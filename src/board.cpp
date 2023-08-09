@@ -50,9 +50,9 @@ std::vector<Board> moveGenerator(Board currBoard) {
 
     // get squares where each piece is
 
-    for (int rank = 0; rank < 8; rank++) {
-        for (int file = 0; file < 8; file++)
-    }
+    // for (int rank = 0; rank < 8; rank++) {
+    //     for (int file = 0; file < 8; file++)
+    // }
 
     // add logic to find all piece types
 
@@ -78,19 +78,20 @@ void validPawnMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
 }
 
 void validKnightMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& knights) {
-    // iterate through currBoard to find the knights
+    for(BoardSquare knight: knights) {
+
+    }
 }
 
 void validBishopMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& bishops) {
-    // iterate through currBoard to find the bishops
+    
 }
 
 void validRookMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& rooks) {
-    // iterate through currBoard to find the rooks
+    
 }
 
 void validQueenMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& queens) {
-    // iterate through currBoard to find the queens (could be more due to promotions)
     // repeat the logic used for rooks and bishops
 }
 
@@ -99,4 +100,15 @@ void validKingMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
     // get valid king moves
 
     // get castling
+}
+
+//helpful for determining valid moves; pieces cannot move onto friendly pieces
+bool isFriendlyPiece(Board& currBoard, BoardSquare square) {
+    int destination = currBoard.board.at(square.rank).at(square.file); //hopefully correct, rank might be mirrored though
+    if(currBoard.isWhiteTurn) {
+        return destination >= 1 && destination <= 9;
+    }
+    else {
+        return destination >= 10 && destination <= 18;
+    }
 }
