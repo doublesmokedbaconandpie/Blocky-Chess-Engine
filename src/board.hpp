@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include <vector>
 
 enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
@@ -21,6 +23,10 @@ struct Board {
             BoardSquare pawnJumpedSquare = BoardSquare(), bool inCheck = false); // maybe useful for testing or chess960
     Board(Board originalBoard, BoardSquare pos1, BoardSquare pos2); // creates a new board for a move 
 
+    int getPiece(int rank, int file) {
+        return this->board.at(rank).at(file);
+    };
+
     std::vector<std::vector<int>> board;
     bool isWhiteTurn;
     int movesWithoutCapture; // 50 move rule
@@ -29,12 +35,4 @@ struct Board {
     BoardSquare pawnJumpedSquare;
 };
 
-std::vector<Board> moveGenerator(Board currBoard); // outputs board instead of board moves for future evaluation functions
-void validPawnMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& pawns); // includes en passant
-void validKnightMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& knights);
-void validBishopMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& bishops);
-void validRookMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& rooks);
-void validQueenMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& queens);
-void validKingMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& kings); // includes castling
-// idk what to do about 3-fold repetition; maybe a hash table
 
