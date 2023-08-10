@@ -19,9 +19,9 @@ Board::Board() {
     this->inCheck = false;
 }
 
-Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn = true, 
-                int movesWithoutCapture = 0, bool pawnJumped = false, 
-                BoardSquare pawnJumpedSquare = BoardSquare(), bool inCheck = false) {
+Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, 
+                int movesWithoutCapture, bool pawnJumped, 
+                BoardSquare pawnJumpedSquare, bool inCheck) {
     this->board = board;
     this->isWhiteTurn = isWhiteTurn;
     this-> movesWithoutCapture = movesWithoutCapture;
