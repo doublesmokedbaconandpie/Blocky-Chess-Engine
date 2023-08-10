@@ -23,12 +23,12 @@ void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, B
     }
     
     pieceTypes currPiece;
-    pieceTypes originPiece = currBoard.getPiece(originSquare);
     int currRank = originSquare.rank + rankIncrement;
     int currFile = originSquare.file + fileIncrement;
 
     while(currRank >= 0 && currRank <= 7 && currFile >= A && currFile <= H) {
         BoardSquare currSquare = BoardSquare(currRank, currFile);
+        currPiece = currBoard.getPiece(currSquare);
         if (isFriendlyPiece(currBoard, currSquare)) {
             break;
         }
@@ -47,7 +47,6 @@ pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int r
     }
     
     pieceTypes currPiece;
-    pieceTypes originPiece = currBoard.getPiece(originSquare);
     int currRank = originSquare.rank + rankIncrement;
     int currFile = originSquare.file + fileIncrement;
 
@@ -114,7 +113,81 @@ bool checkStraightAttackers(Board& currBoard, BoardSquare originSquare, pieceTyp
     return false;
 }
 
-bool inCheck(Board currBoard) {
+
+
+bool checkKnightAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
+
+}
+
+bool checkPawnAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
+    std::vector<pieceTypes> possibleAttackers;
+    int direction; // rank direction of enemy pawns that can attack you
+    if (currBoard.isWhiteTurn) {
+        possibleAttackers.push_back(BPawn);
+        possibleAttackers.push_back(BPawnJumped);
+        direction = -1;
+    }
+    else {
+        possibleAttackers.push_back(WPawn);
+        possibleAttackers.push_back(WPawnJumped);
+        direction = 1;
+    }
+
+    std::vector<pieceTypes> pawnPieces; 
+    int rank = originSquare.rank;
+    int file = originSquare.file;
+    if (file == A) {
+        pawnPieces.push_back(currBoard.getPiece(rank + direction, file + 1));
+    }
+    else if (file == H) {
+        pawnPieces.push_back(currBoard.getPiece(rank + direction, file - 1));
+    }
+    else {
+        pawnPieces.push_back(currBoard.getPiece(rank + direction, file - 1));
+        pawnPieces.push_back(currBoard.getPiece(rank + direction, file + 1));
+    }
+
+    for (pieceTypes piece: pawnPieces) {
+        if (std::find(possibleAttackers.begin(), possibleAttackers.end(), piece) != possibleAttackers.end()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
+    std::vector<pieceTypes> possibleAttackers;
+    if (currBoard.isWhiteTurn) {
+        possibleAttackers.push_back(BKing);
+        possibleAttackers.push_back(BKingUnmoved);
+    }
+    else {
+        possibleAttackers.push_back(WKing);
+        possibleAttackers.push_back(WKingUnmoved);
+    }
+
+    std::vector<pieceTypes> adjacentPieces; 
+    int rank = originSquare.rank;
+    int file = originSquare.file;
+    adjacentPieces.push_back(currBoard.getPiece(rank + 1, file + 1));
+    adjacentPieces.push_back(currBoard.getPiece(rank + 1, file));
+    adjacentPieces.push_back(currBoard.getPiece(rank + 1, file - 1));
+    adjacentPieces.push_back(currBoard.getPiece(rank, file + 1));
+    adjacentPieces.push_back(currBoard.getPiece(rank, file - 1));
+    adjacentPieces.push_back(currBoard.getPiece(rank - 1, file - 1));
+    adjacentPieces.push_back(currBoard.getPiece(rank - 1, file));
+    adjacentPieces.push_back(currBoard.getPiece(rank - 1, file + 1));
+
+    for (pieceTypes piece: adjacentPieces) {
+        if (std::find(possibleAttackers.begin(), possibleAttackers.end(), piece) != possibleAttackers.end()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+bool isInCheck(Board currBoard) {
     pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
     pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
 
@@ -131,6 +204,26 @@ bool inCheck(Board currBoard) {
             }
         }
     }
-    return checkDiagAttackers(currBoard, allyKingSquare, allyKing) && checkStraightAttackers(currBoard, allyKingSquare, allyKing);
-
+    return checkDiagAttackers(currBoard, allyKingSquare, allyKing) 
+        || checkStraightAttackers(currBoard, allyKingSquare, allyKing)
+        || checkKnightAttackers(currBoard, allyKingSquare, allyKing)
+        || checkPawnAttackers(currBoard, allyKingSquare, allyKing)
+        || checkKingAttackers(currBoard, allyKingSquare, allyKing);
 }
+
+Board::Board(Board originalBoard, BoardSquare pos1, BoardSquare pos2) {
+    this->board = originalBoard.board;
+    this->isWhiteTurn = !originalBoard.isWhiteTurn;
+
+    pieceTypes startPiece = this->board.at(pos1.rank).at(pos1.file);
+    this->board.at(pos1.rank).at(pos1.file) = EmptyPiece;
+    this->board.at(pos2.rank).at(pos2.file) = startPiece;
+
+    this->inCheck = isInCheck(*this);
+
+    // need to add logic to convert pawnJumped, rookUnmoved, and kingUnmoved to their respective pieces
+    // perform castling
+    // also check for captures
+    // don't check for king in check
+}
+
