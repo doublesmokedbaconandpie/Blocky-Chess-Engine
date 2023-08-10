@@ -51,7 +51,7 @@ void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, B
     }
 }
 
-pieceTypes checkPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
+pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
     if (rankIncrement == 0 && fileIncrement == 0) {
         throw std::invalid_argument("rankIncrement or fileIncrement must not be 0");
     }

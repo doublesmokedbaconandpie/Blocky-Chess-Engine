@@ -75,17 +75,14 @@ void validRookMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
         if (!upMoves.empty()) {upPiece = currBoard.getPiece(upMoves.back());}
         if (!leftMoves.empty()) {leftPiece = currBoard.getPiece(leftMoves.back());}
         if (!rightMoves.empty()) {rightPiece = currBoard.getPiece(rightMoves.back());}
-        downLeftPiece = checkPieceInDirection(currBoard, rookSquare, 1, -1);
-        downRightPiece = checkPieceInDirection(currBoard, rookSquare, 1, 1);
-        upLeftPiece = checkPieceInDirection(currBoard, rookSquare, -1, -1);
-        upRightPiece = checkPieceInDirection(currBoard, rookSquare, -1, 1);
+        downLeftPiece = getPieceInDirection(currBoard, rookSquare, 1, -1);
+        downRightPiece = getPieceInDirection(currBoard, rookSquare, 1, 1);
+        upLeftPiece = getPieceInDirection(currBoard, rookSquare, -1, -1);
+        upRightPiece = getPieceInDirection(currBoard, rookSquare, -1, 1);
 
         // check pins
-        bool diagPin = false;
-        if (checkDiagPin(rookType, downLeftPiece, upRightPiece) ||
-            checkDiagPin(rookType, upLeftPiece, downRightPiece)) {
-            diagPin = true;
-        }
+        bool diagPin = checkDiagPin(rookType, downLeftPiece, upRightPiece) 
+                    && checkDiagPin(rookType, upLeftPiece, downRightPiece);
         bool vertPin = checkStraightPin(rookType, downPiece, upPiece);
         bool horiPin = checkStraightPin(rookType, leftPiece, rightPiece);
 
