@@ -12,3 +12,4 @@ void validQueenMoves(Board& currBoard, std::vector<Board>& validMoves, std::vect
 void validKingMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& kings); // includes castling
 // idk what to do about 3-fold repetition; maybe a hash table
 
+void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement);

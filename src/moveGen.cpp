@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "moveGen.hpp"
 
 std::vector<Board> moveGenerator(Board currBoard) {
@@ -106,7 +108,19 @@ void validBishopMoves(Board& currBoard, std::vector<Board>& validMoves, std::vec
 }
 
 void validRookMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& rooks) {
-    // iterate through currBoard to find the rooks
+    for (BoardSquare rook: rooks) {
+        std::vector<BoardSquare> rookMoves;
+        addMovesInDirection(currBoard, rookMoves, rook, 1, 0); // down
+        addMovesInDirection(currBoard, rookMoves, rook, -1, 0); // up
+        addMovesInDirection(currBoard, rookMoves, rook, 0, -1); // left
+        addMovesInDirection(currBoard, rookMoves, rook, 0, 1); // right
+        for (BoardSquare move: rookMoves) {
+            Board potentialBoard = Board(currBoard, rook, move);
+            if (!potentialBoard.isIllegalPos) {
+                validMoves.push_back(potentialBoard);
+            }
+        }
+    }
 }
 
 void validQueenMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& queens) {
@@ -120,3 +134,27 @@ void validKingMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
     // get castling
 }
 
+void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
+    // static/non-moves will not be appended
+    if (rankIncrement == 0 && fileIncrement == 0) {
+        throw std::invalid_argument("rankIncrement or fileIncrement must not be 0");
+    }
+    
+    pieceTypes currPiece;
+    int currRank = originSquare.rank + rankIncrement;
+    int currFile = originSquare.file + fileIncrement;
+
+    while(currRank >= 0 && currRank <= 7 && currFile >= A && currFile <= H) {
+        BoardSquare currSquare = BoardSquare(currRank, currFile);
+        currPiece = currBoard.getPiece(currSquare);
+        if (isFriendlyPiece(currBoard, currSquare)) {
+            break;
+        }
+        movesVec.push_back(BoardSquare(currRank, currFile));
+        if (currPiece != EmptyPiece) {
+            break;
+        }
+        currRank += rankIncrement;
+        currFile += fileIncrement;
+    }
+}
