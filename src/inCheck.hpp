@@ -6,8 +6,6 @@
 // targetKing should only be one of WKing and BKing
 // checkPiece doesn't check if the piece and targetKing are on the same side
 
-bool isWhite(pieceTypes piece);
-bool sameSide(pieceTypes piece1, pieceTypes piece2);
 
 void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement);
 pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement);

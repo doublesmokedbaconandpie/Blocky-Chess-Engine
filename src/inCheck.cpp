@@ -3,6 +3,19 @@
 
 #include "inCheck.hpp"
 
+//checks if a square has a friendly piece, useful for determining valid moves
+bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
+    int target = currBoard.board.at(targetSquare.rank).at(targetSquare.file); 
+    //rank could be wrong depending on how indexing works, could be (7 - rank) instead 
+
+    if(currBoard.isWhiteTurn) {
+        return target >= WKing && target <= WRookUnmoved;
+    }
+    else {
+        return target >= BKing && target <= BRookUnmoved;
+    }
+}
+
 void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
     // static/non-moves will not be appended
     if (rankIncrement == 0 && fileIncrement == 0) {
@@ -15,8 +28,8 @@ void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, B
     int currFile = originSquare.file + fileIncrement;
 
     while(currRank >= 0 && currRank <= 7 && currFile >= A && currFile <= H) {
-        currPiece = currBoard.getPiece(currRank, currFile);
-        if (sameSide(originPiece, currPiece)) {
+        BoardSquare currSquare = BoardSquare(currRank, currFile);
+        if (isFriendlyPiece(currBoard, currSquare)) {
             break;
         }
         movesVec.push_back(BoardSquare(currRank, currFile));

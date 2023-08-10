@@ -12,8 +12,8 @@ enum pieceTypes {EmptyPiece = 0,
 
 struct BoardSquare {
     BoardSquare(): file(nullFile), rank(-1) {};
-    BoardSquare(fileVals fileVal, int rankVal): file(fileVal), rank(rankVal) {};
-    BoardSquare(int fileVal, int rankVal): file((fileVals)fileVal), rank(rankVal) {};
+    BoardSquare(int rankVal, fileVals fileVal): rank(rankVal), file(fileVal) {};
+    BoardSquare(int rankVal, int fileVal): file((fileVals)fileVal), rank(rankVal) {};
     fileVals file;
     int rank;
 };

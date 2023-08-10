@@ -14,8 +14,8 @@ std::vector<Board> moveGenerator(Board currBoard) {
 
     for (int rank = 0; rank < 8; rank++) {
         for (const auto file : { fileVals::A, fileVals::H } ) {
-            int currPiece = currBoard.getPiece(file, rank);
-            BoardSquare currSquare = BoardSquare(file, rank);
+            int currPiece = currBoard.getPiece(rank, file);
+            BoardSquare currSquare = BoardSquare(rank, file);
             if (currPiece == WPawn + offset || WPawnJumped + offset ) {
                 pawns.push_back(currSquare);
             }
@@ -59,35 +59,35 @@ void validKnightMoves(Board& currBoard, std::vector<Board>& validMoves, std::vec
         std::vector<BoardSquare> validSquares;
         //up left
         if(currRank - 2 >= 0 && currFile - 1 >= A) {
-            validSquares.push_back(BoardSquare(currFile - 1, currRank - 2));
+            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
         }
         //up right
         if(currRank - 2 >= 0 && currFile + 1 <= H) {
-            validSquares.push_back(BoardSquare(currFile - 1, currRank - 2));
+            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
         }
         //down left
         if(currRank + 2 <= 7 && currFile - 1 >= A) {
-            validSquares.push_back(BoardSquare(currFile - 1, currRank - 2));
+            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
         }
         //down right
         if(currRank + 2 <= 7 && currFile + 1 <= H) {
-            validSquares.push_back(BoardSquare(currFile - 1, currRank - 2));
+            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
         }
         //left up
         if(currRank - 1 >= 0 && currFile - 2 >= A) {
-            validSquares.push_back(BoardSquare(currFile - 1, currRank - 2));
+            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
         }
         //left down
         if(currRank + 1 <= 7 && currFile - 2 >= A) {
-            validSquares.push_back(BoardSquare(currFile - 1, currRank - 2));
+            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
         }
         //right up 
         if(currRank - 1 >= 0 && currFile + 2 <= H) {
-            validSquares.push_back(BoardSquare(currFile - 1, currRank - 2));
+            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
         }
         //right down
         if(currRank + 1 <= 7 && currFile + 2 <= H) {
-            validSquares.push_back(BoardSquare(currFile - 1, currRank - 2));
+            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
         }
 
         for(BoardSquare destination: validSquares) {
@@ -120,15 +120,3 @@ void validKingMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
     // get castling
 }
 
-//checks if a square has a friendly piece, useful for determining valid moves
-bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
-    int target = currBoard.board.at(targetSquare.rank).at(targetSquare.file); 
-    //rank could be wrong depending on how indexing works, could be (7 - rank) instead 
-
-    if(currBoard.isWhiteTurn) {
-        return target >= WKing && target <= WRookUnmoved;
-    }
-    else {
-        return target >= BKing && target <= BRookUnmoved;
-    }
-}
