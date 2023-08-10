@@ -3,30 +3,6 @@
 
 #include "inCheck.hpp"
 
-bool isWhite(pieceTypes piece) {
-    return (piece >= WKing && piece <= WRookUnmoved);
-}
-
-bool sameSide(pieceTypes piece1, pieceTypes piece2) {
-    pieceTypes whiteBot = WKing;
-    pieceTypes whiteTop = WRookUnmoved;
-    pieceTypes blackBot = BKing;
-    pieceTypes blackTop = BRookUnmoved;
-
-    if (whiteBot <= piece1 && piece1 <= whiteTop) {
-        if (whiteBot <= piece2 && piece2 <= whiteTop) {
-            return true;
-        }
-    }
-    if (blackBot <= piece1 && piece1 <= blackTop) {
-        if (blackBot <= piece2 && piece2 <= blackTop) {
-            return true;
-        }
-    }
-    return false;   
-}
-
-
 void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
     // static/non-moves will not be appended
     if (rankIncrement == 0 && fileIncrement == 0) {
