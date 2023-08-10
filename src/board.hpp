@@ -4,7 +4,7 @@
 #include <vector>
 
 enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
-enum pieceTypes {EmptyPiece = 0,
+enum pieceTypes {nullPiece = -1, EmptyPiece,
                 WKing, WQueen, WBishop, WKnight, WRook, WPawn, 
                 WPawnJumped, WKingUnmoved, WRookUnmoved,
                 BKing, BQueen, BBishop, BKnight, BRook, BPawn,
