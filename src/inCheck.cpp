@@ -16,30 +16,6 @@ bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
     }
 }
 
-void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
-    // static/non-moves will not be appended
-    if (rankIncrement == 0 && fileIncrement == 0) {
-        throw std::invalid_argument("rankIncrement or fileIncrement must not be 0");
-    }
-    
-    pieceTypes currPiece;
-    int currRank = originSquare.rank + rankIncrement;
-    int currFile = originSquare.file + fileIncrement;
-
-    while(currRank >= 0 && currRank <= 7 && currFile >= A && currFile <= H) {
-        BoardSquare currSquare = BoardSquare(currRank, currFile);
-        currPiece = currBoard.getPiece(currSquare);
-        if (isFriendlyPiece(currBoard, currSquare)) {
-            break;
-        }
-        movesVec.push_back(BoardSquare(currRank, currFile));
-        if (currPiece != EmptyPiece) {
-            break;
-        }
-        currRank += rankIncrement;
-        currFile += fileIncrement;
-    }
-}
 
 pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
     if (rankIncrement == 0 && fileIncrement == 0) {
