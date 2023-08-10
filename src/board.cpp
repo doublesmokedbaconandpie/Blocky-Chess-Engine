@@ -43,3 +43,4 @@ Board::Board(Board originalBoard, BoardSquare pos1, BoardSquare pos2) {
     // need to add logic to convert pawnJumped, rookUnmoved, and kingUnmoved to their respective pieces
     // also check for captures
 }
+

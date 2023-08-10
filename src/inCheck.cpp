@@ -131,7 +131,6 @@ bool inCheck(Board currBoard) {
             }
         }
     }
-
     return checkDiagAttackers(currBoard, allyKingSquare, allyKing) && checkStraightAttackers(currBoard, allyKingSquare, allyKing);
 
 }
