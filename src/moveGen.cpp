@@ -126,9 +126,9 @@ bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
     //rank could be wrong depending on how indexing works, could be (7 - rank) instead 
 
     if(currBoard.isWhiteTurn) {
-        return target >= 1 && target <= 9;
+        return target >= WKing && target <= WRookUnmoved;
     }
     else {
-        return target >= 10 && target <= 18;
+        return target >= BKing && target <= BRookUnmoved;
     }
 }
