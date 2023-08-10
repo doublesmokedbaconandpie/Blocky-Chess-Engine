@@ -6,7 +6,7 @@
 // targetKing should only be one of WKing and BKing
 // checkPiece doesn't check if the piece and targetKing are on the same side
 
-
+bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare);
 void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement);
 pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement);
 bool checkDiagPin(pieceTypes origin, pieceTypes endPiece1, pieceTypes endPiece2);
