@@ -12,6 +12,7 @@ enum pieceTypes {WKing = 1, WQueen, WBishop, WKnight, WRook, WPawn,
 struct BoardSquare {
     BoardSquare(): file(nullFile), rank(-1) {};
     BoardSquare(fileVals fileVal, int rankVal): file(fileVal), rank(rankVal) {};
+    BoardSquare(int fileVal, int rankVal): file((fileVals)fileVal), rank(rankVal) {};
     fileVals file;
     int rank;
 };
