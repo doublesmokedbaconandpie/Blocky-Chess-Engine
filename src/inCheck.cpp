@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <stdexcept>
 
 #include "inCheck.hpp"
@@ -72,49 +73,60 @@ pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int r
     return EmptyPiece;
 }
 
-bool checkDiagPin(pieceTypes origin, pieceTypes endPiece1, pieceTypes endPiece2) {
-    // checks if origin piece is between an ally king and attacking enemy piece
-    pieceTypes allyKing, enemyQueen, enemyBishop;
-    if (isWhite(origin)) {
-        allyKing = WKing;
-        enemyQueen = BQueen;
-        enemyBishop = BBishop;
+bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
+    std::vector<pieceTypes> possibleAttackers;
+    if (currBoard.isWhiteTurn) {
+        possibleAttackers.push_back(BQueen);
+        possibleAttackers.push_back(BBishop);
     }
     else {
-        allyKing = BKing;
-        enemyQueen = WQueen;
-        enemyBishop = WBishop;
+        possibleAttackers.push_back(WQueen);
+        possibleAttackers.push_back(WBishop);
     }
 
-    if (endPiece1 == allyKing || endPiece2 == allyKing) {
-        if (endPiece1 == enemyQueen || endPiece1 == enemyBishop ||
-            endPiece2 == enemyQueen || endPiece2 == enemyBishop) {
+    std::vector<pieceTypes> cornerPieces; 
+    cornerPieces.push_back(getPieceInDirection(currBoard, originSquare, 1, -1)); // down left
+    cornerPieces.push_back(getPieceInDirection(currBoard, originSquare, 1, 1)); // down right
+    cornerPieces.push_back(getPieceInDirection(currBoard, originSquare, -1, -1)); // up left
+    cornerPieces.push_back(getPieceInDirection(currBoard, originSquare, -1, 1)); // up right
+    
+    for (pieceTypes piece: cornerPieces) {
+        if (std::find(possibleAttackers.begin(), possibleAttackers.end(), piece) != possibleAttackers.end()) {
             return true;
         }
     }
     return false;
 }
-bool checkStraightPin(pieceTypes origin, pieceTypes endPiece1, pieceTypes endPiece2) {
-    // checks if origin piece is between an ally king and attacking enemy piece
-    pieceTypes allyKing, enemyQueen, enemyRook, enemyRookUnmoved;
-    if (isWhite(origin)) {
-        allyKing = WKing;
-        enemyQueen = BQueen;
-        enemyRook = BRook;
-        enemyRookUnmoved = BRookUnmoved;
+
+bool checkStraightAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
+    std::vector<pieceTypes> possibleAttackers;
+    if (currBoard.isWhiteTurn) {
+        possibleAttackers.push_back(BQueen);
+        possibleAttackers.push_back(BRook);
+        possibleAttackers.push_back(BRookUnmoved);
     }
     else {
-        allyKing = BKing;
-        enemyQueen = WQueen;
-        enemyRook = WRook;
-        enemyRookUnmoved = WRookUnmoved;
+        possibleAttackers.push_back(WQueen);
+        possibleAttackers.push_back(WRook);
+        possibleAttackers.push_back(WRookUnmoved);
     }
 
-    if (endPiece1 == allyKing || endPiece2 == allyKing) {
-        if (endPiece1 == enemyQueen || endPiece1 == enemyRook || endPiece1 == enemyRookUnmoved ||
-            endPiece2 == enemyQueen || endPiece2 == enemyRook || endPiece2 == enemyRookUnmoved) {
+    std::vector<pieceTypes> crossPieces; 
+    crossPieces.push_back(getPieceInDirection(currBoard, originSquare, 1, 0)); // down
+    crossPieces.push_back(getPieceInDirection(currBoard, originSquare, -1, 0)); // up
+    crossPieces.push_back(getPieceInDirection(currBoard, originSquare, 0, -1)); // left
+    crossPieces.push_back(getPieceInDirection(currBoard, originSquare, 0, 1)); // right
+    
+    for (pieceTypes piece: crossPieces) {
+        if (std::find(possibleAttackers.begin(), possibleAttackers.end(), piece) != possibleAttackers.end()) {
             return true;
         }
     }
     return false;
+}
+
+bool inCheck(Board currBoard) {
+    pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
+    pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
+
 }
