@@ -16,18 +16,18 @@ Board::Board() {
     this->movesWithoutCapture = 0;
     this->pawnJumped = false;
     this->pawnJumpedSquare = BoardSquare();
-    this->inCheck = false;
+    this->isIllegalPos = false;
 }
 
 Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, 
                 int movesWithoutCapture, bool pawnJumped, 
-                BoardSquare pawnJumpedSquare, bool inCheck) {
+                BoardSquare pawnJumpedSquare, bool isIllegalPos) {
     this->board = board;
     this->isWhiteTurn = isWhiteTurn;
     this-> movesWithoutCapture = movesWithoutCapture;
     this->pawnJumped = pawnJumped;
     this->pawnJumpedSquare = pawnJumpedSquare;
-    this->inCheck = inCheck;
+    this->isIllegalPos = isIllegalPos;
 }
 pieceTypes Board::getPiece(int rank, int file) {
     if (rank < 0 || rank > 7 || file < A || file > H) {
@@ -37,10 +37,17 @@ pieceTypes Board::getPiece(int rank, int file) {
 }
 
 pieceTypes Board::getPiece(BoardSquare square)  {
-    int rank = square.rank;
-    int file = square.file;
+    return this->getPiece(square.rank, square.file);
+}
+
+bool Board::setPiece(int rank, int file, pieceTypes piece) {
     if (rank < 0 || rank > 7 || file < A || file > H) {
-        return nullPiece;
+        return false;
     }
-    return this->board.at(rank).at(file);
+    this->board.at(rank).at(file) = piece;
+    return true;
+}
+
+bool Board::setPiece(BoardSquare square, pieceTypes piece) {
+    return this->setPiece(square.rank, square.file, piece);
 }

@@ -24,17 +24,19 @@ struct Board {
     // maybe useful for testing or chess960
     Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn = true, 
             int movesWithoutCapture = 0, bool pawnJumped = false, 
-            BoardSquare pawnJumpedSquare = BoardSquare(), bool inCheck = false); 
+            BoardSquare pawnJumpedSquare = BoardSquare(), bool isIllegalPos = false); 
     // creates a new board for a move; defined in inCheck.cpp
-    Board(Board originalBoard, BoardSquare pos1, BoardSquare pos2);
+    Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2);
 
     pieceTypes getPiece(int rank, int file);
     pieceTypes getPiece(BoardSquare square);
+    bool setPiece(int rank, int file, pieceTypes piece);
+    bool setPiece(BoardSquare square, pieceTypes piece);
 
     std::vector<std::vector<pieceTypes>> board;
     bool isWhiteTurn;
     int movesWithoutCapture; // 50 move rule
-    bool inCheck;
+    bool isIllegalPos;
     bool pawnJumped;
     BoardSquare pawnJumpedSquare;
 };
