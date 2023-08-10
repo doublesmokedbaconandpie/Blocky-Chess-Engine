@@ -6,9 +6,8 @@
 // targetKing should only be one of WKing and BKing
 // checkPiece doesn't check if the piece and targetKing are on the same side
 
-bool InCheck(Board& currBoard); // all pieces in general
-bool checkPawn(Board& currBoard, BoardSquare pawn, int targetKing);
-bool checkBishop(Board& currBoard, BoardSquare bishop, int targetKing);
-bool checkRook(Board& currBoard, BoardSquare rook, int targetKing);
-bool checkKnight(Board& currBoard, BoardSquare knight, int targetKing);
-bool checkKing(Board& currBoard, BoardSquare king, int targetKing);
+
+void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement);
+pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement);
+bool checkDiagPin(pieceTypes origin, pieceTypes endPiece1, pieceTypes endPiece2);
+bool checkStraightPin(pieceTypes origin, pieceTypes endPiece1, pieceTypes endPiece2);

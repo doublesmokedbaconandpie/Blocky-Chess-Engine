@@ -11,3 +11,5 @@ void validRookMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
 void validQueenMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& queens);
 void validKingMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& kings); // includes castling
 // idk what to do about 3-fold repetition; maybe a hash table
+
+bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare);
