@@ -57,7 +57,51 @@ void validBishopMoves(Board& currBoard, std::vector<Board>& validMoves, std::vec
 }
 
 void validRookMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& rooks) {
-    // iterate through currBoard to find the rooks
+    for (BoardSquare rookSquare: rooks) {
+        std::vector<BoardSquare> downMoves, upMoves, leftMoves, rightMoves;
+        pieceTypes downPiece, upPiece, leftPiece, rightPiece;
+        pieceTypes downLeftPiece, downRightPiece, upLeftPiece, upRightPiece; 
+        downPiece, upPiece, leftPiece, rightPiece = EmptyPiece;
+        pieceTypes rookType = currBoard.getPiece(rookSquare);
+        
+        // add all moves in corresponding directions, ignoring pins
+        addMovesInDirection(currBoard, downMoves, rookSquare, 1, 0);
+        addMovesInDirection(currBoard, upMoves, rookSquare, -1, 0);
+        addMovesInDirection(currBoard, leftMoves, rookSquare, 0, -1);
+        addMovesInDirection(currBoard, rightMoves, rookSquare, 0, 1);
+
+        // check for any possible piece colissions in all directions
+        if (!downMoves.empty()) {downPiece = currBoard.getPiece(downMoves.back());}
+        if (!upMoves.empty()) {upPiece = currBoard.getPiece(upMoves.back());}
+        if (!leftMoves.empty()) {leftPiece = currBoard.getPiece(leftMoves.back());}
+        if (!rightMoves.empty()) {rightPiece = currBoard.getPiece(rightMoves.back());}
+        downLeftPiece = checkPieceInDirection(currBoard, rookSquare, 1, -1);
+        downRightPiece = checkPieceInDirection(currBoard, rookSquare, 1, 1);
+        upLeftPiece = checkPieceInDirection(currBoard, rookSquare, -1, -1);
+        upRightPiece = checkPieceInDirection(currBoard, rookSquare, -1, 1);
+
+        // check pins
+        bool diagPin = false;
+        if (checkDiagPin(rookType, downLeftPiece, upRightPiece) ||
+            checkDiagPin(rookType, upLeftPiece, downRightPiece)) {
+            diagPin = true;
+        }
+        bool vertPin = checkStraightPin(rookType, downPiece, upPiece);
+        bool horiPin = checkStraightPin(rookType, leftPiece, rightPiece);
+
+        // prune valid moves based on pins
+        if (diagPin) {
+            return;
+        }
+        if (!vertPin) {
+            validMoves.insert(validMoves.end(), leftMoves.begin(), leftMoves.end());
+            validMoves.insert(validMoves.end(), rightMoves.begin(), rightMoves.end());
+        }
+        if (!horiPin) {
+            validMoves.insert(validMoves.end(), upMoves.begin(), upMoves.end());
+            validMoves.insert(validMoves.end(), downMoves.begin(), downMoves.end());
+        }
+    }
 }
 
 void validQueenMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& queens) {

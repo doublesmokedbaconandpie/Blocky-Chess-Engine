@@ -1,245 +1,120 @@
-
-#include <vector>
-#include <utility>
+#include <stdexcept>
 
 #include "inCheck.hpp"
 
-bool InCheck(Board& currBoard) {
-    // checks if the current player's king is in check
-
-    std::vector<BoardSquare> pawns, knights, bishops, rooks, queens;
-
-    int offset = 0;
-    if (currBoard.isWhiteTurn) {
-        offset = 9;
-    }
-
-    // gets opposing side's pieces
-    for (int rank = 0; rank < 8; rank++) {
-        for (const auto file : { fileVals::A, fileVals::H } ) {
-            BoardSquare currSquare = BoardSquare(file, rank);
-            int currPiece = currBoard.getPiece(file, rank);
-            if (currPiece == WPawn + offset || WPawnJumped + offset ) {
-                pawns.push_back(currSquare);
-            }
-            if (currPiece == WKnight + offset) {
-                knights.push_back(currSquare);
-            }
-            if (currPiece == WBishop + offset) {
-                bishops.push_back(currSquare);
-            }
-            if (currPiece == WRook + offset) {
-                rooks.push_back(currSquare);
-            }
-            if (currPiece == WQueen + offset) {
-                queens.push_back(currSquare);
-            }
-        }
-    }
-
-    int targetKing = BKing;
-    if (currBoard.isWhiteTurn) {
-        targetKing = WKing;
-    }
-
-    for (BoardSquare pawn: pawns) {
-        if (checkPawn(currBoard, pawn, targetKing)) {
-            return true;
-        }
-    }  
-
-    for (BoardSquare bishop: bishops) {
-        if (checkBishop(currBoard, bishop, targetKing)) {
-            return true;
-        }
-    }
-
-    for (BoardSquare rook: rooks) {
-        if (checkRook(currBoard, rook, targetKing)) {
-            return true;
-        }
-    }
-
-    for (BoardSquare queen: queens) {
-        if (!checkBishop(currBoard, queen, targetKing)) {
-            continue;
-        }
-        if (!checkRook(currBoard, queen, targetKing)) {
-            continue;
-        }
-        return true;
-    }
-
-
-
-    return false;
+bool isWhite(pieceTypes piece) {
+    return (piece >= WKing && piece <= WRookUnmoved);
 }
 
-bool checkPawn(Board& currBoard, BoardSquare pawn, int targetKing) {
-    int rank = pawn.rank;
-    fileVals file = pawn.file;
-    int direction = 1;
-    if (currBoard.isWhiteTurn) {
-        direction = -1;
-    }
+bool sameSide(pieceTypes piece1, pieceTypes piece2) {
+    pieceTypes whiteBot = WKing;
+    pieceTypes whiteTop = WRookUnmoved;
+    pieceTypes blackBot = BKing;
+    pieceTypes blackTop = BRookUnmoved;
 
-    if (file == A) {
-        if (currBoard.getPiece(file + direction, rank + 1) == targetKing) {
+    if (whiteBot <= piece1 && piece1 <= whiteTop) {
+        if (whiteBot <= piece2 && piece2 <= whiteTop) {
             return true;
         }
     }
-    else if (file == H) {
-        if (currBoard.getPiece(file + direction, rank - 1) == targetKing) {
+    if (blackBot <= piece1 && piece1 <= blackTop) {
+        if (blackBot <= piece2 && piece2 <= blackTop) {
             return true;
         }
+    }
+    return false;   
+}
+
+
+void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
+    // static/non-moves will not be appended
+    if (rankIncrement == 0 && fileIncrement == 0) {
+        throw std::invalid_argument("rankIncrement or fileIncrement must not be 0");
+    }
+    
+    pieceTypes currPiece;
+    pieceTypes originPiece = currBoard.getPiece(originSquare);
+    int currRank = originSquare.rank + rankIncrement;
+    int currFile = originSquare.file + fileIncrement;
+
+    while(currRank >= 0 && currRank <= 7 && currFile >= A && currFile <= H) {
+        currPiece = currBoard.getPiece(currRank, currFile);
+        if (sameSide(originPiece, currPiece)) {
+            break;
+        }
+        movesVec.push_back(BoardSquare(currRank, currFile));
+        if (currPiece != EmptyPiece) {
+            break;
+        }
+        currRank += rankIncrement;
+        currFile += fileIncrement;
+    }
+}
+
+pieceTypes checkPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
+    if (rankIncrement == 0 && fileIncrement == 0) {
+        throw std::invalid_argument("rankIncrement or fileIncrement must not be 0");
+    }
+    
+    pieceTypes currPiece;
+    pieceTypes originPiece = currBoard.getPiece(originSquare);
+    int currRank = originSquare.rank + rankIncrement;
+    int currFile = originSquare.file + fileIncrement;
+
+    while(currRank >= 0 && currRank <= 7 && currFile >= A && currFile <= H) {
+        currPiece = currBoard.getPiece(currRank, currFile);
+        if (currPiece != EmptyPiece) {
+            return currPiece;
+        }
+        currRank += rankIncrement;
+        currFile += fileIncrement;
+    }
+    return EmptyPiece;
+}
+
+bool checkDiagPin(pieceTypes origin, pieceTypes endPiece1, pieceTypes endPiece2) {
+    // checks if origin piece is between an ally king and attacking enemy piece
+    pieceTypes allyKing, enemyQueen, enemyBishop;
+    if (isWhite(origin)) {
+        allyKing = WKing;
+        enemyQueen = BQueen;
+        enemyBishop = BBishop;
     }
     else {
-        if (currBoard.getPiece(file + direction, rank - 1) == targetKing) {
-            return true;
-        }
-        if (currBoard.getPiece(file + direction, rank + 1) == targetKing) {
+        allyKing = BKing;
+        enemyQueen = WQueen;
+        enemyBishop = WBishop;
+    }
+
+    if (endPiece1 == allyKing || endPiece2 == allyKing) {
+        if (endPiece1 == enemyQueen || endPiece1 == enemyBishop ||
+            endPiece2 == enemyQueen || endPiece2 == enemyBishop) {
             return true;
         }
     }
+    return false;
 }
+bool checkStraightPin(pieceTypes origin, pieceTypes endPiece1, pieceTypes endPiece2) {
+    // checks if origin piece is between an ally king and attacking enemy piece
+    pieceTypes allyKing, enemyQueen, enemyRook, enemyRookUnmoved;
+    if (isWhite(origin)) {
+        allyKing = WKing;
+        enemyQueen = BQueen;
+        enemyRook = BRook;
+        enemyRookUnmoved = BRookUnmoved;
+    }
+    else {
+        allyKing = BKing;
+        enemyQueen = WQueen;
+        enemyRook = WRook;
+        enemyRookUnmoved = WRookUnmoved;
+    }
 
-bool checkBishop(Board& currBoard, BoardSquare bishop, int targetKing) {
-    // check bottom left
-    int currRank = bishop.rank;
-    int currFile = bishop.file;
-    while (currRank <= 7 && currFile >= A) {
-        if (currBoard.getPiece(currRank, currFile) != 0) {
-            break;
-        }
-        else if (currBoard.getPiece(currRank, currFile) == targetKing) {
+    if (endPiece1 == allyKing || endPiece2 == allyKing) {
+        if (endPiece1 == enemyQueen || endPiece1 == enemyRook || endPiece1 == enemyRookUnmoved ||
+            endPiece2 == enemyQueen || endPiece2 == enemyRook || endPiece2 == enemyRookUnmoved) {
             return true;
         }
-        currRank++;
-        currFile--;
     }
-
-    // check bottom right
-    currRank = bishop.rank;
-    currFile = bishop.file;
-    while (currRank <= 7 && currFile <= H) {
-        if (currBoard.getPiece(currRank, currFile) != 0) {
-            break;
-        }
-        else if (currBoard.getPiece(currRank, currFile) == targetKing) {
-            return true;
-        }
-        currRank++;
-        currFile++;
-    }
-
-    // check top left
-    currRank = bishop.rank;
-    currFile = bishop.file;
-    while (currRank >= 0 && currFile >= A) {
-        if (currBoard.getPiece(currRank, currFile) != 0) {
-            break;
-        }
-        else if (currBoard.getPiece(currRank, currFile) == targetKing) {
-            return true;
-        }
-        currRank--;
-        currFile--;
-    }
-
-    // check top right
-    currRank = bishop.rank;
-    currFile = bishop.file;
-    while (currRank >= 0 && currFile <= H) {
-        if (currBoard.getPiece(currRank, currFile) != 0) {
-            break;
-        }
-        else if (currBoard.getPiece(currRank, currFile) == targetKing) {
-            return true;
-        }
-        currRank--;
-        currFile++;
-    }
-}
-
-bool checkRook(Board& currBoard, BoardSquare rook, int targetKing) {
-    // check down
-    int currRank = rook.rank;
-    int currFile = rook.file;
-    while (currRank <= 7) {
-        if (currBoard.getPiece(currRank, currFile) != 0) {
-            break;
-        }
-        else if (currBoard.getPiece(currRank, currFile) == targetKing) {
-            return true;
-        }
-        currRank++;
-    }
-
-    // check up
-    currRank = rook.rank;
-    currFile = rook.file;
-    while (currRank >= 0) {
-        if (currBoard.getPiece(currRank, currFile) != 0) {
-            break;
-        }
-        else if (currBoard.getPiece(currRank, currFile) == targetKing) {
-            return true;
-        }
-        currRank--;
-    }
-
-    // check left
-    currRank = rook.rank;
-    currFile = rook.file;
-    while (currFile >= A) {
-        if (currBoard.getPiece(currRank, currFile) != 0) {
-            break;
-        }
-        else if (currBoard.getPiece(currRank, currFile) == targetKing) {
-            return true;
-        }
-        currFile--;
-    }
-
-    // check right
-    currRank = rook.rank;
-    currFile = rook.file;
-    while (currFile <= H) {
-        if (currBoard.getPiece(currRank, currFile) != 0) {
-            break;
-        }
-        else if (currBoard.getPiece(currRank, currFile) == targetKing) {
-            return true;
-        }
-        currFile++;
-    }
-}
-
-bool checkKnight(Board& currBoard, BoardSquare knight, int targetKing) {
-    int file = knight.file;
-    int rank = knight.rank;
-
-    std::vector<std::pair<int, int>> possibleSquares;
-    possibleSquares.push_back(std::pair<int, int>(rank - 2, file - 1));
-    possibleSquares.push_back(std::pair<int, int>(rank - 2, file + 1));
-    possibleSquares.push_back(std::pair<int, int>(rank - 1, file + 2));
-    possibleSquares.push_back(std::pair<int, int>(rank + 1, file + 2));
-    possibleSquares.push_back(std::pair<int, int>(rank + 2, file + 1));
-    possibleSquares.push_back(std::pair<int, int>(rank + 2, file - 1));
-    possibleSquares.push_back(std::pair<int, int>(rank + 1, file - 2));
-    possibleSquares.push_back(std::pair<int, int>(rank - 1, file - 2));
-
-    for (auto square: possibleSquares) {
-        int currRank = square.first;
-        int currFile = square.second;
-        if (currRank < 0 || currRank > 7) {
-            continue;
-        }
-        if (currFile < A || currFile > H) {
-            continue;
-        }
-        if (currBoard.getPiece(currRank, currFile) == targetKing) {
-            
-        }
-    }
+    return false;
 }
