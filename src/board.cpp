@@ -16,31 +16,38 @@ Board::Board() {
     this->movesWithoutCapture = 0;
     this->pawnJumped = false;
     this->pawnJumpedSquare = BoardSquare();
-    this->inCheck = false;
+    this->isIllegalPos = false;
 }
 
 Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, 
                 int movesWithoutCapture, bool pawnJumped, 
-                BoardSquare pawnJumpedSquare, bool inCheck) {
+                BoardSquare pawnJumpedSquare, bool isIllegalPos) {
     this->board = board;
     this->isWhiteTurn = isWhiteTurn;
     this-> movesWithoutCapture = movesWithoutCapture;
     this->pawnJumped = pawnJumped;
     this->pawnJumpedSquare = pawnJumpedSquare;
-    this->inCheck = inCheck;
+    this->isIllegalPos = isIllegalPos;
+}
+pieceTypes Board::getPiece(int rank, int file) {
+    if (rank < 0 || rank > 7 || file < A || file > H) {
+        return nullPiece;
+    }
+    return this->board.at(rank).at(file);
 }
 
-Board::Board(Board originalBoard, BoardSquare pos1, BoardSquare pos2) {
-    // does not work for castling
-
-    this->board = originalBoard.board;
-    pieceTypes tmp = this->board.at(pos1.rank).at(pos1.file);
-    this->board.at(pos1.rank).at(pos1.file) = EmptyPiece;
-    this->board.at(pos2.rank).at(pos2.file) = tmp;
-
-    this->isWhiteTurn = !originalBoard.isWhiteTurn;
-
-    // need to add logic to convert pawnJumped, rookUnmoved, and kingUnmoved to their respective pieces
-    // also check for captures
+pieceTypes Board::getPiece(BoardSquare square)  {
+    return this->getPiece(square.rank, square.file);
 }
 
+bool Board::setPiece(int rank, int file, pieceTypes piece) {
+    if (rank < 0 || rank > 7 || file < A || file > H) {
+        return false;
+    }
+    this->board.at(rank).at(file) = piece;
+    return true;
+}
+
+bool Board::setPiece(BoardSquare square, pieceTypes piece) {
+    return this->setPiece(square.rank, square.file, piece);
+}

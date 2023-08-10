@@ -11,31 +11,32 @@ enum pieceTypes {nullPiece = -1, EmptyPiece,
                 BPawnJumped, BKingUnmoved, BRookUnmoved,};
 
 struct BoardSquare {
-    BoardSquare(): file(nullFile), rank(-1) {};
+    BoardSquare(): rank(-1), file(nullFile) {};
     BoardSquare(int rankVal, fileVals fileVal): rank(rankVal), file(fileVal) {};
-    BoardSquare(int rankVal, int fileVal): file((fileVals)fileVal), rank(rankVal) {};
-    fileVals file;
+    BoardSquare(int rankVal, int fileVal): rank(rankVal), file((fileVals)fileVal) {};
     int rank;
+    fileVals file;
 };
 
 struct Board {
-    Board(); // begin default game
+    // begin default game
+    Board(); 
+    // maybe useful for testing or chess960
     Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn = true, 
             int movesWithoutCapture = 0, bool pawnJumped = false, 
-            BoardSquare pawnJumpedSquare = BoardSquare(), bool inCheck = false); // maybe useful for testing or chess960
-    Board(Board originalBoard, BoardSquare pos1, BoardSquare pos2); // creates a new board for a move 
+            BoardSquare pawnJumpedSquare = BoardSquare(), bool isIllegalPos = false); 
+    // creates a new board for a move; defined in inCheck.cpp
+    Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2);
 
-    pieceTypes getPiece(int rank, int file) {
-        return this->board.at(rank).at(file);
-    };
-    pieceTypes getPiece(BoardSquare square) {
-        return this->board.at(square.rank).at(square.file);
-    };
+    pieceTypes getPiece(int rank, int file);
+    pieceTypes getPiece(BoardSquare square);
+    bool setPiece(int rank, int file, pieceTypes piece);
+    bool setPiece(BoardSquare square, pieceTypes piece);
 
     std::vector<std::vector<pieceTypes>> board;
     bool isWhiteTurn;
     int movesWithoutCapture; // 50 move rule
-    bool inCheck;
+    bool isIllegalPos;
     bool pawnJumped;
     BoardSquare pawnJumpedSquare;
 };
