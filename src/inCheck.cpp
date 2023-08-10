@@ -181,7 +181,7 @@ bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes o
 }
 
 
-bool isInCheck(Board currBoard) {
+bool inCheck(Board currBoard) {
     pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
     pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
 
@@ -272,7 +272,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
     }
 
     // check if king is under attack
-    this->isIllegalPos = isInCheck(*this);
+    this->isIllegalPos = inCheck(*this);
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !originalBoard.isWhiteTurn; 
 }

@@ -7,7 +7,6 @@
 // checkPiece doesn't check if the piece and targetKing are on the same side
 
 bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare);
-void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement);
 pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement);
 
 bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
@@ -16,4 +15,4 @@ bool checkKnightAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes
 bool checkPawnAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
 bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
 
-bool isInCheck(Board currBoard);
+bool inCheck(Board currBoard);
