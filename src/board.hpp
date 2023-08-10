@@ -12,8 +12,9 @@ enum pieceTypes {EmptyPiece = 0,
 
 struct BoardSquare {
     BoardSquare(): file(nullFile), rank(-1) {};
-    BoardSquare(int rankVal, int fileVal):  rank(rankVal), file(fileVal) {};
-    int file;
+    BoardSquare(fileVals fileVal, int rankVal): file(fileVal), rank(rankVal) {};
+    BoardSquare(int fileVal, int rankVal): file((fileVals)fileVal), rank(rankVal) {};
+    fileVals file;
     int rank;
 };
 
@@ -38,3 +39,4 @@ struct Board {
     bool pawnJumped;
     BoardSquare pawnJumpedSquare;
 };
+

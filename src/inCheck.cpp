@@ -129,4 +129,20 @@ bool inCheck(Board currBoard) {
     pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
     pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
 
+    BoardSquare allyKingSquare = BoardSquare();
+    for (int rank = 0; rank <= 7; rank++) {
+        if (allyKingSquare.file != nullFile) {
+            break;
+        }
+        for (int file = A; file <= H; file++) {
+            pieceTypes currPiece = currBoard.getPiece(rank, file);
+            if (currPiece == allyKing || currPiece == allyKingUnmoved) {
+                allyKingSquare = BoardSquare(rank, file);
+                break;
+            }
+        }
+    }
+
+    return checkDiagAttackers(currBoard, allyKingSquare, allyKing) && checkStraightAttackers(currBoard, allyKingSquare, allyKing);
+
 }
