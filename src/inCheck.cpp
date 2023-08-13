@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <stdexcept>
+#include <vector>
 
 //checks if a square has a friendly piece, useful for determining valid moves
 bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {

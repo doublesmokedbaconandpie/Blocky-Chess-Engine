@@ -1,6 +1,7 @@
 #include "inCheck.hpp"
 
 #include <gtest/gtest.h>
+#include <vector>
 
 TEST(InCheckTest, isFriendlyPieceTrue1) {
     Board board = Board();
@@ -49,3 +50,79 @@ TEST(InCheckTest, getPieceInDirectionDiag) {
     EXPECT_EQ(bottomLeft, nullPiece);
     EXPECT_EQ(bottomRight, nullPiece);
 }
+
+TEST(InCheckTest, checkDiagAttackersTrue) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BRook     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WQueen, EmptyPiece},
+    };
+    bool isWhiteTurn = false;
+    Board board = Board(boardVector, isWhiteTurn);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkDiagAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, true);
+}
+
+TEST(InCheckTest, checkDiagAttackersFalse) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WBishop   , EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, WRook     , BPawn     , EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece},
+    };
+    bool isWhiteTurn = false;
+    Board board = Board(boardVector, isWhiteTurn);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkDiagAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, false);
+}
+
+
+TEST(InCheckTest, checkStraightAttackersTrue) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece, EmptyPiece, EmptyPiece},
+        {WRook     , EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece},
+    };
+    bool isWhiteTurn = false;
+    Board board = Board(boardVector, isWhiteTurn);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkStraightAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, true);
+}
+
+
+TEST(InCheckTest, checkStraightAttackersFalse) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, WRook     , EmptyPiece, WBishop   , EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, BRook     , BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece},
+    };
+    bool isWhiteTurn = false;
+    Board board = Board(boardVector, isWhiteTurn);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkStraightAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, false);
+}
+
+
