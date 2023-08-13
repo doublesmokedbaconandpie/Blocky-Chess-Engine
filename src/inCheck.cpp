@@ -1,7 +1,7 @@
+#include "inCheck.hpp"
+
 #include <algorithm>
 #include <stdexcept>
-
-#include "inCheck.hpp"
 
 //checks if a square has a friendly piece, useful for determining valid moves
 bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
@@ -34,7 +34,7 @@ pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int r
         currRank += rankIncrement;
         currFile += fileIncrement;
     }
-    return EmptyPiece;
+    return nullPiece;
 }
 
 bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
