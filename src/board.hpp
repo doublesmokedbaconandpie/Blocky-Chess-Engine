@@ -14,6 +14,9 @@ struct BoardSquare {
     BoardSquare(): rank(-1), file(nullFile) {};
     BoardSquare(int rankVal, fileVals fileVal): rank(rankVal), file(fileVal) {};
     BoardSquare(int rankVal, int fileVal): rank(rankVal), file((fileVals)fileVal) {};
+    friend bool operator==(const BoardSquare& lhs, const BoardSquare& rhs) {
+        return (lhs.rank == rhs.rank) && (lhs.file == rhs.file);
+    }
     int rank;
     fileVals file;
 };
@@ -32,6 +35,7 @@ struct Board {
     pieceTypes getPiece(BoardSquare square);
     bool setPiece(int rank, int file, pieceTypes piece);
     bool setPiece(BoardSquare square, pieceTypes piece);
+    void printBoard(); // debugging
 
     std::vector<std::vector<pieceTypes>> board;
     bool isWhiteTurn;

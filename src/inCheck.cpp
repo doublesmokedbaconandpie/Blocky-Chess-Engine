@@ -270,7 +270,8 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
 
     // if the ally side didn't capture a jumped enemy pawn, disallow future en passants
     if (originalBoard.pawnJumped) {
-        this->setPiece(originalBoard.pawnJumpedSquare, allyPawn);
+        pieceTypes enemyPawn = originalBoard.isWhiteTurn ? BPawn : WPawn;
+        this->setPiece(originalBoard.pawnJumpedSquare, enemyPawn);
     }
 
     // check if king is under attack

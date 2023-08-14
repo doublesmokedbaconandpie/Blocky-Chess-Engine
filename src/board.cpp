@@ -1,6 +1,8 @@
 
 #include "board.hpp"
 
+#include <iostream>
+
 Board::Board() {
     this->board = {
         {BRookUnmoved, BKnight, BBishop, BQueen, BKingUnmoved, BBishop, BKnight, BRookUnmoved},
@@ -50,4 +52,14 @@ bool Board::setPiece(int rank, int file, pieceTypes piece) {
 
 bool Board::setPiece(BoardSquare square, pieceTypes piece) {
     return this->setPiece(square.rank, square.file, piece);
+}
+
+void Board::printBoard() {
+    for (auto i: this->board) {
+        std::cout << "[";
+        for (auto j: i) {
+            std::cout << j << ',';
+        }
+        std::cout << "]\n";
+    }
 }

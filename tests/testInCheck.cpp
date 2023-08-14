@@ -62,8 +62,7 @@ TEST(InCheckTest, checkDiagAttackersTrue) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WQueen, EmptyPiece},
     };
-    bool isWhiteTurn = false;
-    Board board = Board(boardVector, isWhiteTurn);
+    Board board = Board(boardVector, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkDiagAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -75,13 +74,12 @@ TEST(InCheckTest, checkDiagAttackersFalse) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WBishop   , EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, WRook     , BPawn     , EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, WBishop   , BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece},
     };
-    bool isWhiteTurn = false;
-    Board board = Board(boardVector, isWhiteTurn);
+    Board board = Board(boardVector, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkDiagAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, false);
@@ -99,8 +97,7 @@ TEST(InCheckTest, checkStraightAttackersTrue) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece},
     };
-    bool isWhiteTurn = false;
-    Board board = Board(boardVector, isWhiteTurn);
+    Board board = Board(boardVector, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkStraightAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -118,11 +115,397 @@ TEST(InCheckTest, checkStraightAttackersFalse) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece},
     };
-    bool isWhiteTurn = false;
-    Board board = Board(boardVector, isWhiteTurn);
+    Board board = Board(boardVector, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkStraightAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, false);
 }
 
+TEST(InCheckTest, checkKnightAttackersTrue1) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, true);
+}
+
+TEST(InCheckTest, checkKnightAttackersTrue2) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, true);
+}
+
+TEST(InCheckTest, checkKnightAttackersTrue3) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, true);
+}
+
+TEST(InCheckTest, checkKnightAttackersTrue4) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, true);
+}
+
+TEST(InCheckTest, checkKnightAttackersFalse) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, BKnight   , WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, false);
+}
+
+TEST(InCheckTest, checkPawnAttackersTrue1) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, WPawn     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkPawnAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, true);
+}
+
+TEST(InCheckTest, checkPawnAttackersTrue2) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkPawnAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, true);
+}
+
+TEST(InCheckTest, checkPawnAttackersFalse) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, WPawn     , EmptyPiece, WPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkPawnAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, false);
+}
+
+TEST(InCheckTest, checkKingAttackersTrue1) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkKingAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, true);
+}
+
+TEST(InCheckTest, checkKingAttackersTrue2) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, WKingUnmoved, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkKingAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, true);
+}
+
+TEST(InCheckTest, checkKingAttackersFalse) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    BoardSquare originSquare = BoardSquare(4, D);
+    bool isAttacked = checkKingAttackers(board, originSquare, BKing);
+    ASSERT_EQ(isAttacked, false);
+}
+
+TEST(InCheckTest, inCheckDefaultBoard) {
+    Board board = Board();
+    bool isAttacked = inCheck(board);
+    ASSERT_EQ(isAttacked, false);
+}
+
+TEST(InCheckTest, inCheckTrue1) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WRook     , EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    bool isAttacked = inCheck(board);
+    ASSERT_EQ(isAttacked, true);
+}
+
+TEST(InCheckTest, inCheckTrue2) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, WBishop   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WRook     , BRook     , EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector, false);
+    bool isAttacked = inCheck(board);
+    ASSERT_EQ(isAttacked, true);
+}
+
+TEST(InCheckTest, BoardMoveConstructorPawnJump) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {BRookUnmoved, BKnight, BBishop, BQueen, BKingUnmoved, BBishop, BKnight, BRookUnmoved},
+        {BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn},
+        {WRookUnmoved, WKnight, WBishop, WQueen, WKingUnmoved, WBishop, WKnight, WRookUnmoved}
+    };
+    Board defaultBoard = Board();
+    BoardSquare pos1 = BoardSquare(6, E);
+    BoardSquare pos2 = BoardSquare(4, E);
+    Board board = Board(defaultBoard, pos1, pos2);
+    EXPECT_EQ(board.isWhiteTurn, false);
+    EXPECT_EQ(board.isIllegalPos, false);
+    EXPECT_EQ(board.getPiece(pos2), WPawnJumped);
+    EXPECT_EQ(board.pawnJumped, true);
+    EXPECT_EQ(board.pawnJumpedSquare, pos2);
+}
+
+TEST(InCheckTest, BoardMoveConstructorKingCastle) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {BRookUnmoved, BKnight, BBishop, BQueen, BKingUnmoved, BBishop, BKnight, BRookUnmoved},
+        {BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn},
+        {WRookUnmoved, WKnight, WBishop, WQueen, WKingUnmoved, EmptyPiece, EmptyPiece, WRookUnmoved}
+    };
+    Board originBoard = Board(boardVector, true);
+    BoardSquare pos1 = BoardSquare(7, E);
+    BoardSquare pos2 = BoardSquare(7, H);
+    Board board = Board(originBoard, pos1, pos2);
+    EXPECT_EQ(board.isWhiteTurn, false);
+    EXPECT_EQ(board.isIllegalPos, false);
+    EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
+    EXPECT_EQ(board.getPiece(pos2), EmptyPiece);
+    EXPECT_EQ(board.getPiece(7, F), WRook);
+    EXPECT_EQ(board.getPiece(7, G), WKing);
+    EXPECT_EQ(board.pawnJumped, false);
+}
+
+TEST(InCheckTest, BoardMoveConstructorQueenCastle) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {BRookUnmoved, BKnight, BBishop, BQueen, BKingUnmoved, BBishop, BKnight, BRookUnmoved},
+        {BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn},
+        {WRookUnmoved, EmptyPiece, EmptyPiece, EmptyPiece, WKingUnmoved, WBishop, WKnight, WRookUnmoved}
+    };
+    Board originBoard = Board(boardVector, true);
+    BoardSquare pos1 = BoardSquare(7, E);
+    BoardSquare pos2 = BoardSquare(7, A);
+    Board board = Board(originBoard, pos1, pos2);
+    EXPECT_EQ(board.isWhiteTurn, false);
+    EXPECT_EQ(board.isIllegalPos, false);
+    EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
+    EXPECT_EQ(board.getPiece(pos2), EmptyPiece);
+    EXPECT_EQ(board.getPiece(7, D), WRook);
+    EXPECT_EQ(board.getPiece(7, C), WKing);
+    EXPECT_EQ(board.pawnJumped, false);
+}
+
+TEST(InCheckTest, BoardMoveConstructorEnPassant) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , BPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board originBoard = Board(boardVector, true);
+    BoardSquare pos1 = BoardSquare(3, D);
+    BoardSquare pos2 = BoardSquare(2, E);
+    Board board = Board(originBoard, pos1, pos2);
+    EXPECT_EQ(board.isWhiteTurn, false);
+    EXPECT_EQ(board.isIllegalPos, false);
+    EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
+    EXPECT_EQ(board.getPiece(pos2), WPawn);
+    EXPECT_EQ(board.getPiece(3, E), EmptyPiece);
+    EXPECT_EQ(board.pawnJumped, false);
+}
+
+TEST(InCheckTest, BoardMoveConstructorNotEnPassant) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , BPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board originBoard = Board(boardVector, true);
+    originBoard.pawnJumped = true;
+    BoardSquare jumpedPawn =  originBoard.pawnJumpedSquare = BoardSquare(3, E);
+    BoardSquare pos1 = BoardSquare(3, D);
+    BoardSquare pos2 = BoardSquare(2, D);
+    Board board = Board(originBoard, pos1, pos2);
+    EXPECT_EQ(board.isWhiteTurn, false);
+    EXPECT_EQ(board.isIllegalPos, false);
+    EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
+    EXPECT_EQ(board.getPiece(pos2), WPawn);
+    EXPECT_EQ(board.getPiece(jumpedPawn), BPawn);
+    EXPECT_EQ(board.pawnJumped, false);
+}
+
+TEST(InCheckTest, BoardMoveConstructorPawnCapture) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , BPawn     , EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board originBoard = Board(boardVector, true);
+    BoardSquare pos1 = BoardSquare(3, D);
+    BoardSquare pos2 = BoardSquare(2, E);
+    Board board = Board(originBoard, pos1, pos2);
+    EXPECT_EQ(board.isWhiteTurn, false);
+    EXPECT_EQ(board.isIllegalPos, false);
+    EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
+    EXPECT_EQ(board.getPiece(pos2), WPawn);
+    EXPECT_EQ(board.getPiece(3, E), BPawn);
+    EXPECT_EQ(board.pawnJumped, false);
+}
+
+TEST(InCheckTest, BoardMoveConstructorRegularCapture) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, WBishop   , BPawn     , EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board originBoard = Board(boardVector, true);
+    BoardSquare pos1 = BoardSquare(3, D);
+    BoardSquare pos2 = BoardSquare(1, F);
+    Board board = Board(originBoard, pos1, pos2);
+    EXPECT_EQ(board.isWhiteTurn, false);
+    EXPECT_EQ(board.isIllegalPos, false);
+    EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
+    EXPECT_EQ(board.getPiece(pos2), WBishop);
+    EXPECT_EQ(board.pawnJumped, false);
+}
 
