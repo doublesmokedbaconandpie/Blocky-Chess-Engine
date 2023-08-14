@@ -18,7 +18,6 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 add_executable(
     allTests
-    tests/allTests.cpp
     tests/testBoard.cpp
     tests/testInCheck.cpp
     src/board.cpp
