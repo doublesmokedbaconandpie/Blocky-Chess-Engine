@@ -20,6 +20,7 @@ add_executable(
     allTests
     tests/testBoard.cpp
     tests/testInCheck.cpp
+    tests/testMoveGen.cpp
     src/board.cpp
     src/inCheck.cpp
     src/moveGen.cpp
