@@ -366,6 +366,7 @@ TEST(InCheckTest, BoardMoveConstructorPawnJump) {
     EXPECT_EQ(board.getPiece(pos2), WPawnJumped);
     EXPECT_EQ(board.pawnJumped, true);
     EXPECT_EQ(board.pawnJumpedSquare, pos2);
+    EXPECT_EQ(board.movesSincePawnMoved, 0);
 }
 
 TEST(InCheckTest, BoardMoveConstructorKingCastle) {
@@ -390,6 +391,7 @@ TEST(InCheckTest, BoardMoveConstructorKingCastle) {
     EXPECT_EQ(board.getPiece(7, F), WRook);
     EXPECT_EQ(board.getPiece(7, G), WKing);
     EXPECT_EQ(board.pawnJumped, false);
+    EXPECT_EQ(board.movesSincePawnMoved, 1);
 }
 
 TEST(InCheckTest, BoardMoveConstructorQueenCastle) {
@@ -414,6 +416,7 @@ TEST(InCheckTest, BoardMoveConstructorQueenCastle) {
     EXPECT_EQ(board.getPiece(7, D), WRook);
     EXPECT_EQ(board.getPiece(7, C), WKing);
     EXPECT_EQ(board.pawnJumped, false);
+    EXPECT_EQ(board.movesSincePawnMoved, 1);
 }
 
 TEST(InCheckTest, BoardMoveConstructorEnPassant) {
@@ -437,6 +440,7 @@ TEST(InCheckTest, BoardMoveConstructorEnPassant) {
     EXPECT_EQ(board.getPiece(pos2), WPawn);
     EXPECT_EQ(board.getPiece(3, E), EmptyPiece);
     EXPECT_EQ(board.pawnJumped, false);
+    EXPECT_EQ(board.movesSincePawnMoved, 0);
 }
 
 TEST(InCheckTest, BoardMoveConstructorNotEnPassant) {
@@ -462,6 +466,7 @@ TEST(InCheckTest, BoardMoveConstructorNotEnPassant) {
     EXPECT_EQ(board.getPiece(pos2), WPawn);
     EXPECT_EQ(board.getPiece(jumpedPawn), BPawn);
     EXPECT_EQ(board.pawnJumped, false);
+    EXPECT_EQ(board.movesSincePawnMoved, 0);
 }
 
 TEST(InCheckTest, BoardMoveConstructorPawnCapture) {
@@ -485,6 +490,7 @@ TEST(InCheckTest, BoardMoveConstructorPawnCapture) {
     EXPECT_EQ(board.getPiece(pos2), WPawn);
     EXPECT_EQ(board.getPiece(3, E), BPawn);
     EXPECT_EQ(board.pawnJumped, false);
+    EXPECT_EQ(board.movesSincePawnMoved, 0);
 }
 
 TEST(InCheckTest, BoardMoveConstructorRegularCapture) {
@@ -507,5 +513,6 @@ TEST(InCheckTest, BoardMoveConstructorRegularCapture) {
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WBishop);
     EXPECT_EQ(board.pawnJumped, false);
+    EXPECT_EQ(board.movesSincePawnMoved, 1);
 }
 

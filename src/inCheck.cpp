@@ -209,6 +209,7 @@ bool inCheck(Board currBoard) {
 
 Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
     this->board = originalBoard.board;
+    this->movesSincePawnMoved = originalBoard.movesSincePawnMoved + 1; // set to 0 in cases with pawn move
 
     // ally refers to allies of originalBoard, as it is the one moving this turn
     pieceTypes allyKing = originalBoard.isWhiteTurn ? WKing : BKing;
@@ -234,7 +235,6 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
             this->setPiece(pos2, EmptyPiece);
             this->setPiece(pos1.rank, pos1.file + kingFileDirection, allyRook);
             this->setPiece(pos1.rank, pos1.file + kingFileDirection * 2, allyKing);
-            this->movesWithoutCapture = 0;
         }
         else {
             this->setPiece(pos2, allyKing);
@@ -249,6 +249,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
             this->setPiece(pos2, allyPawnJumped);
             this->pawnJumped = true;
             this->pawnJumpedSquare = pos2;
+            this->movesSincePawnMoved = 0;
     }
     // all other pawn moves
     else if (originPiece == allyPawn || originPiece == allyPawnJumped) {
@@ -263,6 +264,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
             }
         }
         this->setPiece(pos2, originPiece);
+        this->movesSincePawnMoved = 0;
     }
     else {
         this->setPiece(pos2, originPiece);

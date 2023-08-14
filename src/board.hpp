@@ -2,6 +2,7 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 
 enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
 enum pieceTypes {nullPiece = -1, EmptyPiece,
@@ -14,9 +15,8 @@ struct BoardSquare {
     BoardSquare(): rank(-1), file(nullFile) {};
     BoardSquare(int rankVal, fileVals fileVal): rank(rankVal), file(fileVal) {};
     BoardSquare(int rankVal, int fileVal): rank(rankVal), file((fileVals)fileVal) {};
-    friend bool operator==(const BoardSquare& lhs, const BoardSquare& rhs) {
-        return (lhs.rank == rhs.rank) && (lhs.file == rhs.file);
-    }
+    friend bool operator==(const BoardSquare& lhs, const BoardSquare& rhs);
+    friend std::ostream& operator<<(std::ostream& os, const BoardSquare& target);
     int rank;
     fileVals file;
 };
@@ -30,16 +30,18 @@ struct Board {
             BoardSquare pawnJumpedSquare = BoardSquare(), bool isIllegalPos = false); 
     // creates a new board for a move; defined in inCheck.cpp
     Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2);
+    friend bool operator==(const Board& lhs, const Board& rhs);
+    friend bool operator<(const Board& lhs, const Board& rhs);
+    friend std::ostream& operator<<(std::ostream& os, const Board& target);
 
-    pieceTypes getPiece(int rank, int file);
-    pieceTypes getPiece(BoardSquare square);
+    pieceTypes getPiece(int rank, int file) const;
+    pieceTypes getPiece(BoardSquare square) const;
     bool setPiece(int rank, int file, pieceTypes piece);
     bool setPiece(BoardSquare square, pieceTypes piece);
-    void printBoard(); // debugging
 
     std::vector<std::vector<pieceTypes>> board;
     bool isWhiteTurn;
-    int movesWithoutCapture; // 50 move rule
+    int movesSincePawnMoved; // 50 move rule
     bool isIllegalPos;
     bool pawnJumped;
     BoardSquare pawnJumpedSquare;
