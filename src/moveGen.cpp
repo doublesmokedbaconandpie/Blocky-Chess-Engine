@@ -40,19 +40,72 @@ std::vector<Board> moveGenerator(Board currBoard) {
 }
 
 void validPawnMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& pawns) {
+    int promoteRank = currBoard.isWhiteTurn ? 0 : 7;
+    pieceTypes allyKnight = currBoard.isWhiteTurn ? WKnight : BKnight;
+    pieceTypes allyBishop = currBoard.isWhiteTurn ? WBishop : BBishop;
+    pieceTypes allyRook = currBoard.isWhiteTurn ? WRook : BRook;
+    pieceTypes allyQueen = currBoard.isWhiteTurn ? WQueen : BQueen;
 
-    // check 2nd rank for move two spaces instead of 1
+    for (BoardSquare pawn: pawns) {
+        std::vector<BoardSquare> pawnMoves;
+        int currRank = pawn.rank;
+        fileVals currFile = pawn.file;
 
-    // check 5th rank for en passant
+        forwardPawnMoves(currBoard, pawnMoves, pawn);
+        pawnCaptures(currBoard, pawnMoves, pawn, 1);
+        pawnCaptures(currBoard, pawnMoves, pawn, -1);        
+    
+        for (BoardSquare move: pawnMoves) {
+            Board potentialBoard = Board(currBoard, pawn, move);
+            if (potentialBoard.isIllegalPos) {
+                continue;
+            }
+            if (move.rank == promoteRank) {
+                validMoves.push_back(Board(currBoard, pawn, move, allyKnight));
+                validMoves.push_back(Board(currBoard, pawn, move, allyBishop));
+                validMoves.push_back(Board(currBoard, pawn, move, allyRook));
+                validMoves.push_back(Board(currBoard, pawn, move, allyQueen));
+            }
+            else {
+                validMoves.push_back(potentialBoard);
+            }
+        }
+    }
+}
 
-    // check 7th rank for promotions
 
-    // get pawn moves elsewhere (ranks 3, 4, 6)
+void forwardPawnMoves(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn) {
+    int pawnDirection = currBoard.isWhiteTurn ? -1 : 1;
+    int originRank = currBoard.isWhiteTurn ? 6 : 1;
 
+    // space forward
+    if (currBoard.getPiece(pawn.rank + pawnDirection, pawn.file) == EmptyPiece) {
+        pawnMoves.push_back(BoardSquare(pawn.rank + pawnDirection, pawn.file));
+    }
+    // jump
+    if (pawn.rank == originRank) {
+        if (currBoard.getPiece(pawn.rank + pawnDirection * 2, pawn.file) == EmptyPiece) {
+            pawnMoves.push_back(BoardSquare(pawn.rank + pawnDirection * 2, pawn.file));
+        }
+    }
+}
+
+void pawnCaptures(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn, int fileDirection) {
+    pieceTypes enemyPawnJumped = currBoard.isWhiteTurn ? WPawnJumped : BPawnJumped;
+    int pawnDirection = currBoard.isWhiteTurn ? -1 : 1;
+
+    // left capture and en passant
+    BoardSquare square = BoardSquare(pawn.rank + pawnDirection, pawn.file - fileDirection);
+    if (!isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != EmptyPiece && currBoard.getPiece(square) != nullPiece) {
+        pawnMoves.push_back(square);
+    }
+    if (currBoard.getPiece(pawn.rank, pawn.file - fileDirection) == enemyPawnJumped) {
+        pawnMoves.push_back(square);
+    }
 }
 
 void validKnightMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& knights) {
-    for(BoardSquare knight: knights) {
+    for (BoardSquare knight: knights) {
         int currRank = knight.rank;
         fileVals currFile = knight.file;
         std::vector<BoardSquare> knightMoves;
@@ -67,7 +120,7 @@ void validKnightMoves(Board& currBoard, std::vector<Board>& validMoves, std::vec
             BoardSquare(currRank + 1, currFile + 2),
         };
         for (BoardSquare square: potentialMoves) {
-            if (!isFriendlyPiece(currBoard, square) || currBoard.getPiece(square) == EmptyPiece) {
+            if (!isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != nullPiece) {
                 knightMoves.push_back(square);
             }
         }

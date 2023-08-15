@@ -474,6 +474,29 @@ TEST(InCheckTest, BoardMoveConstructorNotEnPassant) {
     EXPECT_EQ(board.movesSincePawnMoved, 0);
 }
 
+TEST(InCheckTest, BoardMoveConstructorPromote) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WPawn     , WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board originBoard = Board(boardVector, true);
+    BoardSquare pos1 = BoardSquare(1, A);
+    BoardSquare pos2 = BoardSquare(0, A);
+    Board board = Board(originBoard, pos1, pos2, WQueen);
+
+    EXPECT_EQ(board.isWhiteTurn, false);
+    EXPECT_EQ(board.isIllegalPos, false);
+    EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
+    EXPECT_EQ(board.getPiece(pos2), WQueen);
+    EXPECT_EQ(board.movesSincePawnMoved, 0);
+}
+
 TEST(InCheckTest, BoardMoveConstructorPawnCapture) {
     std::vector<std::vector<pieceTypes>> boardVector = {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},

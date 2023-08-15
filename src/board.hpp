@@ -30,7 +30,7 @@ struct Board {
             int movesWithoutCapture = 0, bool pawnJumped = false, 
             BoardSquare pawnJumpedSquare = BoardSquare(), bool isIllegalPos = false); 
     // creates a new board for a move; defined in inCheck.cpp
-    Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2);
+    Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
     friend bool operator==(const Board& lhs, const Board& rhs);
     friend bool operator<(const Board& lhs, const Board& rhs);
     friend std::ostream& operator<<(std::ostream& os, const Board& target);

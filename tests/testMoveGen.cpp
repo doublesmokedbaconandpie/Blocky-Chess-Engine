@@ -38,6 +38,33 @@ TEST(MoveGenTest, validPawnMovesCaptures) {
     ASSERT_EQ(validMoves, expectedValidMoves);
 }
 
+TEST(MoveGenTest, validPawnMovesPromotion) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board board = Board(boardVector);
+    std::vector<Board> validMoves;
+    std::vector<BoardSquare> whitePawns = {BoardSquare(1, D)};
+    std::vector<Board> expectedValidMoves = {
+        Board(board, BoardSquare(1, D), BoardSquare(0, D), WKnight),
+        Board(board, BoardSquare(1, D), BoardSquare(0, D), WBishop),
+        Board(board, BoardSquare(1, D), BoardSquare(0, D), WRook),
+        Board(board, BoardSquare(1, D), BoardSquare(0, D), WQueen),
+    };
+    validPawnMoves(board, validMoves, whitePawns);
+
+    std::sort(validMoves.begin(), validMoves.end());
+    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
+    ASSERT_EQ(validMoves, expectedValidMoves);
+}
+
 TEST(MoveGenTest, validKnightMoves1) {
     std::vector<std::vector<pieceTypes>> boardVector = {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},

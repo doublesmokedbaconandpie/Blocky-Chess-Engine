@@ -13,3 +13,5 @@ void validKingMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
 // idk what to do about 3-fold repetition; maybe a hash table
 
 void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement);
+void forwardPawnMoves(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn);
+void pawnCaptures(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn, int fileDirection);

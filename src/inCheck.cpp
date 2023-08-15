@@ -209,7 +209,7 @@ bool currKingInAttackAfterMove(Board currBoard) {
 
 
 bool notInRange(int var) {return var < 0 || var > 7;}
-Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
+Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece) {
     if (notInRange(pos1.rank) || notInRange(pos1.file) || notInRange(pos2.file) || notInRange(pos2.rank)) {
         this->isIllegalPos = true;
         return;
@@ -227,6 +227,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
     pieceTypes allyPawn = originalBoard.isWhiteTurn ? WPawn : BPawn;
     pieceTypes allyPawnJumped = originalBoard.isWhiteTurn ? WPawnJumped : BPawnJumped;
     int pawnJumpDirection = originalBoard.isWhiteTurn ? -2 : 2;
+    int promotionRank = originalBoard.isWhiteTurn ? 1 : 6;
     
     pieceTypes originPiece = this->getPiece(pos1);
     pieceTypes targetPiece = this->getPiece(pos2);
@@ -259,6 +260,11 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
             this->pawnJumpedSquare = pos2;
             this->movesSincePawnMoved = 0;
     }
+    // promoting pawn
+    else if (originPiece == allyPawn && pos1.rank == promotionRank) {
+        this->setPiece(pos2, promotionPiece);
+        this->movesSincePawnMoved = 0;
+    }
     // all other pawn moves
     else if (originPiece == allyPawn || originPiece == allyPawnJumped) {
         int fileOffset = pos2.file - pos1.file;
@@ -284,7 +290,12 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
         this->setPiece(originalBoard.pawnJumpedSquare, enemyPawn);
     }
 
-    this->isIllegalPos = currKingInAttackAfterMove(*this);
+    if (currKingInAttackAfterMove(*this) || this->movesSincePawnMoved == 50) {
+        this->isIllegalPos = true;
+    }
+    else {
+        this->isIllegalPos = false;
+    }
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !originalBoard.isWhiteTurn; 
 }
