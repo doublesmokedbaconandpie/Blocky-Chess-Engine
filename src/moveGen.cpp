@@ -94,7 +94,6 @@ void pawnCaptures(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSq
     pieceTypes enemyPawnJumped = currBoard.isWhiteTurn ? WPawnJumped : BPawnJumped;
     int pawnDirection = currBoard.isWhiteTurn ? -1 : 1;
 
-    // left capture and en passant
     BoardSquare square = BoardSquare(pawn.rank + pawnDirection, pawn.file - fileDirection);
     if (!isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != EmptyPiece && currBoard.getPiece(square) != nullPiece) {
         pawnMoves.push_back(square);
@@ -173,9 +172,47 @@ void validQueenMoves(Board& currBoard, std::vector<Board>& validMoves, std::vect
 
 
 void validKingMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& kings) {
-    // get valid king moves
+    pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
+    pieceTypes allyRookUnmoved = currBoard.isWhiteTurn ? WRookUnmoved : WRookUnmoved;
+    int kingUnmovedRank = currBoard.isWhiteTurn ? 7 : 0;
+    
+    for (BoardSquare king: kings) {
+        int currRank = king.rank;
+        fileVals currFile = king.file;
+        std::vector<BoardSquare> kingMoves;
+        std::vector<BoardSquare> potentialMoves = {
+            BoardSquare(currRank - 1, currFile - 1),
+            BoardSquare(currRank - 1, currFile),
+            BoardSquare(currRank - 1, currFile + 1),
+            BoardSquare(currRank + 1, currFile - 1),
+            BoardSquare(currRank + 1, currFile),
+            BoardSquare(currRank + 1, currFile + 1),
+            BoardSquare(currRank, currFile - 1),
+            BoardSquare(currRank, currFile + 1),
+        };
+        // regular movements
+        for (BoardSquare square: potentialMoves) {
+            if (!isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != nullPiece) {
+                kingMoves.push_back(square);
+            }
+        }
+        // castling
+        if (currBoard.getPiece(king) == allyKingUnmoved) {
+            if (getPieceInDirection(currBoard, king, 0, 1) == allyRookUnmoved) {
+                kingMoves.push_back(BoardSquare(kingUnmovedRank, H));
+            }
+            if (getPieceInDirection(currBoard, king, 0, -1) == allyRookUnmoved) {
+                kingMoves.push_back(BoardSquare(kingUnmovedRank, A));
+            }
+        }
+        for (BoardSquare move: kingMoves) {
+            Board potentialBoard = Board(currBoard, king, move);
+            if (!potentialBoard.isIllegalPos) {
+                validMoves.push_back(potentialBoard);
+            }
+        }
 
-    // get castling
+    }
 }
 
 void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
