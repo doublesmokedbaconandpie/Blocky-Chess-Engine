@@ -15,4 +15,4 @@ bool checkKnightAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes
 bool checkPawnAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
 bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
 
-bool inCheck(Board currBoard);
+bool currKingInAttackAfterMove(Board currBoard);

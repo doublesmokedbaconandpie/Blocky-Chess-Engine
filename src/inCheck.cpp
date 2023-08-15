@@ -183,33 +183,37 @@ bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes o
 }
 
 
-bool inCheck(Board currBoard) {
+bool currKingInAttackAfterMove(Board currBoard) {
     pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
     pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
+    pieceTypes currKing;
 
-    BoardSquare allyKingSquare = BoardSquare();
+    BoardSquare currKingSquare = BoardSquare();
     for (int rank = 0; rank <= 7; rank++) {
-        if (allyKingSquare.file != nullFile) {
+        if (currKingSquare != BoardSquare()) {
             break;
         }
         for (int file = A; file <= H; file++) {
             pieceTypes currPiece = currBoard.getPiece(rank, file);
             if (currPiece == allyKing || currPiece == allyKingUnmoved) {
-                allyKingSquare = BoardSquare(rank, file);
+                currKingSquare = BoardSquare(rank, file);
+                currKing = currPiece;
                 break;
             }
         }
     }
-    return checkDiagAttackers(currBoard, allyKingSquare, allyKing) 
-        || checkStraightAttackers(currBoard, allyKingSquare, allyKing)
-        || checkKnightAttackers(currBoard, allyKingSquare, allyKing)
-        || checkPawnAttackers(currBoard, allyKingSquare, allyKing)
-        || checkKingAttackers(currBoard, allyKingSquare, allyKing);
+    
+    return checkDiagAttackers(currBoard, currKingSquare, currKing) 
+        || checkStraightAttackers(currBoard, currKingSquare, currKing)
+        || checkKnightAttackers(currBoard, currKingSquare, currKing)
+        || checkPawnAttackers(currBoard, currKingSquare, currKing)
+        || checkKingAttackers(currBoard, currKingSquare, currKing);
 }
 
 Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
     this->board = originalBoard.board;
     this->movesSincePawnMoved = originalBoard.movesSincePawnMoved + 1; // set to 0 in cases with pawn move
+    this->isWhiteTurn = originalBoard.isWhiteTurn; // switch turns will happen after the move
 
     // ally refers to allies of originalBoard, as it is the one moving this turn
     pieceTypes allyKing = originalBoard.isWhiteTurn ? WKing : BKing;
@@ -276,8 +280,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
         this->setPiece(originalBoard.pawnJumpedSquare, enemyPawn);
     }
 
-    // check if king is under attack
-    this->isIllegalPos = inCheck(*this);
+    this->isIllegalPos = currKingInAttackAfterMove(*this);
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !originalBoard.isWhiteTurn; 
 }
