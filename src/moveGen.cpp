@@ -1,6 +1,7 @@
-#include <stdexcept>
-
 #include "moveGen.hpp"
+
+#include <stdexcept>
+#include <vector>
 
 std::vector<Board> moveGenerator(Board currBoard) {
     std::vector<Board> listOfMoves;

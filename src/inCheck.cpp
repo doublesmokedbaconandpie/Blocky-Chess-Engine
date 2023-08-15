@@ -1,7 +1,8 @@
+#include "inCheck.hpp"
+
 #include <algorithm>
 #include <stdexcept>
-
-#include "inCheck.hpp"
+#include <vector>
 
 //checks if a square has a friendly piece, useful for determining valid moves
 bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
@@ -34,7 +35,7 @@ pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int r
         currRank += rankIncrement;
         currFile += fileIncrement;
     }
-    return EmptyPiece;
+    return nullPiece;
 }
 
 bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
@@ -182,32 +183,37 @@ bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes o
 }
 
 
-bool inCheck(Board currBoard) {
+bool currKingInAttackAfterMove(Board currBoard) {
     pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
     pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
+    pieceTypes currKing;
 
-    BoardSquare allyKingSquare = BoardSquare();
+    BoardSquare currKingSquare = BoardSquare();
     for (int rank = 0; rank <= 7; rank++) {
-        if (allyKingSquare.file != nullFile) {
+        if (currKingSquare != BoardSquare()) {
             break;
         }
         for (int file = A; file <= H; file++) {
             pieceTypes currPiece = currBoard.getPiece(rank, file);
             if (currPiece == allyKing || currPiece == allyKingUnmoved) {
-                allyKingSquare = BoardSquare(rank, file);
+                currKingSquare = BoardSquare(rank, file);
+                currKing = currPiece;
                 break;
             }
         }
     }
-    return checkDiagAttackers(currBoard, allyKingSquare, allyKing) 
-        || checkStraightAttackers(currBoard, allyKingSquare, allyKing)
-        || checkKnightAttackers(currBoard, allyKingSquare, allyKing)
-        || checkPawnAttackers(currBoard, allyKingSquare, allyKing)
-        || checkKingAttackers(currBoard, allyKingSquare, allyKing);
+    
+    return checkDiagAttackers(currBoard, currKingSquare, currKing) 
+        || checkStraightAttackers(currBoard, currKingSquare, currKing)
+        || checkKnightAttackers(currBoard, currKingSquare, currKing)
+        || checkPawnAttackers(currBoard, currKingSquare, currKing)
+        || checkKingAttackers(currBoard, currKingSquare, currKing);
 }
 
 Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
     this->board = originalBoard.board;
+    this->movesSincePawnMoved = originalBoard.movesSincePawnMoved + 1; // set to 0 in cases with pawn move
+    this->isWhiteTurn = originalBoard.isWhiteTurn; // switch turns will happen after the move
 
     // ally refers to allies of originalBoard, as it is the one moving this turn
     pieceTypes allyKing = originalBoard.isWhiteTurn ? WKing : BKing;
@@ -233,7 +239,6 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
             this->setPiece(pos2, EmptyPiece);
             this->setPiece(pos1.rank, pos1.file + kingFileDirection, allyRook);
             this->setPiece(pos1.rank, pos1.file + kingFileDirection * 2, allyKing);
-            this->movesWithoutCapture = 0;
         }
         else {
             this->setPiece(pos2, allyKing);
@@ -248,6 +253,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
             this->setPiece(pos2, allyPawnJumped);
             this->pawnJumped = true;
             this->pawnJumpedSquare = pos2;
+            this->movesSincePawnMoved = 0;
     }
     // all other pawn moves
     else if (originPiece == allyPawn || originPiece == allyPawnJumped) {
@@ -262,6 +268,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
             }
         }
         this->setPiece(pos2, originPiece);
+        this->movesSincePawnMoved = 0;
     }
     else {
         this->setPiece(pos2, originPiece);
@@ -269,11 +276,11 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
 
     // if the ally side didn't capture a jumped enemy pawn, disallow future en passants
     if (originalBoard.pawnJumped) {
-        this->setPiece(originalBoard.pawnJumpedSquare, allyPawn);
+        pieceTypes enemyPawn = originalBoard.isWhiteTurn ? BPawn : WPawn;
+        this->setPiece(originalBoard.pawnJumpedSquare, enemyPawn);
     }
 
-    // check if king is under attack
-    this->isIllegalPos = inCheck(*this);
+    this->isIllegalPos = currKingInAttackAfterMove(*this);
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !originalBoard.isWhiteTurn; 
 }
