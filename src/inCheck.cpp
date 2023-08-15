@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
-#include <iostream>
 
 bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
     int target = currBoard.getPiece(targetSquare);

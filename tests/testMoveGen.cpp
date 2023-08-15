@@ -65,13 +65,6 @@ TEST(MoveGenTest, validKnightMoves1) {
         Board(board, BoardSquare(4, D), BoardSquare(3, F)),
         Board(board, BoardSquare(4, D), BoardSquare(3, B)),
     };
-    std::cout << "Board Size" << expectedValidMoves.at(0).board.size() << std::endl;
-    std::cout << "Board Size" << expectedValidMoves.at(1).board.size() << std::endl;
-    std::cout << "Board Size" << expectedValidMoves.at(2).board.size() << std::endl;
-    std::cout << "Board Size" << expectedValidMoves.at(3).board.size() << std::endl;
-    std::cout << "Board Size" << expectedValidMoves.at(4).board.size() << std::endl;
-    std::cout << "Board Size" << expectedValidMoves.at(5).board.size() << std::endl;
-    std::cout << "Board Size" << expectedValidMoves.at(6).board.size() << std::endl;
 
     validKnightMoves(board, validMoves, whiteKnights);
 

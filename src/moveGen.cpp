@@ -71,8 +71,7 @@ void validKnightMoves(Board& currBoard, std::vector<Board>& validMoves, std::vec
                 knightMoves.push_back(square);
             }
         }
-        std::cout << "LSAKDJFLKDSFJLKSDFJLKSDFJ" << potentialMoves.size() << std::endl;
-        for(BoardSquare move: knightMoves) {
+        for (BoardSquare move: knightMoves) {
             Board potentialBoard = Board(currBoard, knight, move);
             if (!potentialBoard.isIllegalPos) {
                 validMoves.push_back(potentialBoard);
