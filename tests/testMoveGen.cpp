@@ -311,5 +311,26 @@ TEST(MoveGenTest, moveGeneratorDefault) {
 
     std::sort(validMoves.begin(), validMoves.end());
     std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
+    ASSERT_EQ(board.isWhiteTurn, true);
+    ASSERT_EQ(validMoves, expectedValidMoves);
+}
+
+TEST(MoveGenTest, moveGeneratorBlackMove) {
+    Board previousBoard = Board();
+    Board currBoard = Board(previousBoard, BoardSquare(6, E), BoardSquare(4, E));
+    std::vector<Board> expectedValidMoves;
+    for (int file = A; file <= H; file++) {
+        expectedValidMoves.push_back(Board(currBoard, BoardSquare(1, file), BoardSquare(2, file)));
+        expectedValidMoves.push_back(Board(currBoard, BoardSquare(1, file), BoardSquare(3, file)));
+    }
+    expectedValidMoves.push_back(Board(currBoard, BoardSquare(0, B), BoardSquare(2, A)));
+    expectedValidMoves.push_back(Board(currBoard, BoardSquare(0, B), BoardSquare(2, C)));
+    expectedValidMoves.push_back(Board(currBoard, BoardSquare(0, G), BoardSquare(2, F)));
+    expectedValidMoves.push_back(Board(currBoard, BoardSquare(0, G), BoardSquare(2, H)));
+    std::vector<Board> validMoves = moveGenerator(currBoard);
+
+    std::sort(validMoves.begin(), validMoves.end());
+    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
+    ASSERT_EQ(currBoard.isWhiteTurn, false);
     ASSERT_EQ(validMoves, expectedValidMoves);
 }
