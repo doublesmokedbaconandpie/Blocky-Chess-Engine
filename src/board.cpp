@@ -7,6 +7,10 @@ bool operator==(const BoardSquare& lhs, const BoardSquare& rhs) {
         return (lhs.rank == rhs.rank) && (lhs.file == rhs.file);
 }
 
+bool operator!=(const BoardSquare& lhs, const BoardSquare& rhs) {
+    return (lhs.rank != rhs.rank) || (lhs.file != rhs.file);
+}
+
 std::ostream& operator<<(std::ostream& os, const BoardSquare& target) {
         os << target.rank << target.file << ' ';
         return os;

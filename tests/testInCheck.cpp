@@ -310,7 +310,7 @@ TEST(InCheckTest, checkKingAttackersFalse) {
 
 TEST(InCheckTest, inCheckDefaultBoard) {
     Board board = Board();
-    bool isAttacked = inCheck(board);
+    bool isAttacked = currKingInAttackAfterMove(board);
     ASSERT_EQ(isAttacked, false);
 }
 
@@ -326,7 +326,7 @@ TEST(InCheckTest, inCheckTrue1) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
     };
     Board board = Board(boardVector, false);
-    bool isAttacked = inCheck(board);
+    bool isAttacked = currKingInAttackAfterMove(board);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -342,7 +342,7 @@ TEST(InCheckTest, inCheckTrue2) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
     };
     Board board = Board(boardVector, false);
-    bool isAttacked = inCheck(board);
+    bool isAttacked = currKingInAttackAfterMove(board);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -361,6 +361,7 @@ TEST(InCheckTest, BoardMoveConstructorPawnJump) {
     BoardSquare pos1 = BoardSquare(6, E);
     BoardSquare pos2 = BoardSquare(4, E);
     Board board = Board(defaultBoard, pos1, pos2);
+
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos2), WPawnJumped);
@@ -384,6 +385,7 @@ TEST(InCheckTest, BoardMoveConstructorKingCastle) {
     BoardSquare pos1 = BoardSquare(7, E);
     BoardSquare pos2 = BoardSquare(7, H);
     Board board = Board(originBoard, pos1, pos2);
+
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -409,6 +411,7 @@ TEST(InCheckTest, BoardMoveConstructorQueenCastle) {
     BoardSquare pos1 = BoardSquare(7, E);
     BoardSquare pos2 = BoardSquare(7, A);
     Board board = Board(originBoard, pos1, pos2);
+
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -434,6 +437,7 @@ TEST(InCheckTest, BoardMoveConstructorEnPassant) {
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(2, E);
     Board board = Board(originBoard, pos1, pos2);
+
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -460,6 +464,7 @@ TEST(InCheckTest, BoardMoveConstructorNotEnPassant) {
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(2, D);
     Board board = Board(originBoard, pos1, pos2);
+
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -484,6 +489,7 @@ TEST(InCheckTest, BoardMoveConstructorPawnCapture) {
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(2, E);
     Board board = Board(originBoard, pos1, pos2);
+
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -508,6 +514,7 @@ TEST(InCheckTest, BoardMoveConstructorRegularCapture) {
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(1, F);
     Board board = Board(originBoard, pos1, pos2);
+
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);

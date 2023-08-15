@@ -16,6 +16,7 @@ struct BoardSquare {
     BoardSquare(int rankVal, fileVals fileVal): rank(rankVal), file(fileVal) {};
     BoardSquare(int rankVal, int fileVal): rank(rankVal), file((fileVals)fileVal) {};
     friend bool operator==(const BoardSquare& lhs, const BoardSquare& rhs);
+    friend bool operator!=(const BoardSquare& lhs, const BoardSquare& rhs);
     friend std::ostream& operator<<(std::ostream& os, const BoardSquare& target);
     int rank;
     fileVals file;
