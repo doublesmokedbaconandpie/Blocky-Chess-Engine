@@ -59,45 +59,20 @@ void validKnightMoves(Board& currBoard, std::vector<Board>& validMoves, std::vec
     for(BoardSquare knight: knights) {
         int currRank = knight.rank;
         fileVals currFile = knight.file;
-        std::vector<BoardSquare> validSquares;
-        //up left
-        if(currRank - 2 >= 0 && currFile - 1 >= A) {
-            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
-        }
-        //up right
-        if(currRank - 2 >= 0 && currFile + 1 <= H) {
-            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
-        }
-        //down left
-        if(currRank + 2 <= 7 && currFile - 1 >= A) {
-            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
-        }
-        //down right
-        if(currRank + 2 <= 7 && currFile + 1 <= H) {
-            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
-        }
-        //left up
-        if(currRank - 1 >= 0 && currFile - 2 >= A) {
-            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
-        }
-        //left down
-        if(currRank + 1 <= 7 && currFile - 2 >= A) {
-            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
-        }
-        //right up 
-        if(currRank - 1 >= 0 && currFile + 2 <= H) {
-            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
-        }
-        //right down
-        if(currRank + 1 <= 7 && currFile + 2 <= H) {
-            validSquares.push_back(BoardSquare(currRank - 1, currFile - 2));
-        }
 
-        for(BoardSquare destination: validSquares) {
-            Board move = Board(currBoard, knight, destination);
-
-            if(/* see if the board doesn't puts the ally king in check; placeholder true */ true) {
-                validMoves.push_back(move);
+        std::vector<BoardSquare> knightMoves;
+        knightMoves.push_back(BoardSquare(currRank - 2, currFile - 1));
+        knightMoves.push_back(BoardSquare(currRank - 2, currFile + 1));
+        knightMoves.push_back(BoardSquare(currRank + 2, currFile - 1));
+        knightMoves.push_back(BoardSquare(currRank + 2, currFile + 1));
+        knightMoves.push_back(BoardSquare(currRank - 1, currFile - 2));
+        knightMoves.push_back(BoardSquare(currRank - 1, currFile + 2));
+        knightMoves.push_back(BoardSquare(currRank + 1, currFile - 2));
+        knightMoves.push_back(BoardSquare(currRank + 1, currFile + 2));
+        for(BoardSquare move: knightMoves) {
+            Board potentialBoard = Board(currBoard, knight, move);
+            if (!potentialBoard.isIllegalPos) {
+                validMoves.push_back(potentialBoard);
             }
         }
 
