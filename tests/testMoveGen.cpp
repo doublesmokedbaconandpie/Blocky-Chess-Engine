@@ -46,8 +46,8 @@ TEST(MoveGenTest, validKnightMoves1) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece},
+        {WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
     };
     Board board = Board(boardVector);
     std::vector<Board> validMoves;
@@ -57,7 +57,7 @@ TEST(MoveGenTest, validKnightMoves1) {
         Board(board, BoardSquare(7, A), BoardSquare(6, C)),
         
         Board(board, BoardSquare(4, D), BoardSquare(6, C)),
-        Board(board, BoardSquare(4, D), BoardSquare(6, E)),
+        // Board(board, BoardSquare(4, D), BoardSquare(6, E)), King located here
         Board(board, BoardSquare(4, D), BoardSquare(2, C)),
         Board(board, BoardSquare(4, D), BoardSquare(2, E)),
         Board(board, BoardSquare(4, D), BoardSquare(5, F)),
@@ -65,6 +65,14 @@ TEST(MoveGenTest, validKnightMoves1) {
         Board(board, BoardSquare(4, D), BoardSquare(3, F)),
         Board(board, BoardSquare(4, D), BoardSquare(3, B)),
     };
+    std::cout << "Board Size" << expectedValidMoves.at(0).board.size() << std::endl;
+    std::cout << "Board Size" << expectedValidMoves.at(1).board.size() << std::endl;
+    std::cout << "Board Size" << expectedValidMoves.at(2).board.size() << std::endl;
+    std::cout << "Board Size" << expectedValidMoves.at(3).board.size() << std::endl;
+    std::cout << "Board Size" << expectedValidMoves.at(4).board.size() << std::endl;
+    std::cout << "Board Size" << expectedValidMoves.at(5).board.size() << std::endl;
+    std::cout << "Board Size" << expectedValidMoves.at(6).board.size() << std::endl;
+
     validKnightMoves(board, validMoves, whiteKnights);
 
     std::sort(validMoves.begin(), validMoves.end());

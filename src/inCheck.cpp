@@ -3,12 +3,10 @@
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
+#include <iostream>
 
-//checks if a square has a friendly piece, useful for determining valid moves
 bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
-    int target = currBoard.board.at(targetSquare.rank).at(targetSquare.file); 
-    //rank could be wrong depending on how indexing works, could be (7 - rank) instead 
-
+    int target = currBoard.getPiece(targetSquare);
     if(currBoard.isWhiteTurn) {
         return target >= WKing && target <= WRookUnmoved;
     }
@@ -222,7 +220,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
     this->movesSincePawnMoved = originalBoard.movesSincePawnMoved + 1; // set to 0 in cases with pawn move
     this->isWhiteTurn = originalBoard.isWhiteTurn; // switch turns will happen after the move
 
-    // ally refers to allies of originalBoard, as it is the one moving this turn
+    // ally refers to allies of originalBoard, as it is the one still moving this turn
     pieceTypes allyKing = originalBoard.isWhiteTurn ? WKing : BKing;
     pieceTypes allyKingUnmoved = originalBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
     pieceTypes allyRook = originalBoard.isWhiteTurn ? WRook : BRook;

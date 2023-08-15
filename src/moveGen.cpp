@@ -39,10 +39,6 @@ std::vector<Board> moveGenerator(Board currBoard) {
     return listOfMoves;
 }
 
-//TODO: Add logic for check
-//
-//
-
 void validPawnMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& pawns) {
 
     // check 2nd rank for move two spaces instead of 1
@@ -59,16 +55,23 @@ void validKnightMoves(Board& currBoard, std::vector<Board>& validMoves, std::vec
     for(BoardSquare knight: knights) {
         int currRank = knight.rank;
         fileVals currFile = knight.file;
-
         std::vector<BoardSquare> knightMoves;
-        knightMoves.push_back(BoardSquare(currRank - 2, currFile - 1));
-        knightMoves.push_back(BoardSquare(currRank - 2, currFile + 1));
-        knightMoves.push_back(BoardSquare(currRank + 2, currFile - 1));
-        knightMoves.push_back(BoardSquare(currRank + 2, currFile + 1));
-        knightMoves.push_back(BoardSquare(currRank - 1, currFile - 2));
-        knightMoves.push_back(BoardSquare(currRank - 1, currFile + 2));
-        knightMoves.push_back(BoardSquare(currRank + 1, currFile - 2));
-        knightMoves.push_back(BoardSquare(currRank + 1, currFile + 2));
+        std::vector<BoardSquare> potentialMoves = {
+            BoardSquare(currRank - 2, currFile - 1),
+            BoardSquare(currRank - 2, currFile + 1),
+            BoardSquare(currRank + 2, currFile - 1),
+            BoardSquare(currRank + 2, currFile + 1),
+            BoardSquare(currRank - 1, currFile - 2),
+            BoardSquare(currRank - 1, currFile + 2),
+            BoardSquare(currRank + 1, currFile - 2),
+            BoardSquare(currRank + 1, currFile + 2),
+        };
+        for (BoardSquare square: potentialMoves) {
+            if (!isFriendlyPiece(currBoard, square) || currBoard.getPiece(square) == EmptyPiece) {
+                knightMoves.push_back(square);
+            }
+        }
+        std::cout << "LSAKDJFLKDSFJLKSDFJLKSDFJ" << potentialMoves.size() << std::endl;
         for(BoardSquare move: knightMoves) {
             Board potentialBoard = Board(currBoard, knight, move);
             if (!potentialBoard.isIllegalPos) {
@@ -80,7 +83,19 @@ void validKnightMoves(Board& currBoard, std::vector<Board>& validMoves, std::vec
 }
 
 void validBishopMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& bishops) {
-    
+    for (BoardSquare bishop: bishops) {
+        std::vector<BoardSquare> bishopMoves;
+        addMovesInDirection(currBoard, bishopMoves, bishop, 1, 1); // down right
+        addMovesInDirection(currBoard, bishopMoves, bishop, 1, -1); // down left
+        addMovesInDirection(currBoard, bishopMoves, bishop, -1, 1); // up right
+        addMovesInDirection(currBoard, bishopMoves, bishop, -1, -1); // up left
+        for (BoardSquare move: bishopMoves) {
+            Board potentialBoard = Board(currBoard, bishop, move);
+            if (!potentialBoard.isIllegalPos) {
+                validMoves.push_back(potentialBoard);
+            }
+        }
+    }
 }
 
 void validRookMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& rooks) {
@@ -100,7 +115,8 @@ void validRookMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
 }
 
 void validQueenMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& queens) {
-    // repeat the logic used for rooks and bishops
+    validBishopMoves(currBoard, validMoves, queens);
+    validRookMoves(currBoard, validMoves, queens);
 }
 
 
