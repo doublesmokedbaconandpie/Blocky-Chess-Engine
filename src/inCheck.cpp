@@ -210,7 +210,14 @@ bool currKingInAttackAfterMove(Board currBoard) {
         || checkKingAttackers(currBoard, currKingSquare, currKing);
 }
 
+
+bool notInRange(int var) {return var < 0 || var > 7;}
 Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2) {
+    if (notInRange(pos1.rank) || notInRange(pos1.file) || notInRange(pos2.file) || notInRange(pos2.rank)) {
+        this->isIllegalPos = true;
+        return;
+    }
+
     this->board = originalBoard.board;
     this->movesSincePawnMoved = originalBoard.movesSincePawnMoved + 1; // set to 0 in cases with pawn move
     this->isWhiteTurn = originalBoard.isWhiteTurn; // switch turns will happen after the move
