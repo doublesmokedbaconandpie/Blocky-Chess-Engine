@@ -516,3 +516,38 @@ TEST(InCheckTest, BoardMoveConstructorRegularCapture) {
     EXPECT_EQ(board.movesSincePawnMoved, 1);
 }
 
+TEST(InCheckTest, BoardMoveConstructorRookPin) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {BRook     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WRook     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board originBoard = Board(boardVector, true);
+    BoardSquare pos1 = BoardSquare(1, A);
+    BoardSquare pos2 = BoardSquare(1, B);
+    Board board = Board(originBoard, pos1, pos2);
+    EXPECT_EQ(board.isIllegalPos, true);
+}
+
+TEST(InCheckTest, BoardMoveConstructorBishopPin) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, BBishop   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, WBishop   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+    };
+    Board originBoard = Board(boardVector, true);
+    BoardSquare pos1 = BoardSquare(6, B);
+    BoardSquare pos2 = BoardSquare(5, A);
+    Board board = Board(originBoard, pos1, pos2);
+    EXPECT_EQ(board.isIllegalPos, true);
+}
