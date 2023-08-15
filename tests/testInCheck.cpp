@@ -531,7 +531,7 @@ TEST(InCheckTest, BoardMoveConstructorRookPin) {
     BoardSquare pos1 = BoardSquare(1, A);
     BoardSquare pos2 = BoardSquare(1, B);
     Board board = Board(originBoard, pos1, pos2);
-    EXPECT_EQ(board.isIllegalPos, true);
+    ASSERT_EQ(board.isIllegalPos, true);
 }
 
 TEST(InCheckTest, BoardMoveConstructorBishopPin) {
@@ -549,5 +549,5 @@ TEST(InCheckTest, BoardMoveConstructorBishopPin) {
     BoardSquare pos1 = BoardSquare(6, B);
     BoardSquare pos2 = BoardSquare(5, A);
     Board board = Board(originBoard, pos1, pos2);
-    EXPECT_EQ(board.isIllegalPos, true);
+    ASSERT_EQ(board.isIllegalPos, true);
 }
