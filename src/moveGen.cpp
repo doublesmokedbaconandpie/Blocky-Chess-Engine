@@ -6,29 +6,29 @@
 std::vector<Board> moveGenerator(Board currBoard) {
     std::vector<Board> listOfMoves;
     std::vector<BoardSquare> pawns, knights, bishops, rooks, queens, kings;
-
-    // get squares where each piece is
-
-    // see pieceTypes definition
-    int offset = 0;
-    if (!currBoard.isWhiteTurn) {
-        offset = BKing - WKing;
-    }
+    
+    pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
+    pieceTypes allyPawn = currBoard.isWhiteTurn ? WPawn : BPawn;
+    pieceTypes allyKnight = currBoard.isWhiteTurn ? WKnight : BKnight;
+    pieceTypes allyBishop = currBoard.isWhiteTurn ? WBishop : BBishop;
+    pieceTypes allyRook = currBoard.isWhiteTurn ? WRook : BRook;
+    pieceTypes allyQueen = currBoard.isWhiteTurn ? WQueen : BQueen;
+    pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
+    pieceTypes allyRookUnmoved = currBoard.isWhiteTurn ? WRookUnmoved : BRookUnmoved;
+    pieceTypes allyPawnJumped = currBoard.isWhiteTurn ? WPawnJumped : BPawnJumped;
 
     for (int rank = 0; rank < 8; rank++) {
-        for (const auto file : { fileVals::A, fileVals::H } ) {
+        for (int file = A; file <= H; file++) {
             int currPiece = currBoard.getPiece(rank, file);
             BoardSquare currSquare = BoardSquare(rank, file);
-            if (currPiece == WPawn + offset || WPawnJumped + offset ) {
-                pawns.push_back(currSquare);
-            }
-            if (currPiece == WBishop + offset) {
-                pawns.push_back(currSquare);
-            }
+            if (currPiece == allyKnight) {knights.push_back(currSquare);}
+            if (currPiece == allyBishop) {bishops.push_back(currSquare);}
+            if (currPiece == allyQueen) {queens.push_back(currSquare);}
+            if (currPiece == allyPawn || currPiece == allyPawnJumped ) {pawns.push_back(currSquare);}
+            if (currPiece == allyRook || currPiece == allyRookUnmoved ) {rooks.push_back(currSquare);}
+            if (currPiece == allyKing || currPiece == allyKingUnmoved ) {kings.push_back(currSquare);}
         }
     }
-
-    // add logic to find all piece types
 
     validPawnMoves(currBoard, listOfMoves, pawns);
     validKnightMoves(currBoard, listOfMoves, knights);
