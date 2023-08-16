@@ -15,8 +15,8 @@ std::pair<int, Board> negaMax(Board board, int depth) {
 
     Board bestBoard = moves.at(0);
     int score;
-    int max = std::numeric_limits<double>::min();
-    
+    int max = std::numeric_limits<int>::min();
+
     for (Board move: moves) {
         score = -1 * negaMax(move, depth - 1).first;
         if (score > max) {
