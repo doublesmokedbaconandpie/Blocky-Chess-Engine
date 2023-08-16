@@ -18,15 +18,18 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 add_executable(
     allTests
-    tests/testBoard.cpp
-    tests/testInCheck.cpp
-    tests/testMoveGen.cpp
-    src/board.cpp
-    src/inCheck.cpp
-    src/moveGen.cpp
+    testBoard.cpp
+    testInCheck.cpp
+    testMoveGen.cpp
+    testSearch.cpp
+    ../src/board.cpp
+    ../src/inCheck.cpp
+    ../src/moveGen.cpp
+    ../src/search.cpp
+    ../src/eval.cpp
 )
 target_include_directories(
-    allTests PUBLIC "src/"
+    allTests PUBLIC "../src/"
 )
 target_link_libraries(
     allTests
