@@ -63,18 +63,18 @@ Board::Board() {
         {WRookUnmoved, WKnight, WBishop, WQueen, WKingUnmoved, WBishop, WKnight, WRookUnmoved}
     };
     this->isWhiteTurn = true;
-    this->movesSincePawnMoved = 0;
+    this->movesSincePawnMovedOrCapture = 0;
     this->pawnJumped = false;
     this->pawnJumpedSquare = BoardSquare();
     this->isIllegalPos = false;
 }
 
 Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, 
-                int movesSincePawnMoved, bool pawnJumped, 
+                int movesSincePawnMovedOrCapture, bool pawnJumped, 
                 BoardSquare pawnJumpedSquare, bool isIllegalPos) {
     this->board = board;
     this->isWhiteTurn = isWhiteTurn;
-    this-> movesSincePawnMoved = movesSincePawnMoved;
+    this-> movesSincePawnMovedOrCapture = movesSincePawnMovedOrCapture;
     this->pawnJumped = pawnJumped;
     this->pawnJumpedSquare = pawnJumpedSquare;
     this->isIllegalPos = isIllegalPos;
@@ -175,5 +175,8 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
         os<< "],\n";
     }
     os << "\n";
+    os << target.isIllegalPos << " ";
+    os << target.isWhiteTurn << " ";
+    os << target.movesSincePawnMovedOrCapture << "\n";
     return os;
 }

@@ -1,4 +1,3 @@
-#include <limits>
 #include <vector>
 #include <utility>
 
@@ -10,13 +9,12 @@
 
 std::pair<int, BoardMove> negaMax(Board board, int depth) {
     if (depth == 0) {return std::pair<int, BoardMove>(eval(board), BoardMove());}
-    int max = std::numeric_limits<int>::min();
+    if (board.movesSincePawnMovedOrCapture >= 50) {return std::pair<int, BoardMove>(0, BoardMove());}
+    int max = -1000000000;
 
     std::vector<BoardMove> moves = moveGenerator(board);
     if (moves.size() == 0) {
-        Board noMoveBoard = board;
-        noMoveBoard.isWhiteTurn = !noMoveBoard.isWhiteTurn;
-        if (currKingInAttackAfterMove(noMoveBoard)) {
+        if (currKingInAttackAfterMove(board)) {
             return std::pair<int, BoardMove>(max, BoardMove());
         }
         else {

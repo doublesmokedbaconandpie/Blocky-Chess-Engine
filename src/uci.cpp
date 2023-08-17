@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <chrono>
 
 #include "uci.hpp"
 #include "search.hpp"
@@ -7,30 +8,48 @@
 
 int main() {
     Board board = Board();
-    BoardMove move = BoardMove(BoardSquare(6, 2), BoardSquare(5, 2));
+    BoardMove move;
+    // board.isWhiteTurn = false;
     int eval;
     int moveCount = 0;
+    int depth;
 
     while (true) {
-        std::pair<int, BoardMove> returnVals = negaMax(board, 2);
+
+        if (board.isWhiteTurn) {
+            depth = 3;
+        }
+        else {
+            depth = 3;
+        }
+
+        auto start = std::chrono::system_clock::now();
+        std::pair<int, BoardMove> returnVals = negaMax(board, depth);
+
         eval = board.isWhiteTurn ? returnVals.first : -1 * returnVals.first;
         move = returnVals.second;
         board = Board(board, move);
         moveCount++;
+
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end-start;
+        std::time_t end_time = std::chrono::system_clock::to_time_t(end);
 
         if (move == BoardMove()) {
             break;
         }
         
         if (board.isWhiteTurn) {
-            std::cout << moveCount << ". Black Moved:" << std::endl;
+            std::cout << moveCount << ". Black Moved:\n";
         }
         else {
-            std::cout << moveCount << ". White Moved:" << std::endl;
+            std::cout << moveCount << ". White Moved:\n";
         }
-        std::cout << "Evaluation: " << eval << std::endl;
-        std::cout << "Best Move: " << move << std::endl;
-        std::cout << "Best Board: \n \n" << board << std::endl << std::endl;
+        std::cout << "Time Stamp:" << std::ctime(&end_time) << "\n";
+        std::cout << "Time elapsed:" << elapsed_seconds.count() << "\n";
+        std::cout << "Evaluation: " << eval << "\n";
+        std::cout << "Best Move: " << move << "\n";
+        std::cout << "Best Board: \n \n" << board << std::endl;
 
     }        
     return 0;
