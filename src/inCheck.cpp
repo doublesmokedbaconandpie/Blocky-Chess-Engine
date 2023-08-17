@@ -223,7 +223,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
     pieceTypes allyKing = originalBoard.isWhiteTurn ? WKing : BKing;
     pieceTypes allyKingUnmoved = originalBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
     pieceTypes allyRook = originalBoard.isWhiteTurn ? WRook : BRook;
-    pieceTypes allyRookUnmoved = originalBoard.isWhiteTurn ? WRookUnmoved : WRookUnmoved;
+    pieceTypes allyRookUnmoved = originalBoard.isWhiteTurn ? WRookUnmoved : BRookUnmoved;
     pieceTypes allyPawn = originalBoard.isWhiteTurn ? WPawn : BPawn;
     pieceTypes allyPawnJumped = originalBoard.isWhiteTurn ? WPawnJumped : BPawnJumped;
     int pawnJumpDirection = originalBoard.isWhiteTurn ? -2 : 2;
@@ -290,12 +290,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         this->setPiece(originalBoard.pawnJumpedSquare, enemyPawn);
     }
 
-    if (currKingInAttackAfterMove(*this) || this->movesSincePawnMoved == 50) {
-        this->isIllegalPos = true;
-    }
-    else {
-        this->isIllegalPos = false;
-    }
+    this->isIllegalPos = currKingInAttackAfterMove(*this) || (this->movesSincePawnMoved == 50);
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !originalBoard.isWhiteTurn; 
 }
