@@ -300,3 +300,6 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
     this->isWhiteTurn = !originalBoard.isWhiteTurn; 
 }
 
+Board::Board(Board& originalBoard, BoardMove move) {
+    *this = Board(originalBoard, move.pos1, move.pos2, move.promotionPiece);
+}

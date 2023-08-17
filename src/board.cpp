@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+// BoardSquare
+
 bool operator==(const BoardSquare& lhs, const BoardSquare& rhs) {
         return (lhs.rank == rhs.rank) && (lhs.file == rhs.file);
 }
@@ -11,10 +13,43 @@ bool operator!=(const BoardSquare& lhs, const BoardSquare& rhs) {
     return (lhs.rank != rhs.rank) || (lhs.file != rhs.file);
 }
 
+bool operator<(const BoardSquare& lhs, const BoardSquare& rhs) {
+    if (lhs.rank != rhs.rank) {
+        return lhs.rank < rhs.rank;
+    }
+    if (lhs.file != rhs.file) {
+        return lhs.file < rhs.file;
+    }
+    return false;
+}
+
 std::ostream& operator<<(std::ostream& os, const BoardSquare& target) {
-        os << target.rank << target.file << ' ';
+        os << "Rank: " << target.rank << " File: " << target.file << ' ';
         return os;
 }
+
+// BoardMove
+
+std::ostream& operator<<(std::ostream& os, const BoardMove& target) {
+    os <<  "Pos1[" << target.pos1 << "] Pos2[" << target.pos2 << "] Promote: " << target.promotionPiece;
+    return os;
+}
+
+bool operator==(const BoardMove& lhs, const BoardMove& rhs) {
+    return (lhs.pos1 == rhs.pos1) && (lhs.pos2 == rhs.pos2) && (lhs.promotionPiece == rhs.promotionPiece);
+}
+
+bool operator<(const BoardMove& lhs, const BoardMove& rhs) {
+    if (lhs.pos1 != rhs.pos1) {
+        return lhs.pos1 < rhs.pos1;
+    }
+    if (lhs.pos2 != rhs.pos2) {
+        return lhs.pos2 < rhs.pos2;
+    }
+    return false;
+}
+
+// Board
 
 Board::Board() {
     this->board = {

@@ -19,6 +19,7 @@ int eval(Board board) {
                 scoreSum += 3;
                 break;
             case WRook:
+            case WRookUnmoved:
                 scoreSum += 5;
                 break;
             case WQueen:
@@ -33,6 +34,7 @@ int eval(Board board) {
                 scoreSum -= 3;
                 break;
             case BRook:
+            case BRookUnmoved:
                 scoreSum -= 5;
                 break;
             case BQueen:
@@ -43,5 +45,5 @@ int eval(Board board) {
             }
         }
     }
-    return scoreSum;
+    return board.isWhiteTurn ? scoreSum : scoreSum * -1;
 }

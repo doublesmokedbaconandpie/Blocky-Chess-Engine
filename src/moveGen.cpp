@@ -3,8 +3,8 @@
 #include <stdexcept>
 #include <vector>
 
-std::vector<Board> moveGenerator(Board currBoard) {
-    std::vector<Board> listOfMoves;
+std::vector<BoardMove> moveGenerator(Board currBoard) {
+    std::vector<BoardMove> listOfMoves;
     std::vector<BoardSquare> pawns, knights, bishops, rooks, queens, kings;
     
     pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
@@ -39,7 +39,7 @@ std::vector<Board> moveGenerator(Board currBoard) {
     return listOfMoves;
 }
 
-void validPawnMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& pawns) {
+void validPawnMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& pawns) {
     int promoteRank = currBoard.isWhiteTurn ? 0 : 7;
     pieceTypes allyKnight = currBoard.isWhiteTurn ? WKnight : BKnight;
     pieceTypes allyBishop = currBoard.isWhiteTurn ? WBishop : BBishop;
@@ -61,13 +61,13 @@ void validPawnMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
                 continue;
             }
             if (move.rank == promoteRank) {
-                validMoves.push_back(Board(currBoard, pawn, move, allyKnight));
-                validMoves.push_back(Board(currBoard, pawn, move, allyBishop));
-                validMoves.push_back(Board(currBoard, pawn, move, allyRook));
-                validMoves.push_back(Board(currBoard, pawn, move, allyQueen));
+                validMoves.push_back(BoardMove(pawn, move, allyKnight));
+                validMoves.push_back(BoardMove(pawn, move, allyBishop));
+                validMoves.push_back(BoardMove(pawn, move, allyRook));
+                validMoves.push_back(BoardMove(pawn, move, allyQueen));
             }
             else {
-                validMoves.push_back(potentialBoard);
+                validMoves.push_back(BoardMove(pawn, move));
             }
         }
     }
@@ -103,7 +103,7 @@ void pawnCaptures(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSq
     }
 }
 
-void validKnightMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& knights) {
+void validKnightMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& knights) {
     for (BoardSquare knight: knights) {
         int currRank = knight.rank;
         fileVals currFile = knight.file;
@@ -126,14 +126,14 @@ void validKnightMoves(Board& currBoard, std::vector<Board>& validMoves, std::vec
         for (BoardSquare move: knightMoves) {
             Board potentialBoard = Board(currBoard, knight, move);
             if (!potentialBoard.isIllegalPos) {
-                validMoves.push_back(potentialBoard);
+                validMoves.push_back(BoardMove(knight, move));
             }
         }
 
     }
 }
 
-void validBishopMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& bishops) {
+void validBishopMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& bishops) {
     for (BoardSquare bishop: bishops) {
         std::vector<BoardSquare> bishopMoves;
         addMovesInDirection(currBoard, bishopMoves, bishop, 1, 1); // down right
@@ -143,13 +143,13 @@ void validBishopMoves(Board& currBoard, std::vector<Board>& validMoves, std::vec
         for (BoardSquare move: bishopMoves) {
             Board potentialBoard = Board(currBoard, bishop, move);
             if (!potentialBoard.isIllegalPos) {
-                validMoves.push_back(potentialBoard);
+                validMoves.push_back(BoardMove(bishop, move));
             }
         }
     }
 }
 
-void validRookMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& rooks) {
+void validRookMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& rooks) {
     for (BoardSquare rook: rooks) {
         std::vector<BoardSquare> rookMoves;
         addMovesInDirection(currBoard, rookMoves, rook, 1, 0); // down
@@ -159,19 +159,19 @@ void validRookMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
         for (BoardSquare move: rookMoves) {
             Board potentialBoard = Board(currBoard, rook, move);
             if (!potentialBoard.isIllegalPos) {
-                validMoves.push_back(potentialBoard);
+                validMoves.push_back(BoardMove(rook, move));
             }
         }
     }
 }
 
-void validQueenMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& queens) {
+void validQueenMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& queens) {
     validBishopMoves(currBoard, validMoves, queens);
     validRookMoves(currBoard, validMoves, queens);
 }
 
 
-void validKingMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& kings) {
+void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& kings) {
     pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
     pieceTypes allyRookUnmoved = currBoard.isWhiteTurn ? WRookUnmoved : WRookUnmoved;
     int kingUnmovedRank = currBoard.isWhiteTurn ? 7 : 0;
@@ -208,7 +208,7 @@ void validKingMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
         for (BoardSquare move: kingMoves) {
             Board potentialBoard = Board(currBoard, king, move);
             if (!potentialBoard.isIllegalPos) {
-                validMoves.push_back(potentialBoard);
+                validMoves.push_back(BoardMove(king, move));
             }
         }
 
