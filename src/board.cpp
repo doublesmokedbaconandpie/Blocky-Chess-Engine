@@ -123,7 +123,54 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
     for (auto i: target.board) {
         os << "[";
         for (auto j: i) {
-            os << j << ',';
+            switch (j)
+            {
+            case WPawn:
+            case WPawnJumped:
+                os << "WP";
+                break;
+            case WKnight:
+                os << "WN";
+                break;
+            case WBishop:
+                os << "WB";
+                break;
+            case WRook:
+            case WRookUnmoved:
+                os << "WR";
+                break;
+            case WQueen:
+                os << "WQ";
+                break;
+            case WKing:
+            case WKingUnmoved:
+                os << "WK";
+                break;
+            case BPawn:
+            case BPawnJumped:
+                os << "BP";
+                break;
+            case BKnight:
+                os << "BN";
+                break;
+            case BBishop:
+                os << "BB";
+                break;
+            case BRook:
+            case BRookUnmoved:
+                os << "BR";
+                break;
+            case BQueen:
+                os << "BQ";
+                break;
+            case BKing:
+            case BKingUnmoved:
+                os << "BK";
+                break;
+            default:
+                os << "  ";
+            }
+            os << ',';
         }
         os<< "],\n";
     }

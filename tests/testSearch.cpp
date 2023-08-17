@@ -7,7 +7,7 @@
 #include <utility>
 
 
-TEST(TestEval, eval) {
+TEST(TestEval, evalTest) {
     Board board = Board();
     ASSERT_EQ(eval(board), 0);
 }
