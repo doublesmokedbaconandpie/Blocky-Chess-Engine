@@ -216,7 +216,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
     }
 
     this->board = originalBoard.board;
-    this->movesSincePawnMoved = originalBoard.movesSincePawnMoved + 1; // set to 0 in cases with pawn move
+    this->movesSincePawnMovedOrCapture = originalBoard.movesSincePawnMovedOrCapture + 1; // set to 0 in cases with pawn move
     this->isWhiteTurn = originalBoard.isWhiteTurn; // switch turns will happen after the move
 
     // ally refers to allies of originalBoard, as it is the one still moving this turn
@@ -258,12 +258,12 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
             this->setPiece(pos2, allyPawnJumped);
             this->pawnJumped = true;
             this->pawnJumpedSquare = pos2;
-            this->movesSincePawnMoved = 0;
+            this->movesSincePawnMovedOrCapture = 0;
     }
     // promoting pawn
     else if (originPiece == allyPawn && pos1.rank == promotionRank) {
         this->setPiece(pos2, promotionPiece);
-        this->movesSincePawnMoved = 0;
+        this->movesSincePawnMovedOrCapture = 0;
     }
     // all other pawn moves
     else if (originPiece == allyPawn || originPiece == allyPawnJumped) {
@@ -278,10 +278,13 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
             }
         }
         this->setPiece(pos2, originPiece);
-        this->movesSincePawnMoved = 0;
+        this->movesSincePawnMovedOrCapture = 0;
     }
     else {
         this->setPiece(pos2, originPiece);
+        if (targetPiece != EmptyPiece) {
+            this->movesSincePawnMovedOrCapture = 0;
+        }
     }
 
     // if the ally side didn't capture a jumped enemy pawn, disallow future en passants
@@ -290,7 +293,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         this->setPiece(originalBoard.pawnJumpedSquare, enemyPawn);
     }
 
-    this->isIllegalPos = currKingInAttackAfterMove(*this) || (this->movesSincePawnMoved == 50);
+    this->isIllegalPos = currKingInAttackAfterMove(*this);
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !originalBoard.isWhiteTurn; 
 }

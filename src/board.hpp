@@ -56,7 +56,7 @@ struct Board {
 
     std::vector<std::vector<pieceTypes>> board;
     bool isWhiteTurn;
-    int movesSincePawnMoved; // 50 move rule
+    int movesSincePawnMovedOrCapture; // 50 move rule
     bool isIllegalPos;
     bool pawnJumped;
     BoardSquare pawnJumpedSquare;

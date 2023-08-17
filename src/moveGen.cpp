@@ -197,14 +197,17 @@ void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
             }
         }
         // castling
-        if (currBoard.getPiece(king) == allyKingUnmoved) {
-            if (getPieceInDirection(currBoard, king, 0, 1) == allyRookUnmoved) {
-                kingMoves.push_back(BoardSquare(kingUnmovedRank, H));
-            }
-            if (getPieceInDirection(currBoard, king, 0, -1) == allyRookUnmoved) {
-                kingMoves.push_back(BoardSquare(kingUnmovedRank, A));
+        if (!currKingInAttackAfterMove(currBoard)) {
+            if (currBoard.getPiece(king) == allyKingUnmoved) {
+                if (getPieceInDirection(currBoard, king, 0, 1) == allyRookUnmoved) {
+                    kingMoves.push_back(BoardSquare(kingUnmovedRank, H));
+                }
+                if (getPieceInDirection(currBoard, king, 0, -1) == allyRookUnmoved) {
+                    kingMoves.push_back(BoardSquare(kingUnmovedRank, A));
+                }
             }
         }
+        
         for (BoardSquare move: kingMoves) {
             Board potentialBoard = Board(currBoard, king, move);
             if (!potentialBoard.isIllegalPos) {
