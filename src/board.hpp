@@ -17,9 +17,21 @@ struct BoardSquare {
     BoardSquare(int rankVal, int fileVal): rank(rankVal), file((fileVals)fileVal) {};
     friend bool operator==(const BoardSquare& lhs, const BoardSquare& rhs);
     friend bool operator!=(const BoardSquare& lhs, const BoardSquare& rhs);
+    friend bool operator<(const BoardSquare& lhs, const BoardSquare& rhs);
     friend std::ostream& operator<<(std::ostream& os, const BoardSquare& target);
     int rank;
     fileVals file;
+};
+
+struct BoardMove {
+    BoardSquare pos1;
+    BoardSquare pos2;
+    pieceTypes promotionPiece;
+    BoardMove(BoardSquare pos1 = BoardSquare(), BoardSquare pos2 = BoardSquare(), pieceTypes promotionPiece = nullPiece): 
+        pos1(pos1), pos2(pos2), promotionPiece(promotionPiece) {}; 
+    friend std::ostream& operator<<(std::ostream& os, const BoardMove& target);
+    friend bool operator==(const BoardMove& lhs, const BoardMove& rhs);
+    friend bool operator<(const BoardMove& lhs, const BoardMove& rhs);
 };
 
 struct Board {
@@ -31,6 +43,8 @@ struct Board {
             BoardSquare pawnJumpedSquare = BoardSquare(), bool isIllegalPos = false); 
     // creates a new board for a move; defined in inCheck.cpp
     Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
+    Board(Board& originalBoard, BoardMove move);
+    
     friend bool operator==(const Board& lhs, const Board& rhs);
     friend bool operator<(const Board& lhs, const Board& rhs);
     friend std::ostream& operator<<(std::ostream& os, const Board& target);
