@@ -24,11 +24,89 @@ bool operator<(const BoardSquare& lhs, const BoardSquare& rhs) {
 }
 
 std::ostream& operator<<(std::ostream& os, const BoardSquare& target) {
-        os << "Rank: " << target.rank << " File: " << target.file << ' ';
-        return os;
+    if (target.rank == -1 || target.file == -1) {
+        os << target.file << target.rank << ' ';
+    }
+    std::vector<char> fileRep = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+    std::vector<char> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
+    os << fileRep.at(target.file) << rankRep.at(target.rank);
+    return os;
 }
 
 // BoardMove
+
+BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
+    pieceTypes allyQueen = BQueen;
+    pieceTypes allyBishop = BBishop;
+    pieceTypes allyKnight = BKnight;
+    pieceTypes allyRook = BRook;
+    if (isWhiteTurn) {
+        allyQueen = WQueen;
+        allyBishop = WBishop;
+        allyKnight = BKnight;
+        allyRook = BRook;
+    }
+    auto fileToInt = [](char file){
+        return int(file - 'a');
+    };
+    auto rankToInt = [](char rank){
+        return int(rank) * -1 + 8;
+    };
+
+    this->pos1 = BoardSquare(rankToInt(input.at(1)), fileToInt(input.at(0)));
+    this->pos2 = BoardSquare(rankToInt(input.at(3)), fileToInt(input.at(2)));
+    if (input.length() == 5) {
+        switch (input.at(4)) {
+            case 'q':
+                this->promotionPiece = allyQueen;
+                break;
+            case 'n':
+                this->promotionPiece = allyKnight;
+                break;
+            case 'b':
+                this->promotionPiece = allyBishop;
+                break;
+            case 'r':
+                this->promotionPiece = allyRook;
+                break;
+        }
+    }
+}
+
+std::string BoardMove::toStr() {
+    auto fileToChar = [](fileVals file){
+        return char(file + 'a');
+    };
+    auto rankToChar = [](int rank){
+        return char((rank - 8) * -1);
+    };
+    char pp;
+    switch (this->promotionPiece) {
+        case WQueen:
+        case BQueen:
+            pp = 'q';
+            break;
+        case WBishop:
+        case BBishop:
+            pp = 'b';
+            break;
+        case WRook:
+        case BRook:
+            pp = 'r';
+            break;
+        case WKnight:
+        case BKnight:
+            pp = 'n';
+            break;
+        default:
+            pp = ' ';
+    }
+    std::string move = "";
+    move += fileToChar(this->pos1.file) + rankToChar(this->pos1.rank);
+    move += fileToChar(this->pos2.file) + rankToChar(this->pos2.rank);
+    move += pp;
+    return move;
+}
 
 std::ostream& operator<<(std::ostream& os, const BoardMove& target) {
     os <<  "Pos1[" << target.pos1 << "] Pos2[" << target.pos2 << "] Promote: " << target.promotionPiece;

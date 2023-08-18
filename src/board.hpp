@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <string>
 
 enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
 enum pieceTypes {nullPiece = -1, EmptyPiece,
@@ -29,6 +30,9 @@ struct BoardMove {
     pieceTypes promotionPiece;
     BoardMove(BoardSquare pos1 = BoardSquare(), BoardSquare pos2 = BoardSquare(), pieceTypes promotionPiece = nullPiece): 
         pos1(pos1), pos2(pos2), promotionPiece(promotionPiece) {}; 
+    BoardMove(std::string input, bool isWhiteTurn = true);
+    std::string toStr();
+
     friend std::ostream& operator<<(std::ostream& os, const BoardMove& target);
     friend bool operator==(const BoardMove& lhs, const BoardMove& rhs);
     friend bool operator<(const BoardMove& lhs, const BoardMove& rhs);
