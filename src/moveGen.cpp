@@ -81,12 +81,12 @@ void forwardPawnMoves(Board& currBoard, std::vector<BoardSquare>& pawnMoves, Boa
     // space forward
     if (currBoard.getPiece(pawn.rank + pawnDirection, pawn.file) == EmptyPiece) {
         pawnMoves.push_back(BoardSquare(pawn.rank + pawnDirection, pawn.file));
-    }
-    // jump
-    if (pawn.rank == originRank) {
-        if (currBoard.getPiece(pawn.rank + pawnDirection * 2, pawn.file) == EmptyPiece) {
-            pawnMoves.push_back(BoardSquare(pawn.rank + pawnDirection * 2, pawn.file));
+        // jump
+        if (pawn.rank == originRank) {
+            if (currBoard.getPiece(pawn.rank + pawnDirection * 2, pawn.file) == EmptyPiece) {
+                pawnMoves.push_back(BoardSquare(pawn.rank + pawnDirection * 2, pawn.file));
         }
+    }
     }
 }
 
