@@ -437,6 +437,32 @@ TEST(InCheckTest, BoardMoveConstructorMovedKing) {
     EXPECT_EQ(board.castlingRights, B_Castle);
 }
 
+TEST(InCheckTest, BoardMoveConstructorKingToCastleSquare) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, WRook     }
+    };
+    Board originBoard = Board(boardVector, true);
+    originBoard.castlingRights = B_Castle;
+    BoardSquare pos1 = BoardSquare(7, F);
+    BoardSquare pos2 = BoardSquare(7, G);
+    Board board = Board(originBoard, pos1, pos2);
+
+    EXPECT_EQ(board.isWhiteTurn, false);
+    EXPECT_EQ(board.isIllegalPos, false);
+    EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
+    EXPECT_EQ(board.getPiece(pos2), WKing);
+    EXPECT_EQ(board.getPiece(7, H), WRook);
+    EXPECT_EQ(board.fiftyMoveRule, 1);
+    EXPECT_EQ(board.castlingRights, B_Castle);
+}
+
 TEST(InCheckTest, BoardMoveConstructorEnPassant) {
     std::vector<std::vector<pieceTypes>> boardVector = {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
