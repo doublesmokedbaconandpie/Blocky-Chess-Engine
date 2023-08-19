@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-#include "types.h"
+#include "types.hpp"
 
 struct BoardSquare {
     BoardSquare(): rank(-1), file(nullFile) {};
