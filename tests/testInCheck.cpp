@@ -310,7 +310,7 @@ TEST(InCheckTest, checkKingAttackersFalse) {
 
 TEST(InCheckTest, inCheckDefaultBoard) {
     Board board = Board();
-    bool isAttacked = currKingInAttackAfterMove(board);
+    bool isAttacked = currKingInAttack(board);
     ASSERT_EQ(isAttacked, false);
 }
 
@@ -326,7 +326,7 @@ TEST(InCheckTest, inCheckTrue1) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
     };
     Board board = Board(boardVector, false);
-    bool isAttacked = currKingInAttackAfterMove(board);
+    bool isAttacked = currKingInAttack(board);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -342,7 +342,7 @@ TEST(InCheckTest, inCheckTrue2) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
     };
     Board board = Board(boardVector, false);
-    bool isAttacked = currKingInAttackAfterMove(board);
+    bool isAttacked = currKingInAttack(board);
     ASSERT_EQ(isAttacked, true);
 }
 

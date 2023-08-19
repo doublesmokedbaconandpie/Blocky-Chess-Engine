@@ -197,7 +197,7 @@ void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
             }
         }
         // castling
-        if (!currKingInAttackAfterMove(currBoard)) {
+        if (!currKingInAttack(currBoard)) {
             if (currBoard.getPiece(king) == allyKingUnmoved) {
                 if (getPieceInDirection(currBoard, king, 0, 1) == allyRookUnmoved) {
                     kingMoves.push_back(BoardSquare(kingUnmovedRank, H));
