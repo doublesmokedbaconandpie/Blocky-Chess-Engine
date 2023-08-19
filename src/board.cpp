@@ -1,6 +1,6 @@
 
 #include "board.hpp"
-#include "types.h"
+#include "types.hpp"
 
 #include <iostream>
 
