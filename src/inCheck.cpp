@@ -180,7 +180,7 @@ bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes o
 }
 
 
-bool currKingInAttackAfterMove(Board currBoard) {
+bool currKingInAttack(Board currBoard) {
     pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
     pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
     pieceTypes currKing;
@@ -293,7 +293,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         this->setPiece(originalBoard.pawnJumpedSquare, enemyPawn);
     }
 
-    this->isIllegalPos = currKingInAttackAfterMove(*this);
+    this->isIllegalPos = currKingInAttack(*this);
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !originalBoard.isWhiteTurn; 
 }

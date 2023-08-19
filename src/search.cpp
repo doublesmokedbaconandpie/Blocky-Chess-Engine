@@ -14,7 +14,7 @@ std::pair<int, BoardMove> negaMax(Board board, int depth) {
 
     std::vector<BoardMove> moves = moveGenerator(board);
     if (moves.size() == 0) {
-        if (currKingInAttackAfterMove(board)) {
+        if (currKingInAttack(board)) {
             return std::pair<int, BoardMove>(max, BoardMove());
         }
         else {

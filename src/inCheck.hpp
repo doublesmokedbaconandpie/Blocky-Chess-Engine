@@ -16,4 +16,4 @@ bool checkPawnAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes o
 bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
 
 bool notInRange(int var);
-bool currKingInAttackAfterMove(Board currBoard);
+bool currKingInAttack(Board currBoard);
