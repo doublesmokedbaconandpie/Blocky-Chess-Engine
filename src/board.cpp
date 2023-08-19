@@ -24,9 +24,9 @@ bool operator<(const BoardSquare& lhs, const BoardSquare& rhs) {
 }
 
 std::ostream& operator<<(std::ostream& os, const BoardSquare& target) {
-    if (target.rank == -1 || target.file == nullFile) {
-        os << target.file << target.rank << ' ';
-        return os;
+    if (target.rank < 0 || target.rank > 7 || target.file < A || target.file > H) {
+        os << target.file << ' ' << target.rank << ' ';
+        return os;    
     }
     std::vector<char> fileRep = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
     std::vector<char> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
@@ -142,18 +142,18 @@ Board::Board() {
         {WRookUnmoved, WKnight, WBishop, WQueen, WKingUnmoved, WBishop, WKnight, WRookUnmoved}
     };
     this->isWhiteTurn = true;
-    this->movesSincePawnMovedOrCapture = 0;
+    this->fiftyMoveRule = 0;
     this->pawnJumped = false;
     this->pawnJumpedSquare = BoardSquare();
     this->isIllegalPos = false;
 }
 
 Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, 
-                int movesSincePawnMovedOrCapture, bool pawnJumped, 
+                int fiftyMoveRule, bool pawnJumped, 
                 BoardSquare pawnJumpedSquare, bool isIllegalPos) {
     this->board = board;
     this->isWhiteTurn = isWhiteTurn;
-    this-> movesSincePawnMovedOrCapture = movesSincePawnMovedOrCapture;
+    this-> fiftyMoveRule = fiftyMoveRule;
     this->pawnJumped = pawnJumped;
     this->pawnJumpedSquare = pawnJumpedSquare;
     this->isIllegalPos = isIllegalPos;
@@ -254,8 +254,8 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
         os<< "],\n";
     }
     os << "\n";
-    os << target.isIllegalPos << " ";
-    os << target.isWhiteTurn << " ";
-    os << target.movesSincePawnMovedOrCapture << "\n";
+    os << "isIllegalPos: " << target.isIllegalPos << "\n";
+    os << "isWhiteTurn: " << target.isWhiteTurn << "\n";
+    os << "50MoveRule: " << target.fiftyMoveRule << "\n";
     return os;
 }

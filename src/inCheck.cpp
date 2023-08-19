@@ -216,7 +216,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
     }
 
     this->board = originalBoard.board;
-    this->movesSincePawnMovedOrCapture = originalBoard.movesSincePawnMovedOrCapture + 1; // set to 0 in cases with pawn move
+    this->fiftyMoveRule = originalBoard.fiftyMoveRule + 1; // set to 0 in cases with pawn move
     this->isWhiteTurn = originalBoard.isWhiteTurn; // switch turns will happen after the move
 
     // ally refers to allies of originalBoard, as it is the one still moving this turn
@@ -258,12 +258,12 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
             this->setPiece(pos2, allyPawnJumped);
             this->pawnJumped = true;
             this->pawnJumpedSquare = pos2;
-            this->movesSincePawnMovedOrCapture = 0;
+            this->fiftyMoveRule = 0;
     }
     // promoting pawn
     else if (originPiece == allyPawn && pos1.rank == promotionRank) {
         this->setPiece(pos2, promotionPiece);
-        this->movesSincePawnMovedOrCapture = 0;
+        this->fiftyMoveRule = 0;
     }
     // all other pawn moves
     else if (originPiece == allyPawn || originPiece == allyPawnJumped) {
@@ -278,12 +278,12 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
             }
         }
         this->setPiece(pos2, originPiece);
-        this->movesSincePawnMovedOrCapture = 0;
+        this->fiftyMoveRule = 0;
     }
     else {
         this->setPiece(pos2, originPiece);
         if (targetPiece != EmptyPiece) {
-            this->movesSincePawnMovedOrCapture = 0;
+            this->fiftyMoveRule = 0;
         }
     }
 
