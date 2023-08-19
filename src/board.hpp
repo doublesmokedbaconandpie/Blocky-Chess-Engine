@@ -7,8 +7,6 @@
 
 #include "types.h"
 
-castleRights castleRightsBit(BoardSquare finalKingPos);
-
 struct BoardSquare {
     BoardSquare(): rank(-1), file(nullFile) {};
     BoardSquare(int rankVal, fileVals fileVal): rank(rankVal), file(fileVal) {};
@@ -61,3 +59,5 @@ struct Board {
     bool isIllegalPos;
     BoardSquare pawnJumpedSquare;
 };
+
+castleRights castleRightsBit(BoardSquare finalKingPos);
