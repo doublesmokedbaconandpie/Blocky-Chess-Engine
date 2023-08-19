@@ -9,7 +9,7 @@
 
 std::pair<int, BoardMove> negaMax(Board board, int depth) {
     if (depth == 0) {return std::pair<int, BoardMove>(eval(board), BoardMove());}
-    if (board.movesSincePawnMovedOrCapture >= 50) {return std::pair<int, BoardMove>(0, BoardMove());}
+    if (board.fiftyMoveRule >= 50) {return std::pair<int, BoardMove>(0, BoardMove());}
     int max = -1000000000;
 
     std::vector<BoardMove> moves = moveGenerator(board);
