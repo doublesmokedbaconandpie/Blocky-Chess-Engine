@@ -24,8 +24,9 @@ bool operator<(const BoardSquare& lhs, const BoardSquare& rhs) {
 }
 
 std::ostream& operator<<(std::ostream& os, const BoardSquare& target) {
-    if (target.rank == -1 || target.file == -1) {
+    if (target.rank == -1 || target.file == nullFile) {
         os << target.file << target.rank << ' ';
+        return os;
     }
     std::vector<char> fileRep = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
     std::vector<char> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
@@ -52,7 +53,7 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
     auto rankToInt = [](char rank){
         return 8 - int(rank - '1') - 1;
     };
-    
+
     this->pos1 = BoardSquare(rankToInt(input.at(1)), fileToInt(input.at(0)));
     this->pos2 = BoardSquare(rankToInt(input.at(3)), fileToInt(input.at(2)));
     if (input.length() == 5) {
