@@ -50,9 +50,9 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
         return int(file - 'a');
     };
     auto rankToInt = [](char rank){
-        return int(rank) * -1 + 8;
+        return 8 - int(rank - '1') - 1;
     };
-
+    
     this->pos1 = BoardSquare(rankToInt(input.at(1)), fileToInt(input.at(0)));
     this->pos2 = BoardSquare(rankToInt(input.at(3)), fileToInt(input.at(2)));
     if (input.length() == 5) {

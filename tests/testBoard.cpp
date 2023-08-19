@@ -77,3 +77,20 @@ TEST(BoardTest, setPieceInvalidSquare2) {
     bool setPieceOutcome = defaultBoard.setPiece(square, WPawnJumped);
     EXPECT_EQ(setPieceOutcome, false);
 }
+
+TEST(BoardTest, boardMoveStrConstructor) {
+    BoardMove move = BoardMove("e2e4");
+    EXPECT_EQ(move.pos1.rank, 6);
+    EXPECT_EQ(move.pos1.file, 4);
+    EXPECT_EQ(move.pos2.rank, 4);
+    EXPECT_EQ(move.pos2.file, 4);
+}
+
+TEST(BoardTest, boardMoveStrConstructor2) {
+    BoardMove move = BoardMove("a7a8q", true);
+    EXPECT_EQ(move.pos1.rank, 1);
+    EXPECT_EQ(move.pos1.file, 0);
+    EXPECT_EQ(move.pos2.rank, 0);
+    EXPECT_EQ(move.pos2.file, 0);
+    EXPECT_EQ(move.promotionPiece, WQueen);
+}
