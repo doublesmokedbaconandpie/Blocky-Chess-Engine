@@ -214,7 +214,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
 
     // castling
     // doesn't check for emptiness between rook and king
-    if (originPiece == allyKing && this->castlingRights && castleRightsBit(pos2)) {
+    if (originPiece == allyKing && (this->castlingRights & castleRightsBit(pos2))) {
         int kingFileDirection = pos2.file > pos1.file ? 1 : -1;
         fileVals rookFile = kingFileDirection == 1 ? H : A;
         this->setPiece(pos2, allyKing);
