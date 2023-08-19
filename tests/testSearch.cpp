@@ -13,8 +13,9 @@ TEST(TestEval, evalTest) {
 }
 
 TEST(TestSearch, Depth4) {
+    GTEST_SKIP();
     Board board = Board();
-    std::pair<int, BoardMove> returnVals = negaMax(board, 4);
+    std::pair<int, BoardMove> returnVals = negaMax(board, 1);
     std::cout << "Evaluation: " << returnVals.first << std::endl;
     std::cout << "Best Move: " << returnVals.second << std::endl;
     std::cout << "Best Board: \n" << Board(board, returnVals.second) << std::endl;

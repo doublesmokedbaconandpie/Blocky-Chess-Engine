@@ -13,9 +13,6 @@ std::vector<BoardMove> moveGenerator(Board currBoard) {
     pieceTypes allyBishop = currBoard.isWhiteTurn ? WBishop : BBishop;
     pieceTypes allyRook = currBoard.isWhiteTurn ? WRook : BRook;
     pieceTypes allyQueen = currBoard.isWhiteTurn ? WQueen : BQueen;
-    pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
-    pieceTypes allyRookUnmoved = currBoard.isWhiteTurn ? WRookUnmoved : BRookUnmoved;
-    pieceTypes allyPawnJumped = currBoard.isWhiteTurn ? WPawnJumped : BPawnJumped;
 
     for (int rank = 0; rank < 8; rank++) {
         for (int file = A; file <= H; file++) {
@@ -24,9 +21,9 @@ std::vector<BoardMove> moveGenerator(Board currBoard) {
             if (currPiece == allyKnight) {knights.push_back(currSquare);}
             if (currPiece == allyBishop) {bishops.push_back(currSquare);}
             if (currPiece == allyQueen) {queens.push_back(currSquare);}
-            if (currPiece == allyPawn || currPiece == allyPawnJumped ) {pawns.push_back(currSquare);}
-            if (currPiece == allyRook || currPiece == allyRookUnmoved ) {rooks.push_back(currSquare);}
-            if (currPiece == allyKing || currPiece == allyKingUnmoved ) {kings.push_back(currSquare);}
+            if (currPiece == allyPawn) {pawns.push_back(currSquare);}
+            if (currPiece == allyRook) {rooks.push_back(currSquare);}
+            if (currPiece == allyKing) {kings.push_back(currSquare);}
         }
     }
 
@@ -91,14 +88,13 @@ void forwardPawnMoves(Board& currBoard, std::vector<BoardSquare>& pawnMoves, Boa
 }
 
 void pawnCaptures(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn, int fileDirection) {
-    pieceTypes enemyPawnJumped = currBoard.isWhiteTurn ? WPawnJumped : BPawnJumped;
     int pawnDirection = currBoard.isWhiteTurn ? -1 : 1;
 
-    BoardSquare square = BoardSquare(pawn.rank + pawnDirection, pawn.file - fileDirection);
+    BoardSquare square = BoardSquare(pawn.rank + pawnDirection, pawn.file + fileDirection);
     if (!isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != EmptyPiece && currBoard.getPiece(square) != nullPiece) {
         pawnMoves.push_back(square);
     }
-    if (currBoard.getPiece(pawn.rank, pawn.file - fileDirection) == enemyPawnJumped) {
+    if (BoardSquare(pawn.rank, pawn.file + fileDirection) == currBoard.pawnJumpedSquare) {
         pawnMoves.push_back(square);
     }
 }
@@ -172,15 +168,15 @@ void validQueenMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::
 
 
 void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& kings) {
-    pieceTypes allyKingUnmoved = currBoard.isWhiteTurn ? WKingUnmoved : BKingUnmoved;
-    pieceTypes allyRookUnmoved = currBoard.isWhiteTurn ? WRookUnmoved : WRookUnmoved;
+    pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
+    pieceTypes allyRook = currBoard.isWhiteTurn ? WRook : BRook;
     int kingUnmovedRank = currBoard.isWhiteTurn ? 7 : 0;
     
     for (BoardSquare king: kings) {
         int currRank = king.rank;
         fileVals currFile = king.file;
         std::vector<BoardSquare> kingMoves;
-        std::vector<BoardSquare> potentialMoves = {
+        std::vector<BoardSquare> potentialAdjacentMoves = {
             BoardSquare(currRank - 1, currFile - 1),
             BoardSquare(currRank - 1, currFile),
             BoardSquare(currRank - 1, currFile + 1),
@@ -190,22 +186,24 @@ void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
             BoardSquare(currRank, currFile - 1),
             BoardSquare(currRank, currFile + 1),
         };
+        std::vector<BoardSquare> potentialCastleMoves = {
+            BoardSquare(currRank, currFile - 2),
+            BoardSquare(currRank, currFile + 2),
+        };
         // regular movements
-        for (BoardSquare square: potentialMoves) {
+        for (BoardSquare square: potentialAdjacentMoves) {
             if (!isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != nullPiece) {
                 kingMoves.push_back(square);
             }
         }
         // castling
-        if (!currKingInAttack(currBoard)) {
-            if (currBoard.getPiece(king) == allyKingUnmoved) {
-                if (getPieceInDirection(currBoard, king, 0, 1) == allyRookUnmoved) {
-                    kingMoves.push_back(BoardSquare(kingUnmovedRank, H));
-                }
-                if (getPieceInDirection(currBoard, king, 0, -1) == allyRookUnmoved) {
-                    kingMoves.push_back(BoardSquare(kingUnmovedRank, A));
-                }
-            }
+        for (BoardSquare square: potentialCastleMoves) {
+            if (currKingInAttack(currBoard)) {break;}
+            if (!(currBoard.castlingRights && castleRightsBit(square))) {continue;}
+            int kingFileDirection = square.file == G ? 1 : -1;
+            if (getPieceInDirection(currBoard, king, 0, kingFileDirection) == allyRook) {
+                kingMoves.push_back(BoardSquare(kingUnmovedRank, square.file));
+            }            
         }
         
         for (BoardSquare move: kingMoves) {

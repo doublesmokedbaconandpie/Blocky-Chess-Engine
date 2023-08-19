@@ -132,32 +132,31 @@ bool operator<(const BoardMove& lhs, const BoardMove& rhs) {
 
 Board::Board() {
     this->board = {
-        {BRookUnmoved, BKnight, BBishop, BQueen, BKingUnmoved, BBishop, BKnight, BRookUnmoved},
+        {BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook},
         {BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {WPawn, WPawn, WPawn, WPawn, WPawn, WPawn, WPawn, WPawn},
-        {WRookUnmoved, WKnight, WBishop, WQueen, WKingUnmoved, WBishop, WKnight, WRookUnmoved}
+        {WRook, WKnight, WBishop, WQueen, WKing, WBishop, WKnight, WRook}
     };
     this->isWhiteTurn = true;
     this->fiftyMoveRule = 0;
-    this->pawnJumped = false;
     this->pawnJumpedSquare = BoardSquare();
     this->isIllegalPos = false;
+    this->castlingRights = 15;
 }
 
-Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, 
-                int fiftyMoveRule, bool pawnJumped, 
-                BoardSquare pawnJumpedSquare, bool isIllegalPos) {
+Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, int fiftyMoveRule,  BoardSquare pawnJumpedSquare, bool isIllegalPos, int castlingRights) {
     this->board = board;
     this->isWhiteTurn = isWhiteTurn;
     this-> fiftyMoveRule = fiftyMoveRule;
-    this->pawnJumped = pawnJumped;
     this->pawnJumpedSquare = pawnJumpedSquare;
     this->isIllegalPos = isIllegalPos;
+    this->castlingRights = castlingRights;
 }
+
 pieceTypes Board::getPiece(int rank, int file) const {
     if (rank < 0 || rank > 7 || file < A || file > H) {
         return nullPiece;
@@ -205,7 +204,6 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
             switch (j)
             {
             case WPawn:
-            case WPawnJumped:
                 os << "WP";
                 break;
             case WKnight:
@@ -215,18 +213,15 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
                 os << "WB";
                 break;
             case WRook:
-            case WRookUnmoved:
                 os << "WR";
                 break;
             case WQueen:
                 os << "WQ";
                 break;
             case WKing:
-            case WKingUnmoved:
                 os << "WK";
                 break;
             case BPawn:
-            case BPawnJumped:
                 os << "BP";
                 break;
             case BKnight:
@@ -236,14 +231,12 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
                 os << "BB";
                 break;
             case BRook:
-            case BRookUnmoved:
                 os << "BR";
                 break;
             case BQueen:
                 os << "BQ";
                 break;
             case BKing:
-            case BKingUnmoved:
                 os << "BK";
                 break;
             default:
@@ -254,8 +247,27 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
         os<< "],\n";
     }
     os << "\n";
+    os << "castlingRights: " << target.castlingRights << "\n";
     os << "isIllegalPos: " << target.isIllegalPos << "\n";
     os << "isWhiteTurn: " << target.isWhiteTurn << "\n";
     os << "50MoveRule: " << target.fiftyMoveRule << "\n";
     return os;
+}
+
+int castleRightsBit(BoardSquare finalKingPos) {
+    if (finalKingPos == BoardSquare(7, C)) { // W_OOO
+        return 1;
+    }
+    else if (finalKingPos == BoardSquare(7, G)) { // W_OO
+        return 2;
+    }
+    else if (finalKingPos == BoardSquare(0, C)) { // B_OOO
+        return 4;
+    }
+    else if (finalKingPos == BoardSquare(0, G)) { // B_OO
+        return 8;        
+    }
+    else {
+        return 0;
+    }
 }
