@@ -224,7 +224,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
     }
     else if (originPiece == allyKing) {
         this->setPiece(pos2, allyKing);
-        this->castlingRights &= allyKing == WKing ? 4 + 8 : 1 + 2;
+        this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
     }
     // jumping pawn
     else if (originPiece == allyPawn && pos2.rank == pos1.rank + pawnJumpDirection) { 

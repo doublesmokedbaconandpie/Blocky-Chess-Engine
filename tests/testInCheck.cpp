@@ -382,7 +382,7 @@ TEST(InCheckTest, BoardMoveConstructorKingCastle) {
     EXPECT_EQ(board.getPiece(7, F), WRook);
     EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.fiftyMoveRule, 1);
-    EXPECT_EQ(board.castlingRights, 1 + 4 + 8);
+    EXPECT_EQ(board.castlingRights, W_OOO + B_Castle);
 }
 
 TEST(InCheckTest, BoardMoveConstructorQueenCastle) {
@@ -408,7 +408,7 @@ TEST(InCheckTest, BoardMoveConstructorQueenCastle) {
     EXPECT_EQ(board.getPiece(7, D), WRook);
     EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.fiftyMoveRule, 1);
-    EXPECT_EQ(board.castlingRights, 2 + 4 + 8);
+    EXPECT_EQ(board.castlingRights, W_OO + B_Castle);
 }
 
 TEST(InCheckTest, BoardMoveConstructorMovedKing) {
@@ -434,7 +434,7 @@ TEST(InCheckTest, BoardMoveConstructorMovedKing) {
     EXPECT_EQ(board.getPiece(7, D), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.fiftyMoveRule, 1);
-    EXPECT_EQ(board.castlingRights, 4 + 8);
+    EXPECT_EQ(board.castlingRights, B_Castle);
 }
 
 TEST(InCheckTest, BoardMoveConstructorEnPassant) {

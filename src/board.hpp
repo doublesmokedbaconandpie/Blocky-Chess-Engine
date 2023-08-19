@@ -5,10 +5,7 @@
 #include <iostream>
 #include <string>
 
-enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
-enum pieceTypes {nullPiece = -1, EmptyPiece,
-                WKing, WQueen, WBishop, WKnight, WRook, WPawn, 
-                BKing, BQueen, BBishop, BKnight, BRook, BPawn,};
+#include "types.h"
 
 struct BoardSquare {
     BoardSquare(): rank(-1), file(nullFile) {};
@@ -40,7 +37,7 @@ struct Board {
     Board(); // default game
     Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn = true, 
             int movesWithoutCapture = 0, BoardSquare pawnJumpedSquare = BoardSquare(), 
-            bool isIllegalPos = false, int castlingRights = 15); 
+            bool isIllegalPos = false, castleRights castlingRights = All_Castle); 
     
     // defined in inCheck.cpp
     Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
@@ -57,10 +54,10 @@ struct Board {
 
     std::vector<std::vector<pieceTypes>> board;
     bool isWhiteTurn;
-    int castlingRights; // bitwise castling rights tracker
+    castleRights castlingRights; // bitwise castling rights tracker
     int fiftyMoveRule; // 50 move rule
     bool isIllegalPos;
     BoardSquare pawnJumpedSquare;
 };
 
-int castleRightsBit(BoardSquare finalKingPos);
+castleRights castleRightsBit(BoardSquare finalKingPos);
