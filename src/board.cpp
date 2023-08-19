@@ -1,5 +1,6 @@
 
 #include "board.hpp"
+#include "types.h"
 
 #include <iostream>
 
@@ -145,10 +146,10 @@ Board::Board() {
     this->fiftyMoveRule = 0;
     this->pawnJumpedSquare = BoardSquare();
     this->isIllegalPos = false;
-    this->castlingRights = 15;
+    this->castlingRights = All_Castle;
 }
 
-Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, int fiftyMoveRule,  BoardSquare pawnJumpedSquare, bool isIllegalPos, int castlingRights) {
+Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, int fiftyMoveRule,  BoardSquare pawnJumpedSquare, bool isIllegalPos, castleRights castlingRights) {
     this->board = board;
     this->isWhiteTurn = isWhiteTurn;
     this-> fiftyMoveRule = fiftyMoveRule;
@@ -254,20 +255,20 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
     return os;
 }
 
-int castleRightsBit(BoardSquare finalKingPos) {
-    if (finalKingPos == BoardSquare(7, C)) { // W_OOO
-        return 1;
+castleRights castleRightsBit(BoardSquare finalKingPos) {
+    if (finalKingPos == BoardSquare(7, G)) {
+        return W_OO;
     }
-    else if (finalKingPos == BoardSquare(7, G)) { // W_OO
-        return 2;
+    else if (finalKingPos == BoardSquare(7, C)) {
+        return W_OOO;
     }
-    else if (finalKingPos == BoardSquare(0, C)) { // B_OOO
-        return 4;
+    else if (finalKingPos == BoardSquare(0, G)) {
+        return B_OO;
     }
-    else if (finalKingPos == BoardSquare(0, G)) { // B_OO
-        return 8;        
+    else if (finalKingPos == BoardSquare(0, C)) {
+        return B_OOO;        
     }
     else {
-        return 0;
+        return noCastle;
     }
 }
