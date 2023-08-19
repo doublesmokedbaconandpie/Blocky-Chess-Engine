@@ -11,7 +11,6 @@ int eval(Board board) {
             switch (piece)
             {
             case WPawn:
-            case WPawnJumped:
                 scoreSum += 1;
                 break;
             case WKnight:
@@ -19,14 +18,12 @@ int eval(Board board) {
                 scoreSum += 3;
                 break;
             case WRook:
-            case WRookUnmoved:
                 scoreSum += 5;
                 break;
             case WQueen:
                 scoreSum += 9;
                 break;
             case BPawn:
-            case BPawnJumped:
                 scoreSum -= 1;
                 break;
             case BKnight:
@@ -34,7 +31,6 @@ int eval(Board board) {
                 scoreSum -= 3;
                 break;
             case BRook:
-            case BRookUnmoved:
                 scoreSum -= 5;
                 break;
             case BQueen:

@@ -12,7 +12,7 @@ TEST(MoveGenTest, validPawnMovesCaptures) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {BPawn     , EmptyPiece, BPawn     , EmptyPiece, WQueen    , EmptyPiece, EmptyPiece, EmptyPiece},
-        {WKing     , WPawnJumped, EmptyPiece, WPawn    , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WKing     , WPawn     , EmptyPiece, WPawn    , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
@@ -112,7 +112,7 @@ TEST(MoveGenTest, validRookMoves1) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {WRookUnmoved, WRook   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BRook     },
+        {WRook     , WRook   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BRook     },
     };
     Board board = Board(boardVector, true);
     
@@ -216,7 +216,7 @@ TEST(MoveGenTest, validKingMovesNoCastle) {
         {EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {WKingUnmoved, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
     };
     Board board = Board(boardVector);
     
@@ -252,7 +252,7 @@ TEST(MoveGenTest, validKingMovesKingCastle) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {WRookUnmoved, EmptyPiece, WBishop , EmptyPiece, WKingUnmoved, EmptyPiece, EmptyPiece, WRookUnmoved},
+        {WRook     , EmptyPiece, WBishop   , EmptyPiece, WKing     , EmptyPiece, EmptyPiece, WRook     },
     };
     Board board = Board(boardVector);
     
@@ -265,7 +265,7 @@ TEST(MoveGenTest, validKingMovesKingCastle) {
         BoardMove(BoardSquare(7, E), BoardSquare(7, D)),
         BoardMove(BoardSquare(7, E), BoardSquare(7, F)),
 
-        BoardMove(BoardSquare(7, E), BoardSquare(7, H)),
+        BoardMove(BoardSquare(7, E), BoardSquare(7, G)),
     };
     validKingMoves(board, validMoves, whiteKings);
 
@@ -283,7 +283,7 @@ TEST(MoveGenTest, validKingMovesQueenCastle) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {WRookUnmoved, EmptyPiece, EmptyPiece, EmptyPiece, WKingUnmoved, EmptyPiece, WBishop, WRookUnmoved},
+        {WRook     , EmptyPiece, EmptyPiece, EmptyPiece, WRook     , EmptyPiece, WBishop   , WRook     },
     };
     Board board = Board(boardVector);
     
@@ -296,7 +296,7 @@ TEST(MoveGenTest, validKingMovesQueenCastle) {
         BoardMove(BoardSquare(7, E), BoardSquare(7, D)),
         BoardMove(BoardSquare(7, E), BoardSquare(7, F)),
 
-        BoardMove(BoardSquare(7, E), BoardSquare(7, A)),
+        BoardMove(BoardSquare(7, E), BoardSquare(7, C)),
     };
     validKingMoves(board, validMoves, whiteKings);
 

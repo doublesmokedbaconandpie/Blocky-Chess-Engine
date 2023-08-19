@@ -7,7 +7,7 @@ TEST(BoardTest, getPieceValidSquare) {
     Board defaultBoard = Board();
     BoardSquare square = BoardSquare(0, A);
     pieceTypes getPieceResult = defaultBoard.getPiece(square);
-    ASSERT_EQ(getPieceResult, BRookUnmoved) << getPieceResult;
+    ASSERT_EQ(getPieceResult, BRook) << getPieceResult;
 }
 
 TEST(BoardTest, getPieceValidSquare2) {
@@ -59,22 +59,22 @@ TEST(BoardTest, setPieceValidSquare1) {
 TEST(BoardTest, setPieceValidSquare2) {
     Board defaultBoard = Board();
     BoardSquare square = BoardSquare(4, D);
-    bool setPieceOutcome = defaultBoard.setPiece(square, BPawnJumped);
+    bool setPieceOutcome = defaultBoard.setPiece(square, BPawn);
     EXPECT_EQ(setPieceOutcome, true);
-    EXPECT_EQ(defaultBoard.getPiece(square), BPawnJumped);
+    EXPECT_EQ(defaultBoard.getPiece(square), BPawn);
 }
 
 TEST(BoardTest, setPieceInvalidSquare1) {
     Board defaultBoard = Board();
     BoardSquare square = BoardSquare(-1, D);
-    bool setPieceOutcome = defaultBoard.setPiece(square, WPawnJumped);
+    bool setPieceOutcome = defaultBoard.setPiece(square, WPawn);
     EXPECT_EQ(setPieceOutcome, false);
 }
 
 TEST(BoardTest, setPieceInvalidSquare2) {
     Board defaultBoard = Board();
     BoardSquare square = BoardSquare(0, 8);
-    bool setPieceOutcome = defaultBoard.setPiece(square, WPawnJumped);
+    bool setPieceOutcome = defaultBoard.setPiece(square, WPawn);
     EXPECT_EQ(setPieceOutcome, false);
 }
 
@@ -93,4 +93,13 @@ TEST(BoardTest, boardMoveStrConstructor2) {
     EXPECT_EQ(move.pos2.rank, 0);
     EXPECT_EQ(move.pos2.file, 0);
     EXPECT_EQ(move.promotionPiece, WQueen);
+}
+
+TEST(CastleRightsBitTest, defaultBoard) {
+    Board board = Board();
+    EXPECT_EQ(castleRightsBit(BoardSquare(0, G)) && board.castlingRights, true);
+    EXPECT_EQ(castleRightsBit(BoardSquare(0, C)) && board.castlingRights, true);
+    EXPECT_EQ(castleRightsBit(BoardSquare(7, G)) && board.castlingRights, true);
+    EXPECT_EQ(castleRightsBit(BoardSquare(7, C)) && board.castlingRights, true);    
+    EXPECT_EQ(castleRightsBit(BoardSquare(4, E)) && board.castlingRights, false);    
 }

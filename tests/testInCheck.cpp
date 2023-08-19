@@ -230,7 +230,7 @@ TEST(InCheckTest, checkPawnAttackersTrue2) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
     };
@@ -245,7 +245,7 @@ TEST(InCheckTest, checkPawnAttackersFalse) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, WPawn     , EmptyPiece, WPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, WPawn     , EmptyPiece, WPawn     , EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
@@ -279,7 +279,7 @@ TEST(InCheckTest, checkKingAttackersTrue2) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, WKingUnmoved, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
@@ -347,16 +347,6 @@ TEST(InCheckTest, inCheckTrue2) {
 }
 
 TEST(InCheckTest, BoardMoveConstructorPawnJump) {
-    std::vector<std::vector<pieceTypes>> boardVector = {
-        {BRookUnmoved, BKnight, BBishop, BQueen, BKingUnmoved, BBishop, BKnight, BRookUnmoved},
-        {BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn},
-        {WRookUnmoved, WKnight, WBishop, WQueen, WKingUnmoved, WBishop, WKnight, WRookUnmoved}
-    };
     Board defaultBoard = Board();
     BoardSquare pos1 = BoardSquare(6, E);
     BoardSquare pos2 = BoardSquare(4, E);
@@ -364,62 +354,87 @@ TEST(InCheckTest, BoardMoveConstructorPawnJump) {
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
-    EXPECT_EQ(board.getPiece(pos2), WPawnJumped);
-    EXPECT_EQ(board.pawnJumped, true);
+    EXPECT_EQ(board.getPiece(pos2), WPawn);
     EXPECT_EQ(board.pawnJumpedSquare, pos2);
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
 TEST(InCheckTest, BoardMoveConstructorKingCastle) {
     std::vector<std::vector<pieceTypes>> boardVector = {
-        {BRookUnmoved, BKnight, BBishop, BQueen, BKingUnmoved, BBishop, BKnight, BRookUnmoved},
+        {BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook},
         {BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawn, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn},
-        {WRookUnmoved, WKnight, WBishop, WQueen, WKingUnmoved, EmptyPiece, EmptyPiece, WRookUnmoved}
+        {WRook, WKnight, WBishop, WQueen, WKing, EmptyPiece, EmptyPiece, WRook}
     };
     Board originBoard = Board(boardVector, true);
     BoardSquare pos1 = BoardSquare(7, E);
-    BoardSquare pos2 = BoardSquare(7, H);
+    BoardSquare pos2 = BoardSquare(7, G);
     Board board = Board(originBoard, pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
-    EXPECT_EQ(board.getPiece(pos2), EmptyPiece);
+    EXPECT_EQ(board.getPiece(7, H), EmptyPiece);
     EXPECT_EQ(board.getPiece(7, F), WRook);
-    EXPECT_EQ(board.getPiece(7, G), WKing);
-    EXPECT_EQ(board.pawnJumped, false);
+    EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.fiftyMoveRule, 1);
+    EXPECT_EQ(board.castlingRights, 1 + 4 + 8);
 }
 
 TEST(InCheckTest, BoardMoveConstructorQueenCastle) {
     std::vector<std::vector<pieceTypes>> boardVector = {
-        {BRookUnmoved, BKnight, BBishop, BQueen, BKingUnmoved, BBishop, BKnight, BRookUnmoved},
+        {BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook},
         {BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawn, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn},
-        {WRookUnmoved, EmptyPiece, EmptyPiece, EmptyPiece, WKingUnmoved, WBishop, WKnight, WRookUnmoved}
+        {WRook, EmptyPiece, EmptyPiece, EmptyPiece, WKing, WBishop, WKnight, WRook}
     };
     Board originBoard = Board(boardVector, true);
     BoardSquare pos1 = BoardSquare(7, E);
-    BoardSquare pos2 = BoardSquare(7, A);
+    BoardSquare pos2 = BoardSquare(7, C);
     Board board = Board(originBoard, pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
-    EXPECT_EQ(board.getPiece(pos2), EmptyPiece);
+    EXPECT_EQ(board.getPiece(7, A), EmptyPiece);
     EXPECT_EQ(board.getPiece(7, D), WRook);
-    EXPECT_EQ(board.getPiece(7, C), WKing);
-    EXPECT_EQ(board.pawnJumped, false);
+    EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.fiftyMoveRule, 1);
+    EXPECT_EQ(board.castlingRights, 2 + 4 + 8);
+}
+
+TEST(InCheckTest, BoardMoveConstructorMovedKing) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook},
+        {BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawn, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn},
+        {WRook, EmptyPiece, EmptyPiece, EmptyPiece, WKing, WBishop, WKnight, WRook}
+    };
+    Board originBoard = Board(boardVector, true);
+    BoardSquare pos1 = BoardSquare(7, E);
+    BoardSquare pos2 = BoardSquare(6, D);
+    Board board = Board(originBoard, pos1, pos2);
+
+    EXPECT_EQ(board.isWhiteTurn, false);
+    EXPECT_EQ(board.isIllegalPos, false);
+    EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
+    EXPECT_EQ(board.getPiece(7, A), WRook);
+    EXPECT_EQ(board.getPiece(7, D), EmptyPiece);
+    EXPECT_EQ(board.getPiece(pos2), WKing);
+    EXPECT_EQ(board.fiftyMoveRule, 1);
+    EXPECT_EQ(board.castlingRights, 4 + 8);
 }
 
 TEST(InCheckTest, BoardMoveConstructorEnPassant) {
@@ -427,13 +442,14 @@ TEST(InCheckTest, BoardMoveConstructorEnPassant) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , BPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , BPawn     , EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
     };
     Board originBoard = Board(boardVector, true);
+    BoardSquare jumpedPawn = originBoard.pawnJumpedSquare = BoardSquare(3, E);
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(2, E);
     Board board = Board(originBoard, pos1, pos2);
@@ -442,8 +458,7 @@ TEST(InCheckTest, BoardMoveConstructorEnPassant) {
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
-    EXPECT_EQ(board.getPiece(3, E), EmptyPiece);
-    EXPECT_EQ(board.pawnJumped, false);
+    EXPECT_EQ(board.getPiece(jumpedPawn), EmptyPiece);
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
@@ -452,15 +467,14 @@ TEST(InCheckTest, BoardMoveConstructorNotEnPassant) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , BPawnJumped, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , BPawn     , EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
     };
     Board originBoard = Board(boardVector, true);
-    originBoard.pawnJumped = true;
-    BoardSquare jumpedPawn =  originBoard.pawnJumpedSquare = BoardSquare(3, E);
+    BoardSquare jumpedPawn = originBoard.pawnJumpedSquare = BoardSquare(3, E);
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(2, D);
     Board board = Board(originBoard, pos1, pos2);
@@ -470,7 +484,6 @@ TEST(InCheckTest, BoardMoveConstructorNotEnPassant) {
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
     EXPECT_EQ(board.getPiece(jumpedPawn), BPawn);
-    EXPECT_EQ(board.pawnJumped, false);
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
@@ -518,7 +531,6 @@ TEST(InCheckTest, BoardMoveConstructorPawnCapture) {
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
     EXPECT_EQ(board.getPiece(3, E), BPawn);
-    EXPECT_EQ(board.pawnJumped, false);
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
@@ -542,7 +554,6 @@ TEST(InCheckTest, BoardMoveConstructorRegularCapture) {
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WBishop);
-    EXPECT_EQ(board.pawnJumped, false);
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
