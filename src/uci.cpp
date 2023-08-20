@@ -74,6 +74,7 @@ namespace UCI {
             else if (commandToken == "position") {currBoard = position(commandStream);}
             else if (commandToken == "go") {go(commandStream, currBoard);}
             else if (commandToken == "isready") {isready();}
+            else if (commandToken == "quit") {return;}
         }
     }
 

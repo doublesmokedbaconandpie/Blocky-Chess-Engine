@@ -23,11 +23,12 @@ std::pair<int, BoardMove> negaMax(Board board, int depth) {
     }
 
     int score;
-    BoardMove bestMove;
+    max -= 1;
+    BoardMove bestMove = moves.at(0);
     for (BoardMove move: moves) {
         Board newBoard = Board(board, move); 
         score = -1 * negaMax(newBoard, depth - 1).first;
-        if (score >= max) {
+        if (score > max) {
             max = score;
             bestMove = move;
         }
