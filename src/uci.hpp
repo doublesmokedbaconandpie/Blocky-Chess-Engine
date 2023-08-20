@@ -1,9 +1,17 @@
+#include <string>
+#include <sstream>
+
 #include "board.hpp"
 
 int main();
 
 bool uci();
-void setOptions();
-Board ucinewgame();
-bool go(Board& board);
-bool oppMove(Board& board);
+
+void SETOPTIONLOOP();
+void setoption(std::istringstream& input);
+
+void UCILOOP();
+Board position(std::istringstream& input);
+void go(std::istringstream& input, Board& board);
+
+void isready();
