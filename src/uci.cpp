@@ -43,7 +43,7 @@ void setOptions() {
     while (input != "isready") {
         std::cin >> input;
     }
-    std::cout << "readyok";
+    std::cout << "readyok\n";
 }
 
 
