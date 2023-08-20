@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
 
 enum pieceTypes {nullPiece = -1, EmptyPiece,
@@ -17,6 +19,22 @@ enum castleRights {
     B_Castle = B_OO | B_OOO,
     All_Castle = W_Castle | B_Castle,
 };
+
+
+//not sure if this should be here but it seems utility stuff belongs here
+static std::map<pieceTypes, int> pieceValues = {
+    {WPawn, 1},
+    {BPawn, -1},
+    {WBishop, 3}, 
+    {BBishop, -3}, 
+    {WKnight, 3}, 
+    {BKnight, -3}, 
+    {WRook, 5}, 
+    {BRook, -5}, 
+    {WQueen, 9},
+    {BQueen, -9}
+};
+
 
 inline castleRights operator&(castleRights lhs, castleRights rhs) {
     return static_cast<castleRights>(static_cast<int>(lhs) & static_cast<int>(rhs));

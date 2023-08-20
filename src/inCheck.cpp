@@ -234,9 +234,17 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
             this->fiftyMoveRule = 0;
     }
     // promoting pawn
-    else if (originPiece == allyPawn && pos1.rank == promotionRank) {
+    else if (originPiece == allyPawn && pos1.rank == promotionRank) { //i think this should be a separate if statement because promotion is not mutually exclusive to capturing
         this->setPiece(pos2, promotionPiece);
         this->fiftyMoveRule = 0;
+
+        //updates material score of the board on promotion
+        if(this->isWhiteTurn) {
+            this->materialDifference += pieceValues.at(targetPiece) - 1;
+        }
+        else {
+            this->materialDifference += pieceValues.at(targetPiece) + 1;
+        }
     }
     // all other pawn moves
     else if (originPiece == allyPawn) {
@@ -257,6 +265,8 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
             this->fiftyMoveRule = 0;
         }
     }
+
+    this->materialDifference -= pieceValues.at(targetPiece); //updates the material score of the board on capture
 
     this->isIllegalPos = currKingInAttack(*this);
     // after finalizing move logic, now switch turns
