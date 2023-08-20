@@ -5,13 +5,20 @@
 
 int main();
 
-bool uci();
+namespace UCI {
+    struct UCIOPTIONS {
+        int depth = 3;
+    };
 
-void SETOPTIONLOOP();
-void setoption(std::istringstream& input);
+    bool uci();
 
-void UCILOOP();
-Board position(std::istringstream& input);
-void go(std::istringstream& input, Board& board);
+    void SETOPTIONLOOP();
+    void setoption(std::istringstream& input);
 
-void isready();
+    void UCILOOP();
+    Board position(std::istringstream& input);
+    void go(std::istringstream& input, Board& board);
+
+    void isready();
+
+} // namespace UCI
