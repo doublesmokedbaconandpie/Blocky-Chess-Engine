@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <stdexcept>
 
 #include "uci.hpp"
@@ -7,25 +8,18 @@
 #include "inCheck.hpp"
 #include "board.hpp"
 
-int main() {
-    std::string input;
 
-    bool runProgram = uci();
-    if (!runProgram) {return 1;}
-    setOptions();
-    Board startBoard = ucinewgame();
-    while (runProgram) {
-        runProgram = go(startBoard);
-        oppMove(startBoard);
-    }
+int main() {
+    if (!uci()) {return 1;}
+    SETOPTIONLOOP();
+    UCILOOP();
 
     return 0;
 }
 
-
 bool uci() {
     std::string input;
-    std::cin >> input;
+    std::getline(std::cin, input);
     if (input != "uci") {
         std::cout << "This engine is only UCI";
         return false;
@@ -36,52 +30,65 @@ bool uci() {
     return true;
 }
 
+void SETOPTIONLOOP() {
+    std::string commandLine, commandToken;
+    while (true) {
+        std::getline(std::cin, commandLine);
+        std::istringstream commandStream(commandLine);
+        commandStream >> commandToken;
 
-void setOptions() {
-    std::string input;
-    std::cin >> input;
-    while (input != "isready") {
-        std::cin >> input;
+        if (commandToken == "setoption") {setoption(commandStream);}
+        else if (commandToken == "isready") {isready(); break;}
     }
-    std::cout << "readyok\n";
+}
+
+void setoption(std::istringstream& input){} // no options to set yet
+
+
+void UCILOOP() {
+    std::string commandLine, commandToken;
+    Board currBoard;
+    while (true) {
+        std::getline(std::cin, commandLine);
+        std::istringstream commandStream(commandLine);
+        commandStream >> commandToken;
+
+        if (commandToken == "ucinewgame") {}
+        else if (commandToken == "position") {currBoard = position(commandStream);}
+        else if (commandToken == "go") {go(commandStream, currBoard);}
+        else if (commandToken == "isready") {isready();}
+    }
 }
 
 
-Board ucinewgame() {
-    // does not support fenstring yet
-    std::string input;
-    while (input.substr(0, 8) != "position") {
-        std::cin >> input;
+Board position(std::istringstream& input) {
+    std::string token;
+    Board currBoard;
+
+    input >> token;
+    if (token == "startpos") {
+        currBoard = Board();
     }
-    if (input.substr(9, 8) != "startpos") {
-        throw std::invalid_argument("Fenstrings not supported by Blocky");
+    else if (token == "fen") {
+        throw std::invalid_argument("NOT FEN");
     }
 
-    std::string subInput = input;
-    size_t index = subInput.find("moves") + 5;
-    std::string moveString;
-    BoardMove currMove;
-    Board currBoard = Board();
-    while (index != std::string::npos) {
-        subInput = subInput.substr(index + 1, subInput.length() - index - 1);
-        index = subInput.find(' ');
-        moveString = subInput.substr(0, index);
-        currMove = BoardMove(moveString, currBoard.isWhiteTurn);
-        currBoard = Board(currBoard, currMove);
+    input >> token;
+    if (token != "moves") {return currBoard;}
+    while (input >> token) {
+        currBoard = Board(currBoard, BoardMove(token));
     }
     return currBoard;
 }
 
-bool go(Board& board) {
-    auto result = negaMax(board, 3);
+void go(std::istringstream& input, Board& board) {
+    std::string token;
+
+    auto result = negaMax(board, 4);
     board = Board(board, result.second);
     std::cout << "bestmove " << result.second.toStr() << "\n";
-    return true;
 }
 
-bool oppMove(Board& board) {
-    std::string input;
-    std::cin >> input;
-    return true;    
-
+void isready() {
+    std::cout << "readyok\n";
 }

@@ -3,6 +3,7 @@
 #include "types.hpp"
 
 #include <iostream>
+#include <sstream>
 
 // BoardSquare
 
@@ -29,7 +30,7 @@ std::ostream& operator<<(std::ostream& os, const BoardSquare& target) {
         os << target.file << ' ' << target.rank << ' ';
         return os;    
     }
-    std::vector<char> fileRep = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+    std::vector<char> fileRep = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
     std::vector<char> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
     os << fileRep.at(target.file) << rankRep.at(target.rank);
     return os;
@@ -76,12 +77,6 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
 }
 
 std::string BoardMove::toStr() {
-    auto fileToChar = [](fileVals file){
-        return char(file + 'a');
-    };
-    auto rankToChar = [](int rank){
-        return char((rank - 8) * -1);
-    };
     char pp;
     switch (this->promotionPiece) {
         case WQueen:
@@ -103,11 +98,11 @@ std::string BoardMove::toStr() {
         default:
             pp = ' ';
     }
-    std::string move = "";
-    move += fileToChar(this->pos1.file) + rankToChar(this->pos1.rank);
-    move += fileToChar(this->pos2.file) + rankToChar(this->pos2.rank);
-    move += pp;
-    return move;
+    std::ostringstream move;
+    move << this->pos1;
+    move << this->pos2;
+    move << pp;
+    return move.str();
 }
 
 std::ostream& operator<<(std::ostream& os, const BoardMove& target) {
