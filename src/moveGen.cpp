@@ -111,6 +111,9 @@ void validRookMoves(Board& currBoard, std::vector<Board>& validMoves, std::vecto
 
 void validQueenMoves(Board& currBoard, std::vector<Board>& validMoves, std::vector<BoardSquare>& queens) {
     // repeat the logic used for rooks and bishops
+
+    validRookMoves(currBoard, validMoves, queens);
+    validBishopMoves(currBoard, validMoves, queens);
 }
 
 
@@ -126,6 +129,19 @@ bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
     //rank could be wrong depending on how indexing works, could be (7 - rank) instead 
 
     if(currBoard.isWhiteTurn) {
+        return target >= WKing && target <= WRookUnmoved;
+    }
+    else {
+        return target >= BKing && target <= BRookUnmoved;
+    }
+}
+
+//checks if a square has an enemy piece (currently planned to use for pawn captures)
+bool isEnemyPiece(Board& currBoard, BoardSquare targetSquare) {
+    int target = currBoard.board.at(targetSquare.rank).at(targetSquare.file); 
+    //rank could be wrong depending on how indexing works, could be (7 - rank) instead 
+
+    if(!currBoard.isWhiteTurn) {
         return target >= WKing && target <= WRookUnmoved;
     }
     else {
