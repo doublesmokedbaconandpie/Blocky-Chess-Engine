@@ -10,85 +10,105 @@
 
 
 int main() {
-    if (!uci()) {return 1;}
-    SETOPTIONLOOP();
-    UCILOOP();
+    if (!UCI::uci()) {return 1;}
+    UCI::SETOPTIONLOOP();
+    UCI::UCILOOP();
 
     return 0;
 }
 
-bool uci() {
-    std::string input;
-    std::getline(std::cin, input);
-    if (input != "uci") {
-        std::cout << "This engine is only UCI";
-        return false;
-    }
-    std::cout << "id name BLOCKY\n";
-    std::cout << "id author BlockyTeam\n";
-    std::cout << "uciok\n";
-    return true;
-}
+namespace UCI {
+    UCIOPTIONS OPTIONS;
 
-void SETOPTIONLOOP() {
-    std::string commandLine, commandToken;
-    while (true) {
-        std::getline(std::cin, commandLine);
-        std::istringstream commandStream(commandLine);
-        commandStream >> commandToken;
+    bool uci() {
+        std::string input;
+        std::getline(std::cin, input);
+        if (input != "uci") {
+            std::cout << "This engine is only UCI";
+            return false;
+        }
+        std::cout << "id name BLOCKY\n";
+        std::cout << "id author BlockyTeam\n";
 
-        if (commandToken == "setoption") {setoption(commandStream);}
-        else if (commandToken == "isready") {isready(); break;}
-    }
-}
+        std::cout << "option name Depth type spin default 3 min 1 max 4\n";
 
-void setoption(std::istringstream& input){} // no options to set yet
-
-
-void UCILOOP() {
-    std::string commandLine, commandToken;
-    Board currBoard;
-    while (true) {
-        std::getline(std::cin, commandLine);
-        std::istringstream commandStream(commandLine);
-        commandStream >> commandToken;
-
-        if (commandToken == "ucinewgame") {}
-        else if (commandToken == "position") {currBoard = position(commandStream);}
-        else if (commandToken == "go") {go(commandStream, currBoard);}
-        else if (commandToken == "isready") {isready();}
-    }
-}
-
-
-Board position(std::istringstream& input) {
-    std::string token;
-    Board currBoard;
-
-    input >> token;
-    if (token == "startpos") {
-        currBoard = Board();
-    }
-    else if (token == "fen") {
-        throw std::invalid_argument("NOT FEN");
+        std::cout << "uciok\n";
+        return true;
     }
 
-    input >> token;
-    if (token != "moves") {return currBoard;}
-    while (input >> token) {
-        currBoard = Board(currBoard, BoardMove(token));
+    void SETOPTIONLOOP() {
+        std::string commandLine, commandToken;
+        while (true) {
+            std::getline(std::cin, commandLine);
+            std::istringstream commandStream(commandLine);
+            commandStream >> commandToken;
+
+            if (commandToken == "setoption") {setoption(commandStream);}
+            else if (commandToken == "isready") {isready(); break;}
+        }
     }
-    return currBoard;
-}
 
-void go(std::istringstream& input, Board& board) {
-    std::string token;
+    void setoption(std::istringstream& input){ 
+        std::string token;
+        input >> token; 
+        if (token != "name") {return;}
+        input >> token;
+        if (token == "Depth") {
+            input >> token;
+            input >> token;
+            OPTIONS.depth = stoi(token);
+            std::cout << "Depth set to: " << OPTIONS.depth << std::endl;
+        };
+    }
 
-    auto result = negaMax(board, 4);
-    board = Board(board, result.second);
-    std::cout << "bestmove " << result.second.toStr() << "\n";
-}
 
-void isready() {
-    std::cout << "readyok\n";
-}
+    void UCILOOP() {
+        std::string commandLine, commandToken;
+        Board currBoard;
+        while (true) {
+            std::getline(std::cin, commandLine);
+            std::istringstream commandStream(commandLine);
+            commandStream >> commandToken;
+
+            if (commandToken == "ucinewgame") {}
+            else if (commandToken == "position") {currBoard = position(commandStream);}
+            else if (commandToken == "go") {go(commandStream, currBoard);}
+            else if (commandToken == "isready") {isready();}
+        }
+    }
+
+
+    Board position(std::istringstream& input) {
+        std::string token;
+        Board currBoard;
+
+        input >> token;
+        if (token == "startpos") {
+            currBoard = Board();
+        }
+        else if (token == "fen") {
+            throw std::invalid_argument("NOT FEN");
+        }
+
+        input >> token;
+        if (token != "moves") {return currBoard;}
+        while (input >> token) {
+            currBoard = Board(currBoard, BoardMove(token));
+        }
+        return currBoard;
+    }
+
+    void go(std::istringstream& input, Board& board) {
+        std::string token;
+
+        auto result = negaMax(board, OPTIONS.depth);
+        board = Board(board, result.second);
+        std::cout << "bestmove " << result.second.toStr() << "\n";
+    }
+
+    void isready() {
+        std::cout << "readyok\n";
+    }
+
+} // namespace UCI
+
