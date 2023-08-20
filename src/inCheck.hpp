@@ -6,9 +6,14 @@
 // targetKing should only be one of WKing and BKing
 // checkPiece doesn't check if the piece and targetKing are on the same side
 
-bool InCheck(Board& currBoard); // all pieces in general
-bool checkPawn(Board& currBoard, BoardSquare pawn, int targetKing);
-bool checkBishop(Board& currBoard, BoardSquare bishop, int targetKing);
-bool checkRook(Board& currBoard, BoardSquare rook, int targetKing);
-bool checkKnight(Board& currBoard, BoardSquare knight, int targetKing);
-bool checkKing(Board& currBoard, BoardSquare king, int targetKing);
+bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare);
+pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement);
+
+bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
+bool checkStraightAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
+bool checkKnightAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
+bool checkPawnAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
+bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
+
+bool notInRange(int var);
+bool currKingInAttack(Board currBoard);
