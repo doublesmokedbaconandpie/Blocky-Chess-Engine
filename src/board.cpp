@@ -3,12 +3,23 @@
 #include "types.hpp"
 
 #include <iostream>
+#include <string>
 #include <sstream>
+#include <unordered_map>
 
 // BoardSquare
 
+BoardSquare::BoardSquare(std::string input) {
+    if (input == "-") {
+        *this = BoardSquare();
+        return;
+    }
+    this->file = fileVals(input.at(0) - 'a');
+    this->rank = 8 - int(input.at(1) - '1') - 1;
+}
+
 bool operator==(const BoardSquare& lhs, const BoardSquare& rhs) {
-        return (lhs.rank == rhs.rank) && (lhs.file == rhs.file);
+    return (lhs.rank == rhs.rank) && (lhs.file == rhs.file);
 }
 
 bool operator!=(const BoardSquare& lhs, const BoardSquare& rhs) {
@@ -39,25 +50,14 @@ std::ostream& operator<<(std::ostream& os, const BoardSquare& target) {
 // BoardMove
 
 BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
-    pieceTypes allyQueen = BQueen;
-    pieceTypes allyBishop = BBishop;
-    pieceTypes allyKnight = BKnight;
-    pieceTypes allyRook = BRook;
-    if (isWhiteTurn) {
-        allyQueen = WQueen;
-        allyBishop = WBishop;
-        allyKnight = BKnight;
-        allyRook = BRook;
-    }
-    auto fileToInt = [](char file){
-        return int(file - 'a');
-    };
-    auto rankToInt = [](char rank){
-        return 8 - int(rank - '1') - 1;
-    };
+    pieceTypes allyQueen = isWhiteTurn ? WQueen : BQueen;
+    pieceTypes allyBishop = isWhiteTurn ? WBishop : BBishop;
+    pieceTypes allyKnight = isWhiteTurn ? WKnight : BKnight;
+    pieceTypes allyRook = isWhiteTurn ? WRook : BRook;
+    
+    this->pos1 = BoardSquare(input.substr(0, 2));
+    this->pos2 = BoardSquare(input.substr(2, 2));
 
-    this->pos1 = BoardSquare(rankToInt(input.at(1)), fileToInt(input.at(0)));
-    this->pos2 = BoardSquare(rankToInt(input.at(3)), fileToInt(input.at(2)));
     if (input.length() == 5) {
         switch (input.at(4)) {
             case 'q':
@@ -72,6 +72,8 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
             case 'r':
                 this->promotionPiece = allyRook;
                 break;
+            default:
+                this->promotionPiece = nullPiece;
         }
     }
 }
@@ -153,6 +155,55 @@ Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, int f
     this->isIllegalPos = isIllegalPos;
     this->castlingRights = castlingRights;
     this->materialDifference = materialDifference;
+}
+
+Board::Board(std::string fenStr) {
+    std::string token; 
+    std::istringstream fenStream(fenStr);
+
+    std::unordered_map<char, pieceTypes> charToPiece = {
+        {'P', WPawn}, {'N', WKnight}, {'B', WBishop}, {'R', WRook}, {'Q', WQueen}, {'K', WKing}, 
+        {'p', BPawn}, {'n', BKnight}, {'b', BBishop}, {'r', BRook}, {'q', BQueen}, {'k', BKing}, 
+    };
+
+    for (int i = 0; i <= 7; i++) { // need a non-empty board to use setPiece()    
+        this->board.push_back({EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece});
+    }
+    fenStream >> token;
+    int rank = 0, file = A;
+    for (char& iter: token) {
+        if (iter == '/') {
+            rank++;
+            file = A;
+        }
+        else if (charToPiece.find(iter) != charToPiece.end()) {
+            this->setPiece(rank, file, charToPiece[iter]);
+            file += 1;
+        }
+        else  { // must be a digit
+            file += int(iter - '0');
+        }
+    }
+
+    fenStream >> token;
+    this->isWhiteTurn = token == "w" ? true : false;
+
+    fenStream >> token;
+    this->castlingRights = noCastle;
+    this->castlingRights ^= token.find('K') != std::string::npos ? W_OO : noCastle;
+    this->castlingRights ^= token.find('Q') != std::string::npos ? W_OOO : noCastle;
+    this->castlingRights ^= token.find('k') != std::string::npos ? B_OO : noCastle;
+    this->castlingRights ^= token.find('q') != std::string::npos ? B_OOO : noCastle;
+
+    fenStream >> token;
+    this->pawnJumpedSquare = BoardSquare(token);
+
+    fenStream >> token;
+    this->fiftyMoveRule = stoi(token);
+
+    this->isIllegalPos = false; // it is up to the UCI gui to not give illegal positions
+
+    // Board doesn't use Fullmove counter
 }
 
 pieceTypes Board::getPiece(int rank, int file) const {

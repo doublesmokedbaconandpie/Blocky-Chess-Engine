@@ -94,7 +94,7 @@ void pawnCaptures(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSq
     if (!isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != EmptyPiece && currBoard.getPiece(square) != nullPiece) {
         pawnMoves.push_back(square);
     }
-    if (BoardSquare(pawn.rank, pawn.file + fileDirection) == currBoard.pawnJumpedSquare) {
+    if (square == currBoard.pawnJumpedSquare) {
         pawnMoves.push_back(square);
     }
 }

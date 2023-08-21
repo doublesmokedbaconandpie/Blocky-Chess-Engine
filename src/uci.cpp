@@ -72,7 +72,7 @@ namespace UCI {
 
             if (commandToken == "ucinewgame") {}
             else if (commandToken == "position") {currBoard = position(commandStream);}
-            else if (commandToken == "go") {go(commandStream, currBoard);}
+            else if (commandToken == "go") {UCI::go(commandStream, currBoard);}
             else if (commandToken == "isready") {isready();}
             else if (commandToken == "quit") {return;}
         }
@@ -86,15 +86,19 @@ namespace UCI {
         input >> token;
         if (token == "startpos") {
             currBoard = Board();
+            input >> token;
         }
         else if (token == "fen") {
-            throw std::invalid_argument("NOT FEN");
+            std::string fenStr;
+            while (input >> token && token != "moves") { 
+                fenStr += token + ' ';
+            }
+            currBoard = Board(fenStr);
         }
 
-        input >> token;
         if (token != "moves") {return currBoard;}
         while (input >> token) {
-            currBoard = Board(currBoard, BoardMove(token));
+            currBoard = Board(currBoard, BoardMove(token, currBoard.isWhiteTurn));
         }
         return currBoard;
     }

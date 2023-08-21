@@ -350,12 +350,13 @@ TEST(InCheckTest, BoardMoveConstructorPawnJump) {
     Board defaultBoard = Board();
     BoardSquare pos1 = BoardSquare(6, E);
     BoardSquare pos2 = BoardSquare(4, E);
+    BoardSquare enPassantSquare = BoardSquare(5, E);
     Board board = Board(defaultBoard, pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
-    EXPECT_EQ(board.pawnJumpedSquare, pos2);
+    EXPECT_EQ(board.pawnJumpedSquare, enPassantSquare);
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
@@ -382,7 +383,7 @@ TEST(InCheckTest, BoardMoveConstructorKingCastle) {
     EXPECT_EQ(board.getPiece(7, F), WRook);
     EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.fiftyMoveRule, 1);
-    EXPECT_EQ(board.castlingRights, W_OOO + B_Castle);
+    EXPECT_EQ(board.castlingRights, B_Castle);
 }
 
 TEST(InCheckTest, BoardMoveConstructorQueenCastle) {
@@ -408,7 +409,7 @@ TEST(InCheckTest, BoardMoveConstructorQueenCastle) {
     EXPECT_EQ(board.getPiece(7, D), WRook);
     EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.fiftyMoveRule, 1);
-    EXPECT_EQ(board.castlingRights, W_OO + B_Castle);
+    EXPECT_EQ(board.castlingRights, B_Castle);
 }
 
 TEST(InCheckTest, BoardMoveConstructorMovedKing) {
@@ -475,9 +476,9 @@ TEST(InCheckTest, BoardMoveConstructorEnPassant) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
     };
     Board originBoard = Board(boardVector, true);
-    BoardSquare jumpedPawn = originBoard.pawnJumpedSquare = BoardSquare(3, E);
+    BoardSquare jumpedPawn = BoardSquare(3, E);
     BoardSquare pos1 = BoardSquare(3, D);
-    BoardSquare pos2 = BoardSquare(2, E);
+    BoardSquare pos2 = originBoard.pawnJumpedSquare = BoardSquare(2, E);
     Board board = Board(originBoard, pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
@@ -485,6 +486,7 @@ TEST(InCheckTest, BoardMoveConstructorEnPassant) {
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
     EXPECT_EQ(board.getPiece(jumpedPawn), EmptyPiece);
+    EXPECT_EQ(board.pawnJumpedSquare, BoardSquare());
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
@@ -510,6 +512,7 @@ TEST(InCheckTest, BoardMoveConstructorNotEnPassant) {
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
     EXPECT_EQ(board.getPiece(jumpedPawn), BPawn);
+    EXPECT_EQ(board.pawnJumpedSquare, BoardSquare());
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
