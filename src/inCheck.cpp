@@ -204,7 +204,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
     pieceTypes allyRook = originalBoard.isWhiteTurn ? WRook : BRook;
     pieceTypes allyPawn = originalBoard.isWhiteTurn ? WPawn : BPawn;
     int pawnJumpDirection = originalBoard.isWhiteTurn ? -2 : 2;
-    int promotionRank = originalBoard.isWhiteTurn ? 1 : 6;
+    int promotionRank = originalBoard.isWhiteTurn ? 0 : 7;
     
     pieceTypes originPiece = this->getPiece(pos1);
     pieceTypes targetPiece = this->getPiece(pos2);
@@ -222,7 +222,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         this->setPiece(pos1.rank, rookFile, EmptyPiece);
         this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
     }
-    else if (originPiece == allyKing) {
+    else if (originPiece == allyKing || originPiece == allyRook) {
         this->setPiece(pos2, originPiece);
         this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
     }
@@ -235,7 +235,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         this->fiftyMoveRule = 0;
     }
     // promoting pawn
-    else if (originPiece == allyPawn && pos1.rank == promotionRank) {
+    else if (originPiece == allyPawn && pos2.rank == promotionRank) {
         this->setPiece(pos2, promotionPiece);
         this->fiftyMoveRule = 0;
     }

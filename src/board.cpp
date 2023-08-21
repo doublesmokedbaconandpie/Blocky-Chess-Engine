@@ -50,16 +50,11 @@ std::ostream& operator<<(std::ostream& os, const BoardSquare& target) {
 // BoardMove
 
 BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
-    pieceTypes allyQueen = BQueen;
-    pieceTypes allyBishop = BBishop;
-    pieceTypes allyKnight = BKnight;
-    pieceTypes allyRook = BRook;
-    if (isWhiteTurn) {
-        allyQueen = WQueen;
-        allyBishop = WBishop;
-        allyKnight = BKnight;
-        allyRook = BRook;
-    }
+    pieceTypes allyQueen = isWhiteTurn ? WQueen : BQueen;
+    pieceTypes allyBishop = isWhiteTurn ? WBishop : BBishop;
+    pieceTypes allyKnight = isWhiteTurn ? WKnight : BKnight;
+    pieceTypes allyRook = isWhiteTurn ? WRook : BRook;
+    
     this->pos1 = BoardSquare(input.substr(0, 2));
     this->pos2 = BoardSquare(input.substr(2, 2));
 
@@ -203,6 +198,8 @@ Board::Board(std::string fenStr) {
 
     fenStream >> token;
     this->fiftyMoveRule = stoi(token);
+
+    this->isIllegalPos = false; // it is up to the UCI gui to not give illegal positions
 
     // Board doesn't use Fullmove counter
 }

@@ -26,7 +26,7 @@ struct BoardMove {
     pieceTypes promotionPiece;
     BoardMove(BoardSquare pos1 = BoardSquare(), BoardSquare pos2 = BoardSquare(), pieceTypes promotionPiece = nullPiece): 
         pos1(pos1), pos2(pos2), promotionPiece(promotionPiece) {}; 
-    BoardMove(std::string input, bool isWhiteTurn = true);
+    BoardMove(std::string input, bool isWhiteTurn);
     std::string toStr();
 
     friend std::ostream& operator<<(std::ostream& os, const BoardMove& target);
