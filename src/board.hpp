@@ -38,7 +38,7 @@ struct Board {
     Board(); // default game
     Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn = true, 
             int movesWithoutCapture = 0, BoardSquare pawnJumpedSquare = BoardSquare(), 
-            bool isIllegalPos = false, castleRights castlingRights = All_Castle); 
+            bool isIllegalPos = false, castleRights castlingRights = All_Castle, int materialDifference = 0); 
     Board(std::string fenStr);
     
     // defined in inCheck.cpp
@@ -60,6 +60,8 @@ struct Board {
     int fiftyMoveRule; // 50 move rule
     bool isIllegalPos;
     BoardSquare pawnJumpedSquare;
+    int materialDifference; //updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
+    //can reuse code in eval function if the position is not the starting position, otherwise defaults to 0
 };
 
 castleRights castleRightsBit(BoardSquare finalKingPos);

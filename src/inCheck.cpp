@@ -3,6 +3,10 @@
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
+#include <map>
+
+
+
 
 bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
     int target = currBoard.getPiece(targetSquare);
@@ -238,6 +242,14 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
     else if (originPiece == allyPawn && pos2.rank == promotionRank) {
         this->setPiece(pos2, promotionPiece);
         this->fiftyMoveRule = 0;
+
+        //updates material score of the board on promotion
+        if(this->isWhiteTurn) {
+            this->materialDifference += pieceValues.at(targetPiece) - 1;
+        }
+        else {
+            this->materialDifference += pieceValues.at(targetPiece) + 1;
+        }
     }
     // en passant 
     else if (pos2 == originalBoard.pawnJumpedSquare) {
@@ -251,6 +263,8 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
             this->fiftyMoveRule = 0;
         }
     }
+
+    this->materialDifference -= pieceValues.at(targetPiece); //updates the material score of the board on capture
 
     this->isIllegalPos = currKingInAttack(*this);
     // after finalizing move logic, now switch turns
