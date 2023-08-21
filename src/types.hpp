@@ -20,9 +20,7 @@ enum castleRights {
     All_Castle = W_Castle | B_Castle,
 };
 
-
-//not sure if this should be here but it seems utility stuff belongs here
-static std::map<pieceTypes, int> pieceValues = {
+static std::map<int, int> pieceValues = {
     {WPawn, 1},
     {BPawn, -1},
     {WBishop, 3}, 
@@ -32,7 +30,10 @@ static std::map<pieceTypes, int> pieceValues = {
     {WRook, 5}, 
     {BRook, -5}, 
     {WQueen, 9},
-    {BQueen, -9}
+    {BQueen, -9},
+    {WKing, 1000}, //should not be used
+    {BKing, 1000}, //should not be used
+    {0, 0}
 };
 
 
