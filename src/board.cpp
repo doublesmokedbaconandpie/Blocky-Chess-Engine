@@ -142,15 +142,17 @@ Board::Board() {
     this->pawnJumpedSquare = BoardSquare();
     this->isIllegalPos = false;
     this->castlingRights = All_Castle;
+    this->materialDifference = 0;
 }
 
-Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, int fiftyMoveRule,  BoardSquare pawnJumpedSquare, bool isIllegalPos, castleRights castlingRights) {
+Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, int fiftyMoveRule,  BoardSquare pawnJumpedSquare, bool isIllegalPos, castleRights castlingRights, int materialDifference) {
     this->board = board;
     this->isWhiteTurn = isWhiteTurn;
     this-> fiftyMoveRule = fiftyMoveRule;
     this->pawnJumpedSquare = pawnJumpedSquare;
     this->isIllegalPos = isIllegalPos;
     this->castlingRights = castlingRights;
+    this->materialDifference = materialDifference;
 }
 
 pieceTypes Board::getPiece(int rank, int file) const {
