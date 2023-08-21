@@ -90,7 +90,7 @@ TEST(BoardTest, boardSquareStrConstructorNeg) {
 }
 
 TEST(BoardTest, boardMoveStrConstructor) {
-    BoardMove move = BoardMove("e2e4");
+    BoardMove move = BoardMove("e2e4", true);
     EXPECT_EQ(move.pos1.rank, 6);
     EXPECT_EQ(move.pos1.file, 4);
     EXPECT_EQ(move.pos2.rank, 4);
@@ -119,7 +119,7 @@ TEST(BoardTest, fenConstructorDefault) {
 TEST(BoardTest, fenConstructorEnPassantSquare) {
     Board fenBoard = Board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
     Board moveBoard = Board();
-    moveBoard = Board(moveBoard, BoardMove("e2e4"));
+    moveBoard = Board(moveBoard, BoardMove("e2e4", moveBoard.isWhiteTurn));
 
     EXPECT_EQ(fenBoard.board, moveBoard.board);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
@@ -132,13 +132,13 @@ TEST(BoardTest, fenConstructorEnPassantCastle) {
     // ruy lopez
     Board fenBoard = Board("r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4");
     Board moveBoard = Board();
-    moveBoard = Board(moveBoard, BoardMove("e2e4"));
-    moveBoard = Board(moveBoard, BoardMove("e7e5"));
-    moveBoard = Board(moveBoard, BoardMove("g1f3"));
-    moveBoard = Board(moveBoard, BoardMove("b8c6"));
-    moveBoard = Board(moveBoard, BoardMove("f1b5"));
-    moveBoard = Board(moveBoard, BoardMove("g8f6"));
-    moveBoard = Board(moveBoard, BoardMove("e1g1"));
+    moveBoard = Board(moveBoard, BoardMove("e2e4", moveBoard.isWhiteTurn));
+    moveBoard = Board(moveBoard, BoardMove("e7e5", moveBoard.isWhiteTurn));
+    moveBoard = Board(moveBoard, BoardMove("g1f3", moveBoard.isWhiteTurn));
+    moveBoard = Board(moveBoard, BoardMove("b8c6", moveBoard.isWhiteTurn));
+    moveBoard = Board(moveBoard, BoardMove("f1b5", moveBoard.isWhiteTurn));
+    moveBoard = Board(moveBoard, BoardMove("g8f6", moveBoard.isWhiteTurn));
+    moveBoard = Board(moveBoard, BoardMove("e1g1", moveBoard.isWhiteTurn));
 
     EXPECT_EQ(fenBoard.board, moveBoard.board);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
