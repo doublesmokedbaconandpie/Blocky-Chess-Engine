@@ -75,7 +75,6 @@ namespace UCI {
             else if (commandToken == "go") {UCI::go(commandStream, currBoard);}
             else if (commandToken == "isready") {isready();}
             else if (commandToken == "quit") {return;}
-            std::cout << currBoard << std::endl;
         }
     }
 
