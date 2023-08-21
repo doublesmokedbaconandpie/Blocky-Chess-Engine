@@ -220,7 +220,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         this->setPiece(pos2, allyKing);
         this->setPiece(pos1.rank, pos1.file + kingFileDirection, allyRook);
         this->setPiece(pos1.rank, rookFile, EmptyPiece);
-        this->castlingRights ^= castleRightsBit(pos2);
+        this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
     }
     else if (originPiece == allyKing) {
         this->setPiece(pos2, allyKing);
