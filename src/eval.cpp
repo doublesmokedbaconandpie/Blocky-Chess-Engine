@@ -4,7 +4,15 @@
 
 int eval(Board board) {
     int scoreSum = board.materialDifference;
-    // for (int rank = 0; rank < 8; rank++) {
+    
+    return board.isWhiteTurn ? scoreSum : scoreSum * -1;
+}
+
+
+
+//We might still need this someday, but there's a more efficient way to calculate from FEN
+
+// for (int rank = 0; rank < 8; rank++) {
     //     for (int file = A; file <= H; file++) {
     //         int piece = board.getPiece(rank, file);
     //         BoardSquare currSquare = BoardSquare(rank, file);
@@ -41,5 +49,3 @@ int eval(Board board) {
     //         }
     //     }
     // }
-    return board.isWhiteTurn ? scoreSum : scoreSum * -1;
-}

@@ -158,6 +158,7 @@ Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, int f
 }
 
 Board::Board(std::string fenStr) {
+    this->materialDifference = 0;
     std::string token; 
     std::istringstream fenStream(fenStr);
 
@@ -179,6 +180,8 @@ Board::Board(std::string fenStr) {
         else if (charToPiece.find(iter) != charToPiece.end()) {
             this->setPiece(rank, file, charToPiece[iter]);
             file += 1;
+
+            this->materialDifference += pieceValues.at(charToPiece[iter]);
         }
         else  { // must be a digit
             file += int(iter - '0');

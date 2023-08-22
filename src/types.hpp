@@ -32,7 +32,7 @@ static std::map<int, int> pieceValues = {
     {WQueen, 9},
     {BQueen, -9},
     {WKing, 1000}, //should not be used
-    {BKing, 1000}, //should not be used
+    {BKing, -1000}, //should not be used
     {0, 0}
 };
 
