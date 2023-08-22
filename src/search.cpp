@@ -29,18 +29,23 @@ namespace SEARCH {
             return result;
         }
 
+        int score, bestscore = MIN_ALPHA;
         for (BoardMove move: moves) {
             Board newBoard = Board(board, move); 
             SearchInfo oppAlphaBeta = alphaBeta(newBoard, -1 * beta, -1 * alpha, depth - 1);
             result.nodes += oppAlphaBeta.nodes;
+            score = -1 * oppAlphaBeta.value;
 
-            if (oppAlphaBeta.value >= beta) {
+            if (score >= beta) {
                 result.value = beta;
                 break;
             }
-            if (oppAlphaBeta.value > alpha) {
-                result.value = alpha = oppAlphaBeta.value;
+            if (score > bestscore) {
+                result.value = bestscore = score;
                 result.move = move;
+                if (score > alpha) {
+                    alpha = score;
+                }
             }
         }
         return result;
