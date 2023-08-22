@@ -108,6 +108,9 @@ namespace UCI {
 
         auto result = negaMax(board, OPTIONS.depth);
         board = Board(board, result.second);
+        if (result.first < 100000 && result.first > -1000000) {
+            std::cout << "info depth " << OPTIONS.depth << " score cp " << (result.first * 100) << "\n";
+        }
         std::cout << "bestmove " << result.second.toStr() << "\n";
     }
 
