@@ -111,13 +111,12 @@ namespace UCI {
         }   
         allytime = board.isWhiteTurn ? wtime : btime;
     
-        std::pair<int, BoardMove> result;
-        if (OPTIONS.useDepth) {result = negaMax(board, OPTIONS.depth);}
-        else {result = negaMax(board, negamaxDepthBasedOnTime(allytime));}
+        int searchDepth = OPTIONS.useDepth ? OPTIONS.useDepth : negamaxDepthBasedOnTime(allytime);
+        std::pair<int, BoardMove> result = negaMax(board, searchDepth);
 
         board = Board(board, result.second);
         if (result.first < 100000 && result.first > -1000000) {
-            std::cout << "info depth " << OPTIONS.depth << " score cp " << (result.first * 100) << "\n";
+            std::cout << "info depth " << searchDepth << " score cp " << (result.first * 100) << "\n";
         }
         std::cout << "bestmove " << result.second.toStr() << "\n";
     }
