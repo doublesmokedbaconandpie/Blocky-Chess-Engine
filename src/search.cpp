@@ -7,31 +7,45 @@
 #include "inCheck.hpp"
 #include "board.hpp"
 
-std::pair<int, BoardMove> negaMax(Board board, int depth) {
-    if (depth == 0) {return std::pair<int, BoardMove>(eval(board), BoardMove());}
-    if (board.fiftyMoveRule >= 50) {return std::pair<int, BoardMove>(0, BoardMove());}
-    int max = -1000000000;
-
-    std::vector<BoardMove> moves = moveGenerator(board);
-    if (moves.size() == 0) {
-        if (currKingInAttack(board)) {
-            return std::pair<int, BoardMove>(max, BoardMove());
-        }
-        else {
-            return std::pair<int, BoardMove>(0, BoardMove());
-        }
+namespace SEARCH {
+    SearchInfo search(Board& board, int depth) {
+        return alphaBeta(board, MIN_ALPHA, MAX_BETA, depth);
     }
 
-    int score;
-    max -= 1;
-    BoardMove bestMove = moves.at(0);
-    for (BoardMove move: moves) {
-        Board newBoard = Board(board, move); 
-        score = -1 * negaMax(newBoard, depth - 1).first;
-        if (score > max) {
-            max = score;
-            bestMove = move;
+    SearchInfo alphaBeta(Board& board, int alpha, int beta, int depth) {
+        SearchInfo result;
+        result.nodes = 1;
+        if (board.fiftyMoveRule >= 50) {
+            result.value = 0;
+            return result;
         }
+        if (depth == 0) {
+            result.value = eval(board);
+            return result;
+        }
+        std::vector<BoardMove> moves = moveGenerator(board);
+        if (moves.size() == 0) {
+            result.value = currKingInAttack(board) ? MIN_ALPHA : 0;
+            return result;
+        }
+
+        int score;
+        for (BoardMove move: moves) {
+            Board newBoard = Board(board, move); 
+            SearchInfo oppAlphaBeta = alphaBeta(newBoard, -1 * beta, -1 * alpha, depth - 1);
+            result.nodes += oppAlphaBeta.nodes;
+            score = -1 * oppAlphaBeta.value;
+
+            if (score >= beta) {
+                result.value = beta;
+                break;
+            }
+            if (score > alpha) {
+                result.value = alpha = score;
+                result.move = move;
+            }
+        }
+        return result;
     }
-    return std::pair<int, BoardMove>(max, bestMove);
-}
+
+} // namespace SEARCH
