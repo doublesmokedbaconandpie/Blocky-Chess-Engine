@@ -1,13 +1,14 @@
+#pragma once
+
 #include <string>
 #include <sstream>
 
 #include "board.hpp"
 
-int main();
-
 namespace UCI {
     struct UCIOPTIONS {
-        int depth = 3;
+        bool useDepth = false;
+        int depth = 0;
     };
 
     bool uci();

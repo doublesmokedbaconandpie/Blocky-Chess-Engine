@@ -4,7 +4,7 @@ option(MAKE_EXE "exe?" OFF)
 
 project(Blocky)
 
-add_executable(Blocky src/uci.cpp)
+add_executable(Blocky src/main.cpp)
 
 if(MAKE_EXE)
     message("Compiling for Windows EXE")
@@ -25,6 +25,8 @@ target_sources(Blocky PRIVATE
     src/moveGen.cpp
     src/search.cpp
     src/eval.cpp
+    src/timeman.cpp
+    src/uci.cpp
 )
 
 target_include_directories(Blocky PRIVATE
