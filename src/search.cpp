@@ -47,7 +47,7 @@ namespace SEARCH {
                 result.value = beta;
                 break;
             }
-            if (score > bestscore || oppAlphaBeta.mateIn != NO_MATE) {
+            if (score > bestscore) {
                 result.mateIn = oppAlphaBeta.mateIn;
                 result.value = bestscore = score;
                 result.move = move;
