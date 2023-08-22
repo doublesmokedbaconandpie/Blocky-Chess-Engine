@@ -1,9 +1,9 @@
+#pragma once
+
 #include <string>
 #include <sstream>
 
 #include "board.hpp"
-
-int main();
 
 namespace UCI {
     struct UCIOPTIONS {
