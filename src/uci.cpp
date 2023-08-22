@@ -4,18 +4,10 @@
 #include <stdexcept>
 
 #include "uci.hpp"
+#include "timeman.hpp"
 #include "search.hpp"
 #include "inCheck.hpp"
 #include "board.hpp"
-
-
-int main() {
-    if (!UCI::uci()) {return 1;}
-    UCI::SETOPTIONLOOP();
-    UCI::UCILOOP();
-
-    return 0;
-}
 
 namespace UCI {
     UCIOPTIONS OPTIONS;
@@ -30,7 +22,8 @@ namespace UCI {
         std::cout << "id name BLOCKY\n";
         std::cout << "id author BlockyTeam\n";
 
-        std::cout << "option name Depth type spin default 3 min 1 max 4\n";
+        std::cout << "option name UseDepth type check default false\n";
+        std::cout << "option name Depth type spin default 1 min 1 max 4\n";
 
         std::cout << "uciok\n";
         return true;
@@ -53,7 +46,12 @@ namespace UCI {
         input >> token; 
         if (token != "name") {return;}
         input >> token;
-        if (token == "Depth") {
+        if (token == "UseDepth") {
+            input >> token;
+            input >> token;
+            OPTIONS.useDepth = token == "true" ? true : false;
+        }
+        if (token == "Depth" && OPTIONS.useDepth) {
             input >> token;
             input >> token;
             OPTIONS.depth = stoi(token);
@@ -104,9 +102,19 @@ namespace UCI {
     }
 
     void go(std::istringstream& input, Board& board) {
-        std::string token;
+        int wtime, btime, allytime;
+        std::string param, value;
+        while (input >> param) {
+            input >> value;
+            if (param == "wtime") {wtime = stoi(value);}
+            else if (param == "btime") {btime = stoi(value);}
+        }   
+        allytime = board.isWhiteTurn ? wtime : btime;
+    
+        std::pair<int, BoardMove> result;
+        if (OPTIONS.useDepth) {result = negaMax(board, OPTIONS.depth);}
+        else {result = negaMax(board, negamaxDepthBasedOnTime(allytime));}
 
-        auto result = negaMax(board, OPTIONS.depth);
         board = Board(board, result.second);
         if (result.first < 100000 && result.first > -1000000) {
             std::cout << "info depth " << OPTIONS.depth << " score cp " << (result.first * 100) << "\n";
