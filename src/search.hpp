@@ -6,8 +6,8 @@
 #include "eval.hpp"
 
 namespace SEARCH {
-    const int MIN_ALPHA = -100000000;
-    const int MAX_BETA = 100000000;
+    const int MIN_ALPHA = -100000;
+    const int MAX_BETA = 100000;
     
     struct SearchInfo {
         int nodes;
