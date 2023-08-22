@@ -283,7 +283,7 @@ TEST(MoveGenTest, validKingMovesQueenCastle) {
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
         {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {WRook     , EmptyPiece, EmptyPiece, EmptyPiece, WRook     , EmptyPiece, WBishop   , WRook     },
+        {WRook     , EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, WBishop   , WRook     },
     };
     Board board = Board(boardVector);
     
@@ -297,6 +297,33 @@ TEST(MoveGenTest, validKingMovesQueenCastle) {
         BoardMove(BoardSquare(7, E), BoardSquare(7, F)),
 
         BoardMove(BoardSquare(7, E), BoardSquare(7, C)),
+    };
+    validKingMoves(board, validMoves, whiteKings);
+
+    std::sort(validMoves.begin(), validMoves.end());
+    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
+    ASSERT_EQ(validMoves, expectedValidMoves);    
+}
+
+TEST(MoveGenTest, validKingMovesInvalidCastle) {
+    std::vector<std::vector<pieceTypes>> boardVector = {
+        {EmptyPiece, EmptyPiece, EmptyPiece, BQueen    , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
+        {WRook     , EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, WBishop   , WRook     },
+    };
+    Board board = Board(boardVector);
+    
+    std::vector<BoardMove> validMoves;
+    std::vector<BoardSquare> whiteKings = {BoardSquare(7, E)};
+    std::vector<BoardMove> expectedValidMoves = {
+        BoardMove(BoardSquare(7, E), BoardSquare(6, E)),
+        BoardMove(BoardSquare(7, E), BoardSquare(6, F)),
+        BoardMove(BoardSquare(7, E), BoardSquare(7, F)),
     };
     validKingMoves(board, validMoves, whiteKings);
 

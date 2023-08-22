@@ -200,10 +200,13 @@ void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
         for (BoardSquare square: potentialCastleMoves) {
             if (currKingInAttack(currBoard)) {break;}
             if (!(currBoard.castlingRights && castleRightsBit(square))) {continue;}
+            
             int kingFileDirection = square.file == G ? 1 : -1;
+            // cannot castle through enemy attack
+            if (Board(currBoard, king, BoardSquare(king.rank, king.file + kingFileDirection)).isIllegalPos) {continue;} 
             if (getPieceInDirection(currBoard, king, 0, kingFileDirection) == allyRook) {
                 kingMoves.push_back(BoardSquare(kingUnmovedRank, square.file));
-            }            
+            }
         }
         
         for (BoardSquare move: kingMoves) {
