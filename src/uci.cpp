@@ -21,7 +21,7 @@ namespace UCI {
         std::cout << "id name BLOCKY\n";
         std::cout << "id author BlockyTeam\n";
 
-        std::cout << "option name Depth type spin default 3 min 1 max 4\n";
+        std::cout << "option name Depth type spin default 4 min 1 max 7\n";
 
         std::cout << "uciok\n";
         return true;
@@ -97,12 +97,23 @@ namespace UCI {
     void go(std::istringstream& input, Board& board) {
         std::string token;
 
-        auto result = negaMax(board, OPTIONS.depth);
-        board = Board(board, result.second);
-        if (result.first < 100000 && result.first > -1000000) {
-            std::cout << "info depth " << OPTIONS.depth << " score cp " << (result.first * 100) << "\n";
+        SEARCH::SearchInfo result = SEARCH::search(board, OPTIONS.depth);
+        board = Board(board, result.move);
+        
+        info(result);
+        std::cout << "bestmove " << result.move.toStr() << "\n";
+    }
+
+    void info(SEARCH::SearchInfo searchResult) {
+        std::cout << "info depth " << OPTIONS.depth << ' ';
+        std::cout << "nodes " << searchResult.nodes << " ";
+        if (searchResult.mateIn == SEARCH::NO_MATE) {
+            std::cout << "score cp " << (searchResult.value * 100) << " ";
         }
-        std::cout << "bestmove " << result.second.toStr() << "\n";
+        else {
+            std::cout << "mate " << searchResult.mateIn / 2 + 1 << " "; // convert plies to moves
+        }
+        std::cout << '\n';
     }
 
     void isready() {
