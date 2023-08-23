@@ -15,6 +15,8 @@ enum castleRights {
     B_OO = W_OO << 2,
     B_OOO = W_OO << 3,
 
+    K_Castle = W_OO | B_OO,
+    Q_Castle = W_OOO | B_OOO,
     W_Castle = W_OO | W_OOO,
     B_Castle = B_OO | B_OOO,
     All_Castle = W_Castle | B_Castle,
