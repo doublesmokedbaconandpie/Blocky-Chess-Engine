@@ -1,13 +1,14 @@
+#pragma once
+
 #include <string>
 #include <sstream>
 
 #include "board.hpp"
-
-int main();
+#include "search.hpp"
 
 namespace UCI {
     struct UCIOPTIONS {
-        int depth = 3;
+        int depth = 4;
     };
 
     bool uci();
@@ -18,6 +19,7 @@ namespace UCI {
     void UCILOOP();
     Board position(std::istringstream& input);
     void go(std::istringstream& input, Board& board);
+    void info(SEARCH::SearchInfo searchResult);
 
     void isready();
 
