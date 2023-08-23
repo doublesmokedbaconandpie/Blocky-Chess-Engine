@@ -45,8 +45,6 @@ void validPawnMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
 
     for (BoardSquare pawn: pawns) {
         std::vector<BoardSquare> pawnMoves;
-        int currRank = pawn.rank;
-        fileVals currFile = pawn.file;
 
         forwardPawnMoves(currBoard, pawnMoves, pawn);
         pawnCaptures(currBoard, pawnMoves, pawn, 1);
@@ -168,7 +166,6 @@ void validQueenMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::
 
 
 void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& kings) {
-    pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
     pieceTypes allyRook = currBoard.isWhiteTurn ? WRook : BRook;
     int kingUnmovedRank = currBoard.isWhiteTurn ? 7 : 0;
     
