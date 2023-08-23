@@ -44,7 +44,7 @@ namespace SEARCH {
             score = -1 * oppAlphaBeta.value;
 
             if (score >= beta) {
-                result.value = beta;
+                result.value = score;
                 break;
             }
             if (score > bestscore) {
