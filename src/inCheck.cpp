@@ -202,6 +202,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
     this->castlingRights = originalBoard.castlingRights;
     this->fiftyMoveRule = originalBoard.fiftyMoveRule + 1;
     this->isWhiteTurn = originalBoard.isWhiteTurn; // switch turns will happen after the move
+    this->materialDifference = originalBoard.materialDifference;
 
     // ally refers to allies of originalBoard, as it is the one still moving this turn
     pieceTypes allyKing = originalBoard.isWhiteTurn ? WKing : BKing;
@@ -245,10 +246,10 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
 
         //updates material score of the board on promotion
         if(this->isWhiteTurn) {
-            this->materialDifference += pieceValues.at(targetPiece) - 1;
+            this->materialDifference += pieceValues.at(promotionPiece) - 1;
         }
         else {
-            this->materialDifference += pieceValues.at(targetPiece) + 1;
+            this->materialDifference += pieceValues.at(promotionPiece) + 1;
         }
     }
     // en passant 
@@ -256,6 +257,8 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
         this->setPiece(pos2, originPiece);
         this->fiftyMoveRule = 0;
+
+        //this->materialDifference = originalBoard.isWhiteTurn ? this->materialDifference + 1 : this->materialDifference - 1;
     }
     else {
         this->setPiece(pos2, originPiece);
@@ -265,7 +268,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
     }
 
     this->materialDifference -= pieceValues.at(targetPiece); //updates the material score of the board on capture
-
+    
     this->isIllegalPos = currKingInAttack(*this);
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !originalBoard.isWhiteTurn; 
