@@ -223,9 +223,16 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         this->setPiece(pos1.rank, rookFile, EmptyPiece);
         this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
     }
-    else if (originPiece == allyKing || originPiece == allyRook) {
+    else if (originPiece == allyKing) {
         this->setPiece(pos2, originPiece);
         this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
+    }
+    else if (originPiece == allyRook) {
+        this->setPiece(pos2, originPiece);
+        this->castlingRights ^= pos1 == BoardSquare("h1") ? W_OO : noCastle;
+        this->castlingRights ^= pos1 == BoardSquare("a1") ? W_OOO : noCastle;
+        this->castlingRights ^= pos1 == BoardSquare("h8") ? B_OO : noCastle;
+        this->castlingRights ^= pos1 == BoardSquare("a8") ? B_OOO : noCastle;
     }
     // jumping pawn
     else if (originPiece == allyPawn && pos2.rank == pos1.rank + pawnJumpDirection) { 
