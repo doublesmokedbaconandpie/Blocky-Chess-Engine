@@ -249,7 +249,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         this->fiftyMoveRule = 0;
 
         //updates material score of the board on promotion
-        if(this->isWhiteTurn) {
+        if(originalBoard.isWhiteTurn) {
             this->materialDifference += pieceValues.at(promotionPiece) - 1;
         }
         else {
@@ -262,7 +262,11 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         this->setPiece(pos2, originPiece);
         this->fiftyMoveRule = 0;
 
-        //this->materialDifference = originalBoard.isWhiteTurn ? this->materialDifference + 1 : this->materialDifference - 1;
+        if(originalBoard.isWhiteTurn)
+            materialDifference += 1;
+        else
+            materialDifference -= 1;
+
     }
     else {
         this->setPiece(pos2, originPiece);

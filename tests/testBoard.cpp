@@ -204,12 +204,13 @@ TEST(MaterialDifferenceTest, enPassantTests) {
     b1 = Board(b1, BoardMove("d7d5", b1.isWhiteTurn));
     b1 = Board(b1, BoardMove("e4e5", b1.isWhiteTurn));
     b1 = Board(b1, BoardMove("d5d4", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("h2h3", b1.isWhiteTurn));
     b1 = Board(b1, BoardMove("f7f5", b1.isWhiteTurn));
-    b1 = Board(b1, BoardMove("e5f5", b1.isWhiteTurn)); //+1
+    b1 = Board(b1, BoardMove("e5f6", b1.isWhiteTurn)); //+1
     int eval1 = b1.materialDifference;
     b1 = Board(b1, BoardMove("g7f6", b1.isWhiteTurn)); //+-0
     b1 = Board(b1, BoardMove("c2c4", b1.isWhiteTurn));
-    b1 = Board(b1, BoardMove("d4c4", b1.isWhiteTurn)); //-1
+    b1 = Board(b1, BoardMove("d4c3", b1.isWhiteTurn)); //-1
     int eval2 = b1.materialDifference;
     b1 = Board(b1, BoardMove("d2d4", b1.isWhiteTurn));
     b1 = Board(b1, BoardMove("c3b2", b1.isWhiteTurn)); //-2

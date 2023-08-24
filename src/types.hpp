@@ -2,6 +2,8 @@
 
 #include <map>
 
+const int BOARD_SIZE = 64;
+
 enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
 
 enum pieceTypes {nullPiece = -1, EmptyPiece,

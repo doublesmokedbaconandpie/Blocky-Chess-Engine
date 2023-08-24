@@ -1,11 +1,11 @@
-
-#include "board.hpp"
-#include "types.hpp"
-
+#include <array>
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <unordered_map>
+
+#include "board.hpp"
+#include "types.hpp"
 
 // BoardSquare
 
@@ -41,8 +41,8 @@ std::ostream& operator<<(std::ostream& os, const BoardSquare& target) {
         os << target.file << ' ' << target.rank << ' ';
         return os;    
     }
-    std::vector<char> fileRep = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-    std::vector<char> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
+    std::array<char, 8> fileRep = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    std::array<char, 8> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
     os << fileRep.at(target.file) << rankRep.at(target.rank);
     return os;
 }
@@ -130,14 +130,14 @@ bool operator<(const BoardMove& lhs, const BoardMove& rhs) {
 
 Board::Board() {
     this->board = {
-        {BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook},
-        {BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece},
-        {WPawn, WPawn, WPawn, WPawn, WPawn, WPawn, WPawn, WPawn},
-        {WRook, WKnight, WBishop, WQueen, WKing, WBishop, WKnight, WRook}
+        BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook,
+        BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn,
+        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
+        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
+        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
+        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
+        WPawn, WPawn, WPawn, WPawn, WPawn, WPawn, WPawn, WPawn,
+        WRook, WKnight, WBishop, WQueen, WKing, WBishop, WKnight, WRook
     };
     this->isWhiteTurn = true;
     this->fiftyMoveRule = 0;
@@ -147,7 +147,7 @@ Board::Board() {
     this->materialDifference = 0;
 }
 
-Board::Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn, int fiftyMoveRule,  BoardSquare pawnJumpedSquare, bool isIllegalPos, castleRights castlingRights, int materialDifference) {
+Board::Board(std::array<pieceTypes, BOARD_SIZE> board, bool isWhiteTurn, int fiftyMoveRule,  BoardSquare pawnJumpedSquare, bool isIllegalPos, castleRights castlingRights, int materialDifference) {
     this->board = board;
     this->isWhiteTurn = isWhiteTurn;
     this-> fiftyMoveRule = fiftyMoveRule;
@@ -167,9 +167,6 @@ Board::Board(std::string fenStr) {
         {'p', BPawn}, {'n', BKnight}, {'b', BBishop}, {'r', BRook}, {'q', BQueen}, {'k', BKing}, 
     };
 
-    for (int i = 0; i <= 7; i++) { // need a non-empty board to use setPiece()    
-        this->board.push_back({EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece});
-    }
     fenStream >> token;
     int rank = 0, file = A;
     for (char& iter: token) {
@@ -177,15 +174,16 @@ Board::Board(std::string fenStr) {
             rank++;
             file = A;
         }
-        else if (charToPiece.find(iter) != charToPiece.end()) {
+        else if (isdigit(iter))  { 
+            file += int(iter - '0');
+        }
+        else { // must be a piece character
             this->setPiece(rank, file, charToPiece[iter]);
             file += 1;
 
             this->materialDifference += pieceValues.at(charToPiece[iter]);
         }
-        else  { // must be a digit
-            file += int(iter - '0');
-        }
+
     }
 
     fenStream >> token;
@@ -213,7 +211,7 @@ pieceTypes Board::getPiece(int rank, int file) const {
     if (rank < 0 || rank > 7 || file < A || file > H) {
         return nullPiece;
     }
-    return this->board.at(rank).at(file);
+    return this->board.at(rank * 8 + file);
 }
 
 pieceTypes Board::getPiece(BoardSquare square) const{
@@ -224,7 +222,7 @@ bool Board::setPiece(int rank, int file, pieceTypes piece) {
     if (rank < 0 || rank > 7 || file < A || file > H) {
         return false;
     }
-    this->board.at(rank).at(file) = piece;
+    this->board.at(rank * 8 + file) = piece;
     return true;
 }
 
@@ -250,10 +248,10 @@ bool operator<(const Board& lhs, const Board& rhs) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& target) {
-    for (auto i: target.board) {
+    for (int rank = 0; rank <= 7; rank++) {
         os << "[";
-        for (auto j: i) {
-            switch (j)
+        for (int file = A; file <= 7; file++) {
+            switch (target.getPiece(rank, file))
             {
             case WPawn:
                 os << "WP";
