@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "board.hpp"
 #include "inCheck.hpp"
 

@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <vector>
+#include <array>
 #include <iostream>
 #include <string>
 
@@ -36,7 +36,7 @@ struct BoardMove {
 
 struct Board {
     Board(); // default game
-    Board(std::vector<std::vector<pieceTypes>> board, bool isWhiteTurn = true, 
+    Board(std::array<pieceTypes, BOARD_SIZE> board, bool isWhiteTurn = true, 
             int movesWithoutCapture = 0, BoardSquare pawnJumpedSquare = BoardSquare(), 
             bool isIllegalPos = false, castleRights castlingRights = All_Castle, int materialDifference = 0); 
     Board(std::string fenStr);
@@ -54,7 +54,7 @@ struct Board {
     bool setPiece(int rank, int file, pieceTypes piece);
     bool setPiece(BoardSquare square, pieceTypes piece);
 
-    std::vector<std::vector<pieceTypes>> board;
+    std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
     bool isWhiteTurn;
     castleRights castlingRights; // bitwise castling rights tracker
     int fiftyMoveRule; // 50 move rule
