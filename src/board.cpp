@@ -174,8 +174,7 @@ Board::Board(std::string fenStr) {
             file = A;
         }
         else if (isdigit(iter))  { 
-            int iterVal = int(iter - '0');
-            file += iterVal;
+            file += int(iter - '0');
         }
         else { // must be a piece character
             this->setPiece(rank, file, charToPiece[iter]);
