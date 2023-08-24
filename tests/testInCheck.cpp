@@ -621,3 +621,25 @@ TEST(InCheckTest, BoardMoveConstructorBishopPin) {
     Board board = Board(originBoard, pos1, pos2);
     ASSERT_EQ(board.isIllegalPos, true);
 }
+
+TEST(InCheckTest, BoardMoveConstructorCastleRightsRook) {
+    Board originBoard = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1");
+    Board board = Board(originBoard, BoardMove("h1g1", originBoard.isWhiteTurn));
+    EXPECT_EQ(originBoard.castlingRights, All_Castle);
+    EXPECT_EQ(board.castlingRights, B_Castle | W_OOO);
+}
+
+TEST(InCheckTest, BoardMoveConstructorCastleRightsRook2) {
+    Board originBoard = Board("rnbqk2r/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
+    Board board = Board(originBoard, BoardMove("h8g8", originBoard.isWhiteTurn));
+    EXPECT_EQ(originBoard.castlingRights, All_Castle);
+    EXPECT_EQ(board.castlingRights, W_Castle | B_OOO);
+}
+
+TEST(InCheckTest, BoardMoveConstructorCastleRightsRook3) {
+    Board originBoard = Board("7r/1k4P1/1n6/B7/P4P1p/7P/4NK2/1R5R b - - 0 44");
+    Board board = Board(originBoard, BoardMove("h8g8", originBoard.isWhiteTurn));
+    EXPECT_EQ(originBoard.castlingRights, noCastle);
+    EXPECT_EQ(board.castlingRights, noCastle);
+}
+
