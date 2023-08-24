@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14) 
 
-option(MAKE_EXE "exe?" OFF)
+option(MAKE_EXE "exe?" ON)
 
 project(Blocky)
 

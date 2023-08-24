@@ -158,6 +158,7 @@ Board::Board(std::array<pieceTypes, BOARD_SIZE> board, bool isWhiteTurn, int fif
 }
 
 Board::Board(std::string fenStr) {
+    this->materialDifference = 0;
     std::string token; 
     std::istringstream fenStream(fenStr);
 
@@ -179,6 +180,8 @@ Board::Board(std::string fenStr) {
         else { // must be a piece character
             this->setPiece(rank, file, charToPiece[iter]);
             file += 1;
+
+            this->materialDifference += pieceValues.at(charToPiece[iter]);
         }
 
     }

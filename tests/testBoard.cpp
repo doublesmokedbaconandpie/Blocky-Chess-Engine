@@ -155,3 +155,70 @@ TEST(CastleRightsBitTest, defaultBoard) {
     EXPECT_EQ(castleRightsBit(BoardSquare(7, C)) && board.castlingRights, true);    
     EXPECT_EQ(castleRightsBit(BoardSquare(4, E)) && board.castlingRights, false);    
 }
+
+TEST(MaterialDifferenceTest, defaultBoard) {
+    Board board = Board();
+    Board fenDefaultBoard = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    EXPECT_EQ(board.materialDifference, 0);
+    EXPECT_EQ(fenDefaultBoard.materialDifference, 0);
+}
+
+TEST(MaterialDifferenceTest, fenBoards) {
+    
+    Board fenBoard1 = Board("r1b1kbnr/pppBpppp/3q4/8/8/2N5/PPPP1PPP/R1BQK1NR b KQkq - 0 1");
+    Board fenBoard2 = Board("r1bqkbnr/pp1ppppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 1");
+    Board fenBoard3 = Board("rnbqkbnr/8/8/8/PP4PP/8/2PPPP2/3QK3 w kq - 0 1");
+
+    EXPECT_EQ(fenBoard1.materialDifference, 3);
+    EXPECT_EQ(fenBoard2.materialDifference, -3);
+    EXPECT_EQ(fenBoard3.materialDifference, -14);
+}
+
+TEST(MaterialDifferenceTest, captureTests) {
+    Board b1 = Board();
+    b1 = Board(b1, BoardMove("e2e4", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("d7d5", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("e4d5", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("c8h3", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("d5d6", b1.isWhiteTurn)); //+1
+    int eval1 = b1.materialDifference;
+    b1 = Board(b1, BoardMove("h3g2", b1.isWhiteTurn)); //+-0
+    int eval2 = b1.materialDifference;
+    b1 = Board(b1, BoardMove("d6c7", b1.isWhiteTurn)); //+1
+    int eval3 = b1.materialDifference;
+    b1 = Board(b1, BoardMove("g2h1", b1.isWhiteTurn)); //-4
+    int eval4 = b1.materialDifference;
+    b1 = Board(b1, BoardMove("c7b8q", b1.isWhiteTurn)); //+7
+    int eval5 = b1.materialDifference;
+
+    EXPECT_EQ(eval1, 1);
+    EXPECT_EQ(eval2, 0);
+    EXPECT_EQ(eval3, 1);
+    EXPECT_EQ(eval4, -4);
+    EXPECT_EQ(eval5, 7);
+}
+
+TEST(MaterialDifferenceTest, enPassantTests) {
+    Board b1 = Board();
+    b1 = Board(b1, BoardMove("e2e4", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("d7d5", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("e4e5", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("d5d4", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("h2h3", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("f7f5", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("e5f6", b1.isWhiteTurn)); //+1
+    int eval1 = b1.materialDifference;
+    b1 = Board(b1, BoardMove("g7f6", b1.isWhiteTurn)); //+-0
+    b1 = Board(b1, BoardMove("c2c4", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("d4c3", b1.isWhiteTurn)); //-1
+    int eval2 = b1.materialDifference;
+    b1 = Board(b1, BoardMove("d2d4", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("c3b2", b1.isWhiteTurn)); //-2
+    b1 = Board(b1, BoardMove("d4d5", b1.isWhiteTurn));
+    b1 = Board(b1, BoardMove("b2a1r", b1.isWhiteTurn)); //-11
+    int eval3 = b1.materialDifference;
+    
+    EXPECT_EQ(eval1, 1);
+    EXPECT_EQ(eval2, -1);
+    EXPECT_EQ(eval3, -11);
+}
