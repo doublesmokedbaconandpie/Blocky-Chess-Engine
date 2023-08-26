@@ -42,8 +42,9 @@ struct Board {
     Board(std::string fenStr);
     
     // defined in inCheck.cpp
-    Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
-    Board(Board& originalBoard, BoardMove move);
+    bool makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
+    bool makeMove(BoardMove move);
+    bool undoMove();
     
     friend bool operator==(const Board& lhs, const Board& rhs);
     friend bool operator<(const Board& lhs, const Board& rhs);
@@ -57,11 +58,13 @@ struct Board {
     std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
     bool isWhiteTurn;
     castleRights castlingRights; // bitwise castling rights tracker
-    int fiftyMoveRule; // 50 move rule
+    int fiftyMoveRule;
     bool isIllegalPos;
     BoardSquare pawnJumpedSquare;
     int materialDifference; //updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
-    //can reuse code in eval function if the position is not the starting position, otherwise defaults to 0
+
+    BoardMove previousMove = BoardMove();
+    pieceTypes previousCapturedPiece = nullPiece;
 };
 
 castleRights castleRightsBit(BoardSquare finalKingPos);
