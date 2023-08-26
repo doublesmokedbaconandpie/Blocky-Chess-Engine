@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
+#include <chrono>
 
 #include "uci.hpp"
 #include "search.hpp"
@@ -97,21 +98,29 @@ namespace UCI {
     void go(std::istringstream& input, Board& board) {
         std::string token;
 
+        auto start = std::chrono::high_resolution_clock::now();
         SEARCH::SearchInfo result = SEARCH::search(board, OPTIONS.depth);
+        auto end = std::chrono::high_resolution_clock::now();
+        int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+
         board = Board(board, result.move);
         
-        info(result);
+        info(result, duration);
         std::cout << "bestmove " << result.move.toStr() << "\n";
     }
 
-    void info(SEARCH::SearchInfo searchResult) {
+    void info(SEARCH::SearchInfo searchResult, int64_t searchDuration) {
         std::cout << "info depth " << OPTIONS.depth << ' ';
-        std::cout << "nodes " << searchResult.nodes << " ";
+        std::cout << "nodes " << searchResult.nodes << ' ';
+        if (searchDuration != 0) {
+            std::cout << "nps " << static_cast<int64_t>(searchResult.nodes) * 1000000 / searchDuration  << ' ';
+        }
+        
         if (searchResult.mateIn == SEARCH::NO_MATE) {
-            std::cout << "score cp " << (searchResult.value * 100) << " ";
+            std::cout << "score cp " << (searchResult.value * 100) << ' ';
         }
         else {
-            std::cout << "mate " << searchResult.mateIn / 2 + 1 << " "; // convert plies to moves
+            std::cout << "mate " << searchResult.mateIn / 2 + 1 << ' '; // convert plies to moves
         }
         std::cout << '\n';
     }
