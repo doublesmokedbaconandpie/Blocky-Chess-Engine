@@ -304,10 +304,11 @@ bool Board::undoMove() {
     this->setPiece(prev.move.pos2, prev.targetPiece);
 
     // castling
-    if (prev.targetPiece == prevKing && (prev.castlingRights & castleRightsBit(prev.move.pos2)) ) {
+    if (prev.originPiece == prevKing && (prev.castlingRights & castleRightsBit(prev.move.pos2)) ) {
         pieceTypes prevRook = this->isWhiteTurn ? BRook : WRook;
         int kingFileDirection = prev.move.pos2.file > prev.move.pos1.file ? 1 : -1;
         fileVals rookFile = kingFileDirection == 1 ? H : A;
+        this->setPiece(prev.move.pos1.rank, prev.move.pos1.file + kingFileDirection, EmptyPiece);
         this->setPiece(prev.move.pos1.rank, rookFile, prevRook);
     }
     // en passant

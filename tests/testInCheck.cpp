@@ -669,7 +669,7 @@ TEST(InCheckTest, BoardUndoCapture) {
     bool undoStatus = board.undoMove();
 
     EXPECT_EQ(undoStatus, true);
-    EXPECT_EQ(expectedBoard, expectedBoard);
+    EXPECT_EQ(board, expectedBoard);
 }
 
 TEST(InCheckTest, BoardUndoMovePawnJump) {
@@ -679,7 +679,7 @@ TEST(InCheckTest, BoardUndoMovePawnJump) {
     bool undoStatus = board.undoMove();
 
     EXPECT_EQ(undoStatus, true);
-    EXPECT_EQ(expectedBoard, expectedBoard);
+    EXPECT_EQ(board, expectedBoard);
 }
 
 TEST(InCheckTest, BoardUndoMoveEnPassant) {
@@ -689,7 +689,7 @@ TEST(InCheckTest, BoardUndoMoveEnPassant) {
     bool undoStatus = board.undoMove();
 
     EXPECT_EQ(undoStatus, true);
-    EXPECT_EQ(expectedBoard, expectedBoard);
+    EXPECT_EQ(board, expectedBoard);
 }
 
 TEST(InCheckTest, BoardUndoMoveCastle) {
@@ -699,7 +699,7 @@ TEST(InCheckTest, BoardUndoMoveCastle) {
     bool undoStatus = board.undoMove();
 
     EXPECT_EQ(undoStatus, true);
-    EXPECT_EQ(expectedBoard, expectedBoard);
+    EXPECT_EQ(board, expectedBoard);
 }
 
 TEST(InCheckTest, BoardUndoRookMove) {
@@ -709,6 +709,27 @@ TEST(InCheckTest, BoardUndoRookMove) {
     bool undoStatus = board.undoMove();
 
     EXPECT_EQ(undoStatus, true);
-    EXPECT_EQ(expectedBoard, expectedBoard);
+    EXPECT_EQ(board, expectedBoard);
+
+}
+
+TEST(InCheckTest, BoardUndoMultipleMoves) {
+    Board expectedBoard("r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3");
+    Board expectedBoard1("r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3");
+    Board expectedBoard2("r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4");
+    Board expectedBoard3("r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4");
+
+    Board board = expectedBoard;
+    board.makeMove(BoardMove("f1b5", board.isWhiteTurn));
+    board.makeMove(BoardMove("g8f6", board.isWhiteTurn));
+    board.makeMove(BoardMove("e1g1", board.isWhiteTurn));
+    EXPECT_EQ(board, expectedBoard3);
+    board.undoMove();
+    EXPECT_EQ(board, expectedBoard2);
+    board.undoMove();
+    EXPECT_EQ(board, expectedBoard1);
+    board.undoMove();
+    EXPECT_EQ(board, expectedBoard);
+
 
 }
