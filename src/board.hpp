@@ -2,6 +2,7 @@
 #pragma once
 
 #include <array>
+#include <vector>
 #include <iostream>
 #include <string>
 
@@ -34,6 +35,21 @@ struct BoardMove {
     friend bool operator<(const BoardMove& lhs, const BoardMove& rhs);
 };
 
+struct BoardState {
+    BoardMove move = BoardMove();
+    pieceTypes originPiece;
+    pieceTypes targetPiece;
+    castleRights castlingRights;
+    BoardSquare pawnJumpedSquare;
+    int fiftyMoveRule;
+    int materialDifference;
+    BoardState(BoardMove move, pieceTypes originPiece, pieceTypes targetPiece, 
+                castleRights castlingRights, BoardSquare pawnJumpedSquare, int fiftyMoveRule,
+                int materialDifference) : move(move), originPiece(originPiece), targetPiece(targetPiece),
+                castlingRights(castlingRights), pawnJumpedSquare(pawnJumpedSquare), fiftyMoveRule(fiftyMoveRule),
+                materialDifference(materialDifference) {};
+};
+
 struct Board {
     Board(); // default game
     Board(std::array<pieceTypes, BOARD_SIZE> board, bool isWhiteTurn = true, 
@@ -63,13 +79,7 @@ struct Board {
     BoardSquare pawnJumpedSquare;
     int materialDifference; //updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
 
-    BoardMove prevMove = BoardMove();
-    pieceTypes prevOriginPiece;
-    pieceTypes prevTargetPiece;
-    castleRights prevCastlingRights;
-    BoardSquare prevPawnJumpedSquare;
-    int prevFiftyMoveRule;
-    int prevMaterialDifference;
+    std::vector<BoardState> moveHistory;
 };
 
 castleRights castleRightsBit(BoardSquare finalKingPos);

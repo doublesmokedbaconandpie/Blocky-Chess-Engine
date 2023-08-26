@@ -195,8 +195,6 @@ bool Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         return false;
     }
 
-    this->prevFiftyMoveRule = this->fiftyMoveRule;
-    this->fiftyMoveRule += 1;
     // allies haven't made a move yet
     pieceTypes allyKing = this->isWhiteTurn ? WKing : BKing;
     pieceTypes allyRook = this->isWhiteTurn ? WRook : BRook;
@@ -207,13 +205,19 @@ bool Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     pieceTypes originPiece = this->getPiece(pos1);
     pieceTypes targetPiece = this->getPiece(pos2);
 
-    this->prevMove = BoardMove(pos1, pos2, promotionPiece);
-    this->prevOriginPiece = originPiece;
-    this->prevTargetPiece = targetPiece;
-    this->prevCastlingRights = this->castlingRights;
-    this->prevPawnJumpedSquare = this->pawnJumpedSquare;
-    this->prevMaterialDifference = this->materialDifference;
+    this->moveHistory.push_back(BoardState(
+        BoardMove(pos1, pos2, promotionPiece),
+        originPiece,
+        targetPiece,
+        this->castlingRights,
+        this->pawnJumpedSquare,
+        this->fiftyMoveRule,
+        this->materialDifference
+    ));
 
+    BoardSquare oldPawnJumpedSquare = this->pawnJumpedSquare;
+
+    this->fiftyMoveRule += 1;
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
 
     // castling
@@ -278,7 +282,7 @@ bool Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     }
 
     this->materialDifference -= pieceValues.at(targetPiece);
-    this->pawnJumpedSquare = this->pawnJumpedSquare == this->prevPawnJumpedSquare ? BoardSquare() : this->pawnJumpedSquare;
+    this->pawnJumpedSquare = this->pawnJumpedSquare == oldPawnJumpedSquare ? BoardSquare() : this->pawnJumpedSquare;
     this->isIllegalPos = currKingInAttack(*this);
     this->isWhiteTurn = !this->isWhiteTurn;  // after finalizing move logic, now switch turns
     return true;
@@ -289,37 +293,36 @@ bool Board::makeMove(BoardMove move) {
 }
 
 bool Board::undoMove() {
-    if (this->prevMove == BoardMove()) {
+    if (this->moveHistory.size() == 0) {
         return false;
     }
+    BoardState prev = moveHistory.back();
 
     pieceTypes prevKing = this->isWhiteTurn ? BKing : WKing;
 
-    this->setPiece(this->prevMove.pos1, prevOriginPiece);
-    this->setPiece(this->prevMove.pos2, prevTargetPiece);
+    this->setPiece(prev.move.pos1, prev.originPiece);
+    this->setPiece(prev.move.pos2, prev.targetPiece);
 
     // castling
-    if (this->prevTargetPiece == prevKing && (this->prevCastlingRights & castleRightsBit(this->prevMove.pos2)) ) {
+    if (prev.targetPiece == prevKing && (prev.castlingRights & castleRightsBit(prev.move.pos2)) ) {
         pieceTypes prevRook = this->isWhiteTurn ? BRook : WRook;
-        int kingFileDirection = this->prevMove.pos2.file > this->prevMove.pos1.file ? 1 : -1;
+        int kingFileDirection = prev.move.pos2.file > prev.move.pos1.file ? 1 : -1;
         fileVals rookFile = kingFileDirection == 1 ? H : A;
-        this->setPiece(this->prevMove.pos1.rank, rookFile, prevRook);
+        this->setPiece(prev.move.pos1.rank, rookFile, prevRook);
     }
     // en passant
-    else if (this->prevMove.pos2 == this->prevPawnJumpedSquare) {
+    else if (prev.move.pos2 == prev.pawnJumpedSquare) {
         pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
-        this->setPiece(this->prevMove.pos1.rank, this->prevMove.pos2.file, allyPawn);
+        this->setPiece(prev.move.pos1.rank, prev.move.pos2.file, allyPawn);
     }
 
     this->isWhiteTurn = !this->isWhiteTurn;
-    this->castlingRights = this->prevCastlingRights;
-    this->pawnJumpedSquare = this->prevPawnJumpedSquare;
-    this->fiftyMoveRule = this->prevFiftyMoveRule;
-    this->materialDifference = this->prevMaterialDifference;
+    this->castlingRights = prev.castlingRights;
+    this->pawnJumpedSquare = prev.pawnJumpedSquare;
+    this->fiftyMoveRule = prev.fiftyMoveRule;
+    this->materialDifference = prev.materialDifference;
     this->isIllegalPos = false;
 
-    // cannot undo moves beyond this move
-    this->prevMove = BoardMove();
-
+    this->moveHistory.pop_back();
     return true;
 }
