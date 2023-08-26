@@ -4,14 +4,14 @@
 #include <array>
 
 TEST(InCheckTest, isFriendlyPieceTrue1) {
-    Board board = Board();
+    Board board;
     BoardSquare whiteSquare = BoardSquare(7, H);
     bool result = isFriendlyPiece(board, whiteSquare);
     ASSERT_EQ(result, true);
 }
 
 TEST(InCheckTest, isFriendlyPieceTrue2) {
-    Board board = Board();
+    Board board;
     board.isWhiteTurn = false;
     BoardSquare blackSquare = BoardSquare(1, H);
     bool result = isFriendlyPiece(board, blackSquare);
@@ -19,14 +19,14 @@ TEST(InCheckTest, isFriendlyPieceTrue2) {
 }
 
 TEST(InCheckTest, isFriendlyPieceFalse) {
-    Board board = Board();
+    Board board;
     BoardSquare blackSquare = BoardSquare(1, H);
     bool result = isFriendlyPiece(board, blackSquare);
     ASSERT_EQ(result, false);
 }
 
 TEST(InCheckTest, getPieceInDirectionStraight) {
-    Board board = Board();
+    Board board;
     BoardSquare originSquare = BoardSquare(1, D); // black pawn
     pieceTypes down = getPieceInDirection(board, originSquare, 1, 0);
     pieceTypes up = getPieceInDirection(board, originSquare, -1, 0);
@@ -39,7 +39,7 @@ TEST(InCheckTest, getPieceInDirectionStraight) {
 }
 
 TEST(InCheckTest, getPieceInDirectionDiag) {
-    Board board = Board();
+    Board board;
     BoardSquare originSquare = BoardSquare(1, E); // black pawn
     pieceTypes topRight = getPieceInDirection(board, originSquare, -1, 1);
     pieceTypes topLeft = getPieceInDirection(board, originSquare, -1, -1);
@@ -62,7 +62,7 @@ TEST(InCheckTest, checkDiagAttackersTrue) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WQueen    , EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkDiagAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -79,7 +79,7 @@ TEST(InCheckTest, checkDiagAttackersFalse) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkDiagAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, false);
@@ -97,7 +97,7 @@ TEST(InCheckTest, checkStraightAttackersTrue) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkStraightAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -115,7 +115,7 @@ TEST(InCheckTest, checkStraightAttackersFalse) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkStraightAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, false);
@@ -132,7 +132,7 @@ TEST(InCheckTest, checkKnightAttackersTrue1) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -149,7 +149,7 @@ TEST(InCheckTest, checkKnightAttackersTrue2) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -166,7 +166,7 @@ TEST(InCheckTest, checkKnightAttackersTrue3) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -183,7 +183,7 @@ TEST(InCheckTest, checkKnightAttackersTrue4) {
         EmptyPiece, EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -200,7 +200,7 @@ TEST(InCheckTest, checkKnightAttackersFalse) {
         EmptyPiece, EmptyPiece, BKnight   , WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, false);
@@ -217,7 +217,7 @@ TEST(InCheckTest, checkPawnAttackersTrue1) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkPawnAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -234,7 +234,7 @@ TEST(InCheckTest, checkPawnAttackersTrue2) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkPawnAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -251,7 +251,7 @@ TEST(InCheckTest, checkPawnAttackersFalse) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkPawnAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, false);
@@ -268,7 +268,7 @@ TEST(InCheckTest, checkKingAttackersTrue1) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkKingAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -285,7 +285,7 @@ TEST(InCheckTest, checkKingAttackersTrue2) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkKingAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, true);
@@ -302,14 +302,14 @@ TEST(InCheckTest, checkKingAttackersFalse) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
     bool isAttacked = checkKingAttackers(board, originSquare, BKing);
     ASSERT_EQ(isAttacked, false);
 }
 
 TEST(InCheckTest, inCheckDefaultBoard) {
-    Board board = Board();
+    Board board;
     bool isAttacked = currKingInAttack(board);
     ASSERT_EQ(isAttacked, false);
 }
@@ -325,7 +325,7 @@ TEST(InCheckTest, inCheckTrue1) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     bool isAttacked = currKingInAttack(board);
     ASSERT_EQ(isAttacked, true);
 }
@@ -341,13 +341,13 @@ TEST(InCheckTest, inCheckTrue2) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, false);
+    Board board(boardArr, false);
     bool isAttacked = currKingInAttack(board);
     ASSERT_EQ(isAttacked, true);
 }
 
 TEST(InCheckTest, BoardMakeMovePawnJump) {
-    Board board = Board();
+    Board board;
     BoardSquare pos1 = BoardSquare(6, E);
     BoardSquare pos2 = BoardSquare(4, E);
     BoardSquare enPassantSquare = BoardSquare(5, E);
@@ -371,7 +371,7 @@ TEST(InCheckTest, BoardMakeMoveKingCastle) {
         WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn,
         WRook, WKnight, WBishop, WQueen, WKing, EmptyPiece, EmptyPiece, WRook,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(7, E);
     BoardSquare pos2 = BoardSquare(7, G);
     board.makeMove(pos1, pos2);
@@ -397,7 +397,7 @@ TEST(InCheckTest, BoardMakeMoveQueenCastle) {
         WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn,
         WRook, EmptyPiece, EmptyPiece, EmptyPiece, WKing, WBishop, WKnight, WRook,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(7, E);
     BoardSquare pos2 = BoardSquare(7, C);
     board.makeMove(pos1, pos2);
@@ -423,7 +423,7 @@ TEST(InCheckTest, BoardMakeMoveMovedKing) {
         WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn,
         WRook, EmptyPiece, EmptyPiece, EmptyPiece, WKing, WBishop, WKnight, WRook,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(7, E);
     BoardSquare pos2 = BoardSquare(6, D);
     board.makeMove(pos1, pos2);
@@ -449,7 +449,7 @@ TEST(InCheckTest, BoardMakeMoveKingToCastleSquare) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, WRook     ,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     board.castlingRights = B_Castle;
     BoardSquare pos1 = BoardSquare(7, F);
     BoardSquare pos2 = BoardSquare(7, G);
@@ -475,7 +475,7 @@ TEST(InCheckTest, BoardMakeMoveEnPassant) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare jumpedPawn = BoardSquare(3, E);
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = board.pawnJumpedSquare = BoardSquare(2, E);
@@ -503,7 +503,7 @@ TEST(InCheckTest, BoardMakeMoveNotEnPassant) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare jumpedPawn = board.pawnJumpedSquare = BoardSquare(3, E);
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(2, D);
@@ -529,7 +529,7 @@ TEST(InCheckTest, BoardMakeMovePromote) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(1, A);
     BoardSquare pos2 = BoardSquare(0, A);
     board.makeMove(pos1, pos2, WQueen);
@@ -552,7 +552,7 @@ TEST(InCheckTest, BoardMakeMovePawnCapture) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(2, E);
     board.makeMove(pos1, pos2);
@@ -576,7 +576,7 @@ TEST(InCheckTest, BoardMakeMoveRegularCapture) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(1, F);
     board.makeMove(pos1, pos2);
@@ -599,7 +599,7 @@ TEST(InCheckTest, BoardMakeMoveRookPin) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(1, A);
     BoardSquare pos2 = BoardSquare(1, B);
     board.makeMove(pos1, pos2);
@@ -617,7 +617,7 @@ TEST(InCheckTest, BoardMakeMoveBishopPin) {
         EmptyPiece, WBishop   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(6, B);
     BoardSquare pos2 = BoardSquare(5, A);
     board.makeMove(pos1, pos2);
@@ -625,21 +625,90 @@ TEST(InCheckTest, BoardMakeMoveBishopPin) {
 }
 
 TEST(InCheckTest, BoardMakeMoveCastleRightsRook) {
-    Board board = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1");
+    Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1");
     board.makeMove(BoardMove("h1g1", board.isWhiteTurn));
     std::cout << board << std::endl;
     EXPECT_EQ(board.castlingRights, B_Castle | W_OOO);
 }
 
 TEST(InCheckTest, BoardMakeMoveCastleRightsRook2) {
-    Board board = Board("rnbqk2r/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
+    Board board("rnbqk2r/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
     board.makeMove(BoardMove("h8g8", board.isWhiteTurn));
     EXPECT_EQ(board.castlingRights, W_Castle | B_OOO);
 }
 
 TEST(InCheckTest, BoardMakeMoveCastleRightsRook3) {
-    Board board = Board("7r/1k4P1/1n6/B7/P4P1p/7P/4NK2/1R5R b - - 0 44");
+    Board board("7r/1k4P1/1n6/B7/P4P1p/7P/4NK2/1R5R b - - 0 44");
     board.makeMove(BoardMove("h8g8", board.isWhiteTurn));
     EXPECT_EQ(board.castlingRights, noCastle);
 }
 
+TEST(InCheckTest, BoardUndoNoMove) {
+    Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    bool undoStatus = board.undoMove();
+
+    EXPECT_EQ(undoStatus, false);
+}
+
+TEST(InCheckTest, BoardUndoMoves) {
+    Board expectedBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    Board board = expectedBoard;
+    board.makeMove(BoardMove("g1f3", board.isWhiteTurn));
+    bool undoStatus = board.undoMove();
+    bool undoStatus2 = board.undoMove();
+
+    EXPECT_EQ(undoStatus, true);
+    EXPECT_EQ(undoStatus2, false);
+    EXPECT_EQ(expectedBoard, expectedBoard);
+}
+
+TEST(InCheckTest, BoardUndoCapture) {
+    Board expectedBoard("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
+    Board board = expectedBoard;
+    board.makeMove(BoardMove("d4d5", board.isWhiteTurn));
+    bool undoStatus = board.undoMove();
+
+    EXPECT_EQ(undoStatus, true);
+    EXPECT_EQ(expectedBoard, expectedBoard);
+}
+
+TEST(InCheckTest, BoardUndoMovePawnJump) {
+    Board expectedBoard("rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
+    Board board = expectedBoard;
+    board.makeMove(BoardMove("d4d5", board.isWhiteTurn));
+    bool undoStatus = board.undoMove();
+
+    EXPECT_EQ(undoStatus, true);
+    EXPECT_EQ(expectedBoard, expectedBoard);
+}
+
+TEST(InCheckTest, BoardUndoMoveEnPassant) {
+    Board expectedBoard("rnbqkbnr/pppp1ppp/8/8/3Pp3/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 3");
+    Board board = expectedBoard;
+    board.makeMove(BoardMove("e4d3", board.isWhiteTurn));
+    bool undoStatus = board.undoMove();
+
+    EXPECT_EQ(undoStatus, true);
+    EXPECT_EQ(expectedBoard, expectedBoard);
+}
+
+TEST(InCheckTest, BoardUndoMoveCastle) {
+    Board expectedBoard("rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 3 4");
+    Board board = expectedBoard;
+    board.makeMove(BoardMove("e1g1", board.isWhiteTurn));
+    bool undoStatus = board.undoMove();
+
+    EXPECT_EQ(undoStatus, true);
+    EXPECT_EQ(expectedBoard, expectedBoard);
+}
+
+TEST(InCheckTest, BoardUndoRookMove) {
+    Board expectedBoard("rnbqk2r/pppp1ppp/5n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 3 4");
+    Board board = expectedBoard;
+    board.makeMove(BoardMove("h1g1", board.isWhiteTurn));
+    bool undoStatus = board.undoMove();
+
+    EXPECT_EQ(undoStatus, true);
+    EXPECT_EQ(expectedBoard, expectedBoard);
+
+}

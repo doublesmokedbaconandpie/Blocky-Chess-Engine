@@ -90,7 +90,7 @@ namespace UCI {
 
         if (token != "moves") {return currBoard;}
         while (input >> token) {
-            currBoard = Board(currBoard, BoardMove(token, currBoard.isWhiteTurn));
+            currBoard.makeMove(BoardMove(token, currBoard.isWhiteTurn));
         }
         return currBoard;
     }
@@ -103,7 +103,7 @@ namespace UCI {
         auto end = std::chrono::high_resolution_clock::now();
         int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
 
-        board = Board(board, result.move);
+        board.makeMove(result.move);
         
         info(result, duration);
         std::cout << "bestmove " << result.move.toStr() << "\n";

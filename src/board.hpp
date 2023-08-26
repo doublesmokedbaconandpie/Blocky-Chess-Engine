@@ -63,8 +63,13 @@ struct Board {
     BoardSquare pawnJumpedSquare;
     int materialDifference; //updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
 
-    BoardMove previousMove = BoardMove();
-    pieceTypes previousCapturedPiece = nullPiece;
+    BoardMove prevMove = BoardMove();
+    pieceTypes prevOriginPiece;
+    pieceTypes prevTargetPiece;
+    castleRights prevCastlingRights;
+    BoardSquare prevPawnJumpedSquare;
+    int prevFiftyMoveRule;
+    int prevMaterialDifference;
 };
 
 castleRights castleRightsBit(BoardSquare finalKingPos);

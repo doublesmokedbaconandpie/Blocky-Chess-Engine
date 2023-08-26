@@ -231,7 +231,10 @@ bool Board::setPiece(BoardSquare square, pieceTypes piece) {
 }
 
 bool operator==(const Board& lhs, const Board& rhs) {
-    return  (lhs.board == rhs.board);
+    return (lhs.board == rhs.board) 
+        && (lhs.fiftyMoveRule == rhs.fiftyMoveRule)
+        && (lhs.pawnJumpedSquare == rhs.pawnJumpedSquare)
+        && (lhs.castlingRights == rhs.castlingRights);
 }
 
 bool operator<(const Board& lhs, const Board& rhs) {
