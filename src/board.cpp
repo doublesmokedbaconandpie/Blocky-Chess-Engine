@@ -333,6 +333,7 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
     os << "isIllegalPos: " << target.isIllegalPos << "\n";
     os << "isWhiteTurn: " << target.isWhiteTurn << "\n";
     os << "50MoveRule: " << target.fiftyMoveRule << "\n";
+    os << "PawnJumpedSquare: " << target.pawnJumpedSquare << "\n";
     return os;
 }
 

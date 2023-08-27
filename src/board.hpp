@@ -45,11 +45,12 @@ struct BoardState {
     BoardSquare pawnJumpedSquare;
     int fiftyMoveRule;
     int materialDifference;
-    BoardState(BoardMove move, pieceTypes originPiece, pieceTypes targetPiece, 
-                castleRights castlingRights, BoardSquare pawnJumpedSquare, int fiftyMoveRule,
-                int materialDifference) : move(move), originPiece(originPiece), targetPiece(targetPiece),
-                castlingRights(castlingRights), pawnJumpedSquare(pawnJumpedSquare), fiftyMoveRule(fiftyMoveRule),
-                materialDifference(materialDifference) {};
+    BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, 
+                castleRights a_castlingRights, BoardSquare a_pawnJumpedSquare, int a_fiftyMoveRule,
+                int a_materialDifference) : 
+                move(a_move), originPiece(a_originPiece), targetPiece(a_targetPiece),
+                castlingRights(a_castlingRights), pawnJumpedSquare(a_pawnJumpedSquare), fiftyMoveRule(a_fiftyMoveRule),
+                materialDifference(a_materialDifference) {};
 };
 
 struct Board {
