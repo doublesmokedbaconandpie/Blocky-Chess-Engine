@@ -321,6 +321,7 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
         os << "[";
         for (int file = A; file <= 7; file++) {
             os << pieceToStr[target.getPiece(rank, file)];
+            os << ',';
         }
         os << "],\n";
     }
