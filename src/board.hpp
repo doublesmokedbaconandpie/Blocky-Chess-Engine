@@ -12,6 +12,8 @@ struct BoardSquare {
     BoardSquare(int rankVal, fileVals fileVal): rank(rankVal), file(fileVal) {};
     BoardSquare(int rankVal, int fileVal): rank(rankVal), file((fileVals)fileVal) {};
     BoardSquare(std::string input);
+    std::string toStr();
+
     friend bool operator==(const BoardSquare& lhs, const BoardSquare& rhs);
     friend bool operator!=(const BoardSquare& lhs, const BoardSquare& rhs);
     friend bool operator<(const BoardSquare& lhs, const BoardSquare& rhs);
@@ -40,6 +42,7 @@ struct Board {
             int movesWithoutCapture = 0, BoardSquare pawnJumpedSquare = BoardSquare(), 
             bool isIllegalPos = false, castleRights castlingRights = All_Castle, int materialDifference = 0); 
     Board(std::string fenStr);
+    std::string toFen();
     
     // defined in inCheck.cpp
     Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);

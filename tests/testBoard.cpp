@@ -147,6 +147,27 @@ TEST(BoardTest, fenConstructorEnPassantCastle) {
     EXPECT_EQ(fenBoard.fiftyMoveRule, moveBoard.fiftyMoveRule);
 }
 
+TEST(BoardTest, toFenDefault) {
+    std::string expectedFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    Board board(expectedFen);
+
+    EXPECT_EQ(board.toFen(), expectedFen);
+}
+
+TEST(BoardTest, toFenMoves) {
+    std::string expectedFen = "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 1";
+    Board board(expectedFen);
+
+    EXPECT_EQ(board.toFen(), expectedFen);
+}
+
+TEST(BoardTest, toFenCastling) {
+    std::string expectedFen = "r1b1kbnr/ppppqppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 1";
+    Board board(expectedFen);
+
+    EXPECT_EQ(board.toFen(), expectedFen);
+}
+
 TEST(CastleRightsBitTest, defaultBoard) {
     Board board = Board();
     EXPECT_EQ(castleRightsBit(BoardSquare(0, G)) && board.castlingRights, true);

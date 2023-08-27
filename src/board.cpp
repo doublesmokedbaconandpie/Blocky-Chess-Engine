@@ -18,6 +18,12 @@ BoardSquare::BoardSquare(std::string input) {
     this->rank = 8 - int(input.at(1) - '1') - 1;
 }
 
+std::string BoardSquare::toStr() {
+    std::ostringstream move;
+    move << *this;
+    return move.str();
+}
+
 bool operator==(const BoardSquare& lhs, const BoardSquare& rhs) {
     return (lhs.rank == rhs.rank) && (lhs.file == rhs.file);
 }
@@ -37,6 +43,10 @@ bool operator<(const BoardSquare& lhs, const BoardSquare& rhs) {
 }
 
 std::ostream& operator<<(std::ostream& os, const BoardSquare& target) {
+    if (target == BoardSquare()) {
+        os << "-";
+        return os;
+    }
     if (target.rank < 0 || target.rank > 7 || target.file < A || target.file > H) {
         os << target.file << ' ' << target.rank << ' ';
         return os;    
@@ -205,6 +215,58 @@ Board::Board(std::string fenStr) {
     this->isIllegalPos = false; // it is up to the UCI gui to not give illegal positions
 
     // Board doesn't use Fullmove counter
+}
+
+std::string Board::toFen() {
+    std::string fenStr; 
+
+    std::unordered_map<pieceTypes, char> pieceToChar = {
+        {WPawn, 'P'}, {WKnight, 'N'}, {WBishop, 'B'}, {WRook, 'R'}, {WQueen, 'Q'}, {WKing, 'K'}, 
+        {BPawn, 'p'}, {BKnight, 'n'}, {BBishop, 'b'}, {BRook, 'r'}, {BQueen, 'q'}, {BKing, 'k'}, 
+    };
+
+    int emptyPiecesInRow = 0, piecesPlaced = 0;
+    for (pieceTypes piece: this->board) {
+        if (piece == EmptyPiece) {
+            emptyPiecesInRow++;
+        }
+        else if (emptyPiecesInRow != 0) {
+            fenStr.append(std::to_string(emptyPiecesInRow));
+            fenStr.push_back(pieceToChar.at(piece));
+            emptyPiecesInRow = 0;
+        }
+        else {
+            fenStr.push_back(pieceToChar.at(piece));
+        }
+        piecesPlaced++;
+        
+        if (piecesPlaced % 8 == 0) {
+            emptyPiecesInRow ? fenStr.append(std::to_string(emptyPiecesInRow)) : ""; 
+            fenStr.push_back('/');
+            emptyPiecesInRow = 0;
+        }
+    }
+    fenStr.pop_back(); // get rid of final '/'
+    fenStr.push_back(' ');
+
+    this->isWhiteTurn ? fenStr.append("w") : fenStr.append("b"); 
+    fenStr.push_back(' ');
+
+    this->castlingRights & W_OO  ? fenStr.append("K") : ""; 
+    this->castlingRights & W_OOO ? fenStr.append("Q") : ""; 
+    this->castlingRights & B_OO  ? fenStr.append("k") : ""; 
+    this->castlingRights & B_OOO ? fenStr.append("q") : ""; 
+    fenStr.push_back(' ');
+
+    fenStr.append(this->pawnJumpedSquare.toStr());
+    fenStr.push_back(' ');
+
+    fenStr.append(std::to_string(this->fiftyMoveRule));
+    fenStr.push_back(' ');
+
+    fenStr.push_back('1'); // Board doesn't use Fullmove counter
+
+    return fenStr;
 }
 
 pieceTypes Board::getPiece(int rank, int file) const {
