@@ -64,7 +64,7 @@ TEST(InCheckTest, checkDiagAttackersTrue) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkDiagAttackers(board, originSquare, BKing);
+    bool isAttacked = checkDiagAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -81,7 +81,7 @@ TEST(InCheckTest, checkDiagAttackersFalse) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkDiagAttackers(board, originSquare, BKing);
+    bool isAttacked = checkDiagAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, false);
 }
 
@@ -99,7 +99,7 @@ TEST(InCheckTest, checkStraightAttackersTrue) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkStraightAttackers(board, originSquare, BKing);
+    bool isAttacked = checkStraightAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -117,7 +117,7 @@ TEST(InCheckTest, checkStraightAttackersFalse) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkStraightAttackers(board, originSquare, BKing);
+    bool isAttacked = checkStraightAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, false);
 }
 
@@ -134,7 +134,7 @@ TEST(InCheckTest, checkKnightAttackersTrue1) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
+    bool isAttacked = checkKnightAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -151,7 +151,7 @@ TEST(InCheckTest, checkKnightAttackersTrue2) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
+    bool isAttacked = checkKnightAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -168,7 +168,7 @@ TEST(InCheckTest, checkKnightAttackersTrue3) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
+    bool isAttacked = checkKnightAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -185,7 +185,7 @@ TEST(InCheckTest, checkKnightAttackersTrue4) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
+    bool isAttacked = checkKnightAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -202,7 +202,7 @@ TEST(InCheckTest, checkKnightAttackersFalse) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkKnightAttackers(board, originSquare, BKing);
+    bool isAttacked = checkKnightAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, false);
 }
 
@@ -219,7 +219,7 @@ TEST(InCheckTest, checkPawnAttackersTrue1) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkPawnAttackers(board, originSquare, BKing);
+    bool isAttacked = checkPawnAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -236,7 +236,7 @@ TEST(InCheckTest, checkPawnAttackersTrue2) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkPawnAttackers(board, originSquare, BKing);
+    bool isAttacked = checkPawnAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -253,7 +253,7 @@ TEST(InCheckTest, checkPawnAttackersFalse) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkPawnAttackers(board, originSquare, BKing);
+    bool isAttacked = checkPawnAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, false);
 }
 
@@ -270,7 +270,7 @@ TEST(InCheckTest, checkKingAttackersTrue1) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkKingAttackers(board, originSquare, BKing);
+    bool isAttacked = checkKingAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -287,7 +287,7 @@ TEST(InCheckTest, checkKingAttackersTrue2) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkKingAttackers(board, originSquare, BKing);
+    bool isAttacked = checkKingAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -304,7 +304,7 @@ TEST(InCheckTest, checkKingAttackersFalse) {
     };
     Board board(boardArr, false);
     BoardSquare originSquare = BoardSquare(4, D);
-    bool isAttacked = checkKingAttackers(board, originSquare, BKing);
+    bool isAttacked = checkKingAttackers(board, originSquare);
     ASSERT_EQ(isAttacked, false);
 }
 

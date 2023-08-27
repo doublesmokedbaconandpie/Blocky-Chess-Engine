@@ -9,11 +9,11 @@
 bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare);
 pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement);
 
-bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
-bool checkStraightAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
-bool checkKnightAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
-bool checkPawnAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
-bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece);
+bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare);
+bool checkStraightAttackers(Board& currBoard, BoardSquare originSquare);
+bool checkKnightAttackers(Board& currBoard, BoardSquare originSquare);
+bool checkPawnAttackers(Board& currBoard, BoardSquare originSquare);
+bool checkKingAttackers(Board& currBoard, BoardSquare originSquare);
 
 bool notInRange(int var);
 bool currKingInAttack(Board currBoard);

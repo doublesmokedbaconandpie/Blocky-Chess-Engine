@@ -36,7 +36,7 @@ pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int r
     return nullPiece;
 }
 
-bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
+bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare) {
     std::vector<pieceTypes> possibleAttackers;
     if (currBoard.isWhiteTurn) {
         possibleAttackers.push_back(BQueen);
@@ -61,7 +61,7 @@ bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes o
     return false;
 }
 
-bool checkStraightAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
+bool checkStraightAttackers(Board& currBoard, BoardSquare originSquare) {
     std::vector<pieceTypes> possibleAttackers;
     if (currBoard.isWhiteTurn) {
         possibleAttackers.push_back(BQueen);
@@ -88,7 +88,7 @@ bool checkStraightAttackers(Board& currBoard, BoardSquare originSquare, pieceTyp
 
 
 
-bool checkKnightAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
+bool checkKnightAttackers(Board& currBoard, BoardSquare originSquare) {
     pieceTypes enemyKnight = currBoard.isWhiteTurn ? BKnight : WKnight;
 
     std::vector<pieceTypes> knightSquares; 
@@ -111,7 +111,7 @@ bool checkKnightAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes
     return false;
 }
 
-bool checkPawnAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
+bool checkPawnAttackers(Board& currBoard, BoardSquare originSquare) {
     pieceTypes enemyPawn = currBoard.isWhiteTurn ? BPawn : WPawn;
     int direction = currBoard.isWhiteTurn ? -1 : 1;
 
@@ -137,7 +137,7 @@ bool checkPawnAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes o
     return false;
 }
 
-bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes originPiece) {
+bool checkKingAttackers(Board& currBoard, BoardSquare originSquare) {
     pieceTypes enemyKing = currBoard.isWhiteTurn ? BKing : WKing;
 
     std::vector<pieceTypes> adjacentPieces; 
@@ -163,7 +163,6 @@ bool checkKingAttackers(Board& currBoard, BoardSquare originSquare, pieceTypes o
 
 bool currKingInAttack(Board currBoard) {
     pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
-    pieceTypes currKing;
 
     BoardSquare currKingSquare = BoardSquare();
     for (int rank = 0; rank <= 7; rank++) {
@@ -174,17 +173,16 @@ bool currKingInAttack(Board currBoard) {
             pieceTypes currPiece = currBoard.getPiece(rank, file);
             if (currPiece == allyKing) {
                 currKingSquare = BoardSquare(rank, file);
-                currKing = currPiece;
                 break;
             }
         }
     }
     
-    return checkDiagAttackers(currBoard, currKingSquare, currKing) 
-        || checkStraightAttackers(currBoard, currKingSquare, currKing)
-        || checkKnightAttackers(currBoard, currKingSquare, currKing)
-        || checkPawnAttackers(currBoard, currKingSquare, currKing)
-        || checkKingAttackers(currBoard, currKingSquare, currKing);
+    return checkDiagAttackers(currBoard, currKingSquare) 
+        || checkStraightAttackers(currBoard, currKingSquare)
+        || checkKnightAttackers(currBoard, currKingSquare)
+        || checkPawnAttackers(currBoard, currKingSquare)
+        || checkKingAttackers(currBoard, currKingSquare);
 }
 
 
