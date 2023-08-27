@@ -318,7 +318,7 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
     std::unordered_map<pieceTypes, std::string> pieceToStr = {
         {WPawn, "WP"}, {WKnight, "WN"}, {WBishop, "WB"}, {WRook, "WR"}, {WQueen, "WQ"}, {WKing, "WK"}, 
         {BPawn, "BP"}, {BKnight, "BN"}, {BBishop, "BB"}, {BRook, "BR"}, {BQueen, "BQ"}, {BKing, "BK"}, 
-        {EmptyPiece, " "}
+        {EmptyPiece, "  "}
     };
     for (int rank = 0; rank <= 7; rank++) {
         os << "[";
