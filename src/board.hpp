@@ -9,8 +9,8 @@
 
 struct BoardSquare {
     BoardSquare(): rank(-1), file(nullFile) {};
-    BoardSquare(int rankVal, fileVals fileVal): rank(rankVal), file(fileVal) {};
-    BoardSquare(int rankVal, int fileVal): rank(rankVal), file((fileVals)fileVal) {};
+    BoardSquare(int a_rank, fileVals a_file): rank(a_rank), file(a_file) {};
+    BoardSquare(int a_rank, int a_file): rank(a_rank), file(fileVals(a_file)) {};
     BoardSquare(std::string input);
     std::string toStr();
 
@@ -26,8 +26,8 @@ struct BoardMove {
     BoardSquare pos1;
     BoardSquare pos2;
     pieceTypes promotionPiece;
-    BoardMove(BoardSquare pos1 = BoardSquare(), BoardSquare pos2 = BoardSquare(), pieceTypes promotionPiece = nullPiece): 
-        pos1(pos1), pos2(pos2), promotionPiece(promotionPiece) {}; 
+    BoardMove(BoardSquare a_pos1 = BoardSquare(), BoardSquare a_pos2 = BoardSquare(), pieceTypes a_promotionPiece = nullPiece): 
+        pos1(a_pos1), pos2(a_pos2), promotionPiece(a_promotionPiece) {}; 
     BoardMove(std::string input, bool isWhiteTurn);
     std::string toStr();
 
@@ -38,9 +38,9 @@ struct BoardMove {
 
 struct Board {
     Board(); // default game
-    Board(std::array<pieceTypes, BOARD_SIZE> board, bool isWhiteTurn = true, 
-            int movesWithoutCapture = 0, BoardSquare pawnJumpedSquare = BoardSquare(), 
-            bool isIllegalPos = false, castleRights castlingRights = All_Castle, int materialDifference = 0); 
+    Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn = true, 
+            int a_fiftyMoveRule = 0, BoardSquare a_pawnJumpedSquare = BoardSquare(), 
+            bool a_isIllegalPos = false, castleRights a_castlingRights = All_Castle, int a_materialDifference = 0); 
     Board(std::string fenStr);
     std::string toFen();
     

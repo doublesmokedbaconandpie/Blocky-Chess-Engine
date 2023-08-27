@@ -157,14 +157,16 @@ Board::Board() {
     this->materialDifference = 0;
 }
 
-Board::Board(std::array<pieceTypes, BOARD_SIZE> board, bool isWhiteTurn, int fiftyMoveRule,  BoardSquare pawnJumpedSquare, bool isIllegalPos, castleRights castlingRights, int materialDifference) {
-    this->board = board;
-    this->isWhiteTurn = isWhiteTurn;
-    this-> fiftyMoveRule = fiftyMoveRule;
-    this->pawnJumpedSquare = pawnJumpedSquare;
-    this->isIllegalPos = isIllegalPos;
-    this->castlingRights = castlingRights;
-    this->materialDifference = materialDifference;
+Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn, 
+            int a_fiftyMoveRule, BoardSquare a_pawnJumpedSquare, 
+            bool a_isIllegalPos, castleRights a_castlingRights, int a_materialDifference) {
+    this->board = a_board;
+    this->isWhiteTurn = a_isWhiteTurn;
+    this->fiftyMoveRule = a_fiftyMoveRule;
+    this->pawnJumpedSquare = a_pawnJumpedSquare;
+    this->isIllegalPos = a_isIllegalPos;
+    this->castlingRights = a_castlingRights;
+    this->materialDifference = a_materialDifference;
 }
 
 Board::Board(std::string fenStr) {
@@ -232,7 +234,7 @@ std::string Board::toFen() {
         }
         else if (emptyPiecesInRow != 0) {
             fenStr.append(std::to_string(emptyPiecesInRow));
-            fenStr.push_back(pieceToChar.at(piece));
+            fenStr.push_back(pieceToChar[piece]);
             emptyPiecesInRow = 0;
         }
         else {
@@ -310,53 +312,18 @@ bool operator<(const Board& lhs, const Board& rhs) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& target) {
+    std::unordered_map<pieceTypes, std::string> pieceToStr = {
+        {WPawn, "WP"}, {WKnight, "WN"}, {WBishop, "WB"}, {WRook, "WR"}, {WQueen, "WQ"}, {WKing, "WK"}, 
+        {BPawn, "BP"}, {BKnight, "BN"}, {BBishop, "BB"}, {BRook, "BR"}, {BQueen, "BQ"}, {BKing, "BK"}, 
+        {EmptyPiece, " "}
+    };
     for (int rank = 0; rank <= 7; rank++) {
         os << "[";
         for (int file = A; file <= 7; file++) {
-            switch (target.getPiece(rank, file))
-            {
-            case WPawn:
-                os << "WP";
-                break;
-            case WKnight:
-                os << "WN";
-                break;
-            case WBishop:
-                os << "WB";
-                break;
-            case WRook:
-                os << "WR";
-                break;
-            case WQueen:
-                os << "WQ";
-                break;
-            case WKing:
-                os << "WK";
-                break;
-            case BPawn:
-                os << "BP";
-                break;
-            case BKnight:
-                os << "BN";
-                break;
-            case BBishop:
-                os << "BB";
-                break;
-            case BRook:
-                os << "BR";
-                break;
-            case BQueen:
-                os << "BQ";
-                break;
-            case BKing:
-                os << "BK";
-                break;
-            default:
-                os << "  ";
-            }
+            os << pieceToStr[target.getPiece(rank, file)];
             os << ',';
         }
-        os<< "],\n";
+        os << "],\n";
     }
     os << "\n";
     os << "castlingRights: " << target.castlingRights << "\n";
