@@ -261,7 +261,7 @@ bool Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         }
     }
     // en passant 
-    else if (pos2 == this->pawnJumpedSquare) {
+    else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
         this->setPiece(pos2, originPiece);
         this->fiftyMoveRule = 0;
@@ -297,22 +297,23 @@ bool Board::undoMove() {
     BoardState prev = moveHistory.back();
 
     pieceTypes prevKing = this->isWhiteTurn ? BKing : WKing;
+    pieceTypes prevRook = this->isWhiteTurn ? BRook : WRook;
+    pieceTypes prevPawn = this->isWhiteTurn ? BPawn : WPawn;
 
     this->setPiece(prev.move.pos1, prev.originPiece);
     this->setPiece(prev.move.pos2, prev.targetPiece);
 
     // castling
     if (prev.originPiece == prevKing && (prev.castlingRights & castleRightsBit(prev.move.pos2)) ) {
-        pieceTypes prevRook = this->isWhiteTurn ? BRook : WRook;
         int kingFileDirection = prev.move.pos2.file > prev.move.pos1.file ? 1 : -1;
         fileVals rookFile = kingFileDirection == 1 ? H : A;
         this->setPiece(prev.move.pos1.rank, prev.move.pos1.file + kingFileDirection, EmptyPiece);
         this->setPiece(prev.move.pos1.rank, rookFile, prevRook);
     }
     // en passant
-    else if (prev.move.pos2 == prev.pawnJumpedSquare) {
-        pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
-        this->setPiece(prev.move.pos1.rank, prev.move.pos2.file, allyPawn);
+    else if (prev.originPiece == prevPawn && prev.move.pos2 == prev.pawnJumpedSquare) {
+        pieceTypes prevJumpedPawn = prevPawn == BPawn ? WPawn : BPawn;
+        this->setPiece(prev.move.pos1.rank, prev.move.pos2.file, prevJumpedPawn);
     }
 
     this->isWhiteTurn = !this->isWhiteTurn;
