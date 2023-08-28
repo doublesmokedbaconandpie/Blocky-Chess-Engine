@@ -187,30 +187,38 @@ bool currKingInAttack(Board currBoard) {
 
 
 bool notInRange(int var) {return var < 0 || var > 7;}
-Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece) {
+void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece) {
     if (notInRange(pos1.rank) || notInRange(pos1.file) || notInRange(pos2.file) || notInRange(pos2.rank)) {
         this->isIllegalPos = true;
         return;
     }
 
-    this->board = originalBoard.board;
-    this->castlingRights = originalBoard.castlingRights;
-    this->fiftyMoveRule = originalBoard.fiftyMoveRule + 1;
-    this->isWhiteTurn = originalBoard.isWhiteTurn; // switch turns will happen after the move
-    this->materialDifference = originalBoard.materialDifference;
-
-    // ally refers to allies of originalBoard, as it is the one still moving this turn
-    pieceTypes allyKing = originalBoard.isWhiteTurn ? WKing : BKing;
-    pieceTypes allyRook = originalBoard.isWhiteTurn ? WRook : BRook;
-    pieceTypes allyPawn = originalBoard.isWhiteTurn ? WPawn : BPawn;
-    int pawnJumpDirection = originalBoard.isWhiteTurn ? -2 : 2;
-    int promotionRank = originalBoard.isWhiteTurn ? 0 : 7;
+    // allies haven't made a move yet
+    pieceTypes allyKing = this->isWhiteTurn ? WKing : BKing;
+    pieceTypes allyRook = this->isWhiteTurn ? WRook : BRook;
+    pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
+    int pawnJumpDirection = this->isWhiteTurn ? -2 : 2;
+    int promotionRank = this->isWhiteTurn ? 0 : 7;
     
     pieceTypes originPiece = this->getPiece(pos1);
     pieceTypes targetPiece = this->getPiece(pos2);
 
+    
+    this->moveHistory.push_back(BoardState(
+        BoardMove(pos1, pos2, promotionPiece),
+        originPiece,
+        targetPiece,
+        this->castlingRights,
+        this->pawnJumpedSquare,
+        this->fiftyMoveRule,
+        this->materialDifference
+    ));
+
+    BoardSquare oldPawnJumpedSquare = this->pawnJumpedSquare;
+
+    this->fiftyMoveRule += 1;
+
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
-    this->pawnJumpedSquare = BoardSquare();
 
     // castling
     // doesn't check for emptiness between rook and king
@@ -236,7 +244,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
     // jumping pawn
     else if (originPiece == allyPawn && pos2.rank == pos1.rank + pawnJumpDirection) { 
         // doesn't check if pawn's original position is rank 2
-        int behindDirection = originalBoard.isWhiteTurn ? 1 : -1;
+        int behindDirection = this->isWhiteTurn ? 1 : -1;
         this->setPiece(pos2, originPiece);
         this->pawnJumpedSquare = BoardSquare(pos2.rank + behindDirection, pos2.file);
         this->fiftyMoveRule = 0;
@@ -247,7 +255,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         this->fiftyMoveRule = 0;
 
         //updates material score of the board on promotion
-        if(originalBoard.isWhiteTurn) {
+        if(this->isWhiteTurn) {
             this->materialDifference += pieceValues.at(promotionPiece) - 1;
         }
         else {
@@ -255,12 +263,12 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         }
     }
     // en passant 
-    else if (originPiece == allyPawn && pos2 == originalBoard.pawnJumpedSquare) {
+    else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
         this->setPiece(pos2, originPiece);
         this->fiftyMoveRule = 0;
 
-        if(originalBoard.isWhiteTurn)
+        if(this->isWhiteTurn)
             materialDifference += 1;
         else
             materialDifference -= 1;
@@ -274,12 +282,50 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
     }
 
     this->materialDifference -= pieceValues.at(targetPiece); //updates the material score of the board on capture
-    
+    this->pawnJumpedSquare = this->pawnJumpedSquare == oldPawnJumpedSquare ? BoardSquare() : this->pawnJumpedSquare;
+
     this->isIllegalPos = currKingInAttack(*this);
     // after finalizing move logic, now switch turns
-    this->isWhiteTurn = !originalBoard.isWhiteTurn; 
+    this->isWhiteTurn = !this->isWhiteTurn; 
 }
 
-Board::Board(Board& originalBoard, BoardMove move) {
-    *this = Board(originalBoard, move.pos1, move.pos2, move.promotionPiece);
+void Board::makeMove(BoardMove move) {
+    this->makeMove(move.pos1, move.pos2, move.promotionPiece);
+}
+
+
+void Board::undoMove() {
+    if (this->moveHistory.size() == 0) {
+        return;
+    }
+    BoardState prev = moveHistory.back();
+
+    pieceTypes prevKing = this->isWhiteTurn ? BKing : WKing;
+    pieceTypes prevRook = this->isWhiteTurn ? BRook : WRook;
+    pieceTypes prevPawn = this->isWhiteTurn ? BPawn : WPawn;
+
+    this->setPiece(prev.move.pos1, prev.originPiece);
+    this->setPiece(prev.move.pos2, prev.targetPiece);
+
+    // castling
+    if (prev.originPiece == prevKing && (prev.castlingRights & castleRightsBit(prev.move.pos2)) ) {
+        int kingFileDirection = prev.move.pos2.file > prev.move.pos1.file ? 1 : -1;
+        fileVals rookFile = kingFileDirection == 1 ? H : A;
+        this->setPiece(prev.move.pos1.rank, prev.move.pos1.file + kingFileDirection, EmptyPiece);
+        this->setPiece(prev.move.pos1.rank, rookFile, prevRook);
+    }
+    // en passant
+    else if (prev.originPiece == prevPawn && prev.move.pos2 == prev.pawnJumpedSquare) {
+        pieceTypes prevJumpedPawn = prevPawn == BPawn ? WPawn : BPawn;
+        this->setPiece(prev.move.pos1.rank, prev.move.pos2.file, prevJumpedPawn);
+    }
+
+    this->isWhiteTurn = !this->isWhiteTurn;
+    this->castlingRights = prev.castlingRights;
+    this->pawnJumpedSquare = prev.pawnJumpedSquare;
+    this->fiftyMoveRule = prev.fiftyMoveRule;
+    this->materialDifference = prev.materialDifference;
+    this->isIllegalPos = false;
+
+    this->moveHistory.pop_back();
 }

@@ -51,8 +51,9 @@ void validPawnMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
         pawnCaptures(currBoard, pawnMoves, pawn, -1);        
     
         for (BoardSquare move: pawnMoves) {
-            Board potentialBoard(currBoard, pawn, move);
-            if (potentialBoard.isIllegalPos) {
+            currBoard.makeMove(pawn, move);
+            if (currBoard.isIllegalPos) {
+                currBoard.undoMove();
                 continue;
             }
             if (move.rank == promoteRank) {
@@ -64,6 +65,7 @@ void validPawnMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
             else {
                 validMoves.push_back(BoardMove(pawn, move));
             }
+            currBoard.undoMove();
         }
     }
 }
@@ -118,10 +120,11 @@ void validKnightMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std:
             }
         }
         for (BoardSquare move: knightMoves) {
-            Board potentialBoard(currBoard, knight, move);
-            if (!potentialBoard.isIllegalPos) {
+            currBoard.makeMove(knight, move);
+            if (!currBoard.isIllegalPos) {
                 validMoves.push_back(BoardMove(knight, move));
             }
+            currBoard.undoMove();
         }
 
     }
@@ -135,10 +138,11 @@ void validBishopMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std:
         addMovesInDirection(currBoard, bishopMoves, bishop, -1, 1); // up right
         addMovesInDirection(currBoard, bishopMoves, bishop, -1, -1); // up left
         for (BoardSquare move: bishopMoves) {
-            Board potentialBoard(currBoard, bishop, move);
-            if (!potentialBoard.isIllegalPos) {
+            currBoard.makeMove(bishop, move);
+            if (!currBoard.isIllegalPos) {
                 validMoves.push_back(BoardMove(bishop, move));
             }
+            currBoard.undoMove();
         }
     }
 }
@@ -151,10 +155,11 @@ void validRookMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
         addMovesInDirection(currBoard, rookMoves, rook, 0, -1); // left
         addMovesInDirection(currBoard, rookMoves, rook, 0, 1); // right
         for (BoardSquare move: rookMoves) {
-            Board potentialBoard(currBoard, rook, move);
-            if (!potentialBoard.isIllegalPos) {
+            currBoard.makeMove(rook, move);
+            if (!currBoard.isIllegalPos) {
                 validMoves.push_back(BoardMove(rook, move));
             }
+            currBoard.undoMove();
         }
     }
 }
@@ -200,17 +205,23 @@ void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
             
             int kingFileDirection = square.file == G ? 1 : -1;
             // cannot castle through enemy attack
-            if (Board(currBoard, king, BoardSquare(king.rank, king.file + kingFileDirection)).isIllegalPos) {continue;} 
+            currBoard.makeMove(king, BoardSquare(king.rank, king.file + kingFileDirection));
+            if (currBoard.isIllegalPos) {
+                currBoard.undoMove();
+                continue;
+            } 
+            currBoard.undoMove();
             if (getPieceInDirection(currBoard, king, 0, kingFileDirection) == allyRook) {
                 kingMoves.push_back(BoardSquare(kingUnmovedRank, square.file));
             }
         }
         
         for (BoardSquare move: kingMoves) {
-            Board potentialBoard(currBoard, king, move);
-            if (!potentialBoard.isIllegalPos) {
+            currBoard.makeMove(king, move);
+            if (!currBoard.isIllegalPos) {
                 validMoves.push_back(BoardMove(king, move));
             }
+            currBoard.undoMove();
         }
 
     }
