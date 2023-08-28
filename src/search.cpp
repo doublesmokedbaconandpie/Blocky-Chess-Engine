@@ -38,7 +38,7 @@ namespace SEARCH {
 
         int score, bestscore = MIN_ALPHA;
         for (BoardMove move: moves) {
-            Board newBoard = Board(board, move); 
+            Board newBoard(board, move); 
             SearchInfo oppAlphaBeta = alphaBeta(newBoard, -1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
             result.nodes += oppAlphaBeta.nodes;
             score = -1 * oppAlphaBeta.value;
