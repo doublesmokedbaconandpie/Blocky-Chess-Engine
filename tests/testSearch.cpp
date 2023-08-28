@@ -16,7 +16,9 @@ TEST(TestSearch, Depth4) {
     GTEST_SKIP();
     Board board = Board();
     SEARCH::SearchInfo returnVals = SEARCH::search(board, 1);
+    board.makeMove(returnVals.move);
+    
     std::cout << "Evaluation: " << returnVals.value << std::endl;
     std::cout << "Best Move: " << returnVals.move << std::endl;
-    std::cout << "Best Board: \n" << Board(board, returnVals.move) << std::endl;
+    std::cout << "Best Board: \n" << board << std::endl;
 }
