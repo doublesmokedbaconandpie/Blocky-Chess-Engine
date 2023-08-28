@@ -196,7 +196,7 @@ void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
         // castling
         for (BoardSquare square: potentialCastleMoves) {
             if (currKingInAttack(currBoard)) {break;}
-            if (!(currBoard.castlingRights && castleRightsBit(square))) {continue;}
+            if (!(currBoard.castlingRights & castleRightsBit(square))) {continue;}
             
             int kingFileDirection = square.file == G ? 1 : -1;
             // cannot castle through enemy attack
