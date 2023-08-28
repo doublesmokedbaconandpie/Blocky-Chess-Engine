@@ -4,6 +4,8 @@
 #include <vector>
 #include <algorithm>
 
+using namespace MOVEGEN;
+
 // there must be a king in each test to see for illegal moves
 
 TEST(MoveGenTest, validPawnMovesCaptures) {

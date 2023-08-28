@@ -216,7 +216,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 
     BoardSquare oldPawnJumpedSquare = this->pawnJumpedSquare;
 
-    this->fiftyMoveRule += 1;
+    this->fiftyMoveRule++;
 
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
 
@@ -269,9 +269,9 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->fiftyMoveRule = 0;
 
         if(this->isWhiteTurn)
-            materialDifference += 1;
+            materialDifference++;
         else
-            materialDifference -= 1;
+            materialDifference--;
 
     }
     else {

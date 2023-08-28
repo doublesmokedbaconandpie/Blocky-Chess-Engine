@@ -24,7 +24,7 @@ namespace SEARCH {
             result.value = eval(board);
             return result;
         }
-        std::vector<BoardMove> moves = moveGenerator(board);
+        std::vector<BoardMove> moves = MOVEGEN::moveGenerator(board);
         if (moves.size() == 0) {
             if (currKingInAttack(board)) {
                 result.value = MIN_ALPHA + distanceFromRoot;
