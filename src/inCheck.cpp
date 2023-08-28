@@ -255,7 +255,7 @@ Board::Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceType
         }
     }
     // en passant 
-    else if (pos2 == originalBoard.pawnJumpedSquare) {
+    else if (originPiece == allyPawn && pos2 == originalBoard.pawnJumpedSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
         this->setPiece(pos2, originPiece);
         this->fiftyMoveRule = 0;
