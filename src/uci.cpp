@@ -77,7 +77,6 @@ namespace UCI {
 
         input >> token;
         if (token == "startpos") {
-            currBoard = Board();
             input >> token;
         }
         else if (token == "fen") {

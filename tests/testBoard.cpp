@@ -4,52 +4,52 @@
 #include <string>
 
 TEST(BoardTest, getPieceValidSquare) {
-    Board defaultBoard = Board();
+    Board defaultBoard;
     BoardSquare square = BoardSquare(0, A);
     pieceTypes getPieceResult = defaultBoard.getPiece(square);
     ASSERT_EQ(getPieceResult, BRook) << getPieceResult;
 }
 
 TEST(BoardTest, getPieceValidSquare2) {
-    Board defaultBoard = Board();
+    Board defaultBoard;
     BoardSquare square = BoardSquare(1, H);
     pieceTypes getPieceResult = defaultBoard.getPiece(square);
     EXPECT_EQ(getPieceResult, BPawn);
 }
 
 TEST(BoardTest, getPieceValidSquare3) {
-    Board defaultBoard = Board();
+    Board defaultBoard;
     BoardSquare square = BoardSquare(6, D);
     pieceTypes getPieceResult = defaultBoard.getPiece(square);
     EXPECT_EQ(getPieceResult, WPawn);
 }
 
 TEST(BoardTest, getPieceInvalidSquare1) {
-    Board defaultBoard = Board();
+    Board defaultBoard;
     BoardSquare square = BoardSquare(-1, A);
     ASSERT_EQ(defaultBoard.getPiece(square), nullPiece);
 }
 
 TEST(BoardTest, getPieceInvalidSquare2) {
-    Board defaultBoard = Board();
+    Board defaultBoard;
     BoardSquare square = BoardSquare(8, A);
     ASSERT_EQ(defaultBoard.getPiece(square), nullPiece);
 }
 
 TEST(BoardTest, getPieceInvalidSquare3) {
-    Board defaultBoard = Board();
+    Board defaultBoard;
     BoardSquare square = BoardSquare(0, -1);
     ASSERT_EQ(defaultBoard.getPiece(square), nullPiece);
 }
 
 TEST(BoardTest, getPieceInvalidSquare4) {
-    Board defaultBoard = Board();
+    Board defaultBoard;
     BoardSquare square = BoardSquare(0, 8);
     ASSERT_EQ(defaultBoard.getPiece(square), nullPiece);
 }
 
 TEST(BoardTest, setPieceValidSquare1) {
-    Board defaultBoard = Board();
+    Board defaultBoard;
     BoardSquare square = BoardSquare(1, A);
     bool setPieceOutcome = defaultBoard.setPiece(square, BRook);
     EXPECT_EQ(setPieceOutcome, true);
@@ -57,7 +57,7 @@ TEST(BoardTest, setPieceValidSquare1) {
 }
 
 TEST(BoardTest, setPieceValidSquare2) {
-    Board defaultBoard = Board();
+    Board defaultBoard;
     BoardSquare square = BoardSquare(4, D);
     bool setPieceOutcome = defaultBoard.setPiece(square, BPawn);
     EXPECT_EQ(setPieceOutcome, true);
@@ -65,14 +65,14 @@ TEST(BoardTest, setPieceValidSquare2) {
 }
 
 TEST(BoardTest, setPieceInvalidSquare1) {
-    Board defaultBoard = Board();
+    Board defaultBoard;
     BoardSquare square = BoardSquare(-1, D);
     bool setPieceOutcome = defaultBoard.setPiece(square, WPawn);
     EXPECT_EQ(setPieceOutcome, false);
 }
 
 TEST(BoardTest, setPieceInvalidSquare2) {
-    Board defaultBoard = Board();
+    Board defaultBoard;
     BoardSquare square = BoardSquare(0, 8);
     bool setPieceOutcome = defaultBoard.setPiece(square, WPawn);
     EXPECT_EQ(setPieceOutcome, false);
@@ -107,8 +107,8 @@ TEST(BoardTest, boardMoveStrConstructor2) {
 }
 
 TEST(BoardTest, fenConstructorDefault) {
-    Board fenBoard = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    Board defaultBoard = Board();
+    Board fenBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    Board defaultBoard;
     EXPECT_EQ(fenBoard.board, defaultBoard.board);
     EXPECT_EQ(fenBoard.isWhiteTurn, defaultBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, defaultBoard.castlingRights);
@@ -117,8 +117,8 @@ TEST(BoardTest, fenConstructorDefault) {
 }
 
 TEST(BoardTest, fenConstructorEnPassantSquare) {
-    Board fenBoard = Board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
-    Board moveBoard = Board();
+    Board fenBoard("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
+    Board moveBoard;
     moveBoard = Board(moveBoard, BoardMove("e2e4", moveBoard.isWhiteTurn));
 
     EXPECT_EQ(fenBoard.board, moveBoard.board);
@@ -130,8 +130,8 @@ TEST(BoardTest, fenConstructorEnPassantSquare) {
 
 TEST(BoardTest, fenConstructorEnPassantCastle) {
     // ruy lopez
-    Board fenBoard = Board("r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4");
-    Board moveBoard = Board();
+    Board fenBoard("r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4");
+    Board moveBoard;
     moveBoard = Board(moveBoard, BoardMove("e2e4", moveBoard.isWhiteTurn));
     moveBoard = Board(moveBoard, BoardMove("e7e5", moveBoard.isWhiteTurn));
     moveBoard = Board(moveBoard, BoardMove("g1f3", moveBoard.isWhiteTurn));
@@ -169,7 +169,7 @@ TEST(BoardTest, toFenCastling) {
 }
 
 TEST(CastleRightsBitTest, defaultBoard) {
-    Board board = Board();
+    Board board;
     EXPECT_EQ(castleRightsBit(BoardSquare(0, G)) && board.castlingRights, true);
     EXPECT_EQ(castleRightsBit(BoardSquare(0, C)) && board.castlingRights, true);
     EXPECT_EQ(castleRightsBit(BoardSquare(7, G)) && board.castlingRights, true);
@@ -178,17 +178,17 @@ TEST(CastleRightsBitTest, defaultBoard) {
 }
 
 TEST(MaterialDifferenceTest, defaultBoard) {
-    Board board = Board();
-    Board fenDefaultBoard = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    Board board;
+    Board fenDefaultBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     EXPECT_EQ(board.materialDifference, 0);
     EXPECT_EQ(fenDefaultBoard.materialDifference, 0);
 }
 
 TEST(MaterialDifferenceTest, fenBoards) {
     
-    Board fenBoard1 = Board("r1b1kbnr/pppBpppp/3q4/8/8/2N5/PPPP1PPP/R1BQK1NR b KQkq - 0 1");
-    Board fenBoard2 = Board("r1bqkbnr/pp1ppppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 1");
-    Board fenBoard3 = Board("rnbqkbnr/8/8/8/PP4PP/8/2PPPP2/3QK3 w kq - 0 1");
+    Board fenBoard1("r1b1kbnr/pppBpppp/3q4/8/8/2N5/PPPP1PPP/R1BQK1NR b KQkq - 0 1");
+    Board fenBoard2("r1bqkbnr/pp1ppppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 1");
+    Board fenBoard3("rnbqkbnr/8/8/8/PP4PP/8/2PPPP2/3QK3 w kq - 0 1");
 
     EXPECT_EQ(fenBoard1.materialDifference, 3);
     EXPECT_EQ(fenBoard2.materialDifference, -3);
@@ -196,7 +196,7 @@ TEST(MaterialDifferenceTest, fenBoards) {
 }
 
 TEST(MaterialDifferenceTest, captureTests) {
-    Board b1 = Board();
+    Board b1;
     b1 = Board(b1, BoardMove("e2e4", b1.isWhiteTurn));
     b1 = Board(b1, BoardMove("d7d5", b1.isWhiteTurn));
     b1 = Board(b1, BoardMove("e4d5", b1.isWhiteTurn));
@@ -220,7 +220,7 @@ TEST(MaterialDifferenceTest, captureTests) {
 }
 
 TEST(MaterialDifferenceTest, enPassantTests) {
-    Board b1 = Board();
+    Board b1;
     b1 = Board(b1, BoardMove("e2e4", b1.isWhiteTurn));
     b1 = Board(b1, BoardMove("d7d5", b1.isWhiteTurn));
     b1 = Board(b1, BoardMove("e4e5", b1.isWhiteTurn));

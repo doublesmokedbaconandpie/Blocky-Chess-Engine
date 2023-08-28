@@ -51,7 +51,7 @@ void validPawnMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
         pawnCaptures(currBoard, pawnMoves, pawn, -1);        
     
         for (BoardSquare move: pawnMoves) {
-            Board potentialBoard = Board(currBoard, pawn, move);
+            Board potentialBoard(currBoard, pawn, move);
             if (potentialBoard.isIllegalPos) {
                 continue;
             }
@@ -118,7 +118,7 @@ void validKnightMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std:
             }
         }
         for (BoardSquare move: knightMoves) {
-            Board potentialBoard = Board(currBoard, knight, move);
+            Board potentialBoard(currBoard, knight, move);
             if (!potentialBoard.isIllegalPos) {
                 validMoves.push_back(BoardMove(knight, move));
             }
@@ -135,7 +135,7 @@ void validBishopMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std:
         addMovesInDirection(currBoard, bishopMoves, bishop, -1, 1); // up right
         addMovesInDirection(currBoard, bishopMoves, bishop, -1, -1); // up left
         for (BoardSquare move: bishopMoves) {
-            Board potentialBoard = Board(currBoard, bishop, move);
+            Board potentialBoard(currBoard, bishop, move);
             if (!potentialBoard.isIllegalPos) {
                 validMoves.push_back(BoardMove(bishop, move));
             }
@@ -151,7 +151,7 @@ void validRookMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
         addMovesInDirection(currBoard, rookMoves, rook, 0, -1); // left
         addMovesInDirection(currBoard, rookMoves, rook, 0, 1); // right
         for (BoardSquare move: rookMoves) {
-            Board potentialBoard = Board(currBoard, rook, move);
+            Board potentialBoard(currBoard, rook, move);
             if (!potentialBoard.isIllegalPos) {
                 validMoves.push_back(BoardMove(rook, move));
             }
@@ -207,7 +207,7 @@ void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::v
         }
         
         for (BoardSquare move: kingMoves) {
-            Board potentialBoard = Board(currBoard, king, move);
+            Board potentialBoard(currBoard, king, move);
             if (!potentialBoard.isIllegalPos) {
                 validMoves.push_back(BoardMove(king, move));
             }
