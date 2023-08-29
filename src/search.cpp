@@ -24,7 +24,7 @@ namespace SEARCH {
             result.value = eval(board);
             return result;
         }
-        std::vector<BoardMove> moves = moveGenerator(board);
+        std::vector<BoardMove> moves = MOVEGEN::moveGenerator(board);
         if (moves.size() == 0) {
             if (currKingInAttack(board)) {
                 result.value = MIN_ALPHA + distanceFromRoot;
@@ -38,8 +38,10 @@ namespace SEARCH {
 
         int score, bestscore = MIN_ALPHA;
         for (BoardMove move: moves) {
-            Board newBoard(board, move); 
-            SearchInfo oppAlphaBeta = alphaBeta(newBoard, -1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
+            board.makeMove(move);
+            SearchInfo oppAlphaBeta = alphaBeta(board, -1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
+            board.undoMove(); 
+            
             result.nodes += oppAlphaBeta.nodes;
             score = -1 * oppAlphaBeta.value;
 

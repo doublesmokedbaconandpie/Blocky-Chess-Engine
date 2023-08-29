@@ -347,11 +347,11 @@ TEST(InCheckTest, inCheckTrue2) {
 }
 
 TEST(InCheckTest, BoardMoveConstructorPawnJump) {
-    Board defaultBoard;
+    Board board;
     BoardSquare pos1 = BoardSquare(6, E);
     BoardSquare pos2 = BoardSquare(4, E);
     BoardSquare enPassantSquare = BoardSquare(5, E);
-    Board board(defaultBoard, pos1, pos2);
+    board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
@@ -371,10 +371,10 @@ TEST(InCheckTest, BoardMoveConstructorKingCastle) {
         WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn,
         WRook, WKnight, WBishop, WQueen, WKing, EmptyPiece, EmptyPiece, WRook,
     };
-    Board originBoard(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(7, E);
     BoardSquare pos2 = BoardSquare(7, G);
-    Board board(originBoard, pos1, pos2);
+    board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
@@ -397,10 +397,10 @@ TEST(InCheckTest, BoardMoveConstructorQueenCastle) {
         WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn,
         WRook, EmptyPiece, EmptyPiece, EmptyPiece, WKing, WBishop, WKnight, WRook,
     };
-    Board originBoard(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(7, E);
     BoardSquare pos2 = BoardSquare(7, C);
-    Board board(originBoard, pos1, pos2);
+    board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
@@ -423,10 +423,10 @@ TEST(InCheckTest, BoardMoveConstructorMovedKing) {
         WPawn, WPawn, WPawn, WPawn, EmptyPiece, WPawn, WPawn, WPawn,
         WRook, EmptyPiece, EmptyPiece, EmptyPiece, WKing, WBishop, WKnight, WRook,
     };
-    Board originBoard(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(7, E);
     BoardSquare pos2 = BoardSquare(6, D);
-    Board board(originBoard, pos1, pos2);
+    board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
@@ -449,11 +449,11 @@ TEST(InCheckTest, BoardMoveConstructorKingToCastleSquare) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, WRook     ,
     };
-    Board originBoard(boardArr, true);
-    originBoard.castlingRights = B_Castle;
+    Board board(boardArr, true);
+    board.castlingRights = B_Castle;
     BoardSquare pos1 = BoardSquare(7, F);
     BoardSquare pos2 = BoardSquare(7, G);
-    Board board(originBoard, pos1, pos2);
+    board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
@@ -475,11 +475,11 @@ TEST(InCheckTest, BoardMoveConstructorEnPassant) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board originBoard(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare jumpedPawn = BoardSquare(3, E);
     BoardSquare pos1 = BoardSquare(3, D);
-    BoardSquare pos2 = originBoard.pawnJumpedSquare = BoardSquare(2, E);
-    Board board(originBoard, pos1, pos2);
+    BoardSquare pos2 = board.pawnJumpedSquare = BoardSquare(2, E);
+    board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
@@ -501,11 +501,11 @@ TEST(InCheckTest, BoardMoveConstructorNotEnPassant) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board originBoard(boardArr, true);
-    BoardSquare jumpedPawn = originBoard.pawnJumpedSquare = BoardSquare(3, E);
+    Board board(boardArr, true);
+    BoardSquare jumpedPawn = board.pawnJumpedSquare = BoardSquare(3, E);
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(2, D);
-    Board board(originBoard, pos1, pos2);
+    board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
@@ -527,10 +527,10 @@ TEST(InCheckTest, BoardMoveConstructorPromote) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board originBoard(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(1, A);
     BoardSquare pos2 = BoardSquare(0, A);
-    Board board(originBoard, pos1, pos2, WQueen);
+    board.makeMove(pos1, pos2, WQueen);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
@@ -550,10 +550,10 @@ TEST(InCheckTest, BoardMoveConstructorPawnCapture) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board originBoard(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(2, E);
-    Board board(originBoard, pos1, pos2);
+    board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
@@ -574,10 +574,10 @@ TEST(InCheckTest, BoardMoveConstructorRegularCapture) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board originBoard(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(3, D);
     BoardSquare pos2 = BoardSquare(1, F);
-    Board board(originBoard, pos1, pos2);
+    board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.isIllegalPos, false);
@@ -597,10 +597,10 @@ TEST(InCheckTest, BoardMoveConstructorRookPin) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board originBoard(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(1, A);
     BoardSquare pos2 = BoardSquare(1, B);
-    Board board(originBoard, pos1, pos2);
+    board.makeMove(pos1, pos2);
     ASSERT_EQ(board.isIllegalPos, true);
 }
 
@@ -615,31 +615,28 @@ TEST(InCheckTest, BoardMoveConstructorBishopPin) {
         EmptyPiece, WBishop   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board originBoard(boardArr, true);
+    Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(6, B);
     BoardSquare pos2 = BoardSquare(5, A);
-    Board board(originBoard, pos1, pos2);
+    board.makeMove(pos1, pos2);
     ASSERT_EQ(board.isIllegalPos, true);
 }
 
 TEST(InCheckTest, BoardMoveConstructorCastleRightsRook) {
-    Board originBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1");
-    Board board(originBoard, BoardMove("h1g1", originBoard.isWhiteTurn));
-    EXPECT_EQ(originBoard.castlingRights, All_Castle);
+    Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1");
+    board.makeMove(BoardMove("h1g1", board.isWhiteTurn));
     EXPECT_EQ(board.castlingRights, B_Castle | W_OOO);
 }
 
 TEST(InCheckTest, BoardMoveConstructorCastleRightsRook2) {
-    Board originBoard("rnbqk2r/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
-    Board board(originBoard, BoardMove("h8g8", originBoard.isWhiteTurn));
-    EXPECT_EQ(originBoard.castlingRights, All_Castle);
+    Board board("rnbqk2r/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
+    board.makeMove(BoardMove("h8g8", board.isWhiteTurn));
     EXPECT_EQ(board.castlingRights, W_Castle | B_OOO);
 }
 
 TEST(InCheckTest, BoardMoveConstructorCastleRightsRook3) {
-    Board originBoard("7r/1k4P1/1n6/B7/P4P1p/7P/4NK2/1R5R b - - 0 44");
-    Board board(originBoard, BoardMove("h8g8", originBoard.isWhiteTurn));
-    EXPECT_EQ(originBoard.castlingRights, noCastle);
+    Board board("7r/1k4P1/1n6/B7/P4P1p/7P/4NK2/1R5R b - - 0 44");
+    board.makeMove(BoardMove("h8g8", board.isWhiteTurn));
     EXPECT_EQ(board.castlingRights, noCastle);
 }
 

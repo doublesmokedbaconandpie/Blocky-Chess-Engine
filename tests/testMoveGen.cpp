@@ -4,6 +4,8 @@
 #include <vector>
 #include <algorithm>
 
+using namespace MOVEGEN;
+
 // there must be a king in each test to see for illegal moves
 
 TEST(MoveGenTest, validPawnMovesCaptures) {
@@ -352,8 +354,8 @@ TEST(MoveGenTest, moveGeneratorDefault) {
 }
 
 TEST(MoveGenTest, moveGeneratorBlackMove) {
-    Board previousBoard = Board();
-    Board currBoard = Board(previousBoard, BoardSquare(6, E), BoardSquare(4, E));
+    Board board;
+    board.makeMove(BoardSquare(6, E), BoardSquare(4, E));
     std::vector<BoardMove> expectedValidMoves;
     for (int file = A; file <= H; file++) {
         expectedValidMoves.push_back(BoardMove(BoardSquare(1, file), BoardSquare(2, file)));
@@ -363,10 +365,10 @@ TEST(MoveGenTest, moveGeneratorBlackMove) {
     expectedValidMoves.push_back(BoardMove(BoardSquare(0, B), BoardSquare(2, C)));
     expectedValidMoves.push_back(BoardMove(BoardSquare(0, G), BoardSquare(2, F)));
     expectedValidMoves.push_back(BoardMove(BoardSquare(0, G), BoardSquare(2, H)));
-    std::vector<BoardMove> validMoves = moveGenerator(currBoard);
+    std::vector<BoardMove> validMoves = moveGenerator(board);
 
     std::sort(validMoves.begin(), validMoves.end());
     std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(currBoard.isWhiteTurn, false);
+    ASSERT_EQ(board.isWhiteTurn, false);
     ASSERT_EQ(validMoves, expectedValidMoves);
 }

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <array>
+#include <vector>
 #include <iostream>
 #include <string>
 
@@ -36,6 +37,22 @@ struct BoardMove {
     friend bool operator<(const BoardMove& lhs, const BoardMove& rhs);
 };
 
+struct BoardState {
+    BoardMove move = BoardMove();
+    pieceTypes originPiece;
+    pieceTypes targetPiece;
+    castleRights castlingRights;
+    BoardSquare pawnJumpedSquare;
+    int fiftyMoveRule;
+    int materialDifference;
+    BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, 
+                castleRights a_castlingRights, BoardSquare a_pawnJumpedSquare, int a_fiftyMoveRule,
+                int a_materialDifference) : 
+                move(a_move), originPiece(a_originPiece), targetPiece(a_targetPiece),
+                castlingRights(a_castlingRights), pawnJumpedSquare(a_pawnJumpedSquare), fiftyMoveRule(a_fiftyMoveRule),
+                materialDifference(a_materialDifference) {};
+};
+
 struct Board {
     Board(); // default game
     Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn = true, 
@@ -45,8 +62,9 @@ struct Board {
     std::string toFen();
     
     // defined in inCheck.cpp
-    Board(Board& originalBoard, BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
-    Board(Board& originalBoard, BoardMove move);
+    void makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
+    void makeMove(BoardMove move);
+    void undoMove();
     
     friend bool operator==(const Board& lhs, const Board& rhs);
     friend bool operator<(const Board& lhs, const Board& rhs);
@@ -60,11 +78,12 @@ struct Board {
     std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
     bool isWhiteTurn;
     castleRights castlingRights; // bitwise castling rights tracker
-    int fiftyMoveRule; // 50 move rule
+    int fiftyMoveRule;
     bool isIllegalPos;
     BoardSquare pawnJumpedSquare;
     int materialDifference; //updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
-    //can reuse code in eval function if the position is not the starting position, otherwise defaults to 0
+
+    std::vector<BoardState> moveHistory;
 };
 
 castleRights castleRightsBit(BoardSquare finalKingPos);
