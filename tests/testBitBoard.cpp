@@ -45,7 +45,7 @@ TEST(BitboardTest, leadingBitMultOnes) {
 
 TEST(BitboardTest, trailingBitEmpty) {
     uint64_t bitboard = 0ull;
-    ASSERT_EQ(trailingBit(bitboard), 64);
+    ASSERT_EQ(trailingBit(bitboard), -1);
 }
 
 TEST(BitboardTest, trailingBitOne) {
