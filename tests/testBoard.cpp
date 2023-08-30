@@ -48,36 +48,6 @@ TEST(BoardTest, getPieceInvalidSquare4) {
     ASSERT_EQ(defaultBoard.getPiece(square), nullPiece);
 }
 
-TEST(BoardTest, setPieceValidSquare1) {
-    Board defaultBoard;
-    BoardSquare square = BoardSquare(1, A);
-    bool setPieceOutcome = defaultBoard.setPiece(square, BRook);
-    EXPECT_EQ(setPieceOutcome, true);
-    EXPECT_EQ(defaultBoard.getPiece(square), BRook);
-}
-
-TEST(BoardTest, setPieceValidSquare2) {
-    Board defaultBoard;
-    BoardSquare square = BoardSquare(4, D);
-    bool setPieceOutcome = defaultBoard.setPiece(square, BPawn);
-    EXPECT_EQ(setPieceOutcome, true);
-    EXPECT_EQ(defaultBoard.getPiece(square), BPawn);
-}
-
-TEST(BoardTest, setPieceInvalidSquare1) {
-    Board defaultBoard;
-    BoardSquare square = BoardSquare(-1, D);
-    bool setPieceOutcome = defaultBoard.setPiece(square, WPawn);
-    EXPECT_EQ(setPieceOutcome, false);
-}
-
-TEST(BoardTest, setPieceInvalidSquare2) {
-    Board defaultBoard;
-    BoardSquare square = BoardSquare(0, 8);
-    bool setPieceOutcome = defaultBoard.setPiece(square, WPawn);
-    EXPECT_EQ(setPieceOutcome, false);
-}
-
 TEST(BoardTest, boardSquareStrConstructor) {
     BoardSquare square = BoardSquare("a8");
     EXPECT_EQ(square.rank, 0);
@@ -109,6 +79,8 @@ TEST(BoardTest, boardMoveStrConstructor2) {
 TEST(BoardTest, fenConstructorDefault) {
     Board fenBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     Board defaultBoard;
+
+    EXPECT_EQ(fenBoard.pieceSets, defaultBoard.pieceSets);
     EXPECT_EQ(fenBoard.board, defaultBoard.board);
     EXPECT_EQ(fenBoard.isWhiteTurn, defaultBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, defaultBoard.castlingRights);
@@ -120,7 +92,8 @@ TEST(BoardTest, fenConstructorEnPassantSquare) {
     Board fenBoard("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
     Board moveBoard;
     moveBoard.makeMove(BoardMove("e2e4", moveBoard.isWhiteTurn));
-
+    
+    EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);
@@ -140,6 +113,7 @@ TEST(BoardTest, fenConstructorEnPassantCastle) {
     moveBoard.makeMove(BoardMove("g8f6", moveBoard.isWhiteTurn));
     moveBoard.makeMove(BoardMove("e1g1", moveBoard.isWhiteTurn));
 
+    EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);

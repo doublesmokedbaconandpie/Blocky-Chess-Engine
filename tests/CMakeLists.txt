@@ -20,10 +20,12 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 add_executable(
     allTests
+    testBitBoard.cpp
     testBoard.cpp
     testInCheck.cpp
     testMoveGen.cpp
     testSearch.cpp
+    ../src/bitboard.cpp
     ../src/board.cpp
     ../src/inCheck.cpp
     ../src/moveGen.cpp
