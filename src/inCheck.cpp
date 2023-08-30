@@ -203,7 +203,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     pieceTypes originPiece = this->getPiece(pos1);
     pieceTypes targetPiece = this->getPiece(pos2);
 
-    
     this->moveHistory.push_back(BoardState(
         BoardMove(pos1, pos2, promotionPiece),
         originPiece,
@@ -219,23 +218,21 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     this->fiftyMoveRule++;
 
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
+    this->setPiece(pos2, originPiece); // pretty much all possible moves translates the original piece to pos 2
 
     // castling
     // doesn't check for emptiness between rook and king
     if (originPiece == allyKing && (this->castlingRights & castleRightsBit(pos2))) {
         int kingFileDirection = pos2.file > pos1.file ? 1 : -1;
         fileVals rookFile = kingFileDirection == 1 ? H : A;
-        this->setPiece(pos2, allyKing);
         this->setPiece(pos1.rank, pos1.file + kingFileDirection, allyRook);
         this->setPiece(pos1.rank, rookFile, EmptyPiece);
         this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
     }
     else if (originPiece == allyKing) {
-        this->setPiece(pos2, originPiece);
         this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
     }
     else if (originPiece == allyRook) {
-        this->setPiece(pos2, originPiece);
         this->castlingRights &= pos1 == BoardSquare("h1") ? NOT_W_OO  : All_Castle;
         this->castlingRights &= pos1 == BoardSquare("a1") ? NOT_W_OOO : All_Castle;
         this->castlingRights &= pos1 == BoardSquare("h8") ? NOT_B_OO  : All_Castle;
@@ -245,7 +242,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     else if (originPiece == allyPawn && pos2.rank == pos1.rank + pawnJumpDirection) { 
         // doesn't check if pawn's original position is rank 2
         int behindDirection = this->isWhiteTurn ? 1 : -1;
-        this->setPiece(pos2, originPiece);
         this->pawnJumpedSquare = BoardSquare(pos2.rank + behindDirection, pos2.file);
         this->fiftyMoveRule = 0;
     }
@@ -265,7 +261,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
-        this->setPiece(pos2, originPiece);
         this->fiftyMoveRule = 0;
 
         if(this->isWhiteTurn)
@@ -275,7 +270,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 
     }
     else {
-        this->setPiece(pos2, originPiece);
         if (targetPiece != EmptyPiece || originPiece == allyPawn) {
             this->fiftyMoveRule = 0;
         }

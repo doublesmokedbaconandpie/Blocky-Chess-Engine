@@ -149,3 +149,7 @@ bool kingAttackers(int square, uint64_t enemyKings) {
     currPiece |= (currPiece >> 8) | (currPiece << 8);
     return currPiece & enemyKings;
 }
+
+void printBitboard(uint64_t bitboard) {
+    std::cout << "0x" << std::setw(16) << std::setfill('0') << std::hex <<  bitboard << "\n" << std::dec;
+}

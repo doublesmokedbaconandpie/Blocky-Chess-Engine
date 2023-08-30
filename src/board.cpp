@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "board.hpp"
+#include "bitboard.hpp"
 #include "types.hpp"
 
 // BoardSquare
@@ -16,6 +17,10 @@ BoardSquare::BoardSquare(std::string input) {
     }
     this->file = fileVals(input.at(0) - 'a');
     this->rank = 8 - int(input.at(1) - '1') - 1;
+}
+
+int BoardSquare::toSquare() {
+    return this->rank * 8 + this->file;
 }
 
 std::string BoardSquare::toStr() {
@@ -155,6 +160,23 @@ Board::Board() {
     this->isIllegalPos = false;
     this->castlingRights = All_Castle;
     this->materialDifference = 0;
+
+    this->pieceSets[WKing]   = 0x1000000000000000ull;
+    this->pieceSets[WQueen]  = 0x0800000000000000ull;
+    this->pieceSets[WBishop] = 0x2400000000000000ull;
+    this->pieceSets[WKnight] = 0x4200000000000000ull;
+    this->pieceSets[WRook]   = 0x8100000000000000ull;
+    this->pieceSets[WPawn]   = 0x00FF000000000000ull;
+
+    this->pieceSets[BKing]   = 0x0000000000000010ull;
+    this->pieceSets[BQueen]  = 0x0000000000000008ull;
+    this->pieceSets[BBishop] = 0x0000000000000024ull;
+    this->pieceSets[BKnight] = 0x0000000000000042ull;
+    this->pieceSets[BRook]   = 0x0000000000000081ull;
+    this->pieceSets[BPawn]   = 0x000000000000FF00ull;
+
+    this->pieceSets[WHITE_PIECES] = 0xFFFF000000000000ull;
+    this->pieceSets[BLACK_PIECES] = 0x000000000000FFFFull;
 }
 
 Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn, 
@@ -275,27 +297,39 @@ pieceTypes Board::getPiece(int rank, int file) const {
     if (rank < 0 || rank > 7 || file < A || file > H) {
         return nullPiece;
     }
-    return this->board.at(rank * 8 + file);
+    return this->board[rank * 8 + file];
 }
 
 pieceTypes Board::getPiece(BoardSquare square) const{
     return this->getPiece(square.rank, square.file);
 }
 
-bool Board::setPiece(int rank, int file, pieceTypes piece) {
-    if (rank < 0 || rank > 7 || file < A || file > H) {
-        return false;
+void Board::setPiece(int rank, int file, pieceTypes targetPiece) {
+    int square = rank * 8 + file;
+    uint64_t setSquare = (1ull << square);
+    uint64_t clearSquare = ALL_SQUARES ^ setSquare;
+
+    pieceTypes originPiece = this->getPiece(rank, file);
+    this->board[square] = targetPiece;
+    
+    if (originPiece != nullPiece && originPiece != EmptyPiece) {
+        pieceTypes originColor = originPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
+        this->pieceSets[originColor] &= clearSquare;
+        this->pieceSets[originPiece] &= clearSquare;
     }
-    this->board.at(rank * 8 + file) = piece;
-    return true;
+    if (targetPiece != EmptyPiece) {
+        pieceTypes targetColor = targetPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
+        this->pieceSets[targetColor] ^= setSquare;
+        this->pieceSets[targetPiece] ^= setSquare;
+    }
 }
 
-bool Board::setPiece(BoardSquare square, pieceTypes piece) {
-    return this->setPiece(square.rank, square.file, piece);
+void Board::setPiece(BoardSquare square, pieceTypes targetPiece) {
+    this->setPiece(square.rank, square.file, targetPiece);
 }
 
 bool operator==(const Board& lhs, const Board& rhs) {
-    return  (lhs.board == rhs.board);
+    return  (lhs.board == rhs.board) && (lhs.pieceSets == rhs.pieceSets);
 }
 
 bool operator<(const Board& lhs, const Board& rhs) {

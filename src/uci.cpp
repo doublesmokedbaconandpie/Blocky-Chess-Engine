@@ -78,6 +78,7 @@ namespace UCI {
         input >> token;
         if (token == "startpos") {
             input >> token;
+            currBoard = Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         }
         else if (token == "fen") {
             std::string fenStr;

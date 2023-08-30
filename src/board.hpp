@@ -7,6 +7,7 @@
 #include <string>
 
 #include "types.hpp"
+#include "bitboard.hpp"
 
 struct BoardSquare {
     BoardSquare(): rank(-1), file(nullFile) {};
@@ -14,6 +15,7 @@ struct BoardSquare {
     BoardSquare(int a_rank, int a_file): rank(a_rank), file(fileVals(a_file)) {};
     BoardSquare(std::string input);
     std::string toStr();
+    int toSquare();
 
     friend bool operator==(const BoardSquare& lhs, const BoardSquare& rhs);
     friend bool operator!=(const BoardSquare& lhs, const BoardSquare& rhs);
@@ -72,9 +74,10 @@ struct Board {
 
     pieceTypes getPiece(int rank, int file) const;
     pieceTypes getPiece(BoardSquare square) const;
-    bool setPiece(int rank, int file, pieceTypes piece);
-    bool setPiece(BoardSquare square, pieceTypes piece);
+    void setPiece(int rank, int file, pieceTypes targetPiece);
+    void setPiece(BoardSquare square, pieceTypes targetPiece);
 
+    std::array<uint64_t, NUM_BITBOARDS> pieceSets = {0ull};
     std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
     bool isWhiteTurn;
     castleRights castlingRights; // bitwise castling rights tracker

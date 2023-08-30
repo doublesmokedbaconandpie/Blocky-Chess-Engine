@@ -69,3 +69,5 @@ bool straightAttackers(int square, uint64_t allies, uint64_t enemies);
 bool knightAttackers(int square, uint64_t enemyKnights);
 bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn);
 bool kingAttackers(int square, uint64_t enemyKings);
+
+void printBitboard(uint64_t bitboard);

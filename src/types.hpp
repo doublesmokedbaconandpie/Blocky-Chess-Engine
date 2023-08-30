@@ -2,13 +2,15 @@
 
 #include <map>
 
-const int BOARD_SIZE = 64;
+constexpr int BOARD_SIZE = 64;
+constexpr int NUM_BITBOARDS = 15;
 
 enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
 
 enum pieceTypes {nullPiece = -1, EmptyPiece,
                 WKing, WQueen, WBishop, WKnight, WRook, WPawn, 
-                BKing, BQueen, BBishop, BKnight, BRook, BPawn,};
+                BKing, BQueen, BBishop, BKnight, BRook, BPawn,
+                WHITE_PIECES, BLACK_PIECES};
 
 enum castleRights {
     noCastle = 0, 
@@ -26,6 +28,7 @@ enum castleRights {
     NOT_W_OOO = B_Castle | W_OO,
     NOT_B_OO = W_Castle | B_OOO,
     NOT_B_OOO = W_Castle | B_OO,
+
     All_Castle = W_Castle | B_Castle,
 };
 
@@ -47,18 +50,18 @@ static std::map<int, int> pieceValues = {
 };
 
 
-inline castleRights operator&(castleRights lhs, castleRights rhs) {
+constexpr inline castleRights operator&(castleRights lhs, castleRights rhs) {
     return static_cast<castleRights>(static_cast<int>(lhs) & static_cast<int>(rhs));
 }
 
-inline castleRights operator^(castleRights lhs, castleRights rhs) {
+constexpr inline castleRights operator^(castleRights lhs, castleRights rhs) {
     return static_cast<castleRights>(static_cast<int>(lhs) ^ static_cast<int>(rhs));
 }
 
-inline castleRights& operator&=(castleRights& lhs, castleRights rhs) {
+constexpr inline castleRights& operator&=(castleRights& lhs, castleRights rhs) {
     return lhs = lhs & rhs;
 }
 
-inline castleRights& operator^=(castleRights& lhs, castleRights rhs) {
+constexpr inline castleRights& operator^=(castleRights& lhs, castleRights rhs) {
     return lhs = lhs ^ rhs;
 }
