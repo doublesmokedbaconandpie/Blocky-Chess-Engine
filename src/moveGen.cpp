@@ -53,7 +53,7 @@ namespace MOVEGEN {
             pawnCaptures(currBoard, pawnMoves, pawn, -1);        
         
             for (BoardSquare move: pawnMoves) {
-                currBoard.makeMove(pawn, move);
+                currBoard.makeMove(pawn, move, allyKnight); // promotion piece is a placeholder
                 if (currBoard.isIllegalPos) {
                     currBoard.undoMove();
                     continue;
