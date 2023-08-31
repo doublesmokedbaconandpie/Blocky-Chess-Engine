@@ -314,28 +314,28 @@ pieceTypes Board::getPiece(BoardSquare square) const{
     return this->getPiece(square.rank, square.file);
 }
 
-void Board::setPiece(int rank, int file, pieceTypes targetPiece) {
+void Board::setPiece(int rank, int file, pieceTypes currPiece) {
     int square = rank * 8 + file;
     uint64_t setSquare = (1ull << square);
     uint64_t clearSquare = ALL_SQUARES ^ setSquare;
 
     pieceTypes originPiece = this->getPiece(rank, file);
-    this->board[square] = targetPiece;
+    this->board[square] = currPiece;
     
     if (originPiece != nullPiece && originPiece != EmptyPiece) {
         pieceTypes originColor = originPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
         this->pieceSets[originColor] &= clearSquare;
         this->pieceSets[originPiece] &= clearSquare;
     }
-    if (targetPiece != EmptyPiece) {
-        pieceTypes targetColor = targetPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
-        this->pieceSets[targetColor] ^= setSquare;
-        this->pieceSets[targetPiece] ^= setSquare;
+    if (currPiece != EmptyPiece) {
+        pieceTypes currColor = currPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
+        this->pieceSets[currColor] ^= setSquare;
+        this->pieceSets[currPiece] ^= setSquare;
     }
 }
 
-void Board::setPiece(BoardSquare square, pieceTypes targetPiece) {
-    this->setPiece(square.rank, square.file, targetPiece);
+void Board::setPiece(BoardSquare square, pieceTypes currPiece) {
+    this->setPiece(square.rank, square.file, currPiece);
 }
 
 bool operator==(const Board& lhs, const Board& rhs) {

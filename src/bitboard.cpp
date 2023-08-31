@@ -58,9 +58,6 @@ bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies) {
     uint64_t enemyDiag  = enemies  & currDiag;
     uint64_t enemyADiag = enemies  & aCurrDiag;
 
-    // printBitboard(allPieces);
-    // printBitboard(enemies);
-
     // get rid of pieces in the same diagonal but not part of the section we want
     int nSquare = 64 - square;
     uint64_t urBlock = (allPiecesDiag  << nSquare) >> nSquare;
@@ -73,12 +70,18 @@ bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies) {
     uint64_t dlEnemy = (enemyDiag  >> square)  << square;
     uint64_t drEnemy = (enemyADiag >> square)  << square;
 
-    // leadingBit and trailingBit return -1 on bitboards with no pieces
+    int traiURBlock = trailingBit(urBlock) != -1 ? trailingBit(urBlock) : 64;
+    int traiULBlock = trailingBit(ulBlock) != -1 ? trailingBit(ulBlock) : 64;
+    int leadDLBlock = leadingBit(dlBlock) != -1 ? leadingBit(dlBlock) : 64;
+    int leadDRBlock = leadingBit(drBlock) != -1 ? leadingBit(drBlock) : 64;
+
+    // trailingBit and leadingBit can only output -1 when the input is 0, 
+    // which doesn't change closestStraights
     uint64_t closestDiags = 0ull;
-    closestDiags |= (leadingBit(urBlock) < leadingBit(urEnemy)) ? urEnemy : 0ull;
-    closestDiags |= (leadingBit(ulBlock) < leadingBit(ulEnemy)) ? ulEnemy : 0ull;
-    closestDiags |= (trailingBit(dlBlock) < trailingBit(dlEnemy)) ? dlEnemy : 0ull;
-    closestDiags |= (trailingBit(drBlock) < trailingBit(drEnemy)) ? drEnemy : 0ull;
+    closestDiags |= (traiURBlock > trailingBit(urEnemy)) ? urEnemy : 0ull;
+    closestDiags |= (traiULBlock > trailingBit(ulEnemy)) ? ulEnemy : 0ull;
+    closestDiags |= (leadDLBlock > leadingBit(dlEnemy)) ? dlEnemy : 0ull;
+    closestDiags |= (leadDRBlock > leadingBit(drEnemy)) ? drEnemy : 0ull;
     return closestDiags & enemies;
 }
 
@@ -105,12 +108,18 @@ bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies) {
     uint64_t dEnemy = (enemyFile >> square)  << square;
     uint64_t rEnemy = (enemyRank >> square)  << square;
 
-    // leadingBit and trailingBit return -1 on bitboards with no pieces
+    int traiUBlock = trailingBit(uBlock) != -1 ? trailingBit(uBlock) : 64;
+    int traiLBlock = trailingBit(lBlock) != -1 ? trailingBit(lBlock) : 64;
+    int leadDBlock = leadingBit(dBlock) != -1 ? leadingBit(dBlock) : 64;
+    int leadRBlock = leadingBit(rBlock) != -1 ? leadingBit(rBlock) : 64;
+
+    // trailingBit and leadingBit can only output -1 when the input is 0, 
+    // which doesn't change closestStraights
     uint64_t closestStraights = 0ull;
-    closestStraights |= (leadingBit(uBlock) < leadingBit(uEnemy)) ? uEnemy : 0ull;
-    closestStraights |= (leadingBit(lBlock) < leadingBit(lEnemy)) ? lEnemy : 0ull;
-    closestStraights |= (trailingBit(dBlock) < trailingBit(dEnemy)) ? dEnemy : 0ull;
-    closestStraights |= (trailingBit(rBlock) < trailingBit(rEnemy)) ? rEnemy : 0ull;
+    closestStraights |= (traiUBlock > trailingBit(uEnemy)) ? uEnemy : 0ull;
+    closestStraights |= (traiLBlock > trailingBit(lEnemy)) ? lEnemy : 0ull;
+    closestStraights |= (leadDBlock > leadingBit(dEnemy)) ? dEnemy : 0ull;
+    closestStraights |= (leadRBlock > leadingBit(rEnemy)) ? rEnemy : 0ull;
     return closestStraights & enemies;
 }
 
