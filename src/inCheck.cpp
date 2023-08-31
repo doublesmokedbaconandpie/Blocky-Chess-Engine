@@ -73,7 +73,7 @@ bool currKingInAttack(Board& board) {
     uint64_t enemyQueens  = board.isWhiteTurn ? board.pieceSets[BQueen]  : board.pieceSets[WQueen];
     uint64_t enemyBishops = board.isWhiteTurn ? board.pieceSets[BBishop] : board.pieceSets[WBishop];
     uint64_t enemyRooks   = board.isWhiteTurn ? board.pieceSets[BRook]   : board.pieceSets[WRook];
-    uint64_t enemyKnights = board.isWhiteTurn ? board.pieceSets[BKing]   : board.pieceSets[WKing];
+    uint64_t enemyKnights = board.isWhiteTurn ? board.pieceSets[BKnight] : board.pieceSets[WKnight];
     uint64_t enemyPawns   = board.isWhiteTurn ? board.pieceSets[BPawn]   : board.pieceSets[WPawn];
 
     return diagAttackers(kingSquare, allPieces, enemyQueens | enemyBishops)
