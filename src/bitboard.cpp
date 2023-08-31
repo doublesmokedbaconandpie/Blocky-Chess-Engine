@@ -59,7 +59,7 @@ bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies) {
     uint64_t enemyADiag = enemies  & aCurrDiag;
 
     // get rid of pieces in the same diagonal but not part of the section we want
-    int nSquare = 64 - square;
+    int nSquare = 63 - square;
     uint64_t urBlock = (allPiecesDiag  << nSquare) >> nSquare;
     uint64_t ulBlock = (allPiecesADiag << nSquare) >> nSquare;
     uint64_t dlBlock = (allPiecesDiag  >> square)  << square;
@@ -97,7 +97,7 @@ bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies) {
     uint64_t enemyRank = enemies  & currRank;
 
     // get rid of pieces in the same straight but not part of the section we want
-    int nSquare = 64 - square;
+    int nSquare = 63 - square;
     uint64_t uBlock = (allPiecesFile << nSquare) >> nSquare;
     uint64_t lBlock = (allPiecesRank << nSquare) >> nSquare;
     uint64_t dBlock = (allPiecesFile >> square)  << square;
