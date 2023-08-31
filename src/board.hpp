@@ -57,6 +57,7 @@ struct BoardState {
 
 struct Board {
     Board(); // default game
+    // for testing
     Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn = true, 
             int a_fiftyMoveRule = 0, BoardSquare a_pawnJumpedSquare = BoardSquare(), 
             bool a_isIllegalPos = false, castleRights a_castlingRights = All_Castle, int a_materialDifference = 0); 
@@ -90,3 +91,5 @@ struct Board {
 };
 
 castleRights castleRightsBit(BoardSquare finalKingPos);
+// for debugging
+uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int target);

@@ -1,5 +1,4 @@
 #include <cstdint>
-#include <cassert>
 #include <iostream>
 #include <iomanip>
 
@@ -47,24 +46,27 @@ uint64_t getAntiDiagMask(int square) {
     return flipVertical(DIAGS_MASK.at(7 - getRank(square) + getFile(square)));
 }
 
-bool diagAttackers(int square, uint64_t allies, uint64_t enemies) {
-    allies ^= (1ull << square);
+bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies) {
+    allPieces ^= (1ull << square) | enemies;
 
     // 'a' or 'A' signifies anti-diagonal
     uint64_t currDiag  = getDiagMask(square);
     uint64_t aCurrDiag = getAntiDiagMask(square);
 
-    uint64_t allyDiag   = allies  & currDiag;
-    uint64_t allyADiag  = allies  & aCurrDiag;
-    uint64_t enemyDiag  = enemies & currDiag;
-    uint64_t enemyADiag = enemies & aCurrDiag;
+    uint64_t allPiecesDiag  = allPieces & currDiag;
+    uint64_t allPiecesADiag = allPieces & aCurrDiag;
+    uint64_t enemyDiag  = enemies  & currDiag;
+    uint64_t enemyADiag = enemies  & aCurrDiag;
+
+    // printBitboard(allPieces);
+    // printBitboard(enemies);
 
     // get rid of pieces in the same diagonal but not part of the section we want
     int nSquare = 64 - square;
-    uint64_t urAlly = (allyDiag  << nSquare) >> nSquare;
-    uint64_t ulAlly = (allyADiag << nSquare) >> nSquare;
-    uint64_t dlAlly = (allyDiag  >> square)  << square;
-    uint64_t drAlly = (allyADiag >> square)  << square;
+    uint64_t urBlock = (allPiecesDiag  << nSquare) >> nSquare;
+    uint64_t ulBlock = (allPiecesADiag << nSquare) >> nSquare;
+    uint64_t dlBlock = (allPiecesDiag  >> square)  << square;
+    uint64_t drBlock = (allPiecesADiag >> square)  << square;
 
     uint64_t urEnemy = (enemyDiag  << nSquare) >> nSquare;
     uint64_t ulEnemy = (enemyADiag << nSquare) >> nSquare;
@@ -73,30 +75,30 @@ bool diagAttackers(int square, uint64_t allies, uint64_t enemies) {
 
     // leadingBit and trailingBit return -1 on bitboards with no pieces
     uint64_t closestDiags = 0ull;
-    closestDiags |= (leadingBit(urAlly) < leadingBit(urEnemy)) ? urEnemy : 0ull;
-    closestDiags |= (leadingBit(ulAlly) < leadingBit(ulEnemy)) ? ulEnemy : 0ull;
-    closestDiags |= (trailingBit(dlAlly) < trailingBit(dlEnemy)) ? dlEnemy : 0ull;
-    closestDiags |= (trailingBit(drAlly) < trailingBit(drEnemy)) ? drEnemy : 0ull;
+    closestDiags |= (leadingBit(urBlock) < leadingBit(urEnemy)) ? urEnemy : 0ull;
+    closestDiags |= (leadingBit(ulBlock) < leadingBit(ulEnemy)) ? ulEnemy : 0ull;
+    closestDiags |= (trailingBit(dlBlock) < trailingBit(dlEnemy)) ? dlEnemy : 0ull;
+    closestDiags |= (trailingBit(drBlock) < trailingBit(drEnemy)) ? drEnemy : 0ull;
     return closestDiags & enemies;
 }
 
-bool straightAttackers(int square, uint64_t allies, uint64_t enemies) {
-    allies ^= (1ull << square);
+bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies) {
+    allPieces ^= (1ull << square) | enemies;
 
     uint64_t currFile = getFileMask(square);
     uint64_t currRank = getRankMask(square);
 
-    uint64_t allyFile  = allies  & currFile;
-    uint64_t allyRank  = allies  & currRank;
-    uint64_t enemyFile = enemies & currFile;
-    uint64_t enemyRank = enemies & currRank;
+    uint64_t allPiecesFile  = allPieces & currFile;
+    uint64_t allPiecesRank  = allPieces & currRank;
+    uint64_t enemyFile = enemies  & currFile;
+    uint64_t enemyRank = enemies  & currRank;
 
     // get rid of pieces in the same straight but not part of the section we want
     int nSquare = 64 - square;
-    uint64_t uAlly = (allyFile << nSquare) >> nSquare;
-    uint64_t lAlly = (allyRank << nSquare) >> nSquare;
-    uint64_t dAlly = (allyFile >> square)  << square;
-    uint64_t rAlly = (allyRank >> square)  << square;
+    uint64_t uBlock = (allPiecesFile << nSquare) >> nSquare;
+    uint64_t lBlock = (allPiecesRank << nSquare) >> nSquare;
+    uint64_t dBlock = (allPiecesFile >> square)  << square;
+    uint64_t rBlock = (allPiecesRank >> square)  << square;
 
     uint64_t uEnemy = (enemyFile << nSquare) >> nSquare;
     uint64_t lEnemy = (enemyRank << nSquare) >> nSquare;
@@ -105,10 +107,10 @@ bool straightAttackers(int square, uint64_t allies, uint64_t enemies) {
 
     // leadingBit and trailingBit return -1 on bitboards with no pieces
     uint64_t closestStraights = 0ull;
-    closestStraights |= (leadingBit(uAlly) < leadingBit(uEnemy)) ? uEnemy : 0ull;
-    closestStraights |= (leadingBit(lAlly) < leadingBit(lEnemy)) ? lEnemy : 0ull;
-    closestStraights |= (trailingBit(dAlly) < trailingBit(dEnemy)) ? dEnemy : 0ull;
-    closestStraights |= (trailingBit(rAlly) < trailingBit(rEnemy)) ? rEnemy : 0ull;
+    closestStraights |= (leadingBit(uBlock) < leadingBit(uEnemy)) ? uEnemy : 0ull;
+    closestStraights |= (leadingBit(lBlock) < leadingBit(lEnemy)) ? lEnemy : 0ull;
+    closestStraights |= (trailingBit(dBlock) < trailingBit(dEnemy)) ? dEnemy : 0ull;
+    closestStraights |= (trailingBit(rBlock) < trailingBit(rEnemy)) ? rEnemy : 0ull;
     return closestStraights & enemies;
 }
 

@@ -189,6 +189,16 @@ Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn,
     this->isIllegalPos = a_isIllegalPos;
     this->castlingRights = a_castlingRights;
     this->materialDifference = a_materialDifference;
+
+    for (int i = WKing; i < WHITE_PIECES; i++) {
+        this->pieceSets[i] = makeBitboardFromArray(this->board, i);
+        if (i < BKing) {
+            this->pieceSets[WHITE_PIECES] |= makeBitboardFromArray(this->board, i);
+        }
+        else {
+            this->pieceSets[BLACK_PIECES] |= makeBitboardFromArray(this->board, i);
+        }
+    }
 }
 
 Board::Board(std::string fenStr) {
@@ -383,4 +393,14 @@ castleRights castleRightsBit(BoardSquare finalKingPos) {
     else {
         return noCastle;
     }
+}
+
+uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int target) {
+    uint64_t result = 0ull;
+    for (size_t i = 0; i < board.size(); i++) {
+        if (board.at(i) == target) {
+            result |= (1ull << i);
+        }
+    }
+    return result;
 }

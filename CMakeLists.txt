@@ -20,6 +20,7 @@ endif(MAKE_EXE)
 unset(MAKE_EXE CACHE)
 
 target_sources(Blocky PRIVATE
+    src/bitboard.cpp
     src/board.cpp
     src/inCheck.cpp
     src/moveGen.cpp

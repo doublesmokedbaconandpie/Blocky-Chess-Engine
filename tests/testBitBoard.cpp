@@ -12,8 +12,6 @@ uint64_t arrayToBitboard(std::array<pieceTypes, BOARD_SIZE> board) {
         if (board.at(i) != EmptyPiece) {
             result |= (1ull << i);
         }
-        if (board.at(i) == BKing) {
-        }
     }
     return result;
 }
@@ -135,7 +133,7 @@ TEST(BitboardTest, diagAttackersFalse1) {
     uint64_t allies = 1ull << 30;
     int square = 30;
 
-    EXPECT_EQ(diagAttackers(square, allies, enemies), false);
+    EXPECT_EQ(diagAttackers(square, allies | enemies, enemies), false);
 }
 
 TEST(BitboardTest, diagAttackersFalse2) {
@@ -167,7 +165,7 @@ TEST(BitboardTest, diagAttackersFalse2) {
     uint64_t allies = arrayToBitboard(alliesBoard);
     uint64_t enemies = arrayToBitboard(enemiesBoard);
 
-    EXPECT_EQ(diagAttackers(square, allies, enemies), false);
+    EXPECT_EQ(diagAttackers(square, allies | enemies, enemies), false);
 }
 
 TEST(BitboardTest, diagAttackersTrue1) {
@@ -199,12 +197,7 @@ TEST(BitboardTest, diagAttackersTrue1) {
     uint64_t allies = arrayToBitboard(alliesBoard);
     uint64_t enemies = arrayToBitboard(enemiesBoard);
 
-    std::cout << std::setw(16) << std::setfill('0') << std::hex << allies << std::endl;
-    std::cout << std::setw(16) << std::setfill('0') << std::hex << enemies << std::endl;
-
-    std::cout << std::endl;
-
-    EXPECT_EQ(diagAttackers(square, allies, enemies), true);
+    EXPECT_EQ(diagAttackers(square, allies | enemies, enemies), true);
 }
 
 TEST(BitboardTest, diagAttackersTrue2) {
@@ -236,7 +229,7 @@ TEST(BitboardTest, diagAttackersTrue2) {
     uint64_t allies = arrayToBitboard(alliesBoard);
     uint64_t enemies = arrayToBitboard(enemiesBoard);
 
-    EXPECT_EQ(diagAttackers(square, allies, enemies), true);
+    EXPECT_EQ(diagAttackers(square, allies | enemies, enemies), true);
 }
 
 TEST(BitboardTest, diagAttackersTrue3) {
@@ -268,7 +261,7 @@ TEST(BitboardTest, diagAttackersTrue3) {
     uint64_t allies = arrayToBitboard(alliesBoard);
     uint64_t enemies = arrayToBitboard(enemiesBoard);
 
-    EXPECT_EQ(diagAttackers(square, allies, enemies), true);
+    EXPECT_EQ(diagAttackers(square, allies | enemies, enemies), true);
 }
 
 TEST(BitboardTest, straightAttackersFalse) {
@@ -300,7 +293,7 @@ TEST(BitboardTest, straightAttackersFalse) {
     uint64_t allies = arrayToBitboard(alliesBoard);
     uint64_t enemies = arrayToBitboard(enemiesBoard);
 
-    EXPECT_EQ(straightAttackers(square, allies, enemies), false);
+    EXPECT_EQ(straightAttackers(square, allies | enemies, enemies), false);
 }
 
 TEST(BitboardTest, straightAttackersFalse2) {
@@ -332,7 +325,7 @@ TEST(BitboardTest, straightAttackersFalse2) {
     uint64_t allies = arrayToBitboard(alliesBoard);
     uint64_t enemies = arrayToBitboard(enemiesBoard);
 
-    EXPECT_EQ(straightAttackers(square, allies, enemies), false);
+    EXPECT_EQ(straightAttackers(square, allies | enemies, enemies), false);
 }
 
 TEST(BitboardTest, straightAttackersTrue1) {
@@ -364,7 +357,7 @@ TEST(BitboardTest, straightAttackersTrue1) {
     uint64_t allies = arrayToBitboard(alliesBoard);
     uint64_t enemies = arrayToBitboard(enemiesBoard);
 
-    EXPECT_EQ(straightAttackers(square, allies, enemies), true);
+    EXPECT_EQ(straightAttackers(square, allies | enemies, enemies), true);
 }
 
 TEST(BitboardTest, straightAttackersTrue2) {
@@ -396,7 +389,7 @@ TEST(BitboardTest, straightAttackersTrue2) {
     uint64_t allies = arrayToBitboard(alliesBoard);
     uint64_t enemies = arrayToBitboard(enemiesBoard);
 
-    EXPECT_EQ(straightAttackers(square, allies, enemies), true);
+    EXPECT_EQ(straightAttackers(square, allies | enemies, enemies), true);
 }
 
 TEST(BitboardTest, knightAttackersTrue1) {

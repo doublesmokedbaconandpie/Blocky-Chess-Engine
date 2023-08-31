@@ -64,8 +64,8 @@ uint64_t getRankMask(int square);
 uint64_t getDiagMask(int square);
 uint64_t getAntiDiagMask(int square);
 
-bool diagAttackers(int square, uint64_t allies, uint64_t enemies);
-bool straightAttackers(int square, uint64_t allies, uint64_t enemies);
+bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies);
+bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies);
 bool knightAttackers(int square, uint64_t enemyKnights);
 bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn);
 bool kingAttackers(int square, uint64_t enemyKings);
