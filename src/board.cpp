@@ -290,6 +290,7 @@ std::string Board::toFen() {
     this->castlingRights & W_OOO ? fenStr.append("Q") : ""; 
     this->castlingRights & B_OO  ? fenStr.append("k") : ""; 
     this->castlingRights & B_OOO ? fenStr.append("q") : ""; 
+    this->castlingRights == noCastle ? fenStr.append("-") : ""; 
     fenStr.push_back(' ');
 
     fenStr.append(this->pawnJumpedSquare.toStr());

@@ -125,11 +125,10 @@ bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies) {
 
 bool knightAttackers(int square, uint64_t enemyKnights) {
     uint64_t currPiece = 1ull << square;
-
-    uint64_t left1 = (currPiece >> 1) & NOT_FILE_A;
-    uint64_t left2 = (currPiece >> 2) & NOT_FILE_AB;
-    uint64_t right1 = (currPiece << 1) & NOT_FILE_H;
-    uint64_t right2 = (currPiece << 2) & NOT_FILE_HG;
+    uint64_t left1 = (currPiece >> 1) & NOT_FILE_H;
+    uint64_t left2 = (currPiece >> 2) & NOT_FILE_HG;
+    uint64_t right1 = (currPiece << 1) & NOT_FILE_A;
+    uint64_t right2 = (currPiece << 2) & NOT_FILE_AB;
 
     uint64_t height1 = left1 | right1;
     uint64_t height2 = left2 | right2;
