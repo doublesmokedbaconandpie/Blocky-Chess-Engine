@@ -4,7 +4,6 @@
 #include "search.hpp"
 #include "eval.hpp"
 #include "moveGen.hpp"
-#include "inCheck.hpp"
 #include "board.hpp"
 
 namespace SEARCH {
