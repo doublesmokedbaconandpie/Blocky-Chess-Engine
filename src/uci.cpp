@@ -5,6 +5,7 @@
 #include <chrono>
 
 #include "uci.hpp"
+#include "timeman.hpp"
 #include "search.hpp"
 #include "inCheck.hpp"
 #include "board.hpp"
@@ -97,18 +98,27 @@ namespace UCI {
 
     void go(std::istringstream& input, Board& board) {
         std::string token;
+        int wtime = TIMEMAN::INF_TIME, btime = TIMEMAN::INF_TIME, allytime;
+        std::string param, value;
+        while (input >> param) {
+            input >> value;
+            if (param == "wtime") {wtime = stoi(value);}
+            else if (param == "btime") {btime = stoi(value);}
+        }   
+        allytime = board.isWhiteTurn ? wtime : btime;
+        int depthToUse = OPTIONS.depth < TIMEMAN::timeToDepth(allytime) ? OPTIONS.depth : TIMEMAN::timeToDepth(allytime);
 
         auto start = std::chrono::high_resolution_clock::now();
-        SEARCH::SearchInfo result = SEARCH::search(board, OPTIONS.depth);
+        SEARCH::SearchInfo result = SEARCH::search(board, depthToUse);
         auto end = std::chrono::high_resolution_clock::now();
         int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         
-        info(result, duration);
+        info(result, duration, depthToUse);
         std::cout << "bestmove " << result.move.toStr() << "\n";
     }
 
-    void info(SEARCH::SearchInfo searchResult, int64_t searchDuration) {
-        std::cout << "info depth " << OPTIONS.depth << ' ';
+    void info(SEARCH::SearchInfo searchResult, int64_t searchDuration, int depth) {
+        std::cout << "info depth " << depth << ' ';
         std::cout << "nodes " << searchResult.nodes << ' ';
         if (searchDuration != 0) {
             std::cout << "nps " << static_cast<int64_t>(searchResult.nodes) * 1000000 / searchDuration  << ' ';
