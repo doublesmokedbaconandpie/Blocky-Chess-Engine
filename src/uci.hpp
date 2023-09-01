@@ -8,7 +8,7 @@
 
 namespace UCI {
     struct UCIOPTIONS {
-        int depth = 4;
+        int depth = 5;
     };
 
     bool uci();

@@ -22,7 +22,7 @@ namespace UCI {
         std::cout << "id name BLOCKY\n";
         std::cout << "id author BlockyTeam\n";
 
-        std::cout << "option name Depth type spin default 4 min 1 max 7\n";
+        std::cout << "option name Depth type spin default 5 min 1 max 7\n";
 
         std::cout << "uciok\n";
         return true;
