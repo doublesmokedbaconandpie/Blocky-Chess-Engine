@@ -37,31 +37,6 @@ pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int r
     return nullPiece;
 }
 
-bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare) {
-    std::vector<pieceTypes> possibleAttackers;
-    if (currBoard.isWhiteTurn) {
-        possibleAttackers.push_back(BQueen);
-        possibleAttackers.push_back(BBishop);
-    }
-    else {
-        possibleAttackers.push_back(WQueen);
-        possibleAttackers.push_back(WBishop);
-    }
-
-    std::vector<pieceTypes> cornerPieces; 
-    cornerPieces.push_back(getPieceInDirection(currBoard, originSquare, 1, -1)); // down left
-    cornerPieces.push_back(getPieceInDirection(currBoard, originSquare, 1, 1)); // down right
-    cornerPieces.push_back(getPieceInDirection(currBoard, originSquare, -1, -1)); // up left
-    cornerPieces.push_back(getPieceInDirection(currBoard, originSquare, -1, 1)); // up right
-    
-    for (pieceTypes piece: cornerPieces) {
-        if (std::find(possibleAttackers.begin(), possibleAttackers.end(), piece) != possibleAttackers.end()) {
-            return true;
-        }
-    }
-    return false;
-}
-
 bool currKingInAttack(Board& board) {
     pieceTypes allyKing = board.isWhiteTurn ? WKing : BKing;
     int kingSquare = leadingBit(board.pieceSets[allyKing]);

@@ -98,15 +98,15 @@ TEST(BitboardTest, getFileMaskTest) {
 }
 
 TEST(BitboardTest, getRankMaskTest) {
-    EXPECT_EQ(getRankMask(0), RANK_1);
-    EXPECT_EQ(getRankMask(8), RANK_2);
-    EXPECT_EQ(getRankMask(16), RANK_3);
-    EXPECT_EQ(getRankMask(24), RANK_4);
-    EXPECT_EQ(getRankMask(32), RANK_5);
-    EXPECT_EQ(getRankMask(40), RANK_6);
-    EXPECT_EQ(getRankMask(48), RANK_7);
-    EXPECT_EQ(getRankMask(56), RANK_8);
-    EXPECT_EQ(getRankMask(5), RANK_1);
+    EXPECT_EQ(getRankMask(0), RANK_8);
+    EXPECT_EQ(getRankMask(8), RANK_7);
+    EXPECT_EQ(getRankMask(16), RANK_6);
+    EXPECT_EQ(getRankMask(24), RANK_5);
+    EXPECT_EQ(getRankMask(32), RANK_4);
+    EXPECT_EQ(getRankMask(40), RANK_3);
+    EXPECT_EQ(getRankMask(48), RANK_2);
+    EXPECT_EQ(getRankMask(56), RANK_1);
+    EXPECT_EQ(getRankMask(5), RANK_8);
 }
 
 TEST(BitboardTest, getDiagMaskTest) {
