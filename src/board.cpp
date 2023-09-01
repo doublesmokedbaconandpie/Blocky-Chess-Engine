@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <unordered_map>
 
 #include "board.hpp"
 #include "move.hpp"
@@ -75,11 +74,6 @@ Board::Board(std::string fenStr) {
     std::string token; 
     std::istringstream fenStream(fenStr);
 
-    std::unordered_map<char, pieceTypes> charToPiece = {
-        {'P', WPawn}, {'N', WKnight}, {'B', WBishop}, {'R', WRook}, {'Q', WQueen}, {'K', WKing}, 
-        {'p', BPawn}, {'n', BKnight}, {'b', BBishop}, {'r', BRook}, {'q', BQueen}, {'k', BKing}, 
-    };
-
     fenStream >> token;
     int rank = 0, file = A;
     for (char& iter: token) {
@@ -122,11 +116,6 @@ Board::Board(std::string fenStr) {
 
 std::string Board::toFen() {
     std::string fenStr; 
-
-    std::unordered_map<pieceTypes, char> pieceToChar = {
-        {WPawn, 'P'}, {WKnight, 'N'}, {WBishop, 'B'}, {WRook, 'R'}, {WQueen, 'Q'}, {WKing, 'K'}, 
-        {BPawn, 'p'}, {BKnight, 'n'}, {BBishop, 'b'}, {BRook, 'r'}, {BQueen, 'q'}, {BKing, 'k'}, 
-    };
 
     int emptyPiecesInRow = 0, piecesPlaced = 0;
     for (pieceTypes piece: this->board) {
@@ -184,6 +173,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     pieceTypes allyKing = this->isWhiteTurn ? WKing : BKing;
     pieceTypes allyRook = this->isWhiteTurn ? WRook : BRook;
     pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
+    pieceTypes enemyRook = this->isWhiteTurn ? BRook : WRook;
     int pawnJumpDirection = this->isWhiteTurn ? -2 : 2;
     int promotionRank = this->isWhiteTurn ? 0 : 7;
     
@@ -218,12 +208,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     }
     else if (originPiece == allyKing) {
         this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
-    }
-    else if (originPiece == allyRook) {
-        this->castlingRights &= pos1 == BoardSquare("h1") ? NOT_W_OO  : All_Castle;
-        this->castlingRights &= pos1 == BoardSquare("a1") ? NOT_W_OOO : All_Castle;
-        this->castlingRights &= pos1 == BoardSquare("h8") ? NOT_B_OO  : All_Castle;
-        this->castlingRights &= pos1 == BoardSquare("a8") ? NOT_B_OOO : All_Castle;
     }
     // jumping pawn
     else if (originPiece == allyPawn && pos2.rank == pos1.rank + pawnJumpDirection) { 
@@ -260,6 +244,20 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         if (targetPiece != EmptyPiece || originPiece == allyPawn) {
             this->fiftyMoveRule = 0;
         }
+    }
+
+    // if either your allyRook is moved or an enemyRook is captured, modify castling rights
+    if (originPiece == allyRook) {
+        this->castlingRights &= pos1 == BoardSquare("h1") ? NOT_W_OO  : All_Castle;
+        this->castlingRights &= pos1 == BoardSquare("a1") ? NOT_W_OOO : All_Castle;
+        this->castlingRights &= pos1 == BoardSquare("h8") ? NOT_B_OO  : All_Castle;
+        this->castlingRights &= pos1 == BoardSquare("a8") ? NOT_B_OOO : All_Castle;
+    }
+    if (targetPiece == enemyRook) {
+        this->castlingRights &= pos2 == BoardSquare("h1") ? NOT_W_OO  : All_Castle;
+        this->castlingRights &= pos2 == BoardSquare("a1") ? NOT_W_OOO : All_Castle;
+        this->castlingRights &= pos2 == BoardSquare("h8") ? NOT_B_OO  : All_Castle;
+        this->castlingRights &= pos2 == BoardSquare("a8") ? NOT_B_OOO : All_Castle;
     }
 
     this->materialDifference -= pieceValues.at(targetPiece); //updates the material score of the board on capture
@@ -364,15 +362,10 @@ bool operator<(const Board& lhs, const Board& rhs) {
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& target) {
-    std::unordered_map<pieceTypes, std::string> pieceToStr = {
-        {WPawn, "WP"}, {WKnight, "WN"}, {WBishop, "WB"}, {WRook, "WR"}, {WQueen, "WQ"}, {WKing, "WK"}, 
-        {BPawn, "BP"}, {BKnight, "BN"}, {BBishop, "BB"}, {BRook, "BR"}, {BQueen, "BQ"}, {BKing, "BK"}, 
-        {EmptyPiece, "  "}
-    };
     for (int rank = 0; rank <= 7; rank++) {
         os << "[";
         for (int file = A; file <= 7; file++) {
-            os << pieceToStr[target.getPiece(rank, file)];
+            os << pieceToChar[target.getPiece(rank, file)];
             os << ',';
         }
         os << "],\n";
