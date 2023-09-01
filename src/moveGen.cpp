@@ -254,4 +254,33 @@ namespace MOVEGEN {
         }
     }
 
+    pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
+        if (rankIncrement == 0 && fileIncrement == 0) {
+            throw std::invalid_argument("rankIncrement or fileIncrement must not be 0");
+        }
+        
+        pieceTypes currPiece;
+        int currRank = originSquare.rank + rankIncrement;
+        int currFile = originSquare.file + fileIncrement;
+
+        while(currRank >= 0 && currRank <= 7 && currFile >= A && currFile <= H) {
+            currPiece = currBoard.getPiece(currRank, currFile);
+            if (currPiece != EmptyPiece) {
+                return currPiece;
+            }
+            currRank += rankIncrement;
+            currFile += fileIncrement;
+        }
+        return nullPiece;
+    }
+
+    bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
+        int target = currBoard.getPiece(targetSquare);
+        if(currBoard.isWhiteTurn) {
+            return target >= WKing && target <= WPawn;
+        }
+        else {
+            return target >= BKing && target <= BPawn;
+        }
+    }
 } // namespace MOVEGEN

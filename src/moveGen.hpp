@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "board.hpp"
-#include "inCheck.hpp"
 
 namespace MOVEGEN {
 
@@ -14,9 +13,11 @@ namespace MOVEGEN {
     void validRookMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& rooks);
     void validQueenMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& queens);
     void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& kings); // includes castling
-    // idk what to do about 3-fold repetition; maybe a hash table
 
     void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement);
+    pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement);
+    bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare);
+
     void forwardPawnMoves(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn);
     void pawnCaptures(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn, int fileDirection);
 
