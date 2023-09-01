@@ -8,7 +8,7 @@
 
 namespace UCI {
     struct UCIOPTIONS {
-        int depth = 4;
+        int depth = 5;
     };
 
     bool uci();
@@ -19,7 +19,7 @@ namespace UCI {
     void UCILOOP();
     Board position(std::istringstream& input);
     void go(std::istringstream& input, Board& board);
-    void info(SEARCH::SearchInfo searchResult, int64_t searchDuration);
+    void info(SEARCH::SearchInfo searchResult, int64_t searchDuration, int depth);
 
     void isready();
 
