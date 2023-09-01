@@ -21,8 +21,8 @@ unset(MAKE_EXE CACHE)
 
 target_sources(Blocky PRIVATE
     src/bitboard.cpp
+    src/move.cpp
     src/board.cpp
-    src/inCheck.cpp
     src/moveGen.cpp
     src/search.cpp
     src/eval.cpp

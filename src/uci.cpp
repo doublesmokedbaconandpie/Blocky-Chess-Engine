@@ -7,7 +7,6 @@
 #include "uci.hpp"
 #include "timeman.hpp"
 #include "search.hpp"
-#include "inCheck.hpp"
 #include "board.hpp"
 
 namespace UCI {
