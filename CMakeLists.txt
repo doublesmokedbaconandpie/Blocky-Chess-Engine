@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14) 
 
-option(MAKE_EXE "exe?" ON)
+option(MAKE_EXE "exe?" OFF)
 
 project(Blocky)
 
@@ -20,6 +20,7 @@ endif(MAKE_EXE)
 unset(MAKE_EXE CACHE)
 
 target_sources(Blocky PRIVATE
+    src/bitboard.cpp
     src/board.cpp
     src/inCheck.cpp
     src/moveGen.cpp

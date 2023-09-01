@@ -1,9 +1,10 @@
 #include "inCheck.hpp"
+#include "bitboard.hpp"
 
 #include <algorithm>
+#include <cassert>
 #include <stdexcept>
 #include <vector>
-#include <map>
 
 bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
     int target = currBoard.getPiece(targetSquare);
@@ -61,130 +62,26 @@ bool checkDiagAttackers(Board& currBoard, BoardSquare originSquare) {
     return false;
 }
 
-bool checkStraightAttackers(Board& currBoard, BoardSquare originSquare) {
-    std::vector<pieceTypes> possibleAttackers;
-    if (currBoard.isWhiteTurn) {
-        possibleAttackers.push_back(BQueen);
-        possibleAttackers.push_back(BRook);
-    }
-    else {
-        possibleAttackers.push_back(WQueen);
-        possibleAttackers.push_back(WRook);
-    }
+bool currKingInAttack(Board& board) {
+    pieceTypes allyKing = board.isWhiteTurn ? WKing : BKing;
+    int kingSquare = leadingBit(board.pieceSets[allyKing]);
+    assert(kingSquare != -1);
 
-    std::vector<pieceTypes> crossPieces; 
-    crossPieces.push_back(getPieceInDirection(currBoard, originSquare, 1, 0)); // down
-    crossPieces.push_back(getPieceInDirection(currBoard, originSquare, -1, 0)); // up
-    crossPieces.push_back(getPieceInDirection(currBoard, originSquare, 0, -1)); // left
-    crossPieces.push_back(getPieceInDirection(currBoard, originSquare, 0, 1)); // right
-    
-    for (pieceTypes piece: crossPieces) {
-        if (std::find(possibleAttackers.begin(), possibleAttackers.end(), piece) != possibleAttackers.end()) {
-            return true;
-        }
-    }
-    return false;
+    uint64_t allPieces = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
+
+    uint64_t enemyKings   = board.isWhiteTurn ? board.pieceSets[BKing]   : board.pieceSets[WKing];
+    uint64_t enemyQueens  = board.isWhiteTurn ? board.pieceSets[BQueen]  : board.pieceSets[WQueen];
+    uint64_t enemyBishops = board.isWhiteTurn ? board.pieceSets[BBishop] : board.pieceSets[WBishop];
+    uint64_t enemyRooks   = board.isWhiteTurn ? board.pieceSets[BRook]   : board.pieceSets[WRook];
+    uint64_t enemyKnights = board.isWhiteTurn ? board.pieceSets[BKnight] : board.pieceSets[WKnight];
+    uint64_t enemyPawns   = board.isWhiteTurn ? board.pieceSets[BPawn]   : board.pieceSets[WPawn];
+
+    return diagAttackers(kingSquare, allPieces, enemyQueens | enemyBishops)
+        || straightAttackers(kingSquare, allPieces, enemyQueens | enemyRooks)
+        || knightAttackers(kingSquare, enemyKnights)
+        || pawnAttackers(kingSquare, enemyPawns, board.isWhiteTurn)
+        || kingAttackers(kingSquare, enemyKings);
 }
-
-
-
-bool checkKnightAttackers(Board& currBoard, BoardSquare originSquare) {
-    pieceTypes enemyKnight = currBoard.isWhiteTurn ? BKnight : WKnight;
-
-    std::vector<pieceTypes> knightSquares; 
-    int rank = originSquare.rank;
-    int file = originSquare.file;
-    knightSquares.push_back(currBoard.getPiece(rank - 2, file - 1));
-    knightSquares.push_back(currBoard.getPiece(rank - 2, file + 1));
-    knightSquares.push_back(currBoard.getPiece(rank + 2, file - 1));
-    knightSquares.push_back(currBoard.getPiece(rank + 2, file + 1));
-    knightSquares.push_back(currBoard.getPiece(rank - 1, file - 2));
-    knightSquares.push_back(currBoard.getPiece(rank + 1, file - 2));
-    knightSquares.push_back(currBoard.getPiece(rank - 1, file + 2));
-    knightSquares.push_back(currBoard.getPiece(rank + 1, file + 2));
-
-    for (pieceTypes piece: knightSquares) {
-        if (piece == enemyKnight) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool checkPawnAttackers(Board& currBoard, BoardSquare originSquare) {
-    pieceTypes enemyPawn = currBoard.isWhiteTurn ? BPawn : WPawn;
-    int direction = currBoard.isWhiteTurn ? -1 : 1;
-
-    std::vector<pieceTypes> pawnPieces; 
-    int rank = originSquare.rank;
-    int file = originSquare.file;
-    if (file == A) {
-        pawnPieces.push_back(currBoard.getPiece(rank + direction, file + 1));
-    }
-    else if (file == H) {
-        pawnPieces.push_back(currBoard.getPiece(rank + direction, file - 1));
-    }
-    else {
-        pawnPieces.push_back(currBoard.getPiece(rank + direction, file - 1));
-        pawnPieces.push_back(currBoard.getPiece(rank + direction, file + 1));
-    }
-
-    for (pieceTypes piece: pawnPieces) {
-        if (piece == enemyPawn) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool checkKingAttackers(Board& currBoard, BoardSquare originSquare) {
-    pieceTypes enemyKing = currBoard.isWhiteTurn ? BKing : WKing;
-
-    std::vector<pieceTypes> adjacentPieces; 
-    int rank = originSquare.rank;
-    int file = originSquare.file;
-    adjacentPieces.push_back(currBoard.getPiece(rank + 1, file + 1));
-    adjacentPieces.push_back(currBoard.getPiece(rank + 1, file));
-    adjacentPieces.push_back(currBoard.getPiece(rank + 1, file - 1));
-    adjacentPieces.push_back(currBoard.getPiece(rank, file + 1));
-    adjacentPieces.push_back(currBoard.getPiece(rank, file - 1));
-    adjacentPieces.push_back(currBoard.getPiece(rank - 1, file - 1));
-    adjacentPieces.push_back(currBoard.getPiece(rank - 1, file));
-    adjacentPieces.push_back(currBoard.getPiece(rank - 1, file + 1));
-
-    for (pieceTypes piece: adjacentPieces) {
-        if (piece == enemyKing) {
-            return true;
-        }
-    }
-    return false;
-}
-
-
-bool currKingInAttack(Board currBoard) {
-    pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
-
-    BoardSquare currKingSquare = BoardSquare();
-    for (int rank = 0; rank <= 7; rank++) {
-        if (currKingSquare != BoardSquare()) {
-            break;
-        }
-        for (int file = A; file <= H; file++) {
-            pieceTypes currPiece = currBoard.getPiece(rank, file);
-            if (currPiece == allyKing) {
-                currKingSquare = BoardSquare(rank, file);
-                break;
-            }
-        }
-    }
-    
-    return checkDiagAttackers(currBoard, currKingSquare) 
-        || checkStraightAttackers(currBoard, currKingSquare)
-        || checkKnightAttackers(currBoard, currKingSquare)
-        || checkPawnAttackers(currBoard, currKingSquare)
-        || checkKingAttackers(currBoard, currKingSquare);
-}
-
 
 bool notInRange(int var) {return var < 0 || var > 7;}
 void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece) {
@@ -203,7 +100,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     pieceTypes originPiece = this->getPiece(pos1);
     pieceTypes targetPiece = this->getPiece(pos2);
 
-    
     this->moveHistory.push_back(BoardState(
         BoardMove(pos1, pos2, promotionPiece),
         originPiece,
@@ -219,23 +115,21 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     this->fiftyMoveRule++;
 
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
+    this->setPiece(pos2, originPiece); // pretty much all possible moves translates the original piece to pos 2
 
     // castling
     // doesn't check for emptiness between rook and king
     if (originPiece == allyKing && (this->castlingRights & castleRightsBit(pos2))) {
         int kingFileDirection = pos2.file > pos1.file ? 1 : -1;
         fileVals rookFile = kingFileDirection == 1 ? H : A;
-        this->setPiece(pos2, allyKing);
         this->setPiece(pos1.rank, pos1.file + kingFileDirection, allyRook);
         this->setPiece(pos1.rank, rookFile, EmptyPiece);
         this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
     }
     else if (originPiece == allyKing) {
-        this->setPiece(pos2, originPiece);
         this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
     }
     else if (originPiece == allyRook) {
-        this->setPiece(pos2, originPiece);
         this->castlingRights &= pos1 == BoardSquare("h1") ? NOT_W_OO  : All_Castle;
         this->castlingRights &= pos1 == BoardSquare("a1") ? NOT_W_OOO : All_Castle;
         this->castlingRights &= pos1 == BoardSquare("h8") ? NOT_B_OO  : All_Castle;
@@ -245,7 +139,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     else if (originPiece == allyPawn && pos2.rank == pos1.rank + pawnJumpDirection) { 
         // doesn't check if pawn's original position is rank 2
         int behindDirection = this->isWhiteTurn ? 1 : -1;
-        this->setPiece(pos2, originPiece);
         this->pawnJumpedSquare = BoardSquare(pos2.rank + behindDirection, pos2.file);
         this->fiftyMoveRule = 0;
     }
@@ -265,7 +158,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
-        this->setPiece(pos2, originPiece);
         this->fiftyMoveRule = 0;
 
         if(this->isWhiteTurn)
@@ -275,7 +167,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 
     }
     else {
-        this->setPiece(pos2, originPiece);
         if (targetPiece != EmptyPiece || originPiece == allyPawn) {
             this->fiftyMoveRule = 0;
         }

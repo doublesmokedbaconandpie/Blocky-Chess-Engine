@@ -7,6 +7,7 @@
 #include <string>
 
 #include "types.hpp"
+#include "bitboard.hpp"
 
 struct BoardSquare {
     BoardSquare(): rank(-1), file(nullFile) {};
@@ -14,6 +15,7 @@ struct BoardSquare {
     BoardSquare(int a_rank, int a_file): rank(a_rank), file(fileVals(a_file)) {};
     BoardSquare(std::string input);
     std::string toStr();
+    int toSquare();
 
     friend bool operator==(const BoardSquare& lhs, const BoardSquare& rhs);
     friend bool operator!=(const BoardSquare& lhs, const BoardSquare& rhs);
@@ -55,6 +57,7 @@ struct BoardState {
 
 struct Board {
     Board(); // default game
+    // for testing
     Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn = true, 
             int a_fiftyMoveRule = 0, BoardSquare a_pawnJumpedSquare = BoardSquare(), 
             bool a_isIllegalPos = false, castleRights a_castlingRights = All_Castle, int a_materialDifference = 0); 
@@ -72,9 +75,10 @@ struct Board {
 
     pieceTypes getPiece(int rank, int file) const;
     pieceTypes getPiece(BoardSquare square) const;
-    bool setPiece(int rank, int file, pieceTypes piece);
-    bool setPiece(BoardSquare square, pieceTypes piece);
+    void setPiece(int rank, int file, pieceTypes currPiece);
+    void setPiece(BoardSquare square, pieceTypes currPiece);
 
+    std::array<uint64_t, NUM_BITBOARDS> pieceSets = {0ull};
     std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
     bool isWhiteTurn;
     castleRights castlingRights; // bitwise castling rights tracker
@@ -87,3 +91,5 @@ struct Board {
 };
 
 castleRights castleRightsBit(BoardSquare finalKingPos);
+// for debugging
+uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int target);
