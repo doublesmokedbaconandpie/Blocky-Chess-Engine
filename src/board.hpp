@@ -60,7 +60,7 @@ struct Board {
     std::vector<BoardState> moveHistory;
 };
 
-castleRights castleRightsBit(BoardSquare finalKingPos);
+castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn);
 bool notInRange(int var);
 bool currKingInAttack(Board& board);
 

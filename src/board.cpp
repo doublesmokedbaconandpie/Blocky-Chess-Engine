@@ -199,7 +199,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 
     // castling
     // doesn't check for emptiness between rook and king
-    if (originPiece == allyKing && (this->castlingRights & castleRightsBit(pos2))) {
+    if (originPiece == allyKing && (this->castlingRights & castleRightsBit(pos2, this->isWhiteTurn))) {
         int kingFileDirection = pos2.file > pos1.file ? 1 : -1;
         fileVals rookFile = kingFileDirection == 1 ? H : A;
         this->setPiece(pos1.rank, pos1.file + kingFileDirection, allyRook);
@@ -287,7 +287,7 @@ void Board::undoMove() {
     this->setPiece(prev.move.pos2, prev.targetPiece);
 
     // castling
-    if (prev.originPiece == prevKing && (prev.castlingRights & castleRightsBit(prev.move.pos2)) ) {
+    if (prev.originPiece == prevKing && (prev.castlingRights & castleRightsBit(prev.move.pos2, !this->isWhiteTurn)) ) {
         int kingFileDirection = prev.move.pos2.file > prev.move.pos1.file ? 1 : -1;
         fileVals rookFile = kingFileDirection == 1 ? H : A;
         this->setPiece(prev.move.pos1.rank, prev.move.pos1.file + kingFileDirection, EmptyPiece);
@@ -378,17 +378,17 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
     return os;
 }
 
-castleRights castleRightsBit(BoardSquare finalKingPos) {
-    if (finalKingPos == BoardSquare(7, G)) {
+castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn) {
+    if (finalKingPos == BoardSquare(7, G) && isWhiteTurn) {
         return W_OO;
     }
-    else if (finalKingPos == BoardSquare(7, C)) {
+    else if (finalKingPos == BoardSquare(7, C) && isWhiteTurn) {
         return W_OOO;
     }
-    else if (finalKingPos == BoardSquare(0, G)) {
+    else if (finalKingPos == BoardSquare(0, G) && !isWhiteTurn) {
         return B_OO;
     }
-    else if (finalKingPos == BoardSquare(0, C)) {
+    else if (finalKingPos == BoardSquare(0, C) && !isWhiteTurn) {
         return B_OOO;        
     }
     else {

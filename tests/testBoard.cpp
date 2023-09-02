@@ -144,11 +144,11 @@ TEST(BoardTest, toFenCastling) {
 
 TEST(CastleRightsBitTest, defaultBoard) {
     Board board;
-    EXPECT_EQ(castleRightsBit(BoardSquare(0, G)) && board.castlingRights, true);
-    EXPECT_EQ(castleRightsBit(BoardSquare(0, C)) && board.castlingRights, true);
-    EXPECT_EQ(castleRightsBit(BoardSquare(7, G)) && board.castlingRights, true);
-    EXPECT_EQ(castleRightsBit(BoardSquare(7, C)) && board.castlingRights, true);    
-    EXPECT_EQ(castleRightsBit(BoardSquare(4, E)) && board.castlingRights, false);    
+    EXPECT_EQ(castleRightsBit(BoardSquare(0, G), board.isWhiteTurn) && board.castlingRights, false); // is not black's turn
+    EXPECT_EQ(castleRightsBit(BoardSquare(0, C), board.isWhiteTurn) && board.castlingRights, false); // is not black's turn
+    EXPECT_EQ(castleRightsBit(BoardSquare(7, G), board.isWhiteTurn) && board.castlingRights, true);
+    EXPECT_EQ(castleRightsBit(BoardSquare(7, C), board.isWhiteTurn) && board.castlingRights, true);    
+    EXPECT_EQ(castleRightsBit(BoardSquare(4, E), board.isWhiteTurn) && board.castlingRights, false);    
 }
 
 TEST(MaterialDifferenceTest, defaultBoard) {
