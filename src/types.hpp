@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <array>
 #include <unordered_map>
 
 constexpr int BOARD_SIZE = 64;
@@ -33,30 +33,19 @@ enum castleRights {
     All_Castle = W_Castle | B_Castle,
 };
 
-static std::map<int, int> pieceValues = {
-    {WPawn, 1},
-    {BPawn, -1},
-    {WBishop, 3}, 
-    {BBishop, -3}, 
-    {WKnight, 3}, 
-    {BKnight, -3}, 
-    {WRook, 5}, 
-    {BRook, -5}, 
-    {WQueen, 9},
-    {BQueen, -9},
-    {WKing, 1000}, //should not be used
-    {BKing, -1000}, //should not be used
-    {EmptyPiece, 0},
-    {nullPiece, 0}
-};
+// indices are equal to the enumerated pieceTypes
+const static std::array<int, 13> pieceValues {
+    0,
+     1000,  9,  3,  3,  5,  1, 
+    -1000, -9, -3, -3, -5, -1,};
 
-static std::unordered_map<pieceTypes, char> pieceToChar = {
+const static std::unordered_map<pieceTypes, char> pieceToChar = {
     {EmptyPiece, ' '},
     {WPawn, 'P'}, {WKnight, 'N'}, {WBishop, 'B'}, {WRook, 'R'}, {WQueen, 'Q'}, {WKing, 'K'}, 
     {BPawn, 'p'}, {BKnight, 'n'}, {BBishop, 'b'}, {BRook, 'r'}, {BQueen, 'q'}, {BKing, 'k'}, 
 };
 
-static std::unordered_map<char, pieceTypes> charToPiece = {
+const static std::unordered_map<char, pieceTypes> charToPiece = {
     {'P', WPawn}, {'N', WKnight}, {'B', WBishop}, {'R', WRook}, {'Q', WQueen}, {'K', WKing}, 
     {'p', BPawn}, {'n', BKnight}, {'b', BBishop}, {'r', BRook}, {'q', BQueen}, {'k', BKing}, 
 };
