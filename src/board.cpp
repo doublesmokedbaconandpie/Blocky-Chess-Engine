@@ -85,10 +85,10 @@ Board::Board(std::string fenStr) {
             file += int(iter - '0');
         }
         else { // must be a piece character
-            this->setPiece(rank, file, charToPiece[iter]);
+            this->setPiece(rank, file, charToPiece.at(iter));
             file += 1;
 
-            this->materialDifference += pieceValues.at(charToPiece[iter]);
+            this->materialDifference += pieceValues[charToPiece.at(iter)];
         }
 
     }
@@ -124,7 +124,7 @@ std::string Board::toFen() {
         }
         else if (emptyPiecesInRow != 0) {
             fenStr.append(std::to_string(emptyPiecesInRow));
-            fenStr.push_back(pieceToChar[piece]);
+            fenStr.push_back(pieceToChar.at(piece));
             emptyPiecesInRow = 0;
         }
         else {
@@ -223,10 +223,10 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 
         //updates material score of the board on promotion
         if(this->isWhiteTurn) {
-            this->materialDifference += pieceValues.at(promotionPiece) - 1;
+            this->materialDifference += pieceValues[promotionPiece] - 1;
         }
         else {
-            this->materialDifference += pieceValues.at(promotionPiece) + 1;
+            this->materialDifference += pieceValues[promotionPiece] + 1;
         }
     }
     // en passant 
@@ -260,7 +260,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->castlingRights &= pos2 == BoardSquare("a8") ? NOT_B_OOO : All_Castle;
     }
 
-    this->materialDifference -= pieceValues.at(targetPiece); //updates the material score of the board on capture
+    this->materialDifference -= pieceValues[targetPiece]; //updates the material score of the board on capture
     this->pawnJumpedSquare = this->pawnJumpedSquare == oldPawnJumpedSquare ? BoardSquare() : this->pawnJumpedSquare;
 
     this->isIllegalPos = currKingInAttack(*this);
@@ -365,7 +365,7 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
     for (int rank = 0; rank <= 7; rank++) {
         os << "[";
         for (int file = A; file <= 7; file++) {
-            os << pieceToChar[target.getPiece(rank, file)];
+            os << pieceToChar.at(target.getPiece(rank, file));
             os << ',';
         }
         os << "],\n";
