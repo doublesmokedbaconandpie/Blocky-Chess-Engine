@@ -1,3 +1,0 @@
-C:/Users/Charles/Documents/GitHub/Blocky-Chess-Engine/CMakeFiles/Blocky.dir
-C:/Users/Charles/Documents/GitHub/Blocky-Chess-Engine/CMakeFiles/edit_cache.dir
-C:/Users/Charles/Documents/GitHub/Blocky-Chess-Engine/CMakeFiles/rebuild_cache.dir
