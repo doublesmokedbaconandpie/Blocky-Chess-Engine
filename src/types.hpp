@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <unordered_map>
 
 constexpr int BOARD_SIZE = 64;
 constexpr int NUM_BITBOARDS = 15;
@@ -47,6 +48,17 @@ static std::map<int, int> pieceValues = {
     {BKing, -1000}, //should not be used
     {EmptyPiece, 0},
     {nullPiece, 0}
+};
+
+static std::unordered_map<pieceTypes, char> pieceToChar = {
+    {EmptyPiece, ' '},
+    {WPawn, 'P'}, {WKnight, 'N'}, {WBishop, 'B'}, {WRook, 'R'}, {WQueen, 'Q'}, {WKing, 'K'}, 
+    {BPawn, 'p'}, {BKnight, 'n'}, {BBishop, 'b'}, {BRook, 'r'}, {BQueen, 'q'}, {BKing, 'k'}, 
+};
+
+static std::unordered_map<char, pieceTypes> charToPiece = {
+    {'P', WPawn}, {'N', WKnight}, {'B', WBishop}, {'R', WRook}, {'Q', WQueen}, {'K', WKing}, 
+    {'p', BPawn}, {'n', BKnight}, {'b', BBishop}, {'r', BRook}, {'q', BQueen}, {'k', BKing}, 
 };
 
 
