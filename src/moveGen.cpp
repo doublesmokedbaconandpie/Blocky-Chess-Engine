@@ -283,4 +283,21 @@ namespace MOVEGEN {
             return target >= BKing && target <= BPawn;
         }
     }
+
+    // perft is a method of determining correctness of move generators
+    // positions can be input and number of total leaf nodes determined
+    // the number determined can be compared to a table to established values from others
+    int perft(Board board, int depthLeft) {
+        if (depthLeft == 0) {
+            return 1;
+        }
+        int leafNodeCount = 0;
+        std::vector<BoardMove> moves = moveGenerator(board);
+        for (auto move: moves) {
+            board.makeMove(move);
+            leafNodeCount += perft(board, depthLeft - 1);
+            board.undoMove();
+        }
+        return leafNodeCount;
+    }
 } // namespace MOVEGEN
