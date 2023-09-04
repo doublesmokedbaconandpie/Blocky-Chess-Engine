@@ -1,4 +1,3 @@
-
 #include "eval.hpp"
 #include "board.hpp"
 

@@ -9,14 +9,14 @@
 #include "search.hpp"
 #include "board.hpp"
 
-namespace UCI {
-    UCIOPTIONS OPTIONS;
+namespace Uci {
+    UciOptions OPTIONS;
 
     bool uci() {
         std::string input;
         std::getline(std::cin, input);
         if (input != "uci") {
-            std::cout << "This engine is only UCI";
+            std::cout << "This engine is only Uci";
             return false;
         }
         std::cout << "id name BLOCKY\n";
@@ -28,7 +28,7 @@ namespace UCI {
         return true;
     }
 
-    void SETOPTIONLOOP() {
+    void setOptionLoop() {
         std::string commandLine, commandToken;
         while (true) {
             std::getline(std::cin, commandLine);
@@ -54,7 +54,7 @@ namespace UCI {
     }
 
 
-    void UCILOOP() {
+    void uciLoop() {
         std::string commandLine, commandToken;
         Board currBoard;
         while (true) {
@@ -64,7 +64,7 @@ namespace UCI {
 
             if (commandToken == "ucinewgame") {}
             else if (commandToken == "position") {currBoard = position(commandStream);}
-            else if (commandToken == "go") {UCI::go(commandStream, currBoard);}
+            else if (commandToken == "go") {Uci::go(commandStream, currBoard);}
             else if (commandToken == "isready") {isready();}
             else if (commandToken == "quit") {return;}
         }
@@ -108,7 +108,7 @@ namespace UCI {
         int depthToUse = OPTIONS.depth < TIMEMAN::timeToDepth(allytime) ? OPTIONS.depth : TIMEMAN::timeToDepth(allytime);
 
         auto start = std::chrono::high_resolution_clock::now();
-        SEARCH::SearchInfo result = SEARCH::search(board, depthToUse);
+        Search::SearchInfo result = Search::search(board, depthToUse);
         auto end = std::chrono::high_resolution_clock::now();
         int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         
@@ -116,14 +116,14 @@ namespace UCI {
         std::cout << "bestmove " << result.move.toStr() << "\n";
     }
 
-    void info(SEARCH::SearchInfo searchResult, int64_t searchDuration, int depth) {
+    void info(Search::SearchInfo searchResult, int64_t searchDuration, int depth) {
         std::cout << "info depth " << depth << ' ';
         std::cout << "nodes " << searchResult.nodes << ' ';
         if (searchDuration != 0) {
             std::cout << "nps " << static_cast<int64_t>(searchResult.nodes) * 1000000 / searchDuration  << ' ';
         }
         
-        if (searchResult.mateIn == SEARCH::NO_MATE) {
+        if (searchResult.mateIn == Search::NO_MATE) {
             std::cout << "score cp " << (searchResult.value * 100) << ' ';
         }
         else {
@@ -136,5 +136,5 @@ namespace UCI {
         std::cout << "readyok\n";
     }
 
-} // namespace UCI
+} // namespace Uci
 

@@ -15,7 +15,7 @@ TEST(TestEval, evalTest) {
 TEST(TestSearch, Depth4) {
     GTEST_SKIP();
     Board board = Board();
-    SEARCH::SearchInfo returnVals = SEARCH::search(board, 1);
+    Search::SearchInfo returnVals = Search::search(board, 1);
     board.makeMove(returnVals.move);
     
     std::cout << "Evaluation: " << returnVals.value << std::endl;

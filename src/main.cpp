@@ -1,9 +1,9 @@
 #include "uci.hpp"
 
 int main() {
-    if (!UCI::uci()) {return 1;}
-    UCI::SETOPTIONLOOP();
-    UCI::UCILOOP();
+    if (!Uci::uci()) {return 1;}
+    Uci::setOptionLoop();
+    Uci::uciLoop();
 
     return 0;
 }
