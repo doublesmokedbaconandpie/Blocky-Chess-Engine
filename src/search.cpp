@@ -6,7 +6,7 @@
 #include "moveGen.hpp"
 #include "board.hpp"
 
-namespace SEARCH {
+namespace Search {
     SearchInfo search(Board& board, int depth) {
         auto result = alphaBeta(board, MIN_ALPHA, MAX_BETA, depth, 0);
         return result;
@@ -15,6 +15,8 @@ namespace SEARCH {
     SearchInfo alphaBeta(Board& board, int alpha, int beta, int depthLeft, int distanceFromRoot) {
         SearchInfo result;
         result.nodes = 1;
+
+        // check for game ending by draw or checkmate
         if (board.fiftyMoveRule >= 50) {
             result.value = 0;
             return result;
@@ -35,6 +37,7 @@ namespace SEARCH {
             return result;
         }
 
+        // start search through moves
         int score, bestscore = MIN_ALPHA;
         for (BoardMove move: moves) {
             board.makeMove(move);
@@ -43,11 +46,13 @@ namespace SEARCH {
             
             result.nodes += oppAlphaBeta.nodes;
             score = -1 * oppAlphaBeta.value;
-
+            
+            // prune if a move is too good; opponent side will avoid playing into this node
             if (score >= beta) {
                 result.value = beta;
                 break;
             }
+            // fail-soft stabilizes the search and allows for returned values outside the alpha-beta bounds
             if (score > bestscore) {
                 result.mateIn = oppAlphaBeta.mateIn;
                 result.value = bestscore = score;
@@ -60,4 +65,4 @@ namespace SEARCH {
         return result;
     }
 
-} // namespace SEARCH
+} // namespace Search

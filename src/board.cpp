@@ -9,8 +9,7 @@
 #include "bitboard.hpp"
 #include "types.hpp"
 
-// Board
-
+// Used for debugging and testing
 Board::Board() {
     this->board = {
         BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook,
@@ -47,6 +46,7 @@ Board::Board() {
     this->pieceSets[BLACK_PIECES] = 0x000000000000FFFFull;
 }
 
+// Used for debugging and testing
 Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn, 
             int a_fiftyMoveRule, BoardSquare a_pawnJumpedSquare, 
             bool a_isIllegalPos, castleRights a_castlingRights, int a_materialDifference) {
@@ -69,6 +69,7 @@ Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn,
     }
 }
 
+// Used in UCI
 Board::Board(std::string fenStr) {
     this->materialDifference = 0;
     std::string token; 
@@ -114,6 +115,7 @@ Board::Board(std::string fenStr) {
     // Board doesn't use Fullmove counter
 }
 
+// For debugging
 std::string Board::toFen() {
     std::string fenStr; 
 
@@ -192,8 +194,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 
     BoardSquare oldPawnJumpedSquare = this->pawnJumpedSquare;
 
-    this->fiftyMoveRule++;
-
+    this->fiftyMoveRule++; // unless stated otherwise later on, increment the fifty move rule
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
     this->setPiece(pos2, originPiece); // pretty much all possible moves translates the original piece to pos 2
 
@@ -260,10 +261,12 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->castlingRights &= pos2 == BoardSquare("a8") ? NOT_B_OOO : All_Castle;
     }
 
-    this->materialDifference -= pieceValues[targetPiece]; //updates the material score of the board on capture
+    // updates the material score of the board on capture
+    this->materialDifference -= pieceValues[targetPiece]; 
+    // if nothing happened to the jumped pawn, disallow en passant
     this->pawnJumpedSquare = this->pawnJumpedSquare == oldPawnJumpedSquare ? BoardSquare() : this->pawnJumpedSquare;
-
     this->isIllegalPos = currKingInAttack(*this);
+
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !this->isWhiteTurn; 
 }
@@ -417,6 +420,7 @@ bool currKingInAttack(Board& board) {
         || kingAttackers(kingSquare, enemyKings);
 }
 
+// used for debugging
 uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int target) {
     uint64_t result = 0ull;
     for (size_t i = 0; i < board.size(); i++) {
