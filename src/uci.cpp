@@ -35,12 +35,12 @@ namespace Uci {
             std::istringstream commandStream(commandLine);
             commandStream >> commandToken;
 
-            if (commandToken == "setoption") {setoption(commandStream);}
+            if (commandToken == "setOption") {setOption(commandStream);}
             else if (commandToken == "isready") {isready(); break;}
         }
     }
 
-    void setoption(std::istringstream& input){ 
+    void setOption(std::istringstream& input){ 
         std::string token;
         input >> token; 
         if (token != "name") {return;}
