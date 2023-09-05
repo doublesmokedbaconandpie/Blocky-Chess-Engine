@@ -31,19 +31,19 @@ int getRank(int square) {
 }
 
 uint64_t getFileMask(int square) {
-    return FILES_MASK.at(getFile(square));
+    return FILES_MASK[getFile(square)];
 }
 
 uint64_t getRankMask(int square) {
-    return RANKS_MASK.at(getRank(square));
+    return RANKS_MASK[getRank(square)];
 }
 
 uint64_t getDiagMask(int square) {
-    return DIAGS_MASK.at(getRank(square) + getFile(square));
+    return DIAGS_MASK[getRank(square) + getFile(square)];
 }
 
 uint64_t getAntiDiagMask(int square) {
-    return flipVertical(DIAGS_MASK.at(7 - getRank(square) + getFile(square)));
+    return flipVertical(DIAGS_MASK[7 - getRank(square) + getFile(square)]);
 }
 
 bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies) {
