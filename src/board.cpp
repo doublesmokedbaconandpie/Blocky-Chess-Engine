@@ -75,6 +75,7 @@ Board::Board(std::string fenStr) {
     std::string token; 
     std::istringstream fenStream(fenStr);
 
+    std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
     int rank = 0, file = A;
     for (char& iter: token) {
