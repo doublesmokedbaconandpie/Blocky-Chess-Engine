@@ -1,5 +1,6 @@
 #include <vector>
 #include <utility>
+#include <iostream>
 
 #include "search.hpp"
 #include "eval.hpp"
@@ -26,8 +27,9 @@ namespace Search {
         // should be restored prior to any future returns to allow correct undomoves
         std::vector<uint64_t> currKeyHistory = board.zobristKeyHistory;
         std::sort(board.zobristKeyHistory.begin(), board.zobristKeyHistory.end());
-        auto bound = std::lower_bound(board.zobristKeyHistory.begin(), board.zobristKeyHistory.end(), board.zobristKeyHistory.back());
-        if (distance(bound, board.zobristKeyHistory.end()) == 3) {
+        auto lBound = std::lower_bound(board.zobristKeyHistory.begin(), board.zobristKeyHistory.end(), board.zobristKey);
+        auto rBound = std::upper_bound(board.zobristKeyHistory.begin(), board.zobristKeyHistory.end(), board.zobristKey);
+        if (distance(lBound, rBound) == 3) {
             result.value = 0;
             board.zobristKeyHistory = currKeyHistory;
             return result;
