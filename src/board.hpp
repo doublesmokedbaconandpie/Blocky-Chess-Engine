@@ -52,7 +52,7 @@ struct Board {
     std::array<uint64_t, NUM_BITBOARDS> pieceSets = {0ull};
     std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
 
-    uint64_t zobristKey;
+    uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
     bool isWhiteTurn;
     castleRights castlingRights; // bitwise castling rights tracker
     int fiftyMoveRule;

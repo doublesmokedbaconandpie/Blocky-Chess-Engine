@@ -78,6 +78,7 @@ Board::Board(std::string fenStr) {
     this->materialDifference = 0;
     std::string token; 
     std::istringstream fenStream(fenStr);
+    this->zobristKeyHistory = {0ull}; // required for setPiece
 
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
@@ -170,6 +171,7 @@ std::string Board::toFen() {
     return fenStr;
 }
 
+// assumes no move history
 void Board::initZobristKey() {
     this->zobristKey = 0ull;
     Zobrist::initKeys();
@@ -194,6 +196,7 @@ void Board::initZobristKey() {
     if (!this->isWhiteTurn) {
         this->zobristKey ^= Zobrist::isBlackKey;
     }
+    this->zobristKeyHistory = {this->zobristKey}; // synchronize history and current key
 }
 
 
@@ -224,7 +227,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->fiftyMoveRule,
         this->materialDifference
     ));
-    this->zobristKeyHistory.push_back(this->zobristKey);
 
     BoardSquare oldPawnJumpedSquare = this->pawnJumpedSquare;
     castleRights oldCastlingRights = this->castlingRights;
@@ -318,6 +320,9 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !this->isWhiteTurn; 
     this->zobristKey ^= Zobrist::isBlackKey;
+
+    // update history to include curr key
+    this->zobristKeyHistory.push_back(this->zobristKey);
 }
 
 void Board::makeMove(BoardMove move) {
@@ -357,10 +362,10 @@ void Board::undoMove() {
     this->fiftyMoveRule = prev.fiftyMoveRule;
     this->materialDifference = prev.materialDifference;
     this->isIllegalPos = false;
-    this->zobristKey = this->zobristKeyHistory.back();
 
     this->moveHistory.pop_back();
     this->zobristKeyHistory.pop_back();
+    this->zobristKey = zobristKeyHistory.back();
 }
 
 pieceTypes Board::getPiece(int rank, int file) const {
@@ -402,7 +407,7 @@ void Board::setPiece(BoardSquare square, pieceTypes currPiece) {
 }
 
 bool operator==(const Board& lhs, const Board& rhs) {
-    return  (lhs.board == rhs.board) && (lhs.pieceSets == rhs.pieceSets) && (lhs.zobristKey == rhs.zobristKey);
+    return  (lhs.board == rhs.board) && (lhs.pieceSets == rhs.pieceSets) && (lhs.zobristKeyHistory == rhs.zobristKeyHistory);
 }
 
 bool operator<(const Board& lhs, const Board& rhs) {
