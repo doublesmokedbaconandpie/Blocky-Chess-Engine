@@ -263,7 +263,9 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     }
 
     // updates the material score of the board on capture
-    this->materialDifference -= pieceValues[targetPiece]; 
+    if (targetPiece != EmptyPiece) {
+        this->materialDifference -= pieceValues[targetPiece]; 
+    }
     // if nothing happened to the jumped pawn, disallow en passant
     this->pawnJumpedSquare = this->pawnJumpedSquare == oldPawnJumpedSquare ? BoardSquare() : this->pawnJumpedSquare;
     this->isIllegalPos = currKingInAttack(*this);
