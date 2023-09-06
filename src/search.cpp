@@ -16,15 +16,29 @@ namespace Search {
         SearchInfo result;
         result.nodes = 1;
 
-        // check for game ending by draw or checkmate
+        // fifty move rule
         if (board.fiftyMoveRule >= 50) {
             result.value = 0;
             return result;
         }
-        if (depthLeft == 0) {
-            result.value = eval(board);
+        // three-fold repetition
+        // board.zobristKeyHistory is sorted to make future sortings faster, but the original ordering
+        // should be restored prior to any future returns to allow correct undomoves
+        std::vector<uint64_t> currKeyHistory = board.zobristKeyHistory;
+        std::sort(board.zobristKeyHistory.begin(), board.zobristKeyHistory.end());
+        auto bound = std::lower_bound(board.zobristKeyHistory.begin(), board.zobristKeyHistory.end(), board.zobristKeyHistory.back());
+        if (distance(bound, board.zobristKeyHistory.end()) == 3) {
+            result.value = 0;
+            board.zobristKeyHistory = currKeyHistory;
             return result;
         }
+        // max depth reached
+        if (depthLeft == 0) {
+            result.value = eval(board);
+            board.zobristKeyHistory = currKeyHistory;
+            return result;
+        }
+        // checkmate or stalemate
         std::vector<BoardMove> moves = MOVEGEN::moveGenerator(board);
         if (moves.size() == 0) {
             if (currKingInAttack(board)) {
@@ -34,6 +48,7 @@ namespace Search {
             else {
                 result.value = 0;
             }
+            board.zobristKeyHistory = currKeyHistory;
             return result;
         }
 
@@ -62,6 +77,7 @@ namespace Search {
                 }
             }
         }
+        board.zobristKeyHistory = currKeyHistory;
         return result;
     }
 
