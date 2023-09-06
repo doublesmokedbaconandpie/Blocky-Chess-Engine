@@ -4,7 +4,8 @@
 #include <unordered_map>
 
 constexpr int BOARD_SIZE = 64;
-constexpr int NUM_BITBOARDS = 15;
+constexpr int NUM_BITBOARDS = 14;
+constexpr int NUM_PIECE_TYPES = 12;
 
 enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
 
