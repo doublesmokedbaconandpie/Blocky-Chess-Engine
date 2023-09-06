@@ -1,5 +1,6 @@
 #include <vector>
 #include <utility>
+#include <iostream>
 
 #include "search.hpp"
 #include "eval.hpp"
@@ -16,15 +17,26 @@ namespace Search {
         SearchInfo result;
         result.nodes = 1;
 
-        // check for game ending by draw or checkmate
+        // fifty move rule
         if (board.fiftyMoveRule == 100) {
             result.value = 0;
             return result;
         }
+        // three-fold repetition
+        std::vector<uint64_t> currKeyHistory = board.zobristKeyHistory;
+        std::sort(currKeyHistory.begin(), currKeyHistory.end());
+        auto lBound = std::lower_bound(currKeyHistory.begin(), currKeyHistory.end(), board.zobristKey);
+        auto rBound = std::upper_bound(currKeyHistory.begin(), currKeyHistory.end(), board.zobristKey);
+        if (distance(lBound, rBound) == 3) {
+            result.value = 0;
+            return result;
+        }
+        // max depth reached
         if (depthLeft == 0) {
             result.value = eval(board);
             return result;
         }
+        // checkmate or stalemate
         std::vector<BoardMove> moves = MOVEGEN::moveGenerator(board);
         if (moves.size() == 0) {
             if (currKingInAttack(board)) {
