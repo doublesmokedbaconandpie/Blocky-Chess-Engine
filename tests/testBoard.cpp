@@ -82,6 +82,8 @@ TEST(BoardTest, fenConstructorDefault) {
 
     EXPECT_EQ(fenBoard.pieceSets, defaultBoard.pieceSets);
     EXPECT_EQ(fenBoard.board, defaultBoard.board);
+    EXPECT_EQ(fenBoard.zobristKey, defaultBoard.zobristKey);
+    EXPECT_NE(fenBoard.zobristKey, 0);
     EXPECT_EQ(fenBoard.isWhiteTurn, defaultBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, defaultBoard.castlingRights);
     EXPECT_EQ(fenBoard.pawnJumpedSquare, defaultBoard.pawnJumpedSquare);
@@ -89,12 +91,18 @@ TEST(BoardTest, fenConstructorDefault) {
 }
 
 TEST(BoardTest, fenConstructorEnPassantSquare) {
+    std::cout << "fenbegin\n";
     Board fenBoard("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
+    std::cout << "fenEnd\n";
+    std::cout << "makemoveBegin\n";
     Board moveBoard;
     moveBoard.makeMove(BoardMove("e2e4", moveBoard.isWhiteTurn));
+    std::cout << "makemoveEnd\n";
     
     EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
+    EXPECT_EQ(fenBoard.zobristKey, moveBoard.zobristKey);
+    EXPECT_NE(fenBoard.zobristKey, 0);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);
     EXPECT_EQ(fenBoard.pawnJumpedSquare, moveBoard.pawnJumpedSquare);
@@ -115,6 +123,8 @@ TEST(BoardTest, fenConstructorEnPassantCastle) {
 
     EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
+    EXPECT_EQ(fenBoard.zobristKey, moveBoard.zobristKey);
+    EXPECT_NE(fenBoard.zobristKey, 0);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);
     EXPECT_EQ(fenBoard.pawnJumpedSquare, moveBoard.pawnJumpedSquare);
