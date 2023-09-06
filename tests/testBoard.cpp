@@ -1,4 +1,5 @@
 #include "board.hpp"
+#include "zobrist.hpp"
 
 #include <gtest/gtest.h>
 #include <string>
@@ -82,6 +83,9 @@ TEST(BoardTest, fenConstructorDefault) {
 
     EXPECT_EQ(fenBoard.pieceSets, defaultBoard.pieceSets);
     EXPECT_EQ(fenBoard.board, defaultBoard.board);
+    EXPECT_EQ(fenBoard.zobristKey, defaultBoard.zobristKey);
+    EXPECT_NE(fenBoard.zobristKey, 0);
+    EXPECT_EQ(fenBoard.zobristKeyHistory.back(), fenBoard.zobristKey);
     EXPECT_EQ(fenBoard.isWhiteTurn, defaultBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, defaultBoard.castlingRights);
     EXPECT_EQ(fenBoard.pawnJumpedSquare, defaultBoard.pawnJumpedSquare);
@@ -89,12 +93,19 @@ TEST(BoardTest, fenConstructorDefault) {
 }
 
 TEST(BoardTest, fenConstructorEnPassantSquare) {
+    std::cout << "fenbegin\n";
     Board fenBoard("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
+    std::cout << "fenEnd\n";
+    std::cout << "makemoveBegin\n";
     Board moveBoard;
     moveBoard.makeMove(BoardMove("e2e4", moveBoard.isWhiteTurn));
+    std::cout << "makemoveEnd\n";
     
     EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
+    EXPECT_EQ(fenBoard.zobristKey, moveBoard.zobristKey);
+    EXPECT_NE(fenBoard.zobristKey, 0);
+    EXPECT_EQ(fenBoard.zobristKeyHistory.back(), fenBoard.zobristKey);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);
     EXPECT_EQ(fenBoard.pawnJumpedSquare, moveBoard.pawnJumpedSquare);
@@ -115,6 +126,9 @@ TEST(BoardTest, fenConstructorEnPassantCastle) {
 
     EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
+    EXPECT_EQ(fenBoard.zobristKey, moveBoard.zobristKey);
+    EXPECT_NE(fenBoard.zobristKey, 0);
+    EXPECT_EQ(fenBoard.zobristKeyHistory.back(), fenBoard.zobristKey);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);
     EXPECT_EQ(fenBoard.pawnJumpedSquare, moveBoard.pawnJumpedSquare);
@@ -785,4 +799,29 @@ TEST(BoardTest, BoardMoveConstructorCastleRightsRook3) {
     Board board("7r/1k4P1/1n6/B7/P4P1p/7P/4NK2/1R5R b - - 0 44");
     board.makeMove(BoardMove("h8g8", board.isWhiteTurn));
     EXPECT_EQ(board.castlingRights, noCastle);
+}
+
+TEST(BoardTest, undoMove) {
+    // ruy lopez
+    Board defaultBoard, moveBoard;
+    moveBoard.makeMove(BoardMove("e2e4", moveBoard.isWhiteTurn));
+    moveBoard.makeMove(BoardMove("e7e5", moveBoard.isWhiteTurn));
+    moveBoard.makeMove(BoardMove("g1f3", moveBoard.isWhiteTurn));
+    moveBoard.makeMove(BoardMove("b8c6", moveBoard.isWhiteTurn));
+    moveBoard.makeMove(BoardMove("f1b5", moveBoard.isWhiteTurn));
+    moveBoard.makeMove(BoardMove("g8f6", moveBoard.isWhiteTurn));
+    moveBoard.makeMove(BoardMove("e1g1", moveBoard.isWhiteTurn));
+    for (int i = 0; i < 7; i++) {
+        moveBoard.undoMove();
+    }
+
+    EXPECT_EQ(defaultBoard.pieceSets, moveBoard.pieceSets);
+    EXPECT_EQ(defaultBoard.board, moveBoard.board);
+    EXPECT_EQ(defaultBoard.zobristKey, moveBoard.zobristKey);
+    EXPECT_NE(defaultBoard.zobristKey, 0);
+    EXPECT_EQ(defaultBoard.zobristKeyHistory.back(), defaultBoard.zobristKey);
+    EXPECT_EQ(defaultBoard.isWhiteTurn, moveBoard.isWhiteTurn);
+    EXPECT_EQ(defaultBoard.castlingRights, moveBoard.castlingRights);
+    EXPECT_EQ(defaultBoard.pawnJumpedSquare, moveBoard.pawnJumpedSquare);
+    EXPECT_EQ(defaultBoard.fiftyMoveRule, moveBoard.fiftyMoveRule);
 }
