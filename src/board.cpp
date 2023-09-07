@@ -426,3 +426,7 @@ uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int tar
     }
     return result;
 }
+
+EvalAttributes::EvalAttributes() {
+    piecesRemaining = 32;
+}

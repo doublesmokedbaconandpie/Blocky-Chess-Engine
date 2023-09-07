@@ -25,6 +25,15 @@ struct BoardState {
                 materialDifference(a_materialDifference) {};
 };
 
+struct EvalAttributes {
+    EvalAttributes(); //default position
+
+    EvalAttributes(uint8_t pieceCount = 32); //not default, to be used with board fen constructor
+
+    uint8_t piecesRemaining;
+    // int totalMaterial; //in consideration, not sure how much this would influence things
+};
+
 struct Board {
     Board(); // default game
     // for testing
@@ -34,7 +43,6 @@ struct Board {
     Board(std::string fenStr);
     std::string toFen();
     
-    // defined in inCheck.cpp
     void makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
     void makeMove(BoardMove move);
     void undoMove();

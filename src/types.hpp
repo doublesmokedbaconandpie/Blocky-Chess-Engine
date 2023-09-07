@@ -33,6 +33,8 @@ enum castleRights {
     All_Castle = W_Castle | B_Castle,
 };
 
+//not sure if we'll use this
+constexpr int ENDGAME_PIECE_THRESHOLD = 14; //arbitrary for now
 enum gameProgress {
     opening = 0,
     midgame = 1,
