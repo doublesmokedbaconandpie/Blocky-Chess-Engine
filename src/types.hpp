@@ -9,7 +9,7 @@ constexpr int NUM_PIECE_TYPES = 12;
 
 enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
 
-enum pieceTypes {nullPiece = -1, EmptyPiece,
+enum pieceTypes {nullPiece = -2, EmptyPiece,
                 WKing, WQueen, WBishop, WKnight, WRook, WPawn, 
                 BKing, BQueen, BBishop, BKnight, BRook, BPawn,
                 WHITE_PIECES, BLACK_PIECES};
@@ -36,7 +36,6 @@ enum castleRights {
 
 // indices are equal to the enumerated pieceTypes
 const static std::array<int, 13> pieceValues {
-    0,
      1000,  9,  3,  3,  5,  1, 
     -1000, -9, -3, -3, -5, -1,};
 

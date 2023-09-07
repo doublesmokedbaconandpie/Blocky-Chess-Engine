@@ -80,6 +80,7 @@ Board::Board(std::string fenStr) {
     std::istringstream fenStream(fenStr);
     this->zobristKeyHistory = {0ull}; // required for setPiece
 
+    std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
     int rank = 0, file = A;
     for (char& iter: token) {
