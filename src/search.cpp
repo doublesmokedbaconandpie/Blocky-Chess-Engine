@@ -46,7 +46,6 @@ namespace Search {
             else {
                 result.value = 0;
             }
-            board.zobristKeyHistory = currKeyHistory;
             return result;
         }
 
