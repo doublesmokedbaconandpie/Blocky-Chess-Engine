@@ -251,7 +251,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         int behindDirection = this->isWhiteTurn ? 1 : -1;
         this->pawnJumpedSquare = BoardSquare(pos2.rank + behindDirection, pos2.file);
         this->zobristKey ^= Zobrist::enPassKeys[pos2.file];
-        this->fiftyMoveRule = 0;
     }
     // promoting pawn
     else if (originPiece == allyPawn && pos2.rank == promotionRank) {
@@ -270,7 +269,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
         this->zobristKey ^= Zobrist::enPassKeys[pos2.file];
         this->pawnJumpedSquare = BoardSquare();
-        this->fiftyMoveRule = 0;
 
         if(this->isWhiteTurn)
             materialDifference++;
