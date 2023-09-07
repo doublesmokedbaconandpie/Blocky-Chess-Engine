@@ -33,6 +33,12 @@ enum castleRights {
     All_Castle = W_Castle | B_Castle,
 };
 
+enum gameProgress {
+    opening = 0,
+    midgame = 1,
+    endgame = 2
+};
+
 static std::map<int, int> pieceValues = {
     {WPawn, 1},
     {BPawn, -1},
@@ -44,8 +50,8 @@ static std::map<int, int> pieceValues = {
     {BRook, -5}, 
     {WQueen, 9},
     {BQueen, -9},
-    {WKing, 1000}, //should not be used
-    {BKing, -1000}, //should not be used
+    {WKing, 0}, //should not be used
+    {BKing, 0}, //should not be used
     {EmptyPiece, 0},
     {nullPiece, 0}
 };
