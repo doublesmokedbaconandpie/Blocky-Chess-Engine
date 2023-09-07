@@ -17,7 +17,7 @@ namespace Search {
         result.nodes = 1;
 
         // check for game ending by draw or checkmate
-        if (board.fiftyMoveRule >= 50) {
+        if (board.fiftyMoveRule == 100) {
             result.value = 0;
             return result;
         }
