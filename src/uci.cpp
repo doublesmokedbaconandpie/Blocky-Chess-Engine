@@ -91,6 +91,15 @@ namespace Uci {
         if (token != "moves") {return currBoard;}
         while (input >> token) {
             currBoard.makeMove(BoardMove(token, currBoard.isWhiteTurn));
+            // if a capture or castling rights change, clear move history since
+            // 3fold repetition or 50 move rule will be reset
+            // this makes things faster
+            if (currBoard.moveHistory.back().targetPiece != EmptyPiece ||
+                currBoard.castlingRights != currBoard.moveHistory.back().castlingRights) {
+                currBoard.moveHistory.clear();
+                currBoard.zobristKeyHistory.clear();
+                currBoard.zobristKeyHistory.push_back(currBoard.zobristKey);
+            }
         }
         return currBoard;
     }
