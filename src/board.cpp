@@ -195,7 +195,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 
     BoardSquare oldPawnJumpedSquare = this->pawnJumpedSquare;
 
-    this->fiftyMoveRule++; // unless stated otherwise later on, increment the fifty move rule
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
     this->setPiece(pos2, originPiece); // pretty much all possible moves translates the original piece to pos 2
 
@@ -216,12 +215,10 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         // doesn't check if pawn's original position is rank 2
         int behindDirection = this->isWhiteTurn ? 1 : -1;
         this->pawnJumpedSquare = BoardSquare(pos2.rank + behindDirection, pos2.file);
-        this->fiftyMoveRule = 0;
     }
     // promoting pawn
     else if (originPiece == allyPawn && pos2.rank == promotionRank) {
         this->setPiece(pos2, promotionPiece);
-        this->fiftyMoveRule = 0;
 
         //updates material score of the board on promotion
         if(this->isWhiteTurn) {
@@ -234,18 +231,19 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
-        this->fiftyMoveRule = 0;
 
         if(this->isWhiteTurn)
             materialDifference++;
         else
             materialDifference--;
+    }
 
+    // reset fifty move rule on captures or pawn moves
+    if (targetPiece != EmptyPiece || originPiece == allyPawn) {
+        this->fiftyMoveRule = 0;
     }
     else {
-        if (targetPiece != EmptyPiece || originPiece == allyPawn) {
-            this->fiftyMoveRule = 0;
-        }
+        this->fiftyMoveRule++;
     }
 
     // if either your allyRook is moved or an enemyRook is captured, modify castling rights

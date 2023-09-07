@@ -570,7 +570,7 @@ TEST(BoardTest, BoardMoveConstructorMovedKing) {
     };
     Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(7, E);
-    BoardSquare pos2 = BoardSquare(6, D);
+    BoardSquare pos2 = BoardSquare(6, E);
     board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
