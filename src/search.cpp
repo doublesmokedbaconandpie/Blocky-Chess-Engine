@@ -23,21 +23,17 @@ namespace Search {
             return result;
         }
         // three-fold repetition
-        // board.zobristKeyHistory is sorted to make future sortings faster, but the original ordering
-        // should be restored prior to any future returns to allow correct undomoves
         std::vector<uint64_t> currKeyHistory = board.zobristKeyHistory;
-        std::sort(board.zobristKeyHistory.begin(), board.zobristKeyHistory.end());
-        auto lBound = std::lower_bound(board.zobristKeyHistory.begin(), board.zobristKeyHistory.end(), board.zobristKey);
-        auto rBound = std::upper_bound(board.zobristKeyHistory.begin(), board.zobristKeyHistory.end(), board.zobristKey);
+        std::sort(currKeyHistory.begin(), currKeyHistory.end());
+        auto lBound = std::lower_bound(currKeyHistory.begin(), currKeyHistory.end(), board.zobristKey);
+        auto rBound = std::upper_bound(currKeyHistory.begin(), currKeyHistory.end(), board.zobristKey);
         if (distance(lBound, rBound) == 3) {
             result.value = 0;
-            board.zobristKeyHistory = currKeyHistory;
             return result;
         }
         // max depth reached
         if (depthLeft == 0) {
             result.value = eval(board);
-            board.zobristKeyHistory = currKeyHistory;
             return result;
         }
         // checkmate or stalemate
@@ -79,7 +75,6 @@ namespace Search {
                 }
             }
         }
-        board.zobristKeyHistory = currKeyHistory;
         return result;
     }
 
