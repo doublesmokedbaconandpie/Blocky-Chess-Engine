@@ -7,6 +7,7 @@
 #include "board.hpp"
 #include "move.hpp"
 #include "bitboard.hpp"
+#include "zobrist.hpp"
 #include "types.hpp"
 
 // Used for debugging and testing
@@ -44,6 +45,8 @@ Board::Board() {
 
     this->pieceSets[WHITE_PIECES] = 0xFFFF000000000000ull;
     this->pieceSets[BLACK_PIECES] = 0x000000000000FFFFull;
+
+    this->initZobristKey();
 }
 
 // Used for debugging and testing
@@ -67,6 +70,7 @@ Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn,
             this->pieceSets[BLACK_PIECES] |= makeBitboardFromArray(this->board, i);
         }
     }
+    this->initZobristKey();
 }
 
 // Used in UCI
@@ -74,6 +78,7 @@ Board::Board(std::string fenStr) {
     this->materialDifference = 0;
     std::string token; 
     std::istringstream fenStream(fenStr);
+    this->zobristKeyHistory = {0ull}; // required for setPiece
 
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
@@ -113,6 +118,7 @@ Board::Board(std::string fenStr) {
 
     this->isIllegalPos = false; // it is up to the UCI gui to not give illegal positions
 
+    this->initZobristKey();
     // Board doesn't use Fullmove counter
 }
 
@@ -165,6 +171,35 @@ std::string Board::toFen() {
     return fenStr;
 }
 
+// assumes no move history
+void Board::initZobristKey() {
+    this->zobristKey = 0ull;
+    Zobrist::initKeys();
+
+    // pieces on board
+    for (size_t i = 0; i < BOARD_SIZE; i++) {
+        pieceTypes currPiece = this->board[i];
+        if (currPiece == EmptyPiece) {continue;}
+        this->zobristKey ^= Zobrist::pieceKeys[currPiece][i];
+    }
+    // castling
+    for (size_t i = 0; i < 4; i++) {
+        if (this->castlingRights & 1ull << i) {
+            this->zobristKey ^= Zobrist::castlingKeys[i];
+        }
+    }
+    // en passant
+    if (this->pawnJumpedSquare != BoardSquare()) {
+        this->zobristKey ^= Zobrist::enPassKeys[this->pawnJumpedSquare.file];
+    }
+    // color to move
+    if (!this->isWhiteTurn) {
+        this->zobristKey ^= Zobrist::isBlackKey;
+    }
+    this->zobristKeyHistory = {this->zobristKey}; // synchronize history and current key
+}
+
+
 bool notInRange(int var) {return var < 0 || var > 7;}
 void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece) {
     if (notInRange(pos1.rank) || notInRange(pos1.file) || notInRange(pos2.file) || notInRange(pos2.rank)) {
@@ -194,6 +229,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     ));
 
     BoardSquare oldPawnJumpedSquare = this->pawnJumpedSquare;
+    castleRights oldCastlingRights = this->castlingRights;
 
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
     this->setPiece(pos2, originPiece); // pretty much all possible moves translates the original piece to pos 2
@@ -205,16 +241,17 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         fileVals rookFile = kingFileDirection == 1 ? H : A;
         this->setPiece(pos1.rank, pos1.file + kingFileDirection, allyRook);
         this->setPiece(pos1.rank, rookFile, EmptyPiece);
-        this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
+        this->castlingRights &= this->isWhiteTurn ? B_Castle : W_Castle;
     }
     else if (originPiece == allyKing) {
-        this->castlingRights &= allyKing == WKing ? B_Castle : W_Castle;
+        this->castlingRights &= this->isWhiteTurn ? B_Castle : W_Castle;
     }
     // jumping pawn
     else if (originPiece == allyPawn && pos2.rank == pos1.rank + pawnJumpDirection) { 
         // doesn't check if pawn's original position is rank 2
         int behindDirection = this->isWhiteTurn ? 1 : -1;
         this->pawnJumpedSquare = BoardSquare(pos2.rank + behindDirection, pos2.file);
+        this->zobristKey ^= Zobrist::enPassKeys[pos2.file];
     }
     // promoting pawn
     else if (originPiece == allyPawn && pos2.rank == promotionRank) {
@@ -231,6 +268,8 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
+        this->zobristKey ^= Zobrist::enPassKeys[pos2.file];
+        this->pawnJumpedSquare = BoardSquare();
 
         if(this->isWhiteTurn)
             materialDifference++;
@@ -260,6 +299,14 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->castlingRights &= pos2 == BoardSquare("a8") ? NOT_B_OOO : All_Castle;
     }
 
+    // update zobrist key for changed castling rights; castling rights can only decrease in chess
+    for (int i = 0; i < 4; i++) {
+        int mask = 1ull << i;
+        if ((oldCastlingRights & mask) && !(this->castlingRights & mask)) {
+            this->zobristKey ^= Zobrist::castlingKeys[i];
+        }
+    }
+
     // updates the material score of the board on capture
     if (targetPiece != EmptyPiece) {
         this->materialDifference -= pieceValues[targetPiece]; 
@@ -270,6 +317,10 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !this->isWhiteTurn; 
+    this->zobristKey ^= Zobrist::isBlackKey;
+
+    // update history to include curr key
+    this->zobristKeyHistory.push_back(this->zobristKey);
 }
 
 void Board::makeMove(BoardMove move) {
@@ -311,6 +362,8 @@ void Board::undoMove() {
     this->isIllegalPos = false;
 
     this->moveHistory.pop_back();
+    this->zobristKeyHistory.pop_back();
+    this->zobristKey = zobristKeyHistory.back();
 }
 
 pieceTypes Board::getPiece(int rank, int file) const {
@@ -324,6 +377,7 @@ pieceTypes Board::getPiece(BoardSquare square) const{
     return this->getPiece(square.rank, square.file);
 }
 
+// handles board, pieceSets, and zobristKey (not including en passant and castling)
 void Board::setPiece(int rank, int file, pieceTypes currPiece) {
     int square = rank * 8 + file;
     uint64_t setSquare = (1ull << square);
@@ -336,11 +390,13 @@ void Board::setPiece(int rank, int file, pieceTypes currPiece) {
         pieceTypes originColor = originPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
         this->pieceSets[originColor] &= clearSquare;
         this->pieceSets[originPiece] &= clearSquare;
+        this->zobristKey ^= Zobrist::pieceKeys[originPiece][square];
     }
     if (currPiece != EmptyPiece) {
         pieceTypes currColor = currPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
         this->pieceSets[currColor] ^= setSquare;
         this->pieceSets[currPiece] ^= setSquare;
+        this->zobristKey ^= Zobrist::pieceKeys[currPiece][square];
     }
 }
 
@@ -349,7 +405,7 @@ void Board::setPiece(BoardSquare square, pieceTypes currPiece) {
 }
 
 bool operator==(const Board& lhs, const Board& rhs) {
-    return  (lhs.board == rhs.board) && (lhs.pieceSets == rhs.pieceSets);
+    return  (lhs.board == rhs.board) && (lhs.pieceSets == rhs.pieceSets) && (lhs.zobristKeyHistory == rhs.zobristKeyHistory);
 }
 
 bool operator<(const Board& lhs, const Board& rhs) {
@@ -379,6 +435,7 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
     os << "isIllegalPos: " << target.isIllegalPos << "\n";
     os << "isWhiteTurn: " << target.isWhiteTurn << "\n";
     os << "50MoveRule: " << target.fiftyMoveRule << "\n";
+    os << "ZobristKey: " << target.zobristKey << "\n";
     return os;
 }
 
