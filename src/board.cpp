@@ -8,6 +8,7 @@
 #include "move.hpp"
 #include "bitboard.hpp"
 #include "zobrist.hpp"
+#include "zobrist.hpp"
 #include "types.hpp"
 
 // Used for debugging and testing
