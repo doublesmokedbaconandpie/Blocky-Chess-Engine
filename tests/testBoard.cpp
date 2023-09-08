@@ -624,55 +624,41 @@ TEST(BoardTest, BoardMoveConstructorKingToCastleSquare) {
 }
 
 TEST(BoardTest, BoardMoveConstructorEnPassant) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , BPawn     , EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-    };
-    Board board(boardArr, true);
-    BoardSquare jumpedPawn = BoardSquare(3, E);
-    BoardSquare pos1 = BoardSquare(3, D);
-    BoardSquare pos2 = board.pawnJumpedSquare = BoardSquare(2, E);
-    board.makeMove(pos1, pos2);
+    Board fenBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
+    Board moveBoard("rnbqkb1r/ppp1pppp/3P1n2/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3");
+    BoardSquare pos1("e5");
+    BoardSquare pos2("d6"); 
+    BoardSquare enemyPawn("d5");
+    EXPECT_EQ(fenBoard.getPiece(enemyPawn), BPawn);
+    fenBoard.makeMove(pos1, pos2);
 
-    EXPECT_EQ(board.isWhiteTurn, false);
-    EXPECT_EQ(board.isIllegalPos, false);
-    EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
-    EXPECT_EQ(board.getPiece(pos2), WPawn);
-    EXPECT_EQ(board.getPiece(jumpedPawn), EmptyPiece);
-    EXPECT_EQ(board.pawnJumpedSquare, BoardSquare());
-    EXPECT_EQ(board.fiftyMoveRule, 0);
+    EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
+    EXPECT_EQ(fenBoard.isIllegalPos, moveBoard.isIllegalPos);
+    EXPECT_EQ(fenBoard.board, moveBoard.board);
+    EXPECT_EQ(fenBoard.getPiece(pos1), EmptyPiece);
+    EXPECT_EQ(fenBoard.getPiece(pos2), WPawn);
+    EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
+    EXPECT_EQ(fenBoard.pawnJumpedSquare, BoardSquare());
+    EXPECT_EQ(fenBoard.zobristKey, moveBoard.zobristKey);
+    EXPECT_EQ(fenBoard.fiftyMoveRule, 0);   
 }
 
 TEST(BoardTest, BoardMoveConstructorNotEnPassant) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , BPawn     , EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-    };
-    Board board(boardArr, true);
-    BoardSquare jumpedPawn = board.pawnJumpedSquare = BoardSquare(3, E);
-    BoardSquare pos1 = BoardSquare(3, D);
-    BoardSquare pos2 = BoardSquare(2, D);
-    board.makeMove(pos1, pos2);
+    Board fenBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
+    Board moveBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 3");
+    BoardSquare pos1("g1");
+    BoardSquare pos2("f3"); 
+    BoardSquare enemyPawn("d5");
+    EXPECT_EQ(fenBoard.getPiece(enemyPawn), BPawn);
+    fenBoard.makeMove(pos1, pos2);
 
-    EXPECT_EQ(board.isWhiteTurn, false);
-    EXPECT_EQ(board.isIllegalPos, false);
-    EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
-    EXPECT_EQ(board.getPiece(pos2), WPawn);
-    EXPECT_EQ(board.getPiece(jumpedPawn), BPawn);
-    EXPECT_EQ(board.pawnJumpedSquare, BoardSquare());
-    EXPECT_EQ(board.fiftyMoveRule, 0);
+    EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
+    EXPECT_EQ(fenBoard.isIllegalPos, moveBoard.isIllegalPos);
+    EXPECT_EQ(fenBoard.board, moveBoard.board);
+    EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
+    EXPECT_EQ(fenBoard.pawnJumpedSquare, BoardSquare());
+    EXPECT_EQ(fenBoard.zobristKey, moveBoard.zobristKey);
+    EXPECT_EQ(fenBoard.fiftyMoveRule, 1);   
 }
 
 TEST(BoardTest, BoardMoveConstructorPromote) {
