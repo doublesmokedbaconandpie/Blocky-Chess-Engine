@@ -9,6 +9,16 @@
 #include "types.hpp"
 
 
+//this struct is purely for organization
+struct EvalAttributes {
+    //EvalAttributes(); //default position
+
+    EvalAttributes(uint8_t pieceCount = 32/*, uint8_t totalMaterial = 78*/); 
+
+    uint8_t piecesRemaining;
+    // int totalMaterial; //in consideration, not sure how much this would influence things
+};
+
 struct BoardState {
     BoardMove move = BoardMove();
     pieceTypes originPiece;
@@ -17,21 +27,13 @@ struct BoardState {
     BoardSquare pawnJumpedSquare;
     int fiftyMoveRule;
     int materialDifference;
+    EvalAttributes eval;
     BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, 
                 castleRights a_castlingRights, BoardSquare a_pawnJumpedSquare, int a_fiftyMoveRule,
-                int a_materialDifference) : 
+                int a_materialDifference, EvalAttributes a_eval) : 
                 move(a_move), originPiece(a_originPiece), targetPiece(a_targetPiece),
                 castlingRights(a_castlingRights), pawnJumpedSquare(a_pawnJumpedSquare), fiftyMoveRule(a_fiftyMoveRule),
-                materialDifference(a_materialDifference) {};
-};
-
-struct EvalAttributes {
-    EvalAttributes(); //default position
-
-    EvalAttributes(uint8_t pieceCount = 32); //not default, to be used with board fen constructor
-
-    uint8_t piecesRemaining;
-    // int totalMaterial; //in consideration, not sure how much this would influence things
+                materialDifference(a_materialDifference), eval(a_eval) {};
 };
 
 struct Board {
@@ -68,6 +70,8 @@ struct Board {
     bool isIllegalPos;
     BoardSquare pawnJumpedSquare; // en passant square
     int materialDifference; // updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
+                            // Possibly could be combined with attributes
+    EvalAttributes eval;
 
     std::vector<BoardState> moveHistory;
     std::vector<uint64_t> zobristKeyHistory;

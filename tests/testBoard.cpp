@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 #include <string>
+#include <stdlib.h>
 
 TEST(BoardTest, getPieceValidSquare) {
     Board defaultBoard;
@@ -824,4 +825,54 @@ TEST(BoardTest, undoMove) {
     EXPECT_EQ(defaultBoard.castlingRights, moveBoard.castlingRights);
     EXPECT_EQ(defaultBoard.pawnJumpedSquare, moveBoard.pawnJumpedSquare);
     EXPECT_EQ(defaultBoard.fiftyMoveRule, moveBoard.fiftyMoveRule);
+}
+
+TEST(MaterialTest, defaultGame) {
+    Board b1 = Board();
+    uint8_t pieceCount1 = 0;
+    uint8_t totalMaterial1 = 0;
+
+    for(pieceTypes piece: b1.board) {
+        if(piece != EmptyPiece) {
+            pieceCount1++;
+            totalMaterial1 += abs(pieceValues[piece]);
+        }
+    }
+    
+    b1.makeMove(BoardMove("e2e4", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("d7d5", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("e4d5", b1.isWhiteTurn)); //cap black pawn
+    int pieceCount2 = b1.eval.piecesRemaining;
+    //int totalMaterial2 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("c8h3", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("d5d6", b1.isWhiteTurn)); 
+    b1.makeMove(BoardMove("h3g2", b1.isWhiteTurn)); //cap white pawn
+    int pieceCount3 = b1.eval.piecesRemaining;
+    //int totalMaterial3 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("d6c7", b1.isWhiteTurn)); //cap black pawn
+    int pieceCount4 = b1.eval.piecesRemaining;
+    //int totalMaterial4 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("g2h1", b1.isWhiteTurn)); //cap white rook
+    int pieceCount5 = b1.eval.piecesRemaining;
+    //int totalMaterial5 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("c7b8q", b1.isWhiteTurn)); //cap black knight
+    int pieceCount6 = b1.eval.piecesRemaining;
+    //int totalMaterial6 = b1.eval.totalMaterial;
+
+    EXPECT_EQ(pieceCount1, 32);
+    EXPECT_EQ(totalMaterial1, 78);
+    EXPECT_EQ(pieceCount2, 31);
+    //EXPECT_EQ(totalMaterial2, 77);
+    EXPECT_EQ(pieceCount3, 30);
+    //EXPECT_EQ(totalMaterial3, 76);
+    EXPECT_EQ(pieceCount4, 29);
+    //EXPECT_EQ(totalMaterial4, 75);
+    EXPECT_EQ(pieceCount5, 28);
+    //EXPECT_EQ(totalMaterial5, 70);
+    EXPECT_EQ(pieceCount6, 27);
+    //EXPECT_EQ(totalMaterial6, 75);
+}
+
+TEST(MaterialTest, fenBoards) {
+
 }

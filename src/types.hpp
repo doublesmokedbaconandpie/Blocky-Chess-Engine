@@ -45,8 +45,8 @@ enum gameProgress {
 
 // indices are equal to the enumerated pieceTypes
 const static std::array<int, 13> pieceValues {
-     1000,  9,  3,  3,  5,  1, 
-    -1000, -9, -3, -3, -5, -1,};
+     0,  9,  3,  3,  5,  1, 
+     0, -9, -3, -3, -5, -1,};
 
 const static std::unordered_map<pieceTypes, char> pieceToChar = {
     {EmptyPiece, ' '},

@@ -3,12 +3,29 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <stdlib.h>
 
 #include "board.hpp"
 #include "move.hpp"
 #include "bitboard.hpp"
 #include "zobrist.hpp"
 #include "types.hpp"
+
+//could be altered in future to calculate more values, returning a different type obviously
+//intended for use on positions other than the starting position (for testing)
+std::pair<uint8_t, uint8_t> countPiecesAndMaterial(std::array<pieceTypes, BOARD_SIZE> board) {
+    uint8_t pieceCount = 0;
+    uint8_t totalMaterial = 0;
+
+    for(pieceTypes piece: board) {
+        if(piece != EmptyPiece) {
+            pieceCount++;
+            totalMaterial += abs(pieceValues[piece]);
+        }
+    }
+
+    return std::pair<uint8_t, uint8_t>(pieceCount, totalMaterial);
+}
 
 // Used for debugging and testing
 Board::Board() {
@@ -28,6 +45,7 @@ Board::Board() {
     this->isIllegalPos = false;
     this->castlingRights = All_Castle;
     this->materialDifference = 0;
+    this->eval = EvalAttributes();
 
     this->pieceSets[WKing]   = 0x1000000000000000ull;
     this->pieceSets[WQueen]  = 0x0800000000000000ull;
@@ -61,6 +79,9 @@ Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn,
     this->castlingRights = a_castlingRights;
     this->materialDifference = a_materialDifference;
 
+    std::pair<uint8_t, uint8_t> pieceCountAndMat = countPiecesAndMaterial(a_board);
+    this->eval = EvalAttributes(pieceCountAndMat.first/*, pieceCountAndMat.second*/);
+
     for (int i = WKing; i < WHITE_PIECES; i++) {
         this->pieceSets[i] = makeBitboardFromArray(this->board, i);
         if (i < BKing) {
@@ -83,6 +104,7 @@ Board::Board(std::string fenStr) {
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
     int rank = 0, file = A;
+    int pieces = 0/*, material = 0*/;
     for (char& iter: token) {
         if (iter == '/') {
             rank++;
@@ -96,9 +118,13 @@ Board::Board(std::string fenStr) {
             file += 1;
 
             this->materialDifference += pieceValues[charToPiece.at(iter)];
+            pieces++;
+            //material += abs(pieceValues[charToPiece.at(iter)]);
         }
 
     }
+
+    this->eval = EvalAttributes(pieces/*, material*/);
 
     fenStream >> token;
     this->isWhiteTurn = token == "w" ? true : false;
@@ -225,7 +251,8 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->castlingRights,
         this->pawnJumpedSquare,
         this->fiftyMoveRule,
-        this->materialDifference
+        this->materialDifference,
+        this->eval
     ));
 
     BoardSquare oldPawnJumpedSquare = this->pawnJumpedSquare;
@@ -264,12 +291,15 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         else {
             this->materialDifference += pieceValues[promotionPiece] + 1;
         }
+        //this->eval.totalMaterial += abs(pieceValues[promotionPiece]) - 1;
     }
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
         this->zobristKey ^= Zobrist::enPassKeys[pos2.file];
         this->pawnJumpedSquare = BoardSquare();
+        this->eval.piecesRemaining--;
+        //this->eval.totalMaterial--;
 
         if(this->isWhiteTurn)
             materialDifference++;
@@ -307,9 +337,11 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         }
     }
 
-    // updates the material score of the board on capture
+    // updates the material score and piece count of the board on capture
     if (targetPiece != EmptyPiece) {
-        this->materialDifference -= pieceValues[targetPiece]; 
+        this->materialDifference -= pieceValues[targetPiece];
+        this->eval.piecesRemaining--; 
+        //this->eval.totalMaterial -= pieceValues[targetPiece];
     }
     // if nothing happened to the jumped pawn, disallow en passant
     this->pawnJumpedSquare = this->pawnJumpedSquare == oldPawnJumpedSquare ? BoardSquare() : this->pawnJumpedSquare;
@@ -360,6 +392,7 @@ void Board::undoMove() {
     this->fiftyMoveRule = prev.fiftyMoveRule;
     this->materialDifference = prev.materialDifference;
     this->isIllegalPos = false;
+    this->eval = prev.eval;
 
     this->moveHistory.pop_back();
     this->zobristKeyHistory.pop_back();
@@ -489,6 +522,8 @@ uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int tar
     return result;
 }
 
-EvalAttributes::EvalAttributes() {
-    piecesRemaining = 32;
+
+EvalAttributes::EvalAttributes(uint8_t pieces/*, uint8_t material*/) {
+    piecesRemaining = pieces;
+    //totalMaterial = material;
 }
