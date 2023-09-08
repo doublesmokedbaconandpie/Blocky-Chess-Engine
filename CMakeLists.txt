@@ -20,6 +20,7 @@ endif(MAKE_EXE)
 unset(MAKE_EXE CACHE)
 
 target_sources(Blocky PRIVATE
+    src/zobrist.cpp
     src/bitboard.cpp
     src/move.cpp
     src/board.cpp
@@ -34,4 +35,4 @@ target_include_directories(Blocky PRIVATE
     src
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")

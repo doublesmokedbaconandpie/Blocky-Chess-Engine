@@ -35,13 +35,15 @@ struct EvalAttributes {
 };
 
 struct Board {
-    Board(); // default game
-    // for testing
+    // for debugging
+    Board();
     Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn = true, 
             int a_fiftyMoveRule = 0, BoardSquare a_pawnJumpedSquare = BoardSquare(), 
             bool a_isIllegalPos = false, castleRights a_castlingRights = All_Castle, int a_materialDifference = 0); 
+    // for production
     Board(std::string fenStr);
     std::string toFen();
+    void initZobristKey();
     
     void makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
     void makeMove(BoardMove move);
@@ -58,17 +60,20 @@ struct Board {
 
     std::array<uint64_t, NUM_BITBOARDS> pieceSets = {0ull};
     std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
+
+    uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
     bool isWhiteTurn;
     castleRights castlingRights; // bitwise castling rights tracker
     int fiftyMoveRule;
     bool isIllegalPos;
-    BoardSquare pawnJumpedSquare;
-    int materialDifference; //updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
+    BoardSquare pawnJumpedSquare; // en passant square
+    int materialDifference; // updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
 
     std::vector<BoardState> moveHistory;
+    std::vector<uint64_t> zobristKeyHistory;
 };
 
-castleRights castleRightsBit(BoardSquare finalKingPos);
+castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn);
 bool notInRange(int var);
 bool currKingInAttack(Board& board);
 

@@ -27,7 +27,7 @@ struct BoardMove {
     BoardMove(BoardSquare a_pos1 = BoardSquare(), BoardSquare a_pos2 = BoardSquare(), pieceTypes a_promotionPiece = nullPiece): 
         pos1(a_pos1), pos2(a_pos2), promotionPiece(a_promotionPiece) {}; 
     BoardMove(std::string input, bool isWhiteTurn);
-    std::string toStr();
+    std::string toStr() const;
 
     friend std::ostream& operator<<(std::ostream& os, const BoardMove& target);
     friend bool operator==(const BoardMove& lhs, const BoardMove& rhs);

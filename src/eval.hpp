@@ -1,5 +1,5 @@
 #pragma once
-#include "board.hpp"
 
+#include "board.hpp"
 
 int eval(Board board);

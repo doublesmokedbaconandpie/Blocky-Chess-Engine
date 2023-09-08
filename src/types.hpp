@@ -1,14 +1,15 @@
 #pragma once
 
-#include <map>
+#include <array>
 #include <unordered_map>
 
 constexpr int BOARD_SIZE = 64;
-constexpr int NUM_BITBOARDS = 15;
+constexpr int NUM_BITBOARDS = 14;
+constexpr int NUM_PIECE_TYPES = 12;
 
 enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
 
-enum pieceTypes {nullPiece = -1, EmptyPiece,
+enum pieceTypes {nullPiece = -2, EmptyPiece,
                 WKing, WQueen, WBishop, WKnight, WRook, WPawn, 
                 BKing, BQueen, BBishop, BKnight, BRook, BPawn,
                 WHITE_PIECES, BLACK_PIECES};
@@ -41,30 +42,19 @@ enum gameProgress {
     endgame = 2
 };
 
-static std::map<int, int> pieceValues = {
-    {WPawn, 1},
-    {BPawn, -1},
-    {WBishop, 3}, 
-    {BBishop, -3}, 
-    {WKnight, 3}, 
-    {BKnight, -3}, 
-    {WRook, 5}, 
-    {BRook, -5}, 
-    {WQueen, 9},
-    {BQueen, -9},
-    {WKing, 0}, //should not be used
-    {BKing, 0}, //should not be used
-    {EmptyPiece, 0},
-    {nullPiece, 0}
-};
 
-static std::unordered_map<pieceTypes, char> pieceToChar = {
+// indices are equal to the enumerated pieceTypes
+const static std::array<int, 13> pieceValues {
+     1000,  9,  3,  3,  5,  1, 
+    -1000, -9, -3, -3, -5, -1,};
+
+const static std::unordered_map<pieceTypes, char> pieceToChar = {
     {EmptyPiece, ' '},
     {WPawn, 'P'}, {WKnight, 'N'}, {WBishop, 'B'}, {WRook, 'R'}, {WQueen, 'Q'}, {WKing, 'K'}, 
     {BPawn, 'p'}, {BKnight, 'n'}, {BBishop, 'b'}, {BRook, 'r'}, {BQueen, 'q'}, {BKing, 'k'}, 
 };
 
-static std::unordered_map<char, pieceTypes> charToPiece = {
+const static std::unordered_map<char, pieceTypes> charToPiece = {
     {'P', WPawn}, {'N', WKnight}, {'B', WBishop}, {'R', WRook}, {'Q', WQueen}, {'K', WKing}, 
     {'p', BPawn}, {'n', BKnight}, {'b', BBishop}, {'r', BRook}, {'q', BQueen}, {'k', BKing}, 
 };

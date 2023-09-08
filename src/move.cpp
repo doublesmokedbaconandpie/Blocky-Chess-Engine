@@ -7,7 +7,7 @@
 // BoardSquare
 
 BoardSquare::BoardSquare(std::string input) {
-    if (input == "-") {
+    if (input == "-") { // fen-style invalid square
         *this = BoardSquare();
         return;
     }
@@ -89,7 +89,7 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
     }
 }
 
-std::string BoardMove::toStr() {
+std::string BoardMove::toStr() const{
     char pp;
     switch (this->promotionPiece) {
         case WQueen:
@@ -119,7 +119,7 @@ std::string BoardMove::toStr() {
 }
 
 std::ostream& operator<<(std::ostream& os, const BoardMove& target) {
-    os <<  "Pos1[" << target.pos1 << "] Pos2[" << target.pos2 << "] Promote: " << target.promotionPiece;
+    os << target.toStr();
     return os;
 }
 

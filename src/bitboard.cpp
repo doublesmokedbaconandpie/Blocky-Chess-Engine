@@ -5,12 +5,12 @@
 #include "bitboard.hpp"
 
 int leadingBit(uint64_t bitboard) {
-    /*Counts from the first bit*/ 
+    // Counts from the first bit
     return bitboard ? __builtin_ctzll(bitboard) : -1;
 }
 
 int trailingBit(uint64_t bitboard) {
-    /*Counts from the last bit*/ 
+    // Counts from the last bit
     return bitboard ? __builtin_clzll(bitboard) : -1;
 }
 
@@ -31,19 +31,19 @@ int getRank(int square) {
 }
 
 uint64_t getFileMask(int square) {
-    return FILES_MASK.at(getFile(square));
+    return FILES_MASK[getFile(square)];
 }
 
 uint64_t getRankMask(int square) {
-    return RANKS_MASK.at(getRank(square));
+    return RANKS_MASK[getRank(square)];
 }
 
 uint64_t getDiagMask(int square) {
-    return DIAGS_MASK.at(getRank(square) + getFile(square));
+    return DIAGS_MASK[getRank(square) + getFile(square)];
 }
 
 uint64_t getAntiDiagMask(int square) {
-    return flipVertical(DIAGS_MASK.at(7 - getRank(square) + getFile(square)));
+    return flipVertical(DIAGS_MASK[7 - getRank(square) + getFile(square)]);
 }
 
 bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies) {
@@ -75,8 +75,8 @@ bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies) {
     int leadDLBlock = leadingBit(dlBlock) != -1 ? leadingBit(dlBlock) : 64;
     int leadDRBlock = leadingBit(drBlock) != -1 ? leadingBit(drBlock) : 64;
 
-    // trailingBit and leadingBit can only output -1 when the input is 0, 
-    // which doesn't change closestStraights
+    // If an enemy section has no pieces, -1 will be returned from trailingBit and leadingBit
+    // However, no enemies means doing bitwise-or with 0, which doesn't change closestStraights
     uint64_t closestDiags = 0ull;
     closestDiags |= (traiURBlock > trailingBit(urEnemy)) ? urEnemy : 0ull;
     closestDiags |= (traiULBlock > trailingBit(ulEnemy)) ? ulEnemy : 0ull;
@@ -113,8 +113,8 @@ bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies) {
     int leadDBlock = leadingBit(dBlock) != -1 ? leadingBit(dBlock) : 64;
     int leadRBlock = leadingBit(rBlock) != -1 ? leadingBit(rBlock) : 64;
 
-    // trailingBit and leadingBit can only output -1 when the input is 0, 
-    // which doesn't change closestStraights
+    // If an enemy section has no pieces, -1 will be returned from trailingBit and leadingBit
+    // However, no enemies means doing bitwise-or with 0, which doesn't change closestStraights
     uint64_t closestStraights = 0ull;
     closestStraights |= (traiUBlock > trailingBit(uEnemy)) ? uEnemy : 0ull;
     closestStraights |= (traiLBlock > trailingBit(lEnemy)) ? lEnemy : 0ull;
@@ -125,6 +125,7 @@ bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies) {
 
 bool knightAttackers(int square, uint64_t enemyKnights) {
     uint64_t currPiece = 1ull << square;
+    // prevent currPiece from teleporting to other side of the board with bit shifts
     uint64_t left1 = (currPiece >> 1) & NOT_FILE_H;
     uint64_t left2 = (currPiece >> 2) & NOT_FILE_HG;
     uint64_t right1 = (currPiece << 1) & NOT_FILE_A;
@@ -140,6 +141,7 @@ bool knightAttackers(int square, uint64_t enemyKnights) {
 bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn) {
     uint64_t currPiece = 1ull << square;
 
+    // prevent currPiece from teleporting to other side of the board with bit shifts
     uint64_t left  = currPiece & NOT_FILE_A;
     uint64_t right = currPiece & NOT_FILE_H;
     
@@ -150,12 +152,15 @@ bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn) {
 
 bool kingAttackers(int square, uint64_t enemyKings) {
     uint64_t currPiece = 1ull << square;
+
+    // prevent currPiece from teleporting to other side of the board with bit shifts
     uint64_t left = currPiece & NOT_FILE_A;
     uint64_t right = currPiece & NOT_FILE_H;
     
     currPiece |= (left >> 1);
     currPiece |= (right << 1);
     
+    // up one row and down one row respectively
     currPiece |= (currPiece >> 8) | (currPiece << 8);
     return currPiece & enemyKings;
 }
