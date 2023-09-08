@@ -316,7 +316,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->pawnJumpedSquare = BoardSquare(); 
     }
     if (oldPawnJumpedSquare != BoardSquare()) {
-	    this->zobristKey ^= Zobrist::enPassKeys[oldPawnJumpedSquare.file];
+        this->zobristKey ^= Zobrist::enPassKeys[oldPawnJumpedSquare.file];
     }	
     
     // check for illegality 
