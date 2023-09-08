@@ -21,4 +21,6 @@ namespace MOVEGEN {
     void forwardPawnMoves(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn);
     void pawnCaptures(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn, int fileDirection);
 
+    // for debugging 
+    int perft(Board currBoard, int depthLeft);
 } // namespace MOVEGEN

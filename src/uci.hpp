@@ -6,21 +6,21 @@
 #include "board.hpp"
 #include "search.hpp"
 
-namespace UCI {
-    struct UCIOPTIONS {
+namespace Uci {
+    struct UciOptions {
         int depth = 5;
     };
 
     bool uci();
 
-    void SETOPTIONLOOP();
-    void setoption(std::istringstream& input);
+    void setOptionLoop();
+    void setOption(std::istringstream& input);
 
-    void UCILOOP();
+    void uciLoop();
     Board position(std::istringstream& input);
     void go(std::istringstream& input, Board& board);
-    void info(SEARCH::SearchInfo searchResult, int64_t searchDuration, int depth);
+    void info(Search::SearchInfo searchResult, int64_t searchDuration, int depth);
 
     void isready();
 
-} // namespace UCI
+} // namespace Uci

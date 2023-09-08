@@ -1,7 +1,7 @@
 #include "moveGen.hpp"
 
-#include <stdexcept>
 #include <vector>
+#include <stdexcept>
 
 namespace MOVEGEN {
 
@@ -77,7 +77,7 @@ namespace MOVEGEN {
         int pawnDirection = currBoard.isWhiteTurn ? -1 : 1;
         int originRank = currBoard.isWhiteTurn ? 6 : 1;
 
-        // space forward
+        // any spaces forward
         if (currBoard.getPiece(pawn.rank + pawnDirection, pawn.file) == EmptyPiece) {
             pawnMoves.push_back(BoardSquare(pawn.rank + pawnDirection, pawn.file));
             // jump
@@ -93,9 +93,11 @@ namespace MOVEGEN {
         int pawnDirection = currBoard.isWhiteTurn ? -1 : 1;
 
         BoardSquare square = BoardSquare(pawn.rank + pawnDirection, pawn.file + fileDirection);
+        // regular capture
         if (!isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != EmptyPiece && currBoard.getPiece(square) != nullPiece) {
             pawnMoves.push_back(square);
         }
+        // en passant
         if (square == currBoard.pawnJumpedSquare) {
             pawnMoves.push_back(square);
         }
@@ -202,17 +204,20 @@ namespace MOVEGEN {
             }
             // castling
             for (BoardSquare square: potentialCastleMoves) {
+                // check for castling rights and validity
                 if (currKingInAttack(currBoard)) {break;}
-                if (!(currBoard.castlingRights & castleRightsBit(square))) {continue;}
+                if (!(currBoard.castlingRights & castleRightsBit(square, currBoard.isWhiteTurn))) {continue;}
                 
+                // prevent castling through squares attacked by enemies
                 int kingFileDirection = square.file == G ? 1 : -1;
-                // cannot castle through enemy attack
                 currBoard.makeMove(king, BoardSquare(king.rank, king.file + kingFileDirection));
                 if (currBoard.isIllegalPos) {
                     currBoard.undoMove();
                     continue;
                 } 
                 currBoard.undoMove();
+
+                // check for pieces in between king and rook
                 if (getPieceInDirection(currBoard, king, 0, kingFileDirection) == allyRook) {
                     kingMoves.push_back(BoardSquare(kingUnmovedRank, square.file));
                 }
@@ -282,5 +287,22 @@ namespace MOVEGEN {
         else {
             return target >= BKing && target <= BPawn;
         }
+    }
+
+    // perft is a method of determining correctness of move generators
+    // positions can be input and number of total leaf nodes determined
+    // the number determined can be compared to a table to established values from others
+    int perft(Board board, int depthLeft) {
+        if (depthLeft == 0) {
+            return 1;
+        }
+        int leafNodeCount = 0;
+        std::vector<BoardMove> moves = moveGenerator(board);
+        for (auto move: moves) {
+            board.makeMove(move);
+            leafNodeCount += perft(board, depthLeft - 1);
+            board.undoMove();
+        }
+        return leafNodeCount;
     }
 } // namespace MOVEGEN
