@@ -13,10 +13,10 @@
 struct EvalAttributes {
     //EvalAttributes(); //default position
 
-    EvalAttributes(uint8_t pieceCount = 32/*, uint8_t totalMaterial = 78*/); 
+    EvalAttributes(uint8_t pieceCount = 32, uint8_t totalMaterial = 78); 
 
     uint8_t piecesRemaining;
-    // int totalMaterial; //in consideration, not sure how much this would influence things
+    int totalMaterial; //in consideration, not sure how much this would influence things
 };
 
 struct BoardState {

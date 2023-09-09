@@ -11,21 +11,7 @@
 #include "zobrist.hpp"
 #include "types.hpp"
 
-//could be altered in future to calculate more values, returning a different type obviously
-//intended for use on positions other than the starting position (for testing)
-std::pair<uint8_t, uint8_t> countPiecesAndMaterial(std::array<pieceTypes, BOARD_SIZE> board) {
-    uint8_t pieceCount = 0;
-    uint8_t totalMaterial = 0;
 
-    for(pieceTypes piece: board) {
-        if(piece != EmptyPiece) {
-            pieceCount++;
-            totalMaterial += abs(pieceValues[piece]);
-        }
-    }
-
-    return std::pair<uint8_t, uint8_t>(pieceCount, totalMaterial);
-}
 
 // Used for debugging and testing
 Board::Board() {
@@ -79,8 +65,16 @@ Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn,
     this->castlingRights = a_castlingRights;
     this->materialDifference = a_materialDifference;
 
-    std::pair<uint8_t, uint8_t> pieceCountAndMat = countPiecesAndMaterial(a_board);
-    this->eval = EvalAttributes(pieceCountAndMat.first/*, pieceCountAndMat.second*/);
+    uint8_t pieceCount = 0;
+    uint8_t totalMaterial = 0;
+
+    for(pieceTypes piece: board) {
+        if(piece != EmptyPiece) {
+            pieceCount++;
+            totalMaterial += abs(pieceValues[piece]);
+        }
+    }
+    this->eval = EvalAttributes(pieceCount, totalMaterial);
 
     for (int i = WKing; i < WHITE_PIECES; i++) {
         this->pieceSets[i] = makeBitboardFromArray(this->board, i);
@@ -104,7 +98,7 @@ Board::Board(std::string fenStr) {
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
     int rank = 0, file = A;
-    int pieces = 0/*, material = 0*/;
+    int pieces = 0, material = 0;
     for (char& iter: token) {
         if (iter == '/') {
             rank++;
@@ -119,12 +113,12 @@ Board::Board(std::string fenStr) {
 
             this->materialDifference += pieceValues[charToPiece.at(iter)];
             pieces++;
-            //material += abs(pieceValues[charToPiece.at(iter)]);
+            material += abs(pieceValues[charToPiece.at(iter)]);
         }
 
     }
 
-    this->eval = EvalAttributes(pieces/*, material*/);
+    this->eval = EvalAttributes(pieces, material);
 
     fenStream >> token;
     this->isWhiteTurn = token == "w" ? true : false;
@@ -291,7 +285,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         else {
             this->materialDifference += pieceValues[promotionPiece] + 1;
         }
-        //this->eval.totalMaterial += abs(pieceValues[promotionPiece]) - 1;
+        this->eval.totalMaterial += abs(pieceValues[promotionPiece]) - 1;
     }
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
@@ -299,7 +293,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->zobristKey ^= Zobrist::enPassKeys[pos2.file];
         this->pawnJumpedSquare = BoardSquare();
         this->eval.piecesRemaining--;
-        //this->eval.totalMaterial--;
+        this->eval.totalMaterial--;
 
         if(this->isWhiteTurn)
             materialDifference++;
@@ -341,7 +335,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     if (targetPiece != EmptyPiece) {
         this->materialDifference -= pieceValues[targetPiece];
         this->eval.piecesRemaining--; 
-        //this->eval.totalMaterial -= pieceValues[targetPiece];
+        this->eval.totalMaterial -= abs(pieceValues[targetPiece]);
     }
     // if nothing happened to the jumped pawn, disallow en passant
     this->pawnJumpedSquare = this->pawnJumpedSquare == oldPawnJumpedSquare ? BoardSquare() : this->pawnJumpedSquare;
@@ -523,7 +517,7 @@ uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int tar
 }
 
 
-EvalAttributes::EvalAttributes(uint8_t pieces/*, uint8_t material*/) {
+EvalAttributes::EvalAttributes(uint8_t pieces, uint8_t material) {
     piecesRemaining = pieces;
-    //totalMaterial = material;
+    totalMaterial = material;
 }

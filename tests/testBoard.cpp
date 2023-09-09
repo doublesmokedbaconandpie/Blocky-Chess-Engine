@@ -843,36 +843,67 @@ TEST(MaterialTest, defaultGame) {
     b1.makeMove(BoardMove("d7d5", b1.isWhiteTurn));
     b1.makeMove(BoardMove("e4d5", b1.isWhiteTurn)); //cap black pawn
     int pieceCount2 = b1.eval.piecesRemaining;
-    //int totalMaterial2 = b1.eval.totalMaterial;
+    int totalMaterial2 = b1.eval.totalMaterial;
     b1.makeMove(BoardMove("c8h3", b1.isWhiteTurn));
     b1.makeMove(BoardMove("d5d6", b1.isWhiteTurn)); 
     b1.makeMove(BoardMove("h3g2", b1.isWhiteTurn)); //cap white pawn
     int pieceCount3 = b1.eval.piecesRemaining;
-    //int totalMaterial3 = b1.eval.totalMaterial;
+    int totalMaterial3 = b1.eval.totalMaterial;
     b1.makeMove(BoardMove("d6c7", b1.isWhiteTurn)); //cap black pawn
     int pieceCount4 = b1.eval.piecesRemaining;
-    //int totalMaterial4 = b1.eval.totalMaterial;
+    int totalMaterial4 = b1.eval.totalMaterial;
     b1.makeMove(BoardMove("g2h1", b1.isWhiteTurn)); //cap white rook
     int pieceCount5 = b1.eval.piecesRemaining;
-    //int totalMaterial5 = b1.eval.totalMaterial;
+    int totalMaterial5 = b1.eval.totalMaterial;
     b1.makeMove(BoardMove("c7b8q", b1.isWhiteTurn)); //cap black knight
     int pieceCount6 = b1.eval.piecesRemaining;
-    //int totalMaterial6 = b1.eval.totalMaterial;
+    int totalMaterial6 = b1.eval.totalMaterial;
 
     EXPECT_EQ(pieceCount1, 32);
     EXPECT_EQ(totalMaterial1, 78);
     EXPECT_EQ(pieceCount2, 31);
-    //EXPECT_EQ(totalMaterial2, 77);
+    EXPECT_EQ(totalMaterial2, 77);
     EXPECT_EQ(pieceCount3, 30);
-    //EXPECT_EQ(totalMaterial3, 76);
+    EXPECT_EQ(totalMaterial3, 76);
     EXPECT_EQ(pieceCount4, 29);
-    //EXPECT_EQ(totalMaterial4, 75);
+    EXPECT_EQ(totalMaterial4, 75);
     EXPECT_EQ(pieceCount5, 28);
-    //EXPECT_EQ(totalMaterial5, 70);
+    EXPECT_EQ(totalMaterial5, 70);
     EXPECT_EQ(pieceCount6, 27);
-    //EXPECT_EQ(totalMaterial6, 75);
+    EXPECT_EQ(totalMaterial6, 75);
+}
+
+TEST(MaterialTest, enPassantTests) {
+    Board b1;
+    b1.makeMove(BoardMove("e2e4", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("d7d5", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("e4e5", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("d5d4", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("h2h3", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("f7f5", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("e5f6", b1.isWhiteTurn)); //+1
+    int pieceCount1 = b1.eval.piecesRemaining;
+    int totalMaterial1 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("g7f6", b1.isWhiteTurn)); //+-0
+    b1.makeMove(BoardMove("c2c4", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("d4c3", b1.isWhiteTurn)); //-1
+    int totalMaterial2 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("d2d4", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("c3b2", b1.isWhiteTurn)); //-2
+    b1.makeMove(BoardMove("d4d5", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("b2a1r", b1.isWhiteTurn)); //-11
+    int totalMaterial3 = b1.eval.totalMaterial;
+    
+    EXPECT_EQ(pieceCount1, 31);
+    EXPECT_EQ(totalMaterial1, 77);
+    EXPECT_EQ(totalMaterial2, 75);
+    EXPECT_EQ(totalMaterial3, 73);
 }
 
 TEST(MaterialTest, fenBoards) {
+    Board fenBoard1("3qk3/8/8/8/8/3p4/8/3QK3 w - - 0 1"); //19
+    Board fenBoard2("r1bqkbnr/pp1ppppp/8/8/3QP3/8/PPP2PPP/RNB1KB1R w KQkq - 0 1"); //70
 
+    EXPECT_EQ(fenBoard1.eval.totalMaterial, 19);
+    EXPECT_EQ(fenBoard2.eval.totalMaterial, 70);
 }
