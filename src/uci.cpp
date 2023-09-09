@@ -129,6 +129,8 @@ namespace Uci {
         std::cout << "info depth " << depth << ' ';
         std::cout << "nodes " << searchResult.nodes << ' ';
         if (searchDuration != 0) {
+            // time is output in milliseconds per the UCI protocol
+            std::cout << "time " << searchDuration / 1000 << ' ';
             std::cout << "nps " << static_cast<int64_t>(searchResult.nodes) * 1000000 / searchDuration  << ' ';
         }
         
