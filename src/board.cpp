@@ -387,7 +387,7 @@ void Board::setPiece(int rank, int file, pieceTypes currPiece) {
     pieceTypes originPiece = this->getPiece(rank, file);
     this->board[square] = currPiece;
     
-    if (originPiece != nullPiece && originPiece != EmptyPiece) {
+    if (originPiece != EmptyPiece) {
         pieceTypes originColor = originPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
         this->pieceSets[originColor] &= clearSquare;
         this->pieceSets[originPiece] &= clearSquare;
