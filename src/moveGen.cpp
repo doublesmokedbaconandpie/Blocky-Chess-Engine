@@ -94,7 +94,7 @@ namespace MOVEGEN {
 
         BoardSquare square = BoardSquare(pawn.rank + pawnDirection, pawn.file + fileDirection);
         // regular capture
-        if (!isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != EmptyPiece && currBoard.getPiece(square) != nullPiece) {
+        if (square.isValid() && !isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != EmptyPiece) {
             pawnMoves.push_back(square);
         }
         // en passant
@@ -119,7 +119,7 @@ namespace MOVEGEN {
                 BoardSquare(currRank + 1, currFile + 2),
             };
             for (BoardSquare square: potentialMoves) {
-                if (!isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != nullPiece) {
+                if (square.isValid() && !isFriendlyPiece(currBoard, square)) {
                     knightMoves.push_back(square);
                 }
             }
@@ -198,7 +198,7 @@ namespace MOVEGEN {
             };
             // regular movements
             for (BoardSquare square: potentialAdjacentMoves) {
-                if (!isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != nullPiece) {
+                if (square.isValid() && !isFriendlyPiece(currBoard, square)) {
                     kingMoves.push_back(square);
                 }
             }
