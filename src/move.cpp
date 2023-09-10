@@ -25,6 +25,10 @@ std::string BoardSquare::toStr() {
     return move.str();
 }
 
+bool BoardSquare::isValid() const {
+    return this->rank >= 0 && this->file >= 0 && this->rank <= 7 && this->file <= 7;
+}
+
 bool operator==(const BoardSquare& lhs, const BoardSquare& rhs) {
     return (lhs.rank == rhs.rank) && (lhs.file == rhs.file);
 }
@@ -116,6 +120,10 @@ std::string BoardMove::toStr() const{
     move << this->pos2;
     move << pp;
     return move.str();
+}
+
+bool BoardMove::isValid() const {
+    return this->pos1.isValid() && this->pos2.isValid();
 }
 
 std::ostream& operator<<(std::ostream& os, const BoardMove& target) {

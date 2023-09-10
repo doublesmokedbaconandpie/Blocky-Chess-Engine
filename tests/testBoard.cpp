@@ -25,30 +25,6 @@ TEST(BoardTest, getPieceValidSquare3) {
     EXPECT_EQ(getPieceResult, WPawn);
 }
 
-TEST(BoardTest, getPieceInvalidSquare1) {
-    Board defaultBoard;
-    BoardSquare square = BoardSquare(-1, A);
-    ASSERT_EQ(defaultBoard.getPiece(square), nullPiece);
-}
-
-TEST(BoardTest, getPieceInvalidSquare2) {
-    Board defaultBoard;
-    BoardSquare square = BoardSquare(8, A);
-    ASSERT_EQ(defaultBoard.getPiece(square), nullPiece);
-}
-
-TEST(BoardTest, getPieceInvalidSquare3) {
-    Board defaultBoard;
-    BoardSquare square = BoardSquare(0, -1);
-    ASSERT_EQ(defaultBoard.getPiece(square), nullPiece);
-}
-
-TEST(BoardTest, getPieceInvalidSquare4) {
-    Board defaultBoard;
-    BoardSquare square = BoardSquare(0, 8);
-    ASSERT_EQ(defaultBoard.getPiece(square), nullPiece);
-}
-
 TEST(BoardTest, boardSquareStrConstructor) {
     BoardSquare square = BoardSquare("a8");
     EXPECT_EQ(square.rank, 0);

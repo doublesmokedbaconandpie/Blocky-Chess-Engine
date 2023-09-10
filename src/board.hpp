@@ -65,7 +65,6 @@ struct Board {
 };
 
 castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn);
-bool notInRange(int var);
 bool currKingInAttack(Board& board);
 
 // for debugging
