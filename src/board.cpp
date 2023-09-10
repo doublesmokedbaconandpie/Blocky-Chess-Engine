@@ -199,14 +199,8 @@ void Board::initZobristKey() {
     this->zobristKeyHistory = {this->zobristKey}; // synchronize history and current key
 }
 
-
-bool notInRange(int var) {return var < 0 || var > 7;}
+// makeMove will not check if the move is invalid
 void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece) {
-    if (notInRange(pos1.rank) || notInRange(pos1.file) || notInRange(pos2.file) || notInRange(pos2.rank)) {
-        this->isIllegalPos = true;
-        return;
-    }
-
     // allies haven't made a move yet
     pieceTypes allyKing = this->isWhiteTurn ? WKing : BKing;
     pieceTypes allyRook = this->isWhiteTurn ? WRook : BRook;
@@ -330,6 +324,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     this->zobristKeyHistory.push_back(this->zobristKey);
 }
 
+// makeMove will not check if the move is invalid
 void Board::makeMove(BoardMove move) {
     this->makeMove(move.pos1, move.pos2, move.promotionPiece);
 }
@@ -373,13 +368,12 @@ void Board::undoMove() {
     this->zobristKey = zobristKeyHistory.back();
 }
 
+// getPiece is not responsible for bounds checking
 pieceTypes Board::getPiece(int rank, int file) const {
-    if (rank < 0 || rank > 7 || file < A || file > H) {
-        return nullPiece;
-    }
     return this->board[rank * 8 + file];
 }
 
+// getPiece is not responsible for bounds checking
 pieceTypes Board::getPiece(BoardSquare square) const{
     return this->getPiece(square.rank, square.file);
 }
