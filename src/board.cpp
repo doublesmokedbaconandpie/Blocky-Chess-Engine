@@ -302,7 +302,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
-        this->zobristKey ^= Zobrist::enPassKeys[pos2.file];
         this->pawnJumpedSquare = BoardSquare();
         this->eval.piecesRemaining--;
         this->eval.totalMaterial--;
@@ -349,8 +348,16 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->eval.piecesRemaining--; 
         this->eval.totalMaterial -= abs(pieceValues[targetPiece]);
     }
-    // if nothing happened to the jumped pawn, disallow en passant
-    this->pawnJumpedSquare = this->pawnJumpedSquare == oldPawnJumpedSquare ? BoardSquare() : this->pawnJumpedSquare;
+    
+    // handle old en passant square 
+    if (this->pawnJumpedSquare == oldPawnJumpedSquare) {
+        this->pawnJumpedSquare = BoardSquare(); 
+    }
+    if (oldPawnJumpedSquare != BoardSquare()) {
+        this->zobristKey ^= Zobrist::enPassKeys[oldPawnJumpedSquare.file];
+    }	
+    
+    // check for illegality 
     this->isIllegalPos = currKingInAttack(*this);
 
     // after finalizing move logic, now switch turns
