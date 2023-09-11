@@ -10,6 +10,7 @@
 #include "bitboard.hpp"
 #include "zobrist.hpp"
 #include "types.hpp"
+#include "eval.hpp" //I hate this
 
 
 
@@ -32,6 +33,12 @@ Board::Board() {
     this->castlingRights = All_Castle;
     this->materialDifference = 0;
     this->eval = EvalAttributes();
+
+    //sets up initial score for piece placement
+    for(uint8_t i = 0; i < BOARD_SIZE; i++) {
+        pieceTypes currPiece = board[i];
+        this->eval.placementScore += getPlacementScore(i / 8, i % 8, currPiece);
+    }
 
     this->pieceSets[WKing]   = 0x1000000000000000ull;
     this->pieceSets[WQueen]  = 0x0800000000000000ull;
@@ -75,6 +82,11 @@ Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn,
         }
     }
     this->eval = EvalAttributes(pieceCount, totalMaterial);
+    //sets up initial score for piece placement (This gets repeated so maybe could turn it into a function)
+    for(uint8_t i = 0; i < BOARD_SIZE; i++) {
+        pieceTypes currPiece = board[i];
+        this->eval.placementScore += getPlacementScore(i / 8, i % 8, currPiece);
+    }
 
     for (int i = WKing; i < WHITE_PIECES; i++) {
         this->pieceSets[i] = makeBitboardFromArray(this->board, i);
@@ -94,11 +106,11 @@ Board::Board(std::string fenStr) {
     std::string token; 
     std::istringstream fenStream(fenStr);
     this->zobristKeyHistory = {0ull}; // required for setPiece
+    this->eval = EvalAttributes(0, 0);
 
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
     int rank = 0, file = A;
-    int pieces = 0, material = 0;
     for (char& iter: token) {
         if (iter == '/') {
             rank++;
@@ -108,17 +120,17 @@ Board::Board(std::string fenStr) {
             file += int(iter - '0');
         }
         else { // must be a piece character
-            this->setPiece(rank, file, charToPiece.at(iter));
-            file += 1;
+            pieceTypes currPiece = charToPiece.at(iter); 
+            this->setPiece(rank, file, currPiece);
 
-            this->materialDifference += pieceValues[charToPiece.at(iter)];
-            pieces++;
-            material += abs(pieceValues[charToPiece.at(iter)]);
+            this->materialDifference += pieceValues[currPiece];
+            this->eval.piecesRemaining++;
+            this->eval.totalMaterial += abs(pieceValues[currPiece]);
+
+            file += 1;
         }
 
     }
-
-    this->eval = EvalAttributes(pieces, material);
 
     fenStream >> token;
     this->isWhiteTurn = token == "w" ? true : false;
@@ -418,12 +430,16 @@ void Board::setPiece(int rank, int file, pieceTypes currPiece) {
         this->pieceSets[originColor] &= clearSquare;
         this->pieceSets[originPiece] &= clearSquare;
         this->zobristKey ^= Zobrist::pieceKeys[originPiece][square];
+
+        this->eval.placementScore -= getPlacementScore(rank, file, originPiece);
     }
     if (currPiece != EmptyPiece) {
         pieceTypes currColor = currPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
         this->pieceSets[currColor] ^= setSquare;
         this->pieceSets[currPiece] ^= setSquare;
         this->zobristKey ^= Zobrist::pieceKeys[currPiece][square];
+
+        this->eval.placementScore += getPlacementScore(rank, file, currPiece);
     }
 }
 

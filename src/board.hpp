@@ -17,6 +17,7 @@ struct EvalAttributes {
 
     uint8_t piecesRemaining;
     int totalMaterial; //in consideration, not sure how much this would influence things
+    int placementScore = 0;
 };
 
 struct BoardState {
