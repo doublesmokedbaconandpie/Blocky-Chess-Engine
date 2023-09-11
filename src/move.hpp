@@ -11,6 +11,7 @@ struct BoardSquare {
     BoardSquare(std::string input);
     std::string toStr();
     int toSquare();
+    bool isValid() const;
 
     friend bool operator==(const BoardSquare& lhs, const BoardSquare& rhs);
     friend bool operator!=(const BoardSquare& lhs, const BoardSquare& rhs);
@@ -28,6 +29,7 @@ struct BoardMove {
         pos1(a_pos1), pos2(a_pos2), promotionPiece(a_promotionPiece) {}; 
     BoardMove(std::string input, bool isWhiteTurn);
     std::string toStr() const;
+    bool isValid() const;
 
     friend std::ostream& operator<<(std::ostream& os, const BoardMove& target);
     friend bool operator==(const BoardMove& lhs, const BoardMove& rhs);
