@@ -870,6 +870,8 @@ TEST(MaterialTest, fenBoards) {
     EXPECT_EQ(fenBoard2.eval.totalMaterial, 70);
 }
 
+//NOTE
+//
 //As the piece-square tables are altered, these tests will begin to fail. 
 //If you are still concerned about the functions working at all, then adjust the expected values accordingly.
 //Otherwise, you can ignore these tests.
