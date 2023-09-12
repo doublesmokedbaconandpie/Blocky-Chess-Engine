@@ -12,13 +12,17 @@ namespace Search {
     
     struct SearchInfo {
         int nodes;
-        int value;
+        int eval;
         int mateIn = NO_MATE;
         BoardMove move = BoardMove();
     };
+    
+    struct Search {
+        Search(Board board);
+        SearchInfo search(int depth);
+        SearchInfo alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot);
 
-    SearchInfo search(Board& board, int depth);
-    SearchInfo alphaBeta(Board& board, int alpha, int beta, int depthLeft, int distanceFromRoot);
-
+        Board board;
+        int nodes;
+    };
 } // namespace Search
-

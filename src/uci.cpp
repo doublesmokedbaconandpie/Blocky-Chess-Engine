@@ -117,7 +117,8 @@ namespace Uci {
         int depthToUse = OPTIONS.depth < TIMEMAN::timeToDepth(allytime) ? OPTIONS.depth : TIMEMAN::timeToDepth(allytime);
 
         auto start = std::chrono::high_resolution_clock::now();
-        Search::SearchInfo result = Search::search(board, depthToUse);
+        Search::Search currSearch(board);
+        Search::SearchInfo result = currSearch.search(depthToUse);
         auto end = std::chrono::high_resolution_clock::now();
         int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         
@@ -135,7 +136,7 @@ namespace Uci {
         }
         
         if (searchResult.mateIn == Search::NO_MATE) {
-            std::cout << "score cp " << (searchResult.value * 100) << ' ';
+            std::cout << "score cp " << (searchResult.eval * 100) << ' ';
         }
         else {
             std::cout << "mate " << searchResult.mateIn / 2 + 1 << ' '; // convert plies to moves
