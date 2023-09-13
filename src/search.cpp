@@ -14,13 +14,23 @@ namespace Search {
     }
 
     SearchInfo Search::search(int depth) {
-        SearchInfo result = this->alphaBeta(MIN_ALPHA, MAX_BETA, depth, 0);
+        SearchInfo result;
+        SearchNode root = this->alphaBeta(MIN_ALPHA, MAX_BETA, depth, 0);
+
         result.nodes = this->nodes;
+        result.eval = root.eval;
+        result.move = root.move;
+        if (root.eval > MAX_BETA - 100) {
+            result.mateIn = MAX_BETA - root.eval;
+        }
+        if (root.eval < MIN_ALPHA + 100) {
+            result.mateIn = root.eval - MIN_ALPHA;
+        }
         return result;
     }
 
-    SearchInfo Search::alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot) {
-        SearchInfo result;
+    SearchNode Search::alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot) {
+        SearchNode result;
         this->nodes++;
 
         // fifty move rule
@@ -47,7 +57,6 @@ namespace Search {
         if (moves.size() == 0) {
             if (currKingInAttack(board)) {
                 result.eval = MIN_ALPHA + distanceFromRoot;
-                result.mateIn = distanceFromRoot;
             }
             else {
                 result.eval = 0;
@@ -59,7 +68,7 @@ namespace Search {
         int score, bestscore = MIN_ALPHA;
         for (BoardMove move: moves) {
             board.makeMove(move);
-            SearchInfo oppAlphaBeta = alphaBeta(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
+            SearchNode oppAlphaBeta = alphaBeta(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
             board.undoMove(); 
             
             score = -1 * oppAlphaBeta.eval;
@@ -71,7 +80,6 @@ namespace Search {
             }
             // fail-soft stabilizes the search and allows for returned.evals outside the alpha-beta bounds
             if (score > bestscore) {
-                result.mateIn = oppAlphaBeta.mateIn;
                 result.eval = bestscore = score;
                 result.move = move;
                 if (score > alpha) {
