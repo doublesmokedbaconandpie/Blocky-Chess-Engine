@@ -76,7 +76,7 @@ namespace Search {
                 result.eval = beta;
                 break;
             }
-            // fail-soft stabilizes the search and allows for returned.evals outside the alpha-beta bounds
+            // fail-soft stabilizes the search and allows for returned values outside the alpha-beta bounds
             if (score > bestscore) {
                 result.eval = bestscore = score;
                 result.move = move;
