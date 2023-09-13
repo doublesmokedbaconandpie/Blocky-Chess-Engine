@@ -15,6 +15,11 @@ BoardSquare::BoardSquare(std::string input) {
     this->rank = 8 - int(input.at(1) - '1') - 1;
 }
 
+BoardSquare::BoardSquare(int square) {
+    this->rank = square / 8;
+    this->file = fileVals(square % 8);
+}
+
 int BoardSquare::toSquare() {
     return this->rank * 8 + this->file;
 }
