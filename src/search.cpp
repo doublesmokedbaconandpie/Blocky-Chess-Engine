@@ -11,6 +11,7 @@ namespace Search {
     Search::Search(Board board) {
         this->board = board;
         this->nodes = 0;
+        this->depth = 0;
     }
 
     Info Search::search(int depth) {
@@ -18,6 +19,8 @@ namespace Search {
         Node root = this->alphaBeta(MIN_ALPHA, MAX_BETA, depth, 0);
 
         result.nodes = this->nodes;
+        result.depth = this->depth;
+        
         result.eval = root.eval;
         result.move = root.move;
         if (root.eval > MAX_BETA - 100) {
@@ -32,6 +35,7 @@ namespace Search {
     Node Search::alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot) {
         Node result;
         this->nodes++;
+        this->depth = distanceFromRoot > this->depth ? distanceFromRoot : this->depth;
 
         // fifty move rule
         if (this->board.fiftyMoveRule == 100) {

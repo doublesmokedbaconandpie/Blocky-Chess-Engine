@@ -13,6 +13,7 @@ namespace Search {
     // used for outside UCI representation    
     struct Info {
         int nodes;
+        int depth;
         int eval;
         int mateIn = NO_MATE;
         BoardMove move;
@@ -31,5 +32,6 @@ namespace Search {
 
         Board board;
         int nodes;
+        int depth;
     };
 } // namespace Search
