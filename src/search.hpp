@@ -11,7 +11,7 @@ namespace Search {
     const int NO_MATE = -1;
 
     // used for outside UCI representation    
-    struct SearchInfo {
+    struct Info {
         int nodes;
         int eval;
         int mateIn = NO_MATE;
@@ -19,15 +19,15 @@ namespace Search {
     };
 
     // used for internal searching
-    struct SearchNode {
+    struct Node {
         int eval;
         BoardMove move;
     };
     
     struct Search {
         Search(Board board);
-        SearchInfo search(int depth);
-        SearchNode alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot);
+        Info search(int depth);
+        Node alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot);
 
         Board board;
         int nodes;

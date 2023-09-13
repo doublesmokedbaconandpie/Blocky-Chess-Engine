@@ -13,9 +13,9 @@ namespace Search {
         this->nodes = 0;
     }
 
-    SearchInfo Search::search(int depth) {
-        SearchInfo result;
-        SearchNode root = this->alphaBeta(MIN_ALPHA, MAX_BETA, depth, 0);
+    Info Search::search(int depth) {
+        Info result;
+        Node root = this->alphaBeta(MIN_ALPHA, MAX_BETA, depth, 0);
 
         result.nodes = this->nodes;
         result.eval = root.eval;
@@ -29,8 +29,8 @@ namespace Search {
         return result;
     }
 
-    SearchNode Search::alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot) {
-        SearchNode result;
+    Node Search::alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot) {
+        Node result;
         this->nodes++;
 
         // fifty move rule
@@ -68,7 +68,7 @@ namespace Search {
         int score, bestscore = MIN_ALPHA;
         for (BoardMove move: moves) {
             board.makeMove(move);
-            SearchNode oppAlphaBeta = alphaBeta(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
+            Node oppAlphaBeta = alphaBeta(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
             board.undoMove(); 
             
             score = -1 * oppAlphaBeta.eval;

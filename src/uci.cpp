@@ -118,7 +118,7 @@ namespace Uci {
 
         auto start = std::chrono::high_resolution_clock::now();
         Search::Search currSearch(board);
-        Search::SearchInfo result = currSearch.search(depthToUse);
+        Search::Info result = currSearch.search(depthToUse);
         auto end = std::chrono::high_resolution_clock::now();
         int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         
@@ -126,7 +126,7 @@ namespace Uci {
         std::cout << "bestmove " << result.move.toStr() << "\n";
     }
 
-    void info(Search::SearchInfo searchResult, int64_t searchDuration, int depth) {
+    void info(Search::Info searchResult, int64_t searchDuration, int depth) {
         std::cout << "info depth " << depth << ' ';
         std::cout << "nodes " << searchResult.nodes << ' ';
         if (searchDuration != 0) {
