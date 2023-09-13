@@ -19,7 +19,7 @@ namespace Uci {
     void uciLoop();
     Board position(std::istringstream& input);
     void go(std::istringstream& input, Board& board);
-    void info(Search::SearchInfo searchResult, int64_t searchDuration, int depth);
+    void info(Search::Info searchResult, int64_t searchDuration);
 
     void isready();
 
