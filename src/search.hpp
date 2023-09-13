@@ -28,8 +28,8 @@ namespace Search {
     
     class Searcher {
         public:  
-            Searcher(Board board) {
-                this->board = board;
+            Searcher(Board a_board) {
+                this->board = a_board;
                 this->nodes = 0;
                 this->depth = 0;
             }
