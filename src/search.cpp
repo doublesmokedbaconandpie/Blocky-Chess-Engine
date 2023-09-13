@@ -8,13 +8,7 @@
 #include "board.hpp"
 
 namespace Search {
-    Search::Search(Board board) {
-        this->board = board;
-        this->nodes = 0;
-        this->depth = 0;
-    }
-
-    Info Search::search(int depth) {
+    Info Searcher::search(int depth) {
         Info result;
         Node root = this->alphaBeta(MIN_ALPHA, MAX_BETA, depth, 0);
 
@@ -32,7 +26,7 @@ namespace Search {
         return result;
     }
 
-    Node Search::alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot) {
+    Node Searcher::alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot) {
         Node result;
         this->nodes++;
         this->depth = distanceFromRoot > this->depth ? distanceFromRoot : this->depth;

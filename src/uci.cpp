@@ -117,7 +117,7 @@ namespace Uci {
         int depthToUse = OPTIONS.depth < TIMEMAN::timeToDepth(allytime) ? OPTIONS.depth : TIMEMAN::timeToDepth(allytime);
 
         auto start = std::chrono::high_resolution_clock::now();
-        Search::Search currSearch(board);
+        Search::Searcher currSearch(board);
         Search::Info result = currSearch.search(depthToUse);
         auto end = std::chrono::high_resolution_clock::now();
         int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();

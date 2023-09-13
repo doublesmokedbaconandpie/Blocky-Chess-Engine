@@ -25,13 +25,18 @@ namespace Search {
         BoardMove move;
     };
     
-    struct Search {
-        Search(Board board);
-        Info search(int depth);
-        Node alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot);
-
-        Board board;
-        int nodes;
-        int depth;
+    class Searcher {
+        public:  
+            Searcher(Board board) {
+                this->board = board;
+                this->nodes = 0;
+                this->depth = 0;
+            }
+            Info search(int depth);
+            Node alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot);
+        private:
+            Board board;
+            int nodes;
+            int depth;
     };
 } // namespace Search
