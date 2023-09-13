@@ -104,26 +104,13 @@ namespace MOVEGEN {
     }
 
     void validKnightMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& knights) {
-        for (BoardSquare knight: knights) {
-            int currRank = knight.rank;
-            fileVals currFile = knight.file;
-            std::vector<BoardSquare> knightMoves;
-            std::vector<BoardSquare> potentialMoves = {
-                BoardSquare(currRank - 2, currFile - 1),
-                BoardSquare(currRank - 2, currFile + 1),
-                BoardSquare(currRank + 2, currFile - 1),
-                BoardSquare(currRank + 2, currFile + 1),
-                BoardSquare(currRank - 1, currFile - 2),
-                BoardSquare(currRank - 1, currFile + 2),
-                BoardSquare(currRank + 1, currFile - 2),
-                BoardSquare(currRank + 1, currFile + 2),
-            };
-            for (BoardSquare square: potentialMoves) {
-                if (square.isValid() && !isFriendlyPiece(currBoard, square)) {
-                    knightMoves.push_back(square);
-                }
-            }
-            for (BoardSquare move: knightMoves) {
+        uint64_t allies = currBoard.isWhiteTurn ? currBoard.pieceSets[WHITE_PIECES] : currBoard.pieceSets[BLACK_PIECES];
+        for (BoardSquare knight: knights) { 
+            uint64_t knightBitboard = 1ull << knight.toSquare();
+            uint64_t knightMoves = knightSquares(knightBitboard) & ~allies;
+            while (knightMoves) {
+                int currSquare = popLeadingBit(knightMoves);
+                BoardSquare move(currSquare);
                 currBoard.makeMove(knight, move);
                 if (!currBoard.isIllegalPos) {
                     validMoves.push_back(BoardMove(knight, move));

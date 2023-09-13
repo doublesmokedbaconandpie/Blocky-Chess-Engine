@@ -470,10 +470,11 @@ TEST(BitboardTest, knightAttackersTrue1) {
 
     int rank = 4, file = 3;
     int square = rank * 8 + file;
+    uint64_t king = 1ull << square;
 
     uint64_t enemies = arrayToBitboard(enemiesBoard);
-
-    EXPECT_EQ(knightAttackers(square, enemies), true);
+    bool attacked = knightSquares(enemies) & king;
+    EXPECT_EQ(attacked, true);
 }
 
 TEST(BitboardTest, knightAttackersTrue2) {
@@ -490,10 +491,10 @@ TEST(BitboardTest, knightAttackersTrue2) {
 
     int rank = 4, file = 3;
     int square = rank * 8 + file;
-
+    uint64_t king = 1ull << square;
     uint64_t enemies = arrayToBitboard(enemiesBoard);
-
-    EXPECT_EQ(knightAttackers(square, enemies), true);
+    bool attacked = knightSquares(enemies) & king;
+    EXPECT_EQ(attacked, true);
 }
 
 TEST(BitboardTest, knightAttackersTrue3) {
@@ -510,10 +511,10 @@ TEST(BitboardTest, knightAttackersTrue3) {
 
     int rank = 4, file = 3;
     int square = rank * 8 + file;
-
+    uint64_t king = 1ull << square;   
     uint64_t enemies = arrayToBitboard(enemiesBoard);
-
-    EXPECT_EQ(knightAttackers(square, enemies), true);
+    bool attacked = knightSquares(enemies) & king;
+    EXPECT_EQ(attacked, true);
 }
 
 TEST(BitboardTest, knightAttackersTrue4) {
@@ -530,10 +531,10 @@ TEST(BitboardTest, knightAttackersTrue4) {
 
     int rank = 7, file = 0;
     int square = rank * 8 + file;
-
+    uint64_t king = 1ull << square;
     uint64_t enemies = arrayToBitboard(enemiesBoard);
-
-    EXPECT_EQ(knightAttackers(square, enemies), true);
+    bool attacked = knightSquares(enemies) & king;
+    EXPECT_EQ(attacked, true);
 }
 
 TEST(BitboardTest, knightAttackersFalse) {
@@ -550,10 +551,10 @@ TEST(BitboardTest, knightAttackersFalse) {
 
     int rank = 7, file = 0;
     int square = rank * 8 + file;
-
+    uint64_t king = 1ull << square;
     uint64_t enemies = arrayToBitboard(enemiesBoard);
-
-    EXPECT_EQ(knightAttackers(square, enemies), false);
+    bool attacked = knightSquares(enemies) & king;
+    EXPECT_EQ(attacked, false);
 }
 
 TEST(BitboardTest, pawnAttackersTrue1) {
