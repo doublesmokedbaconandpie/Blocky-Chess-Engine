@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <utility>
 
 #include "board.hpp"
@@ -12,7 +13,7 @@ namespace Search {
 
     // used for outside UCI representation    
     struct Info {
-        int nodes;
+        uint64_t nodes;
         int depth;
         int eval;
         int mateIn = NO_MATE;
@@ -36,7 +37,7 @@ namespace Search {
             Node alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot);
         private:
             Board board;
-            int nodes;
+            uint64_t nodes;
             int depth;
     };
 } // namespace Search
