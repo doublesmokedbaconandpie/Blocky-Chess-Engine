@@ -9,6 +9,7 @@ struct BoardSquare {
     BoardSquare(int a_rank, fileVals a_file): rank(a_rank), file(a_file) {};
     BoardSquare(int a_rank, int a_file): rank(a_rank), file(fileVals(a_file)) {};
     BoardSquare(std::string input);
+    BoardSquare(int square); // from square
     std::string toStr();
     int toSquare();
     bool isValid() const;

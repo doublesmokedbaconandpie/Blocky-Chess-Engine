@@ -14,6 +14,18 @@ int trailingBit(uint64_t bitboard) {
     return bitboard ? __builtin_clzll(bitboard) : -1;
 }
 
+int popLeadingBit(uint64_t& bitboard) {
+    int pos = leadingBit(bitboard);
+    bitboard ^= 1ull << pos;
+    return pos;
+}
+
+int popTrailingBit(uint64_t& bitboard) {
+    int pos = trailingBit(bitboard);
+    bitboard ^= 1ull << pos;
+    return pos;
+}
+
 uint64_t flipVertical(uint64_t bitboard) {
     uint64_t k1 = 0x00FF00FF00FF00FFull;
     uint64_t k2 = 0x0000FFFF0000FFFFull;
@@ -123,19 +135,17 @@ bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies) {
     return closestStraights & enemies;
 }
 
-bool knightAttackers(int square, uint64_t enemyKnights) {
-    uint64_t currPiece = 1ull << square;
-    // prevent currPiece from teleporting to other side of the board with bit shifts
-    uint64_t left1 = (currPiece >> 1) & NOT_FILE_H;
-    uint64_t left2 = (currPiece >> 2) & NOT_FILE_HG;
-    uint64_t right1 = (currPiece << 1) & NOT_FILE_A;
-    uint64_t right2 = (currPiece << 2) & NOT_FILE_AB;
+uint64_t knightSquares(uint64_t knights) {
+    uint64_t left1 = (knights >> 1) & NOT_FILE_H;
+    uint64_t left2 = (knights >> 2) & NOT_FILE_HG;
+    uint64_t right1 = (knights << 1) & NOT_FILE_A;
+    uint64_t right2 = (knights << 2) & NOT_FILE_AB;
 
     uint64_t height1 = left1 | right1;
     uint64_t height2 = left2 | right2;
     
     uint64_t knightSquares = (height1 << 16) | (height1 >> 16) | (height2 << 8) | (height2 >> 8);
-    return knightSquares & enemyKnights;
+    return knightSquares;
 }
 
 bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn) {

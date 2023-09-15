@@ -7,6 +7,7 @@
 #include "uci.hpp"
 #include "timeman.hpp"
 #include "search.hpp"
+#include "moveGen.hpp"
 #include "board.hpp"
 
 namespace Uci {
@@ -66,6 +67,7 @@ namespace Uci {
             else if (commandToken == "position") {currBoard = position(commandStream);}
             else if (commandToken == "go") {Uci::go(commandStream, currBoard);}
             else if (commandToken == "isready") {isready();}
+            else if (commandToken == "perft") {perft(currBoard);}
             else if (commandToken == "quit") {return;}
         }
     }
@@ -148,5 +150,15 @@ namespace Uci {
         std::cout << "readyok\n";
     }
 
+    void perft(Board& board) {
+        auto start = std::chrono::high_resolution_clock::now();
+        uint64_t nodes = MOVEGEN::perft(board, OPTIONS.depth);
+        auto end = std::chrono::high_resolution_clock::now();
+        int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        std::cout << "perft result nodes " << nodes;
+        std::cout << " nps " << nodes * 1000000 / duration;
+        std::cout << " time " << duration / 1000 << "\n";
+
+    }
 } // namespace Uci
 

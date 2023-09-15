@@ -474,7 +474,7 @@ bool currKingInAttack(Board& board) {
 
     return diagAttackers(kingSquare, allPieces, enemyQueens | enemyBishops)
         || straightAttackers(kingSquare, allPieces, enemyQueens | enemyRooks)
-        || knightAttackers(kingSquare, enemyKnights)
+        || knightSquares(enemyKnights) & 1ull << kingSquare
         || pawnAttackers(kingSquare, enemyPawns, board.isWhiteTurn)
         || kingAttackers(kingSquare, enemyKings);
 }

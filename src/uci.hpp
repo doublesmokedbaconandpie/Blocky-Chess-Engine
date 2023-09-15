@@ -23,4 +23,7 @@ namespace Uci {
 
     void isready();
 
+    // for debugging
+    void perft(Board& board);
+
 } // namespace Uci
