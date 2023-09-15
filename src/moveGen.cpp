@@ -1,7 +1,9 @@
 #include "moveGen.hpp"
 
+#include <cstdint>
 #include <vector>
 #include <stdexcept>
+#include <iostream>
 
 namespace MOVEGEN {
 
@@ -279,11 +281,11 @@ namespace MOVEGEN {
     // perft is a method of determining correctness of move generators
     // positions can be input and number of total leaf nodes determined
     // the number determined can be compared to a table to established values from others
-    int perft(Board board, int depthLeft) {
+    uint64_t perft(Board board, int depthLeft) {
         if (depthLeft == 0) {
             return 1;
         }
-        int leafNodeCount = 0;
+        uint64_t leafNodeCount = 0;
         std::vector<BoardMove> moves = moveGenerator(board);
         for (auto move: moves) {
             board.makeMove(move);
