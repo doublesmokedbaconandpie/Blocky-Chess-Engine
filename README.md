@@ -17,7 +17,7 @@ cmake -S . -B build
 cmake --build build
 ```
 
-Similarly, if you want to build for Windows, run the following:
+Similarly, if you want to build for Windows, minGW is required. If minGW is already installed, run the following:
 
 ```
 cmake -S . -B build -DMAKE_EXE=ON
