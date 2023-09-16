@@ -54,6 +54,9 @@ const static std::array<uint64_t, 15> DIAGS_MASK = {DIAG_0, DIAG_1, DIAG_2, DIAG
 
 int leadingBit(uint64_t bitboard);
 int trailingBit(uint64_t bitboard);
+int popLeadingBit(uint64_t& bitboard);
+int popTrailingBit(uint64_t& bitboard);
+
 uint64_t flipVertical(uint64_t bitboard);
 
 int getFile(int square);
@@ -66,7 +69,7 @@ uint64_t getAntiDiagMask(int square);
 
 bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies);
 bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies);
-bool knightAttackers(int square, uint64_t enemyKnights);
+uint64_t knightSquares(uint64_t knights);
 bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn);
 bool kingAttackers(int square, uint64_t enemyKings);
 

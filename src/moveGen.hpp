@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <vector>
 
 #include "board.hpp"
@@ -22,5 +23,5 @@ namespace MOVEGEN {
     void pawnCaptures(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn, int fileDirection);
 
     // for debugging 
-    int perft(Board currBoard, int depthLeft);
+    uint64_t perft(Board currBoard, int depthLeft);
 } // namespace MOVEGEN

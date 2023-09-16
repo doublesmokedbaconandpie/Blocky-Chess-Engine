@@ -456,11 +456,11 @@ TEST(BitboardTest, straightAttackersTrue2) {
     EXPECT_EQ(straightAttackers(square, allies | enemies, enemies), true);
 }
 
-TEST(BitboardTest, knightAttackersTrue1) {
+TEST(BitboardTest, knightSquares1) {
     std::array<pieceTypes, BOARD_SIZE> enemiesBoard = {
+        WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -468,15 +468,12 @@ TEST(BitboardTest, knightAttackersTrue1) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
 
-    int rank = 4, file = 3;
-    int square = rank * 8 + file;
-
     uint64_t enemies = arrayToBitboard(enemiesBoard);
-
-    EXPECT_EQ(knightAttackers(square, enemies), true);
+    uint64_t knightBitboard = knightSquares(enemies);
+    EXPECT_EQ(knightBitboard, 0x0000000000020400ull);
 }
 
-TEST(BitboardTest, knightAttackersTrue2) {
+TEST(BitboardTest, knightSquares2) {
     std::array<pieceTypes, BOARD_SIZE> enemiesBoard = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -488,15 +485,12 @@ TEST(BitboardTest, knightAttackersTrue2) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
 
-    int rank = 4, file = 3;
-    int square = rank * 8 + file;
-
     uint64_t enemies = arrayToBitboard(enemiesBoard);
-
-    EXPECT_EQ(knightAttackers(square, enemies), true);
+    uint64_t knightBitboard = knightSquares(enemies);
+    EXPECT_EQ(knightBitboard, 0x0000050800080500ull);
 }
 
-TEST(BitboardTest, knightAttackersTrue3) {
+TEST(BitboardTest, knightSquares3) {
     std::array<pieceTypes, BOARD_SIZE> enemiesBoard = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -508,15 +502,12 @@ TEST(BitboardTest, knightAttackersTrue3) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
 
-    int rank = 4, file = 3;
-    int square = rank * 8 + file;
-
     uint64_t enemies = arrayToBitboard(enemiesBoard);
-
-    EXPECT_EQ(knightAttackers(square, enemies), true);
+    uint64_t knightBitboard = knightSquares(enemies);
+    EXPECT_EQ(knightBitboard, 0x0508000805000000ull);
 }
 
-TEST(BitboardTest, knightAttackersTrue4) {
+TEST(BitboardTest, knightSquares4) {
     std::array<pieceTypes, BOARD_SIZE> enemiesBoard = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -528,15 +519,12 @@ TEST(BitboardTest, knightAttackersTrue4) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
 
-    int rank = 7, file = 0;
-    int square = rank * 8 + file;
-
     uint64_t enemies = arrayToBitboard(enemiesBoard);
-
-    EXPECT_EQ(knightAttackers(square, enemies), true);
+    uint64_t knightBitboard = knightSquares(enemies);
+    EXPECT_EQ(knightBitboard, 0x1100110A00000000ull);
 }
 
-TEST(BitboardTest, knightAttackersFalse) {
+TEST(BitboardTest, knightSquares5) {
     std::array<pieceTypes, BOARD_SIZE> enemiesBoard = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -548,12 +536,9 @@ TEST(BitboardTest, knightAttackersFalse) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece,
     };
 
-    int rank = 7, file = 0;
-    int square = rank * 8 + file;
-
     uint64_t enemies = arrayToBitboard(enemiesBoard);
-
-    EXPECT_EQ(knightAttackers(square, enemies), false);
+    uint64_t knightBitboard = knightSquares(enemies);
+    EXPECT_EQ(knightBitboard, 0x22442A1400000000ull);
 }
 
 TEST(BitboardTest, pawnAttackersTrue1) {

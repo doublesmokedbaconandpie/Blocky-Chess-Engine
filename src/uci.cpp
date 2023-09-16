@@ -7,6 +7,7 @@
 #include "uci.hpp"
 #include "timeman.hpp"
 #include "search.hpp"
+#include "moveGen.hpp"
 #include "board.hpp"
 
 namespace Uci {
@@ -66,6 +67,7 @@ namespace Uci {
             else if (commandToken == "position") {currBoard = position(commandStream);}
             else if (commandToken == "go") {Uci::go(commandStream, currBoard);}
             else if (commandToken == "isready") {isready();}
+            else if (commandToken == "perft") {perft(currBoard);}
             else if (commandToken == "quit") {return;}
         }
     }
@@ -117,16 +119,17 @@ namespace Uci {
         int depthToUse = OPTIONS.depth < TIMEMAN::timeToDepth(allytime) ? OPTIONS.depth : TIMEMAN::timeToDepth(allytime);
 
         auto start = std::chrono::high_resolution_clock::now();
-        Search::SearchInfo result = Search::search(board, depthToUse);
+        Search::Searcher currSearch(board);
+        Search::Info result = currSearch.search(depthToUse);
         auto end = std::chrono::high_resolution_clock::now();
         int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         
-        info(result, duration, depthToUse);
+        info(result, duration);
         std::cout << "bestmove " << result.move.toStr() << "\n";
     }
 
-    void info(Search::SearchInfo searchResult, int64_t searchDuration, int depth) {
-        std::cout << "info depth " << depth << ' ';
+    void info(Search::Info searchResult, int64_t searchDuration) {
+        std::cout << "info depth " << searchResult.depth << ' ';
         std::cout << "nodes " << searchResult.nodes << ' ';
         if (searchDuration != 0) {
             // time is output in milliseconds per the UCI protocol
@@ -135,10 +138,10 @@ namespace Uci {
         }
         
         if (searchResult.mateIn == Search::NO_MATE) {
-            std::cout << "score cp " << (searchResult.value * 100) << ' ';
+            std::cout << "score cp " << (searchResult.eval * 100) << ' ';
         }
-        else {
-            std::cout << "mate " << searchResult.mateIn / 2 + 1 << ' '; // convert plies to moves
+        else { 
+            std::cout << "mate " << (searchResult.mateIn + 1) / 2 << ' '; // convert plies to moves
         }
         std::cout << '\n';
     }
@@ -147,5 +150,15 @@ namespace Uci {
         std::cout << "readyok\n";
     }
 
+    void perft(Board& board) {
+        auto start = std::chrono::high_resolution_clock::now();
+        uint64_t nodes = MOVEGEN::perft(board, OPTIONS.depth);
+        auto end = std::chrono::high_resolution_clock::now();
+        int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        std::cout << "perft result nodes " << nodes;
+        std::cout << " nps " << nodes * 1000000 / duration;
+        std::cout << " time " << duration / 1000 << "\n";
+
+    }
 } // namespace Uci
 
