@@ -41,20 +41,41 @@ namespace MOVEGEN {
     }
 
     void validPawnMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& pawns) {
+        // promotion initialization
         int promoteRank = currBoard.isWhiteTurn ? 0 : 7;
         pieceTypes allyKnight = currBoard.isWhiteTurn ? WKnight : BKnight;
         pieceTypes allyBishop = currBoard.isWhiteTurn ? WBishop : BBishop;
-        pieceTypes allyRook = currBoard.isWhiteTurn ? WRook : BRook;
-        pieceTypes allyQueen = currBoard.isWhiteTurn ? WQueen : BQueen;
+        pieceTypes allyRook   = currBoard.isWhiteTurn ? WRook   : BRook;
+        pieceTypes allyQueen  = currBoard.isWhiteTurn ? WQueen  : BQueen;
+        
+        // bitboard initialization
+        uint64_t startRank = currBoard.isWhiteTurn ? RANK_2 : RANK_7;
+        uint64_t jumpRank  = currBoard.isWhiteTurn ? RANK_4 : RANK_5;
+        uint64_t emptySquares = ~(currBoard.pieceSets[WHITE_PIECES] | currBoard.pieceSets[BLACK_PIECES]);
+        uint64_t enemyPieces = currBoard.isWhiteTurn ? currBoard.pieceSets[BLACK_PIECES] : currBoard.pieceSets[WHITE_PIECES]; 
+        if (currBoard.pawnJumpedSquare != BoardSquare()) {
+            enemyPieces |= 1ull << currBoard.pawnJumpedSquare.toSquare();
+        }
 
         for (BoardSquare pawn: pawns) {
-            std::vector<BoardSquare> pawnMoves;
-
-            forwardPawnMoves(currBoard, pawnMoves, pawn);
-            pawnCaptures(currBoard, pawnMoves, pawn, 1);
-            pawnCaptures(currBoard, pawnMoves, pawn, -1);        
-        
-            for (BoardSquare move: pawnMoves) {
+            uint64_t pawnBitboard = 1ull << pawn.toSquare();
+            uint64_t currFile = FILES_MASK[pawn.file];
+            // one space forward
+            uint64_t pawnMoves;
+            if (currBoard.isWhiteTurn) {
+                pawnMoves = (pawnBitboard >> 8) & emptySquares;
+            } else {
+                pawnMoves = (pawnBitboard << 8) & emptySquares;
+            } 
+            // two space forward
+            if (pawnBitboard & startRank && pawnMoves) {
+                pawnMoves |= (currFile & jumpRank) & emptySquares;
+            }
+            // captures
+            pawnMoves |= pawnAttackSquares(pawnBitboard, currBoard.isWhiteTurn) & enemyPieces;
+            while (pawnMoves) {
+                int currSquare = popLeadingBit(pawnMoves);
+                BoardSquare move(currSquare);
                 currBoard.makeMove(pawn, move, allyKnight); // promotion piece is a placeholder
                 if (currBoard.isIllegalPos) {
                     currBoard.undoMove();
@@ -71,37 +92,6 @@ namespace MOVEGEN {
                 }
                 currBoard.undoMove();
             }
-        }
-    }
-
-
-    void forwardPawnMoves(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn) {
-        int pawnDirection = currBoard.isWhiteTurn ? -1 : 1;
-        int originRank = currBoard.isWhiteTurn ? 6 : 1;
-
-        // any spaces forward
-        if (currBoard.getPiece(pawn.rank + pawnDirection, pawn.file) == EmptyPiece) {
-            pawnMoves.push_back(BoardSquare(pawn.rank + pawnDirection, pawn.file));
-            // jump
-            if (pawn.rank == originRank) {
-                if (currBoard.getPiece(pawn.rank + pawnDirection * 2, pawn.file) == EmptyPiece) {
-                    pawnMoves.push_back(BoardSquare(pawn.rank + pawnDirection * 2, pawn.file));
-            }
-        }
-        }
-    }
-
-    void pawnCaptures(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn, int fileDirection) {
-        int pawnDirection = currBoard.isWhiteTurn ? -1 : 1;
-
-        BoardSquare square = BoardSquare(pawn.rank + pawnDirection, pawn.file + fileDirection);
-        // regular capture
-        if (square.isValid() && !isFriendlyPiece(currBoard, square) && currBoard.getPiece(square) != EmptyPiece) {
-            pawnMoves.push_back(square);
-        }
-        // en passant
-        if (square == currBoard.pawnJumpedSquare) {
-            pawnMoves.push_back(square);
         }
     }
 

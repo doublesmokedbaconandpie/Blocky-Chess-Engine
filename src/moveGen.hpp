@@ -19,9 +19,6 @@ namespace MOVEGEN {
     pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement);
     bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare);
 
-    void forwardPawnMoves(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn);
-    void pawnCaptures(Board& currBoard, std::vector<BoardSquare>& pawnMoves, BoardSquare pawn, int fileDirection);
-
     // for debugging 
     uint64_t perft(Board currBoard, int depthLeft);
 } // namespace MOVEGEN
