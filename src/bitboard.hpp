@@ -70,7 +70,7 @@ uint64_t getAntiDiagMask(int square);
 bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies);
 bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies);
 uint64_t knightSquares(uint64_t knights);
-bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn);
+uint64_t pawnAttackSquares(uint64_t pawns, bool isWhite);
 bool kingAttackers(int square, uint64_t enemyKings);
 
 void printBitboard(uint64_t bitboard);

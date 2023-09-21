@@ -136,6 +136,7 @@ bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies) {
 }
 
 uint64_t knightSquares(uint64_t knights) {
+    // prevent knights from teleporting to other side of the board with bitshifts
     uint64_t left1 = (knights >> 1) & NOT_FILE_H;
     uint64_t left2 = (knights >> 2) & NOT_FILE_HG;
     uint64_t right1 = (knights << 1) & NOT_FILE_A;
@@ -148,16 +149,16 @@ uint64_t knightSquares(uint64_t knights) {
     return knightSquares;
 }
 
-bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn) {
-    uint64_t currPiece = 1ull << square;
+uint64_t pawnAttackSquares(uint64_t pawns, bool isWhite) {
+    // prevent pawns from teleporting to other side of the board with bitshifts
+    uint64_t left  = pawns & NOT_FILE_A;
+    uint64_t right = pawns & NOT_FILE_H;
 
-    // prevent currPiece from teleporting to other side of the board with bit shifts
-    uint64_t left  = currPiece & NOT_FILE_A;
-    uint64_t right = currPiece & NOT_FILE_H;
-    
-    uint64_t upPawns   = (left >> 9) | (right >> 7); 
-    uint64_t downPawns = (left << 7) | (right << 9); 
-    return isWhiteTurn ? upPawns & enemyPawns : downPawns & enemyPawns;
+    if (isWhite) {
+        return (left >> 9) | (right >> 7); 
+    } else {
+        return (left << 7) | (right << 9); 
+    } 
 }
 
 bool kingAttackers(int square, uint64_t enemyKings) {

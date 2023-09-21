@@ -461,6 +461,7 @@ castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn) {
 bool currKingInAttack(Board& board) {
     pieceTypes allyKing = board.isWhiteTurn ? WKing : BKing;
     int kingSquare = leadingBit(board.pieceSets[allyKing]);
+    uint64_t allyKingBitboard = 1ull << kingSquare;
     assert(kingSquare != -1);
 
     uint64_t allPieces = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
@@ -474,8 +475,8 @@ bool currKingInAttack(Board& board) {
 
     return diagAttackers(kingSquare, allPieces, enemyQueens | enemyBishops)
         || straightAttackers(kingSquare, allPieces, enemyQueens | enemyRooks)
-        || knightSquares(enemyKnights) & 1ull << kingSquare
-        || pawnAttackers(kingSquare, enemyPawns, board.isWhiteTurn)
+        || knightSquares(enemyKnights) & allyKingBitboard 
+        || pawnAttackSquares(enemyPawns, !board.isWhiteTurn) & allyKingBitboard
         || kingAttackers(kingSquare, enemyKings);
 }
 
