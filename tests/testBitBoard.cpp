@@ -68,6 +68,18 @@ TEST(BitboardTest, trailingBitMultOnes) {
     ASSERT_EQ(trailingBit(bitboard), 20);
 }
 
+TEST(BitboardTest, popLeadingBit1) {
+    uint64_t bitboard = 0x0000001000100000ull;
+    ASSERT_EQ(popLeadingBit(bitboard), 20);
+    ASSERT_EQ(bitboard, 0x0000001000000000ull);
+}
+
+TEST(BitboardTest, popTrailingBit1) {
+    uint64_t bitboard = 0x0000080010000000ull;
+    ASSERT_EQ(popTrailingBit(bitboard), 20);
+    ASSERT_EQ(bitboard, 0x0000000010000000ull);
+}
+
 TEST(BitboardTest, FlipVerticalEmpty) {
     uint64_t bitboard = 0x0000000000000000ull;
     ASSERT_EQ(flipVertical(bitboard), 0ull);
