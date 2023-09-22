@@ -22,7 +22,7 @@ int popLeadingBit(uint64_t& bitboard) {
 
 int popTrailingBit(uint64_t& bitboard) {
     int pos = trailingBit(bitboard);
-    bitboard ^= 1ull << pos;
+    bitboard ^= 0x8000000000000000ull >> pos;
     return pos;
 }
 
