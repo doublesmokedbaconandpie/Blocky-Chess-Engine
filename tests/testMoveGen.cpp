@@ -1,5 +1,6 @@
 #include "board.hpp"
 #include "moveGen.hpp"
+#include "bitboard.hpp"
 
 #include <gtest/gtest.h>
 #include <vector>
@@ -71,7 +72,6 @@ TEST(MoveGenTest, validPawnMovesCaptures) {
     Board board = Board(boardArr);
     
     std::vector<BoardMove> validMoves;
-    std::vector<BoardSquare> whitePawns = {BoardSquare(4, B), BoardSquare(4, D), BoardSquare(6, G)};
     std::vector<BoardMove> expectedValidMoves = {
         BoardMove(BoardSquare(4, B), BoardSquare(3, A)),
         BoardMove(BoardSquare(4, B), BoardSquare(3, B)),
@@ -83,6 +83,7 @@ TEST(MoveGenTest, validPawnMovesCaptures) {
         BoardMove(BoardSquare(6, G), BoardSquare(5, G)),
         BoardMove(BoardSquare(6, G), BoardSquare(4, G)),
     };
+    uint64_t whitePawns = arrayToBitboardPieceType(boardArr, WPawn);
     validPawnMoves(board, validMoves, whitePawns);
 
     std::sort(validMoves.begin(), validMoves.end());
@@ -104,13 +105,13 @@ TEST(MoveGenTest, validPawnMovesPromotion) {
     Board board = Board(boardArr);
     
     std::vector<BoardMove> validMoves;
-    std::vector<BoardSquare> whitePawns = {BoardSquare(1, D)};
     std::vector<BoardMove> expectedValidMoves = {
         BoardMove(BoardSquare(1, D), BoardSquare(0, D), WKnight),
         BoardMove(BoardSquare(1, D), BoardSquare(0, D), WBishop),
         BoardMove(BoardSquare(1, D), BoardSquare(0, D), WRook),
         BoardMove(BoardSquare(1, D), BoardSquare(0, D), WQueen),
     };
+    uint64_t whitePawns = arrayToBitboardPieceType(boardArr, WPawn);
     validPawnMoves(board, validMoves, whitePawns);
 
     std::sort(validMoves.begin(), validMoves.end());
@@ -132,7 +133,6 @@ TEST(MoveGenTest, validKnightMoves1) {
     Board board = Board(boardArr);
     
     std::vector<BoardMove> validMoves;
-    std::vector<BoardSquare> whiteKnights = {BoardSquare(7, A), BoardSquare(4, D)};
     std::vector<BoardMove> expectedValidMoves = {
         BoardMove(BoardSquare(7, A), BoardSquare(5, B)),
         BoardMove(BoardSquare(7, A), BoardSquare(6, C)),
@@ -146,7 +146,7 @@ TEST(MoveGenTest, validKnightMoves1) {
         BoardMove(BoardSquare(4, D), BoardSquare(3, F)),
         BoardMove(BoardSquare(4, D), BoardSquare(3, B)),
     };
-
+    uint64_t whiteKnights = arrayToBitboardPieceType(boardArr, WKnight);
     validKnightMoves(board, validMoves, whiteKnights);
 
     std::sort(validMoves.begin(), validMoves.end());
@@ -168,7 +168,6 @@ TEST(MoveGenTest, validRookMoves1) {
     Board board = Board(boardArr, true);
     
     std::vector<BoardMove> validMoves;
-    std::vector<BoardSquare> whiteRooks = {BoardSquare(7, A), BoardSquare(7, B)};
     std::vector<BoardMove> expectedValidMoves;
     for (int rank = 6; rank >= 1; rank--) {
         expectedValidMoves.push_back(BoardMove(BoardSquare(7, A), BoardSquare(rank, A)));
@@ -177,6 +176,7 @@ TEST(MoveGenTest, validRookMoves1) {
     for (int file = H; file >= C; file--) {
         expectedValidMoves.push_back(BoardMove(BoardSquare(7, B), BoardSquare(7, file)));
     }
+    uint64_t whiteRooks = arrayToBitboardPieceType(boardArr, WRook);
     validRookMoves(board, validMoves, whiteRooks);
 
     std::sort(validMoves.begin(), validMoves.end());
@@ -198,7 +198,6 @@ TEST(MoveGenTest, validBishopMoves1) {
     Board board = Board(boardArr);
     
     std::vector<BoardMove> validMoves;
-    std::vector<BoardSquare> whiteBishops = {BoardSquare(7, A), BoardSquare(4, D)};
     std::vector<BoardMove> expectedValidMoves = {
         BoardMove(BoardSquare(7, A), BoardSquare(6, B)),
         BoardMove(BoardSquare(7, A), BoardSquare(5, C)),
@@ -217,6 +216,7 @@ TEST(MoveGenTest, validBishopMoves1) {
         BoardMove(BoardSquare(4, D), BoardSquare(3, E)),
         BoardMove(BoardSquare(4, D), BoardSquare(2, F)),
     };
+    uint64_t whiteBishops = arrayToBitboardPieceType(boardArr, WBishop);
     validBishopMoves(board, validMoves, whiteBishops);
 
     std::sort(validMoves.begin(), validMoves.end());
@@ -238,7 +238,6 @@ TEST(MoveGenTest, validQueenMoves1) {
     Board board = Board(boardArr);
     
     std::vector<BoardMove> validMoves;
-    std::vector<BoardSquare> whiteQueens = {BoardSquare(7, A), BoardSquare(7, H)};
     std::vector<BoardMove> expectedValidMoves;
     for (int i = 1; i <= 7; i++) {
         expectedValidMoves.push_back(BoardMove(BoardSquare(7, A), BoardSquare(7 - i, A)));
@@ -251,6 +250,7 @@ TEST(MoveGenTest, validQueenMoves1) {
         expectedValidMoves.push_back(BoardMove(BoardSquare(7, A), BoardSquare(7, A + i)));
         expectedValidMoves.push_back(BoardMove(BoardSquare(7, H), BoardSquare(7, H - i)));
     }
+    uint64_t whiteQueens = arrayToBitboardPieceType(boardArr, WQueen);
     validQueenMoves(board, validMoves, whiteQueens);
 
     std::sort(validMoves.begin(), validMoves.end());
@@ -272,7 +272,6 @@ TEST(MoveGenTest, validKingMovesNoCastle) {
     Board board = Board(boardArr);
     
     std::vector<BoardMove> validMoves;
-    std::vector<BoardSquare> whiteKings = {BoardSquare(7, A), BoardSquare(4, D)};
     std::vector<BoardMove> expectedValidMoves = {
         BoardMove(BoardSquare(7, A), BoardSquare(6, A)),
         BoardMove(BoardSquare(7, A), BoardSquare(6, B)),
@@ -287,6 +286,7 @@ TEST(MoveGenTest, validKingMovesNoCastle) {
         BoardMove(BoardSquare(4, D), BoardSquare(4, E)),
         BoardMove(BoardSquare(4, D), BoardSquare(4, C)),
     };
+    uint64_t whiteKings = arrayToBitboardPieceType(boardArr, WKing);
     validKingMoves(board, validMoves, whiteKings);
 
     std::sort(validMoves.begin(), validMoves.end());
@@ -308,7 +308,6 @@ TEST(MoveGenTest, validKingMovesKingCastle) {
     Board board = Board(boardArr);
     
     std::vector<BoardMove> validMoves;
-    std::vector<BoardSquare> whiteKings = {BoardSquare(7, E)};
     std::vector<BoardMove> expectedValidMoves = {
         BoardMove(BoardSquare(7, E), BoardSquare(6, D)),
         BoardMove(BoardSquare(7, E), BoardSquare(6, E)),
@@ -318,6 +317,7 @@ TEST(MoveGenTest, validKingMovesKingCastle) {
 
         BoardMove(BoardSquare(7, E), BoardSquare(7, G)),
     };
+    uint64_t whiteKings = arrayToBitboardPieceType(boardArr, WKing);
     validKingMoves(board, validMoves, whiteKings);
 
     std::sort(validMoves.begin(), validMoves.end());
@@ -339,7 +339,6 @@ TEST(MoveGenTest, validKingMovesQueenCastle) {
     Board board = Board(boardArr);
     
     std::vector<BoardMove> validMoves;
-    std::vector<BoardSquare> whiteKings = {BoardSquare(7, E)};
     std::vector<BoardMove> expectedValidMoves = {
         BoardMove(BoardSquare(7, E), BoardSquare(6, D)),
         BoardMove(BoardSquare(7, E), BoardSquare(6, E)),
@@ -349,6 +348,7 @@ TEST(MoveGenTest, validKingMovesQueenCastle) {
 
         BoardMove(BoardSquare(7, E), BoardSquare(7, C)),
     };
+    uint64_t whiteKings = arrayToBitboardPieceType(boardArr, WKing);
     validKingMoves(board, validMoves, whiteKings);
 
     std::sort(validMoves.begin(), validMoves.end());
@@ -370,12 +370,12 @@ TEST(MoveGenTest, validKingMovesInvalidCastle) {
     Board board = Board(boardArr);
     
     std::vector<BoardMove> validMoves;
-    std::vector<BoardSquare> whiteKings = {BoardSquare(7, E)};
     std::vector<BoardMove> expectedValidMoves = {
         BoardMove(BoardSquare(7, E), BoardSquare(6, E)),
         BoardMove(BoardSquare(7, E), BoardSquare(6, F)),
         BoardMove(BoardSquare(7, E), BoardSquare(7, F)),
     };
+    uint64_t whiteKings = arrayToBitboardPieceType(boardArr, WKing);
     validKingMoves(board, validMoves, whiteKings);
 
     std::sort(validMoves.begin(), validMoves.end());
