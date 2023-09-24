@@ -17,7 +17,8 @@ MovePicker::MovePicker(std::vector<BoardMove>&& a_moves) {
 void MovePicker::assignMoveScores(const Board& board) {
     size_t i = 0;
     for (BoardMove move: this->moves) {
-        // capture 
+        // capture
+        // moveGen outputs least valuable piece moves first, so least value captures is automatic 
         if (board.getPiece(move.pos2) != EmptyPiece) {
             this->moveScores[i] = 1;
         }
