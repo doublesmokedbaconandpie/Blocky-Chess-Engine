@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "types.hpp"
+
 enum {
     ALL_SQUARES = 0xFFFFFFFFFFFFFFFFull,
 
@@ -73,4 +75,7 @@ uint64_t knightSquares(uint64_t knights);
 uint64_t pawnAttackSquares(uint64_t pawns, bool isWhite);
 bool kingAttackers(int square, uint64_t enemyKings);
 
+// for debugging and testing
 void printBitboard(uint64_t bitboard);
+uint64_t arrayToBitboardNotEmpty(std::array<pieceTypes, BOARD_SIZE> board);
+uint64_t arrayToBitboardPieceType(std::array<pieceTypes, BOARD_SIZE> board, pieceTypes piece);

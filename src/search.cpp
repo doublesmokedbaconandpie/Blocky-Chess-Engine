@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "search.hpp"
+#include "movePicker.hpp"
 #include "eval.hpp"
 #include "moveGen.hpp"
 #include "board.hpp"
@@ -13,7 +14,7 @@ namespace Search {
         Node root = this->alphaBeta(MIN_ALPHA, MAX_BETA, depth, 0);
 
         result.nodes = this->nodes;
-        result.depth = this->depth;
+        result.depth = this->max_depth;
         
         result.eval = root.eval;
         result.move = root.move;
@@ -29,7 +30,7 @@ namespace Search {
     Node Searcher::alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot) {
         Node result;
         this->nodes++;
-        this->depth = distanceFromRoot > this->depth ? distanceFromRoot : this->depth;
+        this->max_depth = distanceFromRoot > this->max_depth ? distanceFromRoot : this->max_depth;
 
         // fifty move rule
         if (this->board.fiftyMoveRule == 100) {
@@ -62,9 +63,14 @@ namespace Search {
             return result;
         }
 
+        // init movePicker
+        MovePicker movePicker(std::move(moves));
+        movePicker.assignMoveScores(board);
+
         // start search through moves
         int score, bestscore = MIN_ALPHA;
-        for (BoardMove move: moves) {
+        while (movePicker.movesLeft()) {
+            BoardMove move = movePicker.pickMove();
             board.makeMove(move);
             Node oppAlphaBeta = alphaBeta(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
             board.undoMove(); 
