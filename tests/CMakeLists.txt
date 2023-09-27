@@ -29,6 +29,7 @@ add_executable(
     ../src/move.cpp
     ../src/board.cpp
     ../src/moveGen.cpp
+    ../src/movePicker.cpp
     ../src/search.cpp
     ../src/eval.cpp
 )

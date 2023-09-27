@@ -6,15 +6,7 @@
 #include <bitset>
 #include <array>
 
-uint64_t arrayToBitboard(std::array<pieceTypes, BOARD_SIZE> board) {
-    uint64_t result = 0ull;
-    for (size_t i = 0; i < board.size(); i++) {
-        if (board.at(i) != EmptyPiece) {
-            result |= (1ull << i);
-        }
-    }
-    return result;
-}
+
 
 TEST(BitboardTest, leadingBitEmpty) {
     uint64_t bitboard = 0ull;
@@ -66,6 +58,18 @@ TEST(BitboardTest, trailingBitMiddleOne) {
 TEST(BitboardTest, trailingBitMultOnes) {
     uint64_t bitboard = 0x0000080010000000ull;
     ASSERT_EQ(trailingBit(bitboard), 20);
+}
+
+TEST(BitboardTest, popLeadingBit1) {
+    uint64_t bitboard = 0x0000001000100000ull;
+    ASSERT_EQ(popLeadingBit(bitboard), 20);
+    ASSERT_EQ(bitboard, 0x0000001000000000ull);
+}
+
+TEST(BitboardTest, popTrailingBit1) {
+    uint64_t bitboard = 0x0000080010000000ull;
+    ASSERT_EQ(popTrailingBit(bitboard), 20);
+    ASSERT_EQ(bitboard, 0x0000000010000000ull);
 }
 
 TEST(BitboardTest, FlipVerticalEmpty) {
@@ -162,8 +166,8 @@ TEST(BitboardTest, diagAttackersFalse2) {
     int square = rank * 8 + file;
     ASSERT_EQ(alliesBoard.at(square), BKing);
 
-    uint64_t allies = arrayToBitboard(alliesBoard);
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t allies = arrayToBitboardNotEmpty(alliesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(diagAttackers(square, allies | enemies, enemies), false);
 }
@@ -194,8 +198,8 @@ TEST(BitboardTest, diagAttackersFalse3) {
     int square = rank * 8 + file;
     ASSERT_EQ(alliesBoard.at(square), BKing);
 
-    uint64_t allies = arrayToBitboard(alliesBoard);
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t allies = arrayToBitboardNotEmpty(alliesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(diagAttackers(square, allies | enemies, enemies), false);
 }
@@ -226,8 +230,8 @@ TEST(BitboardTest, diagAttackersTrue1) {
     int square = rank * 8 + file;
     ASSERT_EQ(alliesBoard.at(square), BKing);
 
-    uint64_t allies = arrayToBitboard(alliesBoard);
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t allies = arrayToBitboardNotEmpty(alliesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(diagAttackers(square, allies | enemies, enemies), true);
 }
@@ -258,8 +262,8 @@ TEST(BitboardTest, diagAttackersTrue2) {
     int square = rank * 8 + file;
     ASSERT_EQ(alliesBoard.at(square), BKing);
 
-    uint64_t allies = arrayToBitboard(alliesBoard);
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t allies = arrayToBitboardNotEmpty(alliesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(diagAttackers(square, allies | enemies, enemies), true);
 }
@@ -290,8 +294,8 @@ TEST(BitboardTest, diagAttackersTrue3) {
     int square = rank * 8 + file;
     ASSERT_EQ(alliesBoard.at(square), BKing);
 
-    uint64_t allies = arrayToBitboard(alliesBoard);
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t allies = arrayToBitboardNotEmpty(alliesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(diagAttackers(square, allies | enemies, enemies), true);
 }
@@ -322,8 +326,8 @@ TEST(BitboardTest, straightAttackersFalse) {
     int square = rank * 8 + file;
     ASSERT_EQ(alliesBoard.at(square), BKing);
 
-    uint64_t allies = arrayToBitboard(alliesBoard);
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t allies = arrayToBitboardNotEmpty(alliesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(straightAttackers(square, allies | enemies, enemies), false);
 }
@@ -354,8 +358,8 @@ TEST(BitboardTest, straightAttackersFalse2) {
     int square = rank * 8 + file;
     ASSERT_EQ(alliesBoard.at(square), BKing);
 
-    uint64_t allies = arrayToBitboard(alliesBoard);
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t allies = arrayToBitboardNotEmpty(alliesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(straightAttackers(square, allies | enemies, enemies), false);
 }
@@ -386,8 +390,8 @@ TEST(BitboardTest, straightAttackersFalse3) {
     int square = rank * 8 + file;
     ASSERT_EQ(alliesBoard.at(square), BKing);
 
-    uint64_t allies = arrayToBitboard(alliesBoard);
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t allies = arrayToBitboardNotEmpty(alliesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(straightAttackers(square, allies | enemies, enemies), false);
 }
@@ -418,8 +422,8 @@ TEST(BitboardTest, straightAttackersTrue1) {
     int square = rank * 8 + file;
     ASSERT_EQ(alliesBoard.at(square), BKing);
 
-    uint64_t allies = arrayToBitboard(alliesBoard);
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t allies = arrayToBitboardNotEmpty(alliesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(straightAttackers(square, allies | enemies, enemies), true);
 }
@@ -450,8 +454,8 @@ TEST(BitboardTest, straightAttackersTrue2) {
     int square = rank * 8 + file;
     ASSERT_EQ(alliesBoard.at(square), BKing);
 
-    uint64_t allies = arrayToBitboard(alliesBoard);
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t allies = arrayToBitboardNotEmpty(alliesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(straightAttackers(square, allies | enemies, enemies), true);
 }
@@ -468,7 +472,7 @@ TEST(BitboardTest, knightSquares1) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
 
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
     uint64_t knightBitboard = knightSquares(enemies);
     EXPECT_EQ(knightBitboard, 0x0000000000020400ull);
 }
@@ -485,7 +489,7 @@ TEST(BitboardTest, knightSquares2) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
 
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
     uint64_t knightBitboard = knightSquares(enemies);
     EXPECT_EQ(knightBitboard, 0x0000050800080500ull);
 }
@@ -502,7 +506,7 @@ TEST(BitboardTest, knightSquares3) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
 
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
     uint64_t knightBitboard = knightSquares(enemies);
     EXPECT_EQ(knightBitboard, 0x0508000805000000ull);
 }
@@ -519,7 +523,7 @@ TEST(BitboardTest, knightSquares4) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
 
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
     uint64_t knightBitboard = knightSquares(enemies);
     EXPECT_EQ(knightBitboard, 0x1100110A00000000ull);
 }
@@ -536,7 +540,7 @@ TEST(BitboardTest, knightSquares5) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece,
     };
 
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
     uint64_t knightBitboard = knightSquares(enemies);
     EXPECT_EQ(knightBitboard, 0x22442A1400000000ull);
 }
@@ -556,7 +560,7 @@ TEST(BitboardTest, pawnAttackersTrue1) {
     int rank = 4, file = 3;
     int square = rank * 8 + file;
 
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(pawnAttackers(square, enemies, false), true);
 }
@@ -576,7 +580,7 @@ TEST(BitboardTest, pawnAttackersTrue2) {
     int rank = 4, file = 3;
     int square = rank * 8 + file;
 
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(pawnAttackers(square, enemies, false), true);
 }
@@ -596,7 +600,7 @@ TEST(BitboardTest, pawnAttackersFalse) {
     int rank = 4, file = 3;
     int square = rank * 8 + file;
 
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(pawnAttackers(square, enemies, false), false);
 }
@@ -616,7 +620,7 @@ TEST(BitboardTest, kingAttackersTrue1) {
     int rank = 4, file = 3;
     int square = rank * 8 + file;
 
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(kingAttackers(square, enemies), true);
 }
@@ -636,7 +640,7 @@ TEST(BitboardTest, kingAttackersTrue2) {
     int rank = 4, file = 3;
     int square = rank * 8 + file;
 
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(kingAttackers(square, enemies), true);
 }
@@ -656,7 +660,7 @@ TEST(BitboardTest, kingAttackersFalse) {
     int rank = 4, file = 3;
     int square = rank * 8 + file;
 
-    uint64_t enemies = arrayToBitboard(enemiesBoard);
+    uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
 
     EXPECT_EQ(kingAttackers(square, enemies), false);
 }

@@ -31,13 +31,13 @@ namespace Search {
             Searcher(Board a_board) {
                 this->board = a_board;
                 this->nodes = 0;
-                this->depth = 0;
+                this->max_depth = 0;
             }
             Info search(int depth);
             Node alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot);
         private:
             Board board;
             uint64_t nodes;
-            int depth;
+            int max_depth;
     };
 } // namespace Search

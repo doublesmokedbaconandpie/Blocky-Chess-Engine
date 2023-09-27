@@ -3,6 +3,7 @@
 #include <iomanip>
 
 #include "bitboard.hpp"
+#include "types.hpp"
 
 int leadingBit(uint64_t bitboard) {
     // Counts from the first bit
@@ -22,7 +23,7 @@ int popLeadingBit(uint64_t& bitboard) {
 
 int popTrailingBit(uint64_t& bitboard) {
     int pos = trailingBit(bitboard);
-    bitboard ^= 1ull << pos;
+    bitboard ^= 0x8000000000000000ull >> pos;
     return pos;
 }
 
@@ -175,6 +176,28 @@ bool kingAttackers(int square, uint64_t enemyKings) {
     return currPiece & enemyKings;
 }
 
+// below functions are for debugging and testing
+
 void printBitboard(uint64_t bitboard) {
     std::cout << "0x" << std::setw(16) << std::setfill('0') << std::hex <<  bitboard << "\n" << std::dec;
+}
+
+uint64_t arrayToBitboardNotEmpty(std::array<pieceTypes, BOARD_SIZE> board) {
+    uint64_t result = 0ull;
+    for (size_t i = 0; i < board.size(); i++) {
+        if (board.at(i) != EmptyPiece) {
+            result |= (1ull << i);
+        }
+    }
+    return result;
+}
+
+uint64_t arrayToBitboardPieceType(std::array<pieceTypes, BOARD_SIZE> board, pieceTypes piece) {
+    uint64_t result = 0ull;
+    for (size_t i = 0; i < board.size(); i++) {
+        if (board.at(i) == piece) {
+            result |= (1ull << i);
+        }
+    }
+    return result;
 }

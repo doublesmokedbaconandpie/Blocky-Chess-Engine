@@ -9,27 +9,13 @@ namespace MOVEGEN {
 
     std::vector<BoardMove> moveGenerator(Board currBoard) {
         std::vector<BoardMove> listOfMoves;
-        std::vector<BoardSquare> pawns, knights, bishops, rooks, queens, kings;
         
-        pieceTypes allyKing = currBoard.isWhiteTurn ? WKing : BKing;
-        pieceTypes allyPawn = currBoard.isWhiteTurn ? WPawn : BPawn;
-        pieceTypes allyKnight = currBoard.isWhiteTurn ? WKnight : BKnight;
-        pieceTypes allyBishop = currBoard.isWhiteTurn ? WBishop : BBishop;
-        pieceTypes allyRook = currBoard.isWhiteTurn ? WRook : BRook;
-        pieceTypes allyQueen = currBoard.isWhiteTurn ? WQueen : BQueen;
-
-        for (int rank = 0; rank < 8; rank++) {
-            for (int file = A; file <= H; file++) {
-                int currPiece = currBoard.getPiece(rank, file);
-                BoardSquare currSquare = BoardSquare(rank, file);
-                if (currPiece == allyKnight) {knights.push_back(currSquare);}
-                if (currPiece == allyBishop) {bishops.push_back(currSquare);}
-                if (currPiece == allyQueen) {queens.push_back(currSquare);}
-                if (currPiece == allyPawn) {pawns.push_back(currSquare);}
-                if (currPiece == allyRook) {rooks.push_back(currSquare);}
-                if (currPiece == allyKing) {kings.push_back(currSquare);}
-            }
-        }
+        uint64_t kings   = currBoard.isWhiteTurn ? currBoard.pieceSets[WKing]   : currBoard.pieceSets[BKing]; 
+        uint64_t pawns   = currBoard.isWhiteTurn ? currBoard.pieceSets[WPawn]   : currBoard.pieceSets[BPawn];
+        uint64_t knights = currBoard.isWhiteTurn ? currBoard.pieceSets[WKnight] : currBoard.pieceSets[BKnight];
+        uint64_t bishops = currBoard.isWhiteTurn ? currBoard.pieceSets[WBishop] : currBoard.pieceSets[BBishop];
+        uint64_t rooks   = currBoard.isWhiteTurn ? currBoard.pieceSets[WRook]   : currBoard.pieceSets[BRook];
+        uint64_t queens  = currBoard.isWhiteTurn ? currBoard.pieceSets[WQueen]  : currBoard.pieceSets[BQueen];
 
         validPawnMoves(currBoard, listOfMoves, pawns);
         validKnightMoves(currBoard, listOfMoves, knights);
@@ -40,14 +26,15 @@ namespace MOVEGEN {
         return listOfMoves;
     }
 
-    void validPawnMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& pawns) {
+    void validPawnMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t pawns) {
         int promoteRank = currBoard.isWhiteTurn ? 0 : 7;
         pieceTypes allyKnight = currBoard.isWhiteTurn ? WKnight : BKnight;
         pieceTypes allyBishop = currBoard.isWhiteTurn ? WBishop : BBishop;
         pieceTypes allyRook = currBoard.isWhiteTurn ? WRook : BRook;
         pieceTypes allyQueen = currBoard.isWhiteTurn ? WQueen : BQueen;
 
-        for (BoardSquare pawn: pawns) {
+        while (pawns) {
+            BoardSquare pawn(popLeadingBit(pawns));
             std::vector<BoardSquare> pawnMoves;
 
             forwardPawnMoves(currBoard, pawnMoves, pawn);
@@ -105,9 +92,10 @@ namespace MOVEGEN {
         }
     }
 
-    void validKnightMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& knights) {
+    void validKnightMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t knights) {
         uint64_t allies = currBoard.isWhiteTurn ? currBoard.pieceSets[WHITE_PIECES] : currBoard.pieceSets[BLACK_PIECES];
-        for (BoardSquare knight: knights) { 
+        while (knights) {
+            BoardSquare knight(popLeadingBit(knights));
             uint64_t knightBitboard = 1ull << knight.toSquare();
             uint64_t knightMoves = knightSquares(knightBitboard) & ~allies;
             while (knightMoves) {
@@ -123,8 +111,9 @@ namespace MOVEGEN {
         }
     }
 
-    void validBishopMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& bishops) {
-        for (BoardSquare bishop: bishops) {
+    void validBishopMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t bishops) {
+        while (bishops) {
+            BoardSquare bishop(popLeadingBit(bishops));
             std::vector<BoardSquare> bishopMoves;
             addMovesInDirection(currBoard, bishopMoves, bishop, 1, 1); // down right
             addMovesInDirection(currBoard, bishopMoves, bishop, 1, -1); // down left
@@ -140,8 +129,9 @@ namespace MOVEGEN {
         }
     }
 
-    void validRookMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& rooks) {
-        for (BoardSquare rook: rooks) {
+    void validRookMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t rooks) {
+        while (rooks) {
+            BoardSquare rook(popLeadingBit(rooks));
             std::vector<BoardSquare> rookMoves;
             addMovesInDirection(currBoard, rookMoves, rook, 1, 0); // down
             addMovesInDirection(currBoard, rookMoves, rook, -1, 0); // up
@@ -157,17 +147,18 @@ namespace MOVEGEN {
         }
     }
 
-    void validQueenMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& queens) {
+    void validQueenMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t queens) {
         validBishopMoves(currBoard, validMoves, queens);
         validRookMoves(currBoard, validMoves, queens);
     }
 
 
-    void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, std::vector<BoardSquare>& kings) {
+    void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t kings) {
         pieceTypes allyRook = currBoard.isWhiteTurn ? WRook : BRook;
         int kingUnmovedRank = currBoard.isWhiteTurn ? 7 : 0;
         
-        for (BoardSquare king: kings) {
+        while (kings) {
+            BoardSquare king(popLeadingBit(kings));
             int currRank = king.rank;
             fileVals currFile = king.file;
             std::vector<BoardSquare> kingMoves;
