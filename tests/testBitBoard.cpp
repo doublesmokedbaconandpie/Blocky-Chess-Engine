@@ -40,8 +40,6 @@ TEST(BitboardTest, trailingBitEmpty) {
 
 TEST(BitboardTest, trailingBitOne) {
     uint64_t bitboard = 0x8000000000000000ull;
-    std::bitset<64> y(bitboard);
-    std::cout << y << std::endl;
     ASSERT_EQ(trailingBit(bitboard), 0);
 }
 
