@@ -174,7 +174,6 @@ std::string Board::toFen() {
 // assumes no move history
 void Board::initZobristKey() {
     this->zobristKey = 0ull;
-    Zobrist::initKeys();
 
     // pieces on board
     for (size_t i = 0; i < BOARD_SIZE; i++) {

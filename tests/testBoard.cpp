@@ -4,39 +4,47 @@
 #include <gtest/gtest.h>
 #include <string>
 
-TEST(BoardTest, getPieceValidSquare) {
+class BoardTest : public testing::Test {
+    public:
+        static void SetUpTestSuite() {
+            Zobrist::init();
+            std::cout << "lasdjfladfja" << std::endl;
+        }
+};
+
+TEST_F(BoardTest, getPieceValidSquare) {
     Board defaultBoard;
     BoardSquare square = BoardSquare(0, A);
     pieceTypes getPieceResult = defaultBoard.getPiece(square);
     ASSERT_EQ(getPieceResult, BRook) << getPieceResult;
 }
 
-TEST(BoardTest, getPieceValidSquare2) {
+TEST_F(BoardTest, getPieceValidSquare2) {
     Board defaultBoard;
     BoardSquare square = BoardSquare(1, H);
     pieceTypes getPieceResult = defaultBoard.getPiece(square);
     EXPECT_EQ(getPieceResult, BPawn);
 }
 
-TEST(BoardTest, getPieceValidSquare3) {
+TEST_F(BoardTest, getPieceValidSquare3) {
     Board defaultBoard;
     BoardSquare square = BoardSquare(6, D);
     pieceTypes getPieceResult = defaultBoard.getPiece(square);
     EXPECT_EQ(getPieceResult, WPawn);
 }
 
-TEST(BoardTest, boardSquareStrConstructor) {
+TEST_F(BoardTest, boardSquareStrConstructor) {
     BoardSquare square = BoardSquare("a8");
     EXPECT_EQ(square.rank, 0);
     EXPECT_EQ(square.file, 0);
 }
 
-TEST(BoardTest, boardSquareStrConstructorNeg) {
+TEST_F(BoardTest, boardSquareStrConstructorNeg) {
     BoardSquare square = BoardSquare("-");
     EXPECT_EQ(square, BoardSquare());
 }
 
-TEST(BoardTest, boardMoveStrConstructor) {
+TEST_F(BoardTest, boardMoveStrConstructor) {
     BoardMove move = BoardMove("e2e4", true);
     EXPECT_EQ(move.pos1.rank, 6);
     EXPECT_EQ(move.pos1.file, 4);
@@ -44,7 +52,7 @@ TEST(BoardTest, boardMoveStrConstructor) {
     EXPECT_EQ(move.pos2.file, 4);
 }
 
-TEST(BoardTest, boardMoveStrConstructor2) {
+TEST_F(BoardTest, boardMoveStrConstructor2) {
     BoardMove move = BoardMove("a7a8q", true);
     EXPECT_EQ(move.pos1.rank, 1);
     EXPECT_EQ(move.pos1.file, 0);
@@ -53,7 +61,7 @@ TEST(BoardTest, boardMoveStrConstructor2) {
     EXPECT_EQ(move.promotionPiece, WQueen);
 }
 
-TEST(BoardTest, fenConstructorDefault) {
+TEST_F(BoardTest, fenConstructorDefault) {
     Board fenBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     Board defaultBoard;
 
@@ -68,14 +76,10 @@ TEST(BoardTest, fenConstructorDefault) {
     EXPECT_EQ(fenBoard.fiftyMoveRule, defaultBoard.fiftyMoveRule);
 }
 
-TEST(BoardTest, fenConstructorEnPassantSquare) {
-    std::cout << "fenbegin\n";
+TEST_F(BoardTest, fenConstructorEnPassantSquare) {
     Board fenBoard("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
-    std::cout << "fenEnd\n";
-    std::cout << "makemoveBegin\n";
     Board moveBoard;
     moveBoard.makeMove(BoardMove("e2e4", moveBoard.isWhiteTurn));
-    std::cout << "makemoveEnd\n";
     
     EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
@@ -88,7 +92,7 @@ TEST(BoardTest, fenConstructorEnPassantSquare) {
     EXPECT_EQ(fenBoard.fiftyMoveRule, moveBoard.fiftyMoveRule);
 }
 
-TEST(BoardTest, fenConstructorEnPassantCastle) {
+TEST_F(BoardTest, fenConstructorEnPassantCastle) {
     // ruy lopez
     Board fenBoard("r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4");
     Board moveBoard;
@@ -111,21 +115,21 @@ TEST(BoardTest, fenConstructorEnPassantCastle) {
     EXPECT_EQ(fenBoard.fiftyMoveRule, moveBoard.fiftyMoveRule);
 }
 
-TEST(BoardTest, toFenDefault) {
+TEST_F(BoardTest, toFenDefault) {
     std::string expectedFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     Board board(expectedFen);
 
     EXPECT_EQ(board.toFen(), expectedFen);
 }
 
-TEST(BoardTest, toFenMoves) {
+TEST_F(BoardTest, toFenMoves) {
     std::string expectedFen = "r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 1";
     Board board(expectedFen);
 
     EXPECT_EQ(board.toFen(), expectedFen);
 }
 
-TEST(BoardTest, toFenCastling) {
+TEST_F(BoardTest, toFenCastling) {
     std::string expectedFen = "r1b1kbnr/ppppqppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 1";
     Board board(expectedFen);
 
@@ -208,7 +212,7 @@ TEST(MaterialDifferenceTest, enPassantTests) {
     EXPECT_EQ(eval3, -11);
 }
 
-TEST(BoardTest, checkDiagAttackersTrue) {
+TEST_F(BoardTest, checkDiagAttackersTrue) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -224,7 +228,7 @@ TEST(BoardTest, checkDiagAttackersTrue) {
     ASSERT_EQ(isAttacked, true);
 }
 
-TEST(BoardTest, checkDiagAttackersFalse) {
+TEST_F(BoardTest, checkDiagAttackersFalse) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -240,7 +244,7 @@ TEST(BoardTest, checkDiagAttackersFalse) {
     ASSERT_EQ(isAttacked, false);
 }
 
-TEST(BoardTest, checkStraightAttackersTrue) {
+TEST_F(BoardTest, checkStraightAttackersTrue) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -257,7 +261,7 @@ TEST(BoardTest, checkStraightAttackersTrue) {
 }
 
 
-TEST(BoardTest, checkStraightAttackersFalse) {
+TEST_F(BoardTest, checkStraightAttackersFalse) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -273,7 +277,7 @@ TEST(BoardTest, checkStraightAttackersFalse) {
     ASSERT_EQ(isAttacked, false);
 }
 
-TEST(BoardTest, checkKnightAttackersTrue1) {
+TEST_F(BoardTest, checkKnightAttackersTrue1) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -289,7 +293,7 @@ TEST(BoardTest, checkKnightAttackersTrue1) {
     ASSERT_EQ(isAttacked, true);
 }
 
-TEST(BoardTest, checkKnightAttackersTrue2) {
+TEST_F(BoardTest, checkKnightAttackersTrue2) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -305,7 +309,7 @@ TEST(BoardTest, checkKnightAttackersTrue2) {
     ASSERT_EQ(isAttacked, true);
 }
 
-TEST(BoardTest, checkKnightAttackersTrue3) {
+TEST_F(BoardTest, checkKnightAttackersTrue3) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -321,7 +325,7 @@ TEST(BoardTest, checkKnightAttackersTrue3) {
     ASSERT_EQ(isAttacked, true);
 }
 
-TEST(BoardTest, checkKnightAttackersTrue4) {
+TEST_F(BoardTest, checkKnightAttackersTrue4) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -337,7 +341,7 @@ TEST(BoardTest, checkKnightAttackersTrue4) {
     ASSERT_EQ(isAttacked, true);
 }
 
-TEST(BoardTest, checkKnightAttackersFalse) {
+TEST_F(BoardTest, checkKnightAttackersFalse) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -353,7 +357,7 @@ TEST(BoardTest, checkKnightAttackersFalse) {
     ASSERT_EQ(isAttacked, false);
 }
 
-TEST(BoardTest, checkPawnAttackersTrue1) {
+TEST_F(BoardTest, checkPawnAttackersTrue1) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -369,7 +373,7 @@ TEST(BoardTest, checkPawnAttackersTrue1) {
     ASSERT_EQ(isAttacked, true);
 }
 
-TEST(BoardTest, checkPawnAttackersTrue2) {
+TEST_F(BoardTest, checkPawnAttackersTrue2) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -385,7 +389,7 @@ TEST(BoardTest, checkPawnAttackersTrue2) {
     ASSERT_EQ(isAttacked, true);
 }
 
-TEST(BoardTest, checkPawnAttackersFalse) {
+TEST_F(BoardTest, checkPawnAttackersFalse) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -401,7 +405,7 @@ TEST(BoardTest, checkPawnAttackersFalse) {
     ASSERT_EQ(isAttacked, false);
 }
 
-TEST(BoardTest, checkKingAttackersTrue1) {
+TEST_F(BoardTest, checkKingAttackersTrue1) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -417,7 +421,7 @@ TEST(BoardTest, checkKingAttackersTrue1) {
     ASSERT_EQ(isAttacked, true);
 }
 
-TEST(BoardTest, checkKingAttackersTrue2) {
+TEST_F(BoardTest, checkKingAttackersTrue2) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -433,7 +437,7 @@ TEST(BoardTest, checkKingAttackersTrue2) {
     ASSERT_EQ(isAttacked, true);
 }
 
-TEST(BoardTest, checkKingAttackersFalse) {
+TEST_F(BoardTest, checkKingAttackersFalse) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -449,7 +453,7 @@ TEST(BoardTest, checkKingAttackersFalse) {
     ASSERT_EQ(isAttacked, false);
 }
 
-TEST(BoardTest, inCheckTrue1) {
+TEST_F(BoardTest, inCheckTrue1) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -465,7 +469,7 @@ TEST(BoardTest, inCheckTrue1) {
     ASSERT_EQ(isAttacked, true);
 }
 
-TEST(BoardTest, inCheckTrue2) {
+TEST_F(BoardTest, inCheckTrue2) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -481,7 +485,7 @@ TEST(BoardTest, inCheckTrue2) {
     ASSERT_EQ(isAttacked, true);
 }
 
-TEST(BoardTest, BoardMoveConstructorPawnJump) {
+TEST_F(BoardTest, BoardMoveConstructorPawnJump) {
     Board board;
     BoardSquare pos1 = BoardSquare(6, E);
     BoardSquare pos2 = BoardSquare(4, E);
@@ -495,7 +499,7 @@ TEST(BoardTest, BoardMoveConstructorPawnJump) {
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
-TEST(BoardTest, BoardMoveConstructorKingCastle) {
+TEST_F(BoardTest, BoardMoveConstructorKingCastle) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook,
         BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn,
@@ -521,7 +525,7 @@ TEST(BoardTest, BoardMoveConstructorKingCastle) {
     EXPECT_EQ(board.castlingRights, B_Castle);
 }
 
-TEST(BoardTest, BoardMoveConstructorQueenCastle) {
+TEST_F(BoardTest, BoardMoveConstructorQueenCastle) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook,
         BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn,
@@ -547,7 +551,7 @@ TEST(BoardTest, BoardMoveConstructorQueenCastle) {
     EXPECT_EQ(board.castlingRights, B_Castle);
 }
 
-TEST(BoardTest, BoardMoveConstructorMovedKing) {
+TEST_F(BoardTest, BoardMoveConstructorMovedKing) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook,
         BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn,
@@ -573,7 +577,7 @@ TEST(BoardTest, BoardMoveConstructorMovedKing) {
     EXPECT_EQ(board.castlingRights, B_Castle);
 }
 
-TEST(BoardTest, BoardMoveConstructorKingToCastleSquare) {
+TEST_F(BoardTest, BoardMoveConstructorKingToCastleSquare) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -599,7 +603,7 @@ TEST(BoardTest, BoardMoveConstructorKingToCastleSquare) {
     EXPECT_EQ(board.castlingRights, B_Castle);
 }
 
-TEST(BoardTest, BoardMoveConstructorEnPassant) {
+TEST_F(BoardTest, BoardMoveConstructorEnPassant) {
     Board fenBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
     Board moveBoard("rnbqkb1r/ppp1pppp/3P1n2/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3");
     BoardSquare pos1("e5");
@@ -619,7 +623,7 @@ TEST(BoardTest, BoardMoveConstructorEnPassant) {
     EXPECT_EQ(fenBoard.fiftyMoveRule, 0);   
 }
 
-TEST(BoardTest, BoardMoveConstructorNotEnPassant) {
+TEST_F(BoardTest, BoardMoveConstructorNotEnPassant) {
     Board fenBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
     Board moveBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 3");
     BoardSquare pos1("g1");
@@ -637,7 +641,7 @@ TEST(BoardTest, BoardMoveConstructorNotEnPassant) {
     EXPECT_EQ(fenBoard.fiftyMoveRule, 1);   
 }
 
-TEST(BoardTest, BoardMoveConstructorPromote) {
+TEST_F(BoardTest, BoardMoveConstructorPromote) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WPawn     , WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -660,7 +664,7 @@ TEST(BoardTest, BoardMoveConstructorPromote) {
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
-TEST(BoardTest, BoardMoveConstructorPawnCapture) {
+TEST_F(BoardTest, BoardMoveConstructorPawnCapture) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -684,7 +688,7 @@ TEST(BoardTest, BoardMoveConstructorPawnCapture) {
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
-TEST(BoardTest, BoardMoveConstructorRegularCapture) {
+TEST_F(BoardTest, BoardMoveConstructorRegularCapture) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece, EmptyPiece,
@@ -707,7 +711,7 @@ TEST(BoardTest, BoardMoveConstructorRegularCapture) {
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
-TEST(BoardTest, BoardMoveConstructorRookPin) {
+TEST_F(BoardTest, BoardMoveConstructorRookPin) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         BRook     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BKing     ,
         WRook     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -721,13 +725,11 @@ TEST(BoardTest, BoardMoveConstructorRookPin) {
     Board board(boardArr, true);
     BoardSquare pos1 = BoardSquare(1, A);
     BoardSquare pos2 = BoardSquare(1, B);
-    std::cout << board << std::endl;
     board.makeMove(pos1, pos2);
-    std::cout << board << std::endl;
     ASSERT_EQ(board.isIllegalPos, true);
 }
 
-TEST(BoardTest, BoardMoveConstructorBishopPin) {
+TEST_F(BoardTest, BoardMoveConstructorBishopPin) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -745,25 +747,25 @@ TEST(BoardTest, BoardMoveConstructorBishopPin) {
     ASSERT_EQ(board.isIllegalPos, true);
 }
 
-TEST(BoardTest, BoardMoveConstructorCastleRightsRook) {
+TEST_F(BoardTest, BoardMoveConstructorCastleRightsRook) {
     Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1");
     board.makeMove(BoardMove("h1g1", board.isWhiteTurn));
     EXPECT_EQ(board.castlingRights, B_Castle | W_OOO);
 }
 
-TEST(BoardTest, BoardMoveConstructorCastleRightsRook2) {
+TEST_F(BoardTest, BoardMoveConstructorCastleRightsRook2) {
     Board board("rnbqk2r/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
     board.makeMove(BoardMove("h8g8", board.isWhiteTurn));
     EXPECT_EQ(board.castlingRights, W_Castle | B_OOO);
 }
 
-TEST(BoardTest, BoardMoveConstructorCastleRightsRook3) {
+TEST_F(BoardTest, BoardMoveConstructorCastleRightsRook3) {
     Board board("7r/1k4P1/1n6/B7/P4P1p/7P/4NK2/1R5R b - - 0 44");
     board.makeMove(BoardMove("h8g8", board.isWhiteTurn));
     EXPECT_EQ(board.castlingRights, noCastle);
 }
 
-TEST(BoardTest, undoMove) {
+TEST_F(BoardTest, undoMove) {
     // ruy lopez
     Board defaultBoard, moveBoard;
     moveBoard.makeMove(BoardMove("e2e4", moveBoard.isWhiteTurn));
