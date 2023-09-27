@@ -35,11 +35,12 @@ enum castleRights {
 };
 
 //not sure if we'll use this
-constexpr int ENDGAME_PIECE_THRESHOLD = 14; //arbitrary for now
+constexpr int ENDGAME_PIECE_THRESHOLD = -1; //unused for now
 enum gameProgress {
-    opening = 0,
-    midgame = 1,
-    endgame = 2
+    Opening = 0,
+    // Middlegame = 1, //Not sure if we need a third type
+    // Endgame = 2
+    Endgame = 1
 };
 
 

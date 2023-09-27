@@ -14,12 +14,12 @@ int eval(Board board) {
     return board.isWhiteTurn ? scoreSum : scoreSum * -1;
 }
 
-int getPlacementScore(int rank, int file, pieceTypes currPiece) {
+int getPlacementScore(int rank, int file, pieceTypes currPiece, gameProgress gameState) {
     if(currPiece >= WKing && currPiece <= WPawn) {
-        return tablesOp[currPiece][rank * 8 + file];
+        return tables[0 /*gameState*/][currPiece][rank * 8 + file];
     }
     else if(currPiece >= BKing && currPiece <= BPawn) {
-        return -1 * tablesOp[currPiece - BKing][file + 56 - 8 * rank];
+        return -1 * tables[0 /*gameState*/][currPiece - BKing][file + 56 - 8 * rank];
     }
     
     return 0;
