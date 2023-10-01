@@ -35,6 +35,7 @@ namespace Search {
             }
             Info search(int depth);
             Node alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot);
+            int quiesce(int alpha, int beta, int depthLeft);
         private:
             Board board;
             uint64_t nodes;

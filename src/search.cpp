@@ -48,7 +48,7 @@ namespace Search {
         }
         // max depth reached
         if (depthLeft == 0) {
-            result.eval = eval(this->board);
+            result.eval = quiesce(alpha, beta, 5);
             return result;
         }
         // checkmate or stalemate
@@ -94,6 +94,35 @@ namespace Search {
         return result;
     }
 
+    int Searcher::quiesce(int alpha, int beta, int depthLeft) {
+        int stand_pat = eval(this->board);
+        if(stand_pat >= beta)
+            return beta;
+        if(alpha < stand_pat)
+            alpha = stand_pat;
+        if(depthLeft == 0)
+            return stand_pat;
 
+        std::vector<BoardMove> moves = MOVEGEN::moveGenerator(this->board);
+        MovePicker movePicker(std::move(moves));
+        movePicker.assignMoveScores(board);
+
+        int score = MIN_ALPHA;
+        while (movePicker.movesLeft()) {
+            BoardMove move = movePicker.pickMove();
+            if(!board.moveIsCapture(move))
+                continue;
+            board.makeMove(move);
+            score = -1 * (quiesce(-1 * beta, -1 * alpha, depthLeft - 1));
+            board.undoMove(); 
+
+            if(score >= beta)
+                return beta;
+            if(score > alpha)
+                alpha = score;
+        }
+        return alpha;
+
+    }
 
 } // namespace Search
