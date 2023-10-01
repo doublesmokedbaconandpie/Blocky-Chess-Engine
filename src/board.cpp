@@ -12,8 +12,6 @@
 #include "types.hpp"
 #include "eval.hpp" 
 
-
-
 // Used for debugging and testing
 Board::Board() {
     this->board = {
@@ -465,6 +463,11 @@ void Board::setPiece(int rank, int file, pieceTypes currPiece) {
 
         this->eval.placementScore += Eval::getPlacementScore(rank, file, currPiece, this->eval.gameState);
     }
+}
+    
+int Board::getEvalScore() const {
+    int scoreSum = this->eval.placementScore;
+    return this->isWhiteTurn ? scoreSum : scoreSum * -1;
 }
 
 void Board::setPiece(BoardSquare square, pieceTypes currPiece) {

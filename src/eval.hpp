@@ -5,12 +5,11 @@
 namespace Eval {
 
 int getPlacementScore(int rank, int file, pieceTypes currPiece, gameProgress gameState);
-int eval(Board board);
 void init();
 
 // opening tables
 
-std::array<int, BOARD_SIZE> tableKingOp = {
+static const std::array<int, BOARD_SIZE> tableKingOp = {
     0 , -30, -30, -30, -30, -30, -30, 0 ,
     0 , -30, -30, -30, -30, -30, -30, 0 ,
     0 , -30, -30, -30, -30, -30, -30, 0 ,
@@ -21,7 +20,7 @@ std::array<int, BOARD_SIZE> tableKingOp = {
     20, 20, 10, 10 , 10, 10, 20, 20 
 };
 
-std::array<int, BOARD_SIZE> tableQueenOp = {
+static const std::array<int, BOARD_SIZE> tableQueenOp = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 1 , 1 , 0 , 0 , 0 ,
     0 , 0 , 3 , 3 , 3 , 3 , 0 , 0 ,
@@ -32,7 +31,7 @@ std::array<int, BOARD_SIZE> tableQueenOp = {
     -9, -4, -4, 2 , 2 , -4, -4, -9
 };
 
-std::array<int, BOARD_SIZE> tableBishopOp = {
+static const std::array<int, BOARD_SIZE> tableBishopOp = {
     -20, -10, -5, -5, -5, -5, -10, -20,
     -10, -5, 5 , 5 , 5 , 5 , -5, -10,
     -5, 5 , 10, 15, 15, 10, 5 , -5,
@@ -43,7 +42,7 @@ std::array<int, BOARD_SIZE> tableBishopOp = {
     -20, -5, -10, -5, -5, -10, -5, -20,
 };
 
-std::array<int, BOARD_SIZE> tableKnightOp = {
+static const std::array<int, BOARD_SIZE> tableKnightOp = {
     -20, -10, -5, -5, -5, -5, -10, -20,
     -10, -5, 0 , 5 , 5 , 0 , -5, -10,
     -5, 5 , 15, 15, 15, 15, 5 , -5,
@@ -54,7 +53,7 @@ std::array<int, BOARD_SIZE> tableKnightOp = {
     -25, -20, -10, -10, -10, -10, -20, -25,
 };
 
-std::array<int, BOARD_SIZE> tableRookOp = {
+static const std::array<int, BOARD_SIZE> tableRookOp = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     20, 20, 20, 20, 20, 20, 20, 20,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
@@ -65,7 +64,7 @@ std::array<int, BOARD_SIZE> tableRookOp = {
     0 , 0 , 10, 10, 10, 10, 0 , 0 
 };
 
-std::array<int, BOARD_SIZE> tablePawnOp = {
+static const std::array<int, BOARD_SIZE> tablePawnOp = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     20, 20, 25, 30, 30, 25, 20, 20,
     10, 10, 15, 25, 25, 15, 10, 10,
@@ -78,7 +77,7 @@ std::array<int, BOARD_SIZE> tablePawnOp = {
 
 // Endgame tables
 
-std::array<int, BOARD_SIZE> tableKingEg = {
+static const std::array<int, BOARD_SIZE> tableKingEg = {
     -20, -15, -7, 0 , 0 , -7, -15, -20,
     -15, -7, 0 , 5 , 5 , 0 , -7, -15,
     -7, 0 , 5 , 15, 15, 5 , 0 , -7,
@@ -89,7 +88,7 @@ std::array<int, BOARD_SIZE> tableKingEg = {
     -20, -15, -7, 0 , 0 , -7, -15, -20 
 };
 
-std::array<int, BOARD_SIZE> tableQueenEg = {
+static const std::array<int, BOARD_SIZE> tableQueenEg = {
     -5, -5, -5, -5, -5, -5, -5, -5,
     -5, 0 , 0 , 0 , 0 , 0 , 0 , -5,
     -5, 0 , 5 , 5 , 5 , 5 , 0 , -5,
@@ -100,7 +99,7 @@ std::array<int, BOARD_SIZE> tableQueenEg = {
     -5, -5, -5, -5, -5, -5, -5, -5
 };
 
-std::array<int, BOARD_SIZE> tableBishopEg = {
+static const std::array<int, BOARD_SIZE> tableBishopEg = {
     -10, -7, -5, -5, -5, -5, -7, -10,
     -7, 3, 4 , 5 , 5 , 4 , 3, -7,
     -5, 4 , 10, 15, 15, 10, 4 , -5,
@@ -111,7 +110,7 @@ std::array<int, BOARD_SIZE> tableBishopEg = {
     -10, -7, -5, -5, -5, -5, -7, -10,
 };
 
-std::array<int, BOARD_SIZE> tableKnightEg = {
+static const std::array<int, BOARD_SIZE> tableKnightEg = {
     -20, -10, -5, -5, -5, -5, -10, -20,
     -10, -5, 0 , 5 , 5 , 0 , -5, -10,
     -5, 5 , 15, 15, 15, 15, 5 , -5,
@@ -122,7 +121,7 @@ std::array<int, BOARD_SIZE> tableKnightEg = {
     -25, -20, -10, -10, -10, -10, -20, -25,
 };
 
-std::array<int, BOARD_SIZE> tableRookEg = {
+static const std::array<int, BOARD_SIZE> tableRookEg = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
@@ -133,7 +132,7 @@ std::array<int, BOARD_SIZE> tableRookEg = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 
 };
 
-std::array<int, BOARD_SIZE> tablePawnEg = {
+static const std::array<int, BOARD_SIZE> tablePawnEg = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     120, 110, 100, 100, 100, 100, 110, 120,
     80, 75, 71, 71, 71, 71, 75, 80,

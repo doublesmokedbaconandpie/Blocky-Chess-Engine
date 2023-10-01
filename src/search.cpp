@@ -48,7 +48,7 @@ namespace Search {
         }
         // max depth reached
         if (depthLeft == 0) {
-            result.eval = Eval::eval(this->board);
+            result.eval = this->board.getEvalScore();
             return result;
         }
         // checkmate or stalemate

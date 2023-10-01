@@ -2,10 +2,10 @@
 #include "zobrist.hpp"
 
 int main() {
-    if (!Uci::uci()) {return 1;}
-
     Zobrist::init();
     Eval::init();
+
+    if (!Uci::uci()) {return 1;}
     Uci::setOptionLoop();
     Uci::uciLoop();
 
