@@ -3,12 +3,14 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <stdlib.h>
 
 #include "board.hpp"
 #include "move.hpp"
 #include "bitboard.hpp"
 #include "zobrist.hpp"
 #include "types.hpp"
+#include "eval.hpp" 
 
 // Used for debugging and testing
 Board::Board() {
@@ -28,6 +30,13 @@ Board::Board() {
     this->isIllegalPos = false;
     this->castlingRights = All_Castle;
     this->materialDifference = 0;
+    this->eval = EvalAttributes();
+    
+    //sets up initial score for piece placement
+    for(uint8_t i = 0; i < BOARD_SIZE; i++) {
+        pieceTypes currPiece = board[i];
+        this->eval.placementScore += Eval::getPlacementScore(i / 8, i % 8, currPiece, this->eval.gameState);
+    }
 
     this->pieceSets[WKing]   = 0x1000000000000000ull;
     this->pieceSets[WQueen]  = 0x0800000000000000ull;
@@ -61,6 +70,23 @@ Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn,
     this->castlingRights = a_castlingRights;
     this->materialDifference = a_materialDifference;
 
+    uint8_t pieceCount = 0;
+    uint8_t totalMaterial = 0;
+
+    for(pieceTypes piece: board) {
+        if(piece != EmptyPiece) {
+            pieceCount++;
+            totalMaterial += abs(pieceValues[piece]);
+        }
+    }
+    this->eval = EvalAttributes(pieceCount, totalMaterial);
+    this->eval.gameState = this->eval.piecesRemaining <= ENDGAME_PIECE_THRESHOLD ? Endgame : Opening;
+    //sets up initial score for piece placement (This gets repeated so maybe could turn it into a function)
+    for(uint8_t i = 0; i < BOARD_SIZE; i++) {
+        pieceTypes currPiece = board[i];
+        this->eval.placementScore += Eval::getPlacementScore(i / 8, i % 8, currPiece, eval.gameState);
+    }
+
     for (int i = WKing; i < WHITE_PIECES; i++) {
         this->pieceSets[i] = makeBitboardFromArray(this->board, i);
         if (i < BKing) {
@@ -79,6 +105,7 @@ Board::Board(std::string fenStr) {
     std::string token; 
     std::istringstream fenStream(fenStr);
     this->zobristKeyHistory = {0ull}; // required for setPiece
+    this->eval = EvalAttributes(0, 0);
 
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
@@ -92,12 +119,23 @@ Board::Board(std::string fenStr) {
             file += int(iter - '0');
         }
         else { // must be a piece character
-            this->setPiece(rank, file, charToPiece.at(iter));
-            file += 1;
+            pieceTypes currPiece = charToPiece.at(iter); 
+            this->setPiece(rank, file, currPiece);
 
-            this->materialDifference += pieceValues[charToPiece.at(iter)];
+            this->materialDifference += pieceValues[currPiece];
+            this->eval.piecesRemaining++;
+            this->eval.totalMaterial += abs(pieceValues[currPiece]);
+
+            file += 1;
         }
 
+    }
+
+    if(this->eval.piecesRemaining <= ENDGAME_PIECE_THRESHOLD)
+        this->eval.gameState = Endgame;
+    for(uint8_t i = 0; i < BOARD_SIZE; i++) {
+        pieceTypes currPiece = board[i];
+        this->eval.placementScore += Eval::getPlacementScore(i / 8, i % 8, currPiece, eval.gameState);
     }
 
     fenStream >> token;
@@ -218,7 +256,8 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->castlingRights,
         this->pawnJumpedSquare,
         this->fiftyMoveRule,
-        this->materialDifference
+        this->materialDifference,
+        this->eval
     ));
 
     BoardSquare oldPawnJumpedSquare = this->pawnJumpedSquare;
@@ -257,11 +296,17 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         else {
             this->materialDifference += pieceValues[promotionPiece] + 1;
         }
+        this->eval.totalMaterial += abs(pieceValues[promotionPiece]) - 1;
     }
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
         this->pawnJumpedSquare = BoardSquare();
+        this->eval.piecesRemaining--;
+        this->eval.totalMaterial--;
+
+        if(this->eval.piecesRemaining <= ENDGAME_PIECE_THRESHOLD)
+            this->eval.gameState = Endgame;
 
         if(this->isWhiteTurn)
             materialDifference++;
@@ -299,10 +344,25 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         }
     }
 
-    // updates the material score of the board on capture
+    // updates the material score and piece count of the board on capture
     if (targetPiece != EmptyPiece) {
-        this->materialDifference -= pieceValues[targetPiece]; 
+        this->materialDifference -= pieceValues[targetPiece];
+        this->eval.piecesRemaining--; 
+        this->eval.totalMaterial -= abs(pieceValues[targetPiece]);
+        if(this->eval.gameState != Endgame && this->eval.piecesRemaining <= ENDGAME_PIECE_THRESHOLD) {
+            this->eval.gameState = Endgame;
+        }
+            
     }
+
+    //This is inefficient and hopefully temporary
+    if(this->eval.piecesRemaining <= ENDGAME_PIECE_THRESHOLD) {
+        for(uint8_t i = 0; i < BOARD_SIZE; i++) {
+        pieceTypes currPiece = board[i];
+        this->eval.placementScore += Eval::getPlacementScore(i / 8, i % 8, currPiece, eval.gameState);
+        }
+    }
+
     
     // handle old en passant square 
     if (this->pawnJumpedSquare == oldPawnJumpedSquare) {
@@ -361,6 +421,7 @@ void Board::undoMove() {
     this->fiftyMoveRule = prev.fiftyMoveRule;
     this->materialDifference = prev.materialDifference;
     this->isIllegalPos = false;
+    this->eval = prev.eval;
 
     this->moveHistory.pop_back();
     this->zobristKeyHistory.pop_back();
@@ -391,13 +452,22 @@ void Board::setPiece(int rank, int file, pieceTypes currPiece) {
         this->pieceSets[originColor] &= clearSquare;
         this->pieceSets[originPiece] &= clearSquare;
         this->zobristKey ^= Zobrist::pieceKeys[originPiece][square];
+
+        this->eval.placementScore -= Eval::getPlacementScore(rank, file, originPiece, this->eval.gameState);
     }
     if (currPiece != EmptyPiece) {
         pieceTypes currColor = currPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
         this->pieceSets[currColor] ^= setSquare;
         this->pieceSets[currPiece] ^= setSquare;
         this->zobristKey ^= Zobrist::pieceKeys[currPiece][square];
+
+        this->eval.placementScore += Eval::getPlacementScore(rank, file, currPiece, this->eval.gameState);
     }
+}
+    
+int Board::getEvalScore() const {
+    int scoreSum = this->eval.placementScore;
+    return this->isWhiteTurn ? scoreSum : scoreSum * -1;
 }
 
 void Board::setPiece(BoardSquare square, pieceTypes currPiece) {
@@ -487,4 +557,16 @@ uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int tar
         }
     }
     return result;
+}
+
+bool Board::moveIsCapture(BoardMove move) {
+    if(this->getPiece(move.pos1) % 6 == WPawn && this->pawnJumpedSquare == move.pos2)
+        return true;
+
+    return this->getPiece(move.pos2) != EmptyPiece;
+}
+
+EvalAttributes::EvalAttributes(uint8_t pieces, uint8_t material) {
+    piecesRemaining = pieces;
+    totalMaterial = material;
 }

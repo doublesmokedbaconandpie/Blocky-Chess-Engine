@@ -138,7 +138,7 @@ namespace Uci {
         }
         
         if (searchResult.mateIn == Search::NO_MATE) {
-            std::cout << "score cp " << (searchResult.eval * 100) << ' ';
+            std::cout << "score cp " << searchResult.eval << ' ';
         }
         else { 
             std::cout << "mate " << (searchResult.mateIn + 1) / 2 << ' '; // convert plies to moves

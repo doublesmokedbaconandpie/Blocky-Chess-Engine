@@ -34,10 +34,20 @@ enum castleRights {
     All_Castle = W_Castle | B_Castle,
 };
 
+//not sure if we'll use this
+constexpr int ENDGAME_PIECE_THRESHOLD = -1; //unused for now
+enum gameProgress {
+    Opening = 0,
+    // Middlegame = 1, //Not sure if we need a third type
+    // Endgame = 2
+    Endgame = 1
+};
+
+
 // indices are equal to the enumerated pieceTypes
 const static std::array<int, 13> pieceValues {
-     1000,  9,  3,  3,  5,  1, 
-    -1000, -9, -3, -3, -5, -1,};
+     0,  9,  3,  3,  5,  1, 
+     0, -9, -3, -3, -5, -1,};
 
 const static std::unordered_map<pieceTypes, char> pieceToChar = {
     {EmptyPiece, ' '},

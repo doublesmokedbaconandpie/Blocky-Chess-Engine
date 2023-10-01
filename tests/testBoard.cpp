@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 #include <string>
+#include <stdlib.h>
 
 class BoardTest : public testing::Test {
     public:
@@ -787,4 +788,198 @@ TEST_F(BoardTest, undoMove) {
     EXPECT_EQ(defaultBoard.castlingRights, moveBoard.castlingRights);
     EXPECT_EQ(defaultBoard.pawnJumpedSquare, moveBoard.pawnJumpedSquare);
     EXPECT_EQ(defaultBoard.fiftyMoveRule, moveBoard.fiftyMoveRule);
+}
+
+TEST(MaterialTest, defaultGame) {
+    Board b1 = Board();
+    uint8_t pieceCount1 = 0;
+    uint8_t totalMaterial1 = 0;
+
+    for(pieceTypes piece: b1.board) {
+        if(piece != EmptyPiece) {
+            pieceCount1++;
+            totalMaterial1 += abs(pieceValues[piece]);
+        }
+    }
+    
+    b1.makeMove(BoardMove("e2e4", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("d7d5", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("e4d5", b1.isWhiteTurn)); //cap black pawn
+    int pieceCount2 = b1.eval.piecesRemaining;
+    int totalMaterial2 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("c8h3", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("d5d6", b1.isWhiteTurn)); 
+    b1.makeMove(BoardMove("h3g2", b1.isWhiteTurn)); //cap white pawn
+    int pieceCount3 = b1.eval.piecesRemaining;
+    int totalMaterial3 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("d6c7", b1.isWhiteTurn)); //cap black pawn
+    int pieceCount4 = b1.eval.piecesRemaining;
+    int totalMaterial4 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("g2h1", b1.isWhiteTurn)); //cap white rook
+    int pieceCount5 = b1.eval.piecesRemaining;
+    int totalMaterial5 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("c7b8q", b1.isWhiteTurn)); //cap black knight
+    int pieceCount6 = b1.eval.piecesRemaining;
+    int totalMaterial6 = b1.eval.totalMaterial;
+
+    EXPECT_EQ(pieceCount1, 32);
+    EXPECT_EQ(totalMaterial1, 78);
+    EXPECT_EQ(pieceCount2, 31);
+    EXPECT_EQ(totalMaterial2, 77);
+    EXPECT_EQ(pieceCount3, 30);
+    EXPECT_EQ(totalMaterial3, 76);
+    EXPECT_EQ(pieceCount4, 29);
+    EXPECT_EQ(totalMaterial4, 75);
+    EXPECT_EQ(pieceCount5, 28);
+    EXPECT_EQ(totalMaterial5, 70);
+    EXPECT_EQ(pieceCount6, 27);
+    EXPECT_EQ(totalMaterial6, 75);
+}
+
+TEST(MaterialTest, enPassantTests) {
+    Board b1;
+    b1.makeMove(BoardMove("e2e4", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("d7d5", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("e4e5", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("d5d4", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("h2h3", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("f7f5", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("e5f6", b1.isWhiteTurn)); //+1
+    int pieceCount1 = b1.eval.piecesRemaining;
+    int totalMaterial1 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("g7f6", b1.isWhiteTurn)); //+-0
+    b1.makeMove(BoardMove("c2c4", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("d4c3", b1.isWhiteTurn)); //-1
+    int totalMaterial2 = b1.eval.totalMaterial;
+    b1.makeMove(BoardMove("d2d4", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("c3b2", b1.isWhiteTurn)); //-2
+    b1.makeMove(BoardMove("d4d5", b1.isWhiteTurn));
+    b1.makeMove(BoardMove("b2a1r", b1.isWhiteTurn)); //-11
+    int totalMaterial3 = b1.eval.totalMaterial;
+    
+    EXPECT_EQ(pieceCount1, 31);
+    EXPECT_EQ(totalMaterial1, 77);
+    EXPECT_EQ(totalMaterial2, 75);
+    EXPECT_EQ(totalMaterial3, 73);
+}
+
+TEST(MaterialTest, fenBoards) {
+    Board fenBoard1("3qk3/8/8/8/8/3p4/8/3QK3 w - - 0 1"); //19
+    Board fenBoard2("r1bqkbnr/pp1ppppp/8/8/3QP3/8/PPP2PPP/RNB1KB1R w KQkq - 0 1"); //70
+
+    EXPECT_EQ(fenBoard1.eval.totalMaterial, 19);
+    EXPECT_EQ(fenBoard2.eval.totalMaterial, 70);
+}
+
+//NOTE
+//
+//As the piece-square tables are altered, these tests will begin to fail. 
+//If you are still concerned about the functions working at all, then adjust the expected values accordingly.
+//Otherwise, you can ignore these tests.
+TEST(PlacementScoreTest, defaultBoard) {
+    Board b1 = Board(); 
+    
+    int placementScore0 = b1.eval.placementScore;
+
+    b1.makeMove(BoardMove("e2e4", b1.isWhiteTurn)); //-5 to +15
+    int placementScore1 = b1.eval.placementScore;   //+20
+    b1.makeMove(BoardMove("d7d5", b1.isWhiteTurn)); //-5 to +15
+    b1.makeMove(BoardMove("e4e5", b1.isWhiteTurn)); //+15 to +20
+    b1.makeMove(BoardMove("d5d4", b1.isWhiteTurn)); //+15 to +20
+    b1.makeMove(BoardMove("h2h3", b1.isWhiteTurn)); //0 to 0
+    b1.makeMove(BoardMove("f7f5", b1.isWhiteTurn)); //0 to 6
+    int placementScore2 = b1.eval.placementScore;   //-6
+    b1.makeMove(BoardMove("e5f6", b1.isWhiteTurn)); //White +20 to +15, Black -6
+    int placementScore3 = b1.eval.placementScore;   //-5
+    b1.makeMove(BoardMove("g7f6", b1.isWhiteTurn)); //White -15, Black 7 to 3
+    int placementScore4 = b1.eval.placementScore;   //-16
+    b1.makeMove(BoardMove("c2c4", b1.isWhiteTurn)); //0 to 6 (-10)
+    b1.makeMove(BoardMove("d4c3", b1.isWhiteTurn)); //White -6, Black 20 to 15
+    int placementScore5 = b1.eval.placementScore;   //-11
+    b1.makeMove(BoardMove("d2d4", b1.isWhiteTurn)); //-5 to 15 (+9)
+    b1.makeMove(BoardMove("c3b2", b1.isWhiteTurn)); //White -7, Black 15 to 20
+    int placementScore6 = b1.eval.placementScore;   //-3
+    b1.makeMove(BoardMove("d4d5", b1.isWhiteTurn)); //15 to 20 (+2)
+    b1.makeMove(BoardMove("b2a1n", b1.isWhiteTurn)); //White 0, Black 20 to -20 (+42)
+    int placementScore7 = b1.eval.placementScore;
+
+    EXPECT_EQ(placementScore0, 0);
+    EXPECT_EQ(placementScore1, 20);
+    EXPECT_EQ(placementScore2, -6);
+    EXPECT_EQ(placementScore3, -5);
+    EXPECT_EQ(placementScore4, -16);
+    EXPECT_EQ(placementScore5, -11);
+    EXPECT_EQ(placementScore6, -3);
+    EXPECT_EQ(placementScore7, 42);
+}
+
+TEST(PlacementScoreTest, fenBoards) {
+    Board fenBoard1 = Board("4k3/8/8/3pp3/8/8/8/R3K2R w KQ - 0 1");
+    Board fenBoard2 = Board("4k3/8/1q1n4/3pp3/8/2B5/1P6/2KR4 w - - 0 1");
+
+
+    EXPECT_EQ(fenBoard1.eval.placementScore, -30);
+    EXPECT_EQ(fenBoard2.eval.placementScore, -13);
+}
+
+TEST(MoveIsCaptureTest, defaultBoard) {
+    Board b1;
+    BoardMove m1 = BoardMove("e2e4", b1.isWhiteTurn);
+    bool b_1 = b1.moveIsCapture(m1); //F
+    b1.makeMove(m1);
+    BoardMove m2 = BoardMove("d7d5", b1.isWhiteTurn);
+    bool b_2 = b1.moveIsCapture(m2); //F
+    b1.makeMove(m2);
+    BoardMove m3 = BoardMove("e4e5", b1.isWhiteTurn);
+    bool b_3 = b1.moveIsCapture(m3); //F
+    b1.makeMove(m3);
+    BoardMove m4 = BoardMove("d5d4", b1.isWhiteTurn);
+    bool b_4 = b1.moveIsCapture(m4); //F
+    b1.makeMove(m4);
+    BoardMove m5 = BoardMove("h2h3", b1.isWhiteTurn);
+    bool b_5 = b1.moveIsCapture(m5); //F
+    b1.makeMove(m5);
+    BoardMove m6 = BoardMove("f7f5", b1.isWhiteTurn);
+    bool b_6 = b1.moveIsCapture(m6); //F
+    b1.makeMove(m6);
+    BoardMove m7 = BoardMove("e5f6", b1.isWhiteTurn);
+    bool b_7 = b1.moveIsCapture(m7); //T
+    b1.makeMove(m7);
+    BoardMove m8 = BoardMove("g7f6", b1.isWhiteTurn);
+    bool b_8 = b1.moveIsCapture(m8); //T
+    b1.makeMove(m8);
+    BoardMove m9 = BoardMove("c2c4", b1.isWhiteTurn);
+    bool b_9 = b1.moveIsCapture(m9); //F
+    b1.makeMove(m9);
+    BoardMove m10 = BoardMove("d4c3", b1.isWhiteTurn);
+    bool b_10 = b1.moveIsCapture(m10); //T
+    b1.makeMove(m10);
+    BoardMove m11 = BoardMove("d2d4", b1.isWhiteTurn);
+    bool b_11 = b1.moveIsCapture(m11); //F
+    b1.makeMove(m11);
+    BoardMove m12 = BoardMove("c3b2", b1.isWhiteTurn);
+    bool b_12 = b1.moveIsCapture(m12); //T
+    b1.makeMove(m12);
+    BoardMove m13 = BoardMove("d4d5", b1.isWhiteTurn);
+    bool b_13 = b1.moveIsCapture(m13); //F
+    b1.makeMove(m13);
+    BoardMove m14 = BoardMove("b2a1r", b1.isWhiteTurn);
+    bool b_14 = b1.moveIsCapture(m14); //T
+    b1.makeMove(m14);
+    
+
+    EXPECT_EQ(b_1, false);
+    EXPECT_EQ(b_2, false);
+    EXPECT_EQ(b_3, false);
+    EXPECT_EQ(b_4, false);
+    EXPECT_EQ(b_5, false);
+    EXPECT_EQ(b_6, false);
+    EXPECT_EQ(b_7, true);
+    EXPECT_EQ(b_8, true);
+    EXPECT_EQ(b_9, false);
+    EXPECT_EQ(b_10, true);
+    EXPECT_EQ(b_11, false);
+    EXPECT_EQ(b_12, true);
+    EXPECT_EQ(b_13, false);
+    EXPECT_EQ(b_14, true);
 }
