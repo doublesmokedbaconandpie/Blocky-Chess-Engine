@@ -1,11 +1,13 @@
 #pragma once
 
-#include "board.hpp"
+#include "types.hpp"
 
-//Note
-//  
-//Some more eval related variables can have their operations moved to setPiece
+namespace Eval {
 
+int getPlacementScore(int rank, int file, pieceTypes currPiece, gameProgress gameState);
+void init();
+
+// opening tables
 
 static const std::array<int, BOARD_SIZE> tableKingOp = {
     0 , -30, -30, -30, -30, -30, -30, 0 ,
@@ -18,7 +20,6 @@ static const std::array<int, BOARD_SIZE> tableKingOp = {
     20, 20, 10, 10 , 10, 10, 20, 20 
 };
 
-//needs a bit of work
 static const std::array<int, BOARD_SIZE> tableQueenOp = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 1 , 1 , 0 , 0 , 0 ,
@@ -64,7 +65,7 @@ static const std::array<int, BOARD_SIZE> tableRookOp = {
 };
 
 static const std::array<int, BOARD_SIZE> tablePawnOp = {
-    99, 99, 99, 99, 99, 99, 99, 99,
+    0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     20, 20, 25, 30, 30, 25, 20, 20,
     10, 10, 15, 25, 25, 15, 10, 10,
     0 , 5 , 10, 28, 28, 10, 5 , 0 ,
@@ -74,8 +75,7 @@ static const std::array<int, BOARD_SIZE> tablePawnOp = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 
 };
 
-static const std::array<std::array<int, BOARD_SIZE>, 6> tablesOp = 
-{tableKingOp, tableQueenOp, tableBishopOp, tableKnightOp, tableRookOp, tablePawnOp};
+// Endgame tables
 
 static const std::array<int, BOARD_SIZE> tableKingEg = {
     -20, -15, -7, 0 , 0 , -7, -15, -20,
@@ -99,7 +99,6 @@ static const std::array<int, BOARD_SIZE> tableQueenEg = {
     -5, -5, -5, -5, -5, -5, -5, -5
 };
 
-//slightly modified from opening
 static const std::array<int, BOARD_SIZE> tableBishopEg = {
     -10, -7, -5, -5, -5, -5, -7, -10,
     -7, 3, 4 , 5 , 5 , 4 , 3, -7,
@@ -111,7 +110,6 @@ static const std::array<int, BOARD_SIZE> tableBishopEg = {
     -10, -7, -5, -5, -5, -5, -7, -10,
 };
 
-//copied from opening for now
 static const std::array<int, BOARD_SIZE> tableKnightEg = {
     -20, -10, -5, -5, -5, -5, -10, -20,
     -10, -5, 0 , 5 , 5 , 0 , -5, -10,
@@ -123,7 +121,6 @@ static const std::array<int, BOARD_SIZE> tableKnightEg = {
     -25, -20, -10, -10, -10, -10, -20, -25,
 };
 
-//idk what to do here
 static const std::array<int, BOARD_SIZE> tableRookEg = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
@@ -136,7 +133,7 @@ static const std::array<int, BOARD_SIZE> tableRookEg = {
 };
 
 static const std::array<int, BOARD_SIZE> tablePawnEg = {
-    99, 99, 99, 99, 99, 99, 99, 99,
+    0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     120, 110, 100, 100, 100, 100, 110, 120,
     80, 75, 71, 71, 71, 71, 75, 80,
     50, 47, 44, 44, 44, 44, 47, 50,
@@ -146,13 +143,7 @@ static const std::array<int, BOARD_SIZE> tablePawnEg = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0
 };
 
-static const std::array<std::array<int, BOARD_SIZE>, 6> tablesEg = 
-{tableKingEg, tableQueenEg, tableBishopEg, tableKnightEg, tableRookEg, tablePawnEg};
+extern std::array<std::array<int, BOARD_SIZE>, 6> tablesOp;
+extern std::array<std::array<int, BOARD_SIZE>, 6> tablesEg; 
 
-
-
-static const std::array<std::array<std::array<int, BOARD_SIZE>, 6>, 2> tables = {tablesOp, tablesEg}; //this is space inefficient but just trying to get it working for now
-
-int getPlacementScore(int rank, int file, pieceTypes currPiece, gameProgress gameState);
-
-int eval(Board board);
+} // namespace eval
