@@ -28,7 +28,7 @@ namespace Zobrist {
     }
 
     // zobrist hashing
-    void initKeys() {
+    void init() {
         // 16 different 16 bit integers were collected from random.org and assembled together to form the 256 bit seed
         // feel free to experiment with different ones
         seed = {0x360BAFF383999633ull, 0x68EE16F8479F8123ull, 0xA89ADF4551B3B25Bull, 0x4887B5A003B21D40ull};
