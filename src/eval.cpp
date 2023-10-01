@@ -1,8 +1,8 @@
 #include <array>
 
-#include "eval.hpp"
 #include "board.hpp"
-
+#include "eval.hpp"
+#include "types.hpp"
 
 namespace Eval {
 

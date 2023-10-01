@@ -5,6 +5,7 @@ int main() {
     if (!Uci::uci()) {return 1;}
 
     Zobrist::init();
+    Eval::init();
     Uci::setOptionLoop();
     Uci::uciLoop();
 
