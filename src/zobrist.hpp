@@ -16,5 +16,5 @@ namespace Zobrist {
     extern std::array<uint64_t, 4> castlingKeys;
     extern std::array<uint64_t, 8> enPassKeys;
     extern uint64_t isBlackKey;
-    void initKeys();
+    void init();
 } // namespace Zobrist
