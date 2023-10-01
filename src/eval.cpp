@@ -26,7 +26,7 @@ void init() {
     tablesOp = {tableKingOp, tableQueenOp, tableBishopOp, tableKnightOp, tableRookOp, tablePawnOp};
     tablesEg = {tableKingEg, tableQueenEg, tableBishopEg, tableKnightEg, tableRookEg, tablePawnEg};
     for (int i = WKing; i <= WPawn; i++) {
-        int pieceVal = pieceValues[i] * 100;  
+        int pieceVal = pieceValues[i] * 100;
         for (int j = 0; j < BOARD_SIZE; j++) {
             tablesOp[i][j] += pieceVal;
             tablesEg[i][j] += pieceVal;
