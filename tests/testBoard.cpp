@@ -921,3 +921,65 @@ TEST(PlacementScoreTest, fenBoards) {
     EXPECT_EQ(fenBoard1.eval.placementScore, -30);
     EXPECT_EQ(fenBoard2.eval.placementScore, -13);
 }
+
+TEST(MoveIsCaptureTest, defaultBoard) {
+    Board b1;
+    BoardMove m1 = BoardMove("e2e4", b1.isWhiteTurn);
+    bool b_1 = b1.moveIsCapture(m1); //F
+    b1.makeMove(m1);
+    BoardMove m2 = BoardMove("d7d5", b1.isWhiteTurn);
+    bool b_2 = b1.moveIsCapture(m2); //F
+    b1.makeMove(m2);
+    BoardMove m3 = BoardMove("e4e5", b1.isWhiteTurn);
+    bool b_3 = b1.moveIsCapture(m3); //F
+    b1.makeMove(m3);
+    BoardMove m4 = BoardMove("d5d4", b1.isWhiteTurn);
+    bool b_4 = b1.moveIsCapture(m4); //F
+    b1.makeMove(m4);
+    BoardMove m5 = BoardMove("h2h3", b1.isWhiteTurn);
+    bool b_5 = b1.moveIsCapture(m5); //F
+    b1.makeMove(m5);
+    BoardMove m6 = BoardMove("f7f5", b1.isWhiteTurn);
+    bool b_6 = b1.moveIsCapture(m6); //F
+    b1.makeMove(m6);
+    BoardMove m7 = BoardMove("e5f6", b1.isWhiteTurn);
+    bool b_7 = b1.moveIsCapture(m7); //T
+    b1.makeMove(m7);
+    BoardMove m8 = BoardMove("g7f6", b1.isWhiteTurn);
+    bool b_8 = b1.moveIsCapture(m8); //T
+    b1.makeMove(m8);
+    BoardMove m9 = BoardMove("c2c4", b1.isWhiteTurn);
+    bool b_9 = b1.moveIsCapture(m9); //F
+    b1.makeMove(m9);
+    BoardMove m10 = BoardMove("d4c3", b1.isWhiteTurn);
+    bool b_10 = b1.moveIsCapture(m10); //T
+    b1.makeMove(m10);
+    BoardMove m11 = BoardMove("d2d4", b1.isWhiteTurn);
+    bool b_11 = b1.moveIsCapture(m11); //F
+    b1.makeMove(m11);
+    BoardMove m12 = BoardMove("c3b2", b1.isWhiteTurn);
+    bool b_12 = b1.moveIsCapture(m12); //T
+    b1.makeMove(m12);
+    BoardMove m13 = BoardMove("d4d5", b1.isWhiteTurn);
+    bool b_13 = b1.moveIsCapture(m13); //F
+    b1.makeMove(m13);
+    BoardMove m14 = BoardMove("b2a1r", b1.isWhiteTurn);
+    bool b_14 = b1.moveIsCapture(m14); //T
+    b1.makeMove(m14);
+    
+
+    EXPECT_EQ(b_1, false);
+    EXPECT_EQ(b_2, false);
+    EXPECT_EQ(b_3, false);
+    EXPECT_EQ(b_4, false);
+    EXPECT_EQ(b_5, false);
+    EXPECT_EQ(b_6, false);
+    EXPECT_EQ(b_7, true);
+    EXPECT_EQ(b_8, true);
+    EXPECT_EQ(b_9, false);
+    EXPECT_EQ(b_10, true);
+    EXPECT_EQ(b_11, false);
+    EXPECT_EQ(b_12, true);
+    EXPECT_EQ(b_13, false);
+    EXPECT_EQ(b_14, true);
+}

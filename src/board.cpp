@@ -556,6 +556,12 @@ uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int tar
     return result;
 }
 
+bool Board::moveIsCapture(BoardMove move) {
+    if(this->getPiece(move.pos1) % 6 == WPawn && this->pawnJumpedSquare == move.pos2)
+        return true;
+
+    return this->getPiece(move.pos2) != EmptyPiece;
+}
 
 EvalAttributes::EvalAttributes(uint8_t pieces, uint8_t material) {
     piecesRemaining = pieces;

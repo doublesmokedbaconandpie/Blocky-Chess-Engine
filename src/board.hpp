@@ -52,6 +52,7 @@ struct Board {
     void makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
     void makeMove(BoardMove move);
     void undoMove();
+    bool moveIsCapture(BoardMove move);
     
     friend bool operator==(const Board& lhs, const Board& rhs);
     friend bool operator<(const Board& lhs, const Board& rhs);
