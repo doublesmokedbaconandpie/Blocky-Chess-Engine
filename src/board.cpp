@@ -12,8 +12,6 @@
 #include "types.hpp"
 #include "eval.hpp" 
 
-
-
 // Used for debugging and testing
 Board::Board() {
     this->board = {
@@ -37,7 +35,7 @@ Board::Board() {
     //sets up initial score for piece placement
     for(uint8_t i = 0; i < BOARD_SIZE; i++) {
         pieceTypes currPiece = board[i];
-        this->eval.placementScore += getPlacementScore(i / 8, i % 8, currPiece, this->eval.gameState);
+        this->eval.placementScore += Eval::getPlacementScore(i / 8, i % 8, currPiece, this->eval.gameState);
     }
 
     this->pieceSets[WKing]   = 0x1000000000000000ull;
@@ -86,7 +84,7 @@ Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn,
     //sets up initial score for piece placement (This gets repeated so maybe could turn it into a function)
     for(uint8_t i = 0; i < BOARD_SIZE; i++) {
         pieceTypes currPiece = board[i];
-        this->eval.placementScore += getPlacementScore(i / 8, i % 8, currPiece, eval.gameState);
+        this->eval.placementScore += Eval::getPlacementScore(i / 8, i % 8, currPiece, eval.gameState);
     }
 
     for (int i = WKing; i < WHITE_PIECES; i++) {
@@ -137,7 +135,7 @@ Board::Board(std::string fenStr) {
         this->eval.gameState = Endgame;
     for(uint8_t i = 0; i < BOARD_SIZE; i++) {
         pieceTypes currPiece = board[i];
-        this->eval.placementScore += getPlacementScore(i / 8, i % 8, currPiece, eval.gameState);
+        this->eval.placementScore += Eval::getPlacementScore(i / 8, i % 8, currPiece, eval.gameState);
     }
 
     fenStream >> token;
@@ -361,7 +359,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     if(this->eval.piecesRemaining <= ENDGAME_PIECE_THRESHOLD) {
         for(uint8_t i = 0; i < BOARD_SIZE; i++) {
         pieceTypes currPiece = board[i];
-        this->eval.placementScore += getPlacementScore(i / 8, i % 8, currPiece, eval.gameState);
+        this->eval.placementScore += Eval::getPlacementScore(i / 8, i % 8, currPiece, eval.gameState);
         }
     }
 
@@ -455,7 +453,7 @@ void Board::setPiece(int rank, int file, pieceTypes currPiece) {
         this->pieceSets[originPiece] &= clearSquare;
         this->zobristKey ^= Zobrist::pieceKeys[originPiece][square];
 
-        this->eval.placementScore -= getPlacementScore(rank, file, originPiece, this->eval.gameState);
+        this->eval.placementScore -= Eval::getPlacementScore(rank, file, originPiece, this->eval.gameState);
     }
     if (currPiece != EmptyPiece) {
         pieceTypes currColor = currPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
@@ -463,8 +461,13 @@ void Board::setPiece(int rank, int file, pieceTypes currPiece) {
         this->pieceSets[currPiece] ^= setSquare;
         this->zobristKey ^= Zobrist::pieceKeys[currPiece][square];
 
-        this->eval.placementScore += getPlacementScore(rank, file, currPiece, this->eval.gameState);
+        this->eval.placementScore += Eval::getPlacementScore(rank, file, currPiece, this->eval.gameState);
     }
+}
+    
+int Board::getEvalScore() const {
+    int scoreSum = this->eval.placementScore;
+    return this->isWhiteTurn ? scoreSum : scoreSum * -1;
 }
 
 void Board::setPiece(BoardSquare square, pieceTypes currPiece) {

@@ -62,6 +62,7 @@ struct Board {
     pieceTypes getPiece(BoardSquare square) const;
     void setPiece(int rank, int file, pieceTypes currPiece);
     void setPiece(BoardSquare square, pieceTypes currPiece);
+    int getEvalScore() const;
 
     std::array<uint64_t, NUM_BITBOARDS> pieceSets = {0ull};
     std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};

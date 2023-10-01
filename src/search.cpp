@@ -95,7 +95,7 @@ namespace Search {
     }
 
     int Searcher::quiesce(int alpha, int beta, int depthLeft) {
-        int stand_pat = eval(this->board);
+        int stand_pat = this->board.getEvalScore();
         if(stand_pat >= beta)
             return beta;
         if(alpha < stand_pat)
