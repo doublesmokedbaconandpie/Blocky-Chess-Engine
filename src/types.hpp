@@ -44,17 +44,17 @@ enum gameProgress {
 
 
 // indices are equal to the enumerated pieceTypes
-const static std::array<int, 13> pieceValues {
+constexpr std::array<int, 13> pieceValues {
      0,  9,  3,  3,  5,  1, 
      0, -9, -3, -3, -5, -1,};
 
-const static std::unordered_map<pieceTypes, char> pieceToChar = {
+const std::unordered_map<pieceTypes, char> pieceToChar {
     {EmptyPiece, ' '},
     {WPawn, 'P'}, {WKnight, 'N'}, {WBishop, 'B'}, {WRook, 'R'}, {WQueen, 'Q'}, {WKing, 'K'}, 
     {BPawn, 'p'}, {BKnight, 'n'}, {BBishop, 'b'}, {BRook, 'r'}, {BQueen, 'q'}, {BKing, 'k'}, 
 };
 
-const static std::unordered_map<char, pieceTypes> charToPiece = {
+const std::unordered_map<char, pieceTypes> charToPiece {
     {'P', WPawn}, {'N', WKnight}, {'B', WBishop}, {'R', WRook}, {'Q', WQueen}, {'K', WKing}, 
     {'p', BPawn}, {'n', BKnight}, {'b', BBishop}, {'r', BRook}, {'q', BQueen}, {'k', BKing}, 
 };

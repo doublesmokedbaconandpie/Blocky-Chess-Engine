@@ -9,7 +9,7 @@ void init();
 
 // opening tables
 
-static const std::array<int, BOARD_SIZE> tableKingOp = {
+constexpr std::array<int, BOARD_SIZE> tableKingOp = {
     0 , -30, -30, -30, -30, -30, -30, 0 ,
     0 , -30, -30, -30, -30, -30, -30, 0 ,
     0 , -30, -30, -30, -30, -30, -30, 0 ,
@@ -20,7 +20,7 @@ static const std::array<int, BOARD_SIZE> tableKingOp = {
     20, 20, 10, 10 , 10, 10, 20, 20 
 };
 
-static const std::array<int, BOARD_SIZE> tableQueenOp = {
+constexpr std::array<int, BOARD_SIZE> tableQueenOp = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 1 , 1 , 0 , 0 , 0 ,
     0 , 0 , 3 , 3 , 3 , 3 , 0 , 0 ,
@@ -31,7 +31,7 @@ static const std::array<int, BOARD_SIZE> tableQueenOp = {
     -9, -4, -4, 2 , 2 , -4, -4, -9
 };
 
-static const std::array<int, BOARD_SIZE> tableBishopOp = {
+constexpr std::array<int, BOARD_SIZE> tableBishopOp = {
     -20, -10, -5, -5, -5, -5, -10, -20,
     -10, -5, 5 , 5 , 5 , 5 , -5, -10,
     -5, 5 , 10, 15, 15, 10, 5 , -5,
@@ -42,7 +42,7 @@ static const std::array<int, BOARD_SIZE> tableBishopOp = {
     -20, -5, -10, -5, -5, -10, -5, -20,
 };
 
-static const std::array<int, BOARD_SIZE> tableKnightOp = {
+constexpr std::array<int, BOARD_SIZE> tableKnightOp = {
     -20, -10, -5, -5, -5, -5, -10, -20,
     -10, -5, 0 , 5 , 5 , 0 , -5, -10,
     -5, 5 , 15, 15, 15, 15, 5 , -5,
@@ -53,7 +53,7 @@ static const std::array<int, BOARD_SIZE> tableKnightOp = {
     -25, -20, -10, -10, -10, -10, -20, -25,
 };
 
-static const std::array<int, BOARD_SIZE> tableRookOp = {
+constexpr std::array<int, BOARD_SIZE> tableRookOp = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     20, 20, 20, 20, 20, 20, 20, 20,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
@@ -64,7 +64,7 @@ static const std::array<int, BOARD_SIZE> tableRookOp = {
     0 , 0 , 10, 10, 10, 10, 0 , 0 
 };
 
-static const std::array<int, BOARD_SIZE> tablePawnOp = {
+constexpr std::array<int, BOARD_SIZE> tablePawnOp = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     20, 20, 25, 30, 30, 25, 20, 20,
     10, 10, 15, 25, 25, 15, 10, 10,
@@ -77,7 +77,7 @@ static const std::array<int, BOARD_SIZE> tablePawnOp = {
 
 // Endgame tables
 
-static const std::array<int, BOARD_SIZE> tableKingEg = {
+constexpr std::array<int, BOARD_SIZE> tableKingEg = {
     -20, -15, -7, 0 , 0 , -7, -15, -20,
     -15, -7, 0 , 5 , 5 , 0 , -7, -15,
     -7, 0 , 5 , 15, 15, 5 , 0 , -7,
@@ -88,7 +88,7 @@ static const std::array<int, BOARD_SIZE> tableKingEg = {
     -20, -15, -7, 0 , 0 , -7, -15, -20 
 };
 
-static const std::array<int, BOARD_SIZE> tableQueenEg = {
+constexpr std::array<int, BOARD_SIZE> tableQueenEg = {
     -5, -5, -5, -5, -5, -5, -5, -5,
     -5, 0 , 0 , 0 , 0 , 0 , 0 , -5,
     -5, 0 , 5 , 5 , 5 , 5 , 0 , -5,
@@ -99,7 +99,7 @@ static const std::array<int, BOARD_SIZE> tableQueenEg = {
     -5, -5, -5, -5, -5, -5, -5, -5
 };
 
-static const std::array<int, BOARD_SIZE> tableBishopEg = {
+constexpr std::array<int, BOARD_SIZE> tableBishopEg = {
     -10, -7, -5, -5, -5, -5, -7, -10,
     -7, 3, 4 , 5 , 5 , 4 , 3, -7,
     -5, 4 , 10, 15, 15, 10, 4 , -5,
@@ -110,7 +110,7 @@ static const std::array<int, BOARD_SIZE> tableBishopEg = {
     -10, -7, -5, -5, -5, -5, -7, -10,
 };
 
-static const std::array<int, BOARD_SIZE> tableKnightEg = {
+constexpr std::array<int, BOARD_SIZE> tableKnightEg = {
     -20, -10, -5, -5, -5, -5, -10, -20,
     -10, -5, 0 , 5 , 5 , 0 , -5, -10,
     -5, 5 , 15, 15, 15, 15, 5 , -5,
@@ -121,7 +121,7 @@ static const std::array<int, BOARD_SIZE> tableKnightEg = {
     -25, -20, -10, -10, -10, -10, -20, -25,
 };
 
-static const std::array<int, BOARD_SIZE> tableRookEg = {
+constexpr std::array<int, BOARD_SIZE> tableRookEg = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
@@ -132,7 +132,7 @@ static const std::array<int, BOARD_SIZE> tableRookEg = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 
 };
 
-static const std::array<int, BOARD_SIZE> tablePawnEg = {
+constexpr std::array<int, BOARD_SIZE> tablePawnEg = {
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     120, 110, 100, 100, 100, 100, 110, 120,
     80, 75, 71, 71, 71, 71, 75, 80,
