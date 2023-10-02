@@ -95,6 +95,8 @@ namespace Search {
     }
 
     int Searcher::quiesce(int alpha, int beta, int depthLeft) {
+        this->nodes++;
+
         int stand_pat = this->board.getEvalScore();
         if(stand_pat >= beta)
             return beta;
