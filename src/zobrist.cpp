@@ -6,7 +6,7 @@
 #include "types.hpp"
 
 namespace Zobrist {
-    // global variables definition
+    // global variables
     std::array<uint64_t, 4> seed;
     std::array<std::array<uint64_t, BOARD_SIZE>, NUM_PIECE_TYPES> pieceKeys;
     std::array<uint64_t, 4> castlingKeys;

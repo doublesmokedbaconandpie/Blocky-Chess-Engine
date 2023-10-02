@@ -10,7 +10,6 @@ std::array<std::array<int, BOARD_SIZE>, 6> tablesOp;
 std::array<std::array<int, BOARD_SIZE>, 6> tablesEg; 
 
 // functions
-
 int getPlacementScore(int rank, int file, pieceTypes currPiece, gameProgress gameState) {
     if(currPiece >= WKing && currPiece <= WPawn) {
         return tablesOp[currPiece][rank * 8 + file];
