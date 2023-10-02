@@ -565,8 +565,3 @@ bool Board::moveIsCapture(BoardMove move) {
 
     return this->getPiece(move.pos2) != EmptyPiece;
 }
-
-EvalAttributes::EvalAttributes(uint8_t pieces, uint8_t material) {
-    piecesRemaining = pieces;
-    totalMaterial = material;
-}

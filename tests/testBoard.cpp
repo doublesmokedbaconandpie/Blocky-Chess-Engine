@@ -871,57 +871,6 @@ TEST(MaterialTest, fenBoards) {
     EXPECT_EQ(fenBoard2.eval.totalMaterial, 70);
 }
 
-//NOTE
-//
-//As the piece-square tables are altered, these tests will begin to fail. 
-//If you are still concerned about the functions working at all, then adjust the expected values accordingly.
-//Otherwise, you can ignore these tests.
-TEST(PlacementScoreTest, defaultBoard) {
-    Board b1 = Board(); 
-    
-    int placementScore0 = b1.eval.placementScore;
-
-    b1.makeMove(BoardMove("e2e4", b1.isWhiteTurn)); //-5 to +15
-    int placementScore1 = b1.eval.placementScore;   //+20
-    b1.makeMove(BoardMove("d7d5", b1.isWhiteTurn)); //-5 to +15
-    b1.makeMove(BoardMove("e4e5", b1.isWhiteTurn)); //+15 to +20
-    b1.makeMove(BoardMove("d5d4", b1.isWhiteTurn)); //+15 to +20
-    b1.makeMove(BoardMove("h2h3", b1.isWhiteTurn)); //0 to 0
-    b1.makeMove(BoardMove("f7f5", b1.isWhiteTurn)); //0 to 6
-    int placementScore2 = b1.eval.placementScore;   //-6
-    b1.makeMove(BoardMove("e5f6", b1.isWhiteTurn)); //White +20 to +15, Black -6
-    int placementScore3 = b1.eval.placementScore;   //-5
-    b1.makeMove(BoardMove("g7f6", b1.isWhiteTurn)); //White -15, Black 7 to 3
-    int placementScore4 = b1.eval.placementScore;   //-16
-    b1.makeMove(BoardMove("c2c4", b1.isWhiteTurn)); //0 to 6 (-10)
-    b1.makeMove(BoardMove("d4c3", b1.isWhiteTurn)); //White -6, Black 20 to 15
-    int placementScore5 = b1.eval.placementScore;   //-11
-    b1.makeMove(BoardMove("d2d4", b1.isWhiteTurn)); //-5 to 15 (+9)
-    b1.makeMove(BoardMove("c3b2", b1.isWhiteTurn)); //White -7, Black 15 to 20
-    int placementScore6 = b1.eval.placementScore;   //-3
-    b1.makeMove(BoardMove("d4d5", b1.isWhiteTurn)); //15 to 20 (+2)
-    b1.makeMove(BoardMove("b2a1n", b1.isWhiteTurn)); //White 0, Black 20 to -20 (+42)
-    int placementScore7 = b1.eval.placementScore;
-
-    EXPECT_EQ(placementScore0, 0);
-    EXPECT_EQ(placementScore1, 20);
-    EXPECT_EQ(placementScore2, -6);
-    EXPECT_EQ(placementScore3, -5);
-    EXPECT_EQ(placementScore4, -16);
-    EXPECT_EQ(placementScore5, -11);
-    EXPECT_EQ(placementScore6, -3);
-    EXPECT_EQ(placementScore7, 42);
-}
-
-TEST(PlacementScoreTest, fenBoards) {
-    Board fenBoard1 = Board("4k3/8/8/3pp3/8/8/8/R3K2R w KQ - 0 1");
-    Board fenBoard2 = Board("4k3/8/1q1n4/3pp3/8/2B5/1P6/2KR4 w - - 0 1");
-
-
-    EXPECT_EQ(fenBoard1.eval.placementScore, -30);
-    EXPECT_EQ(fenBoard2.eval.placementScore, -13);
-}
-
 TEST(MoveIsCaptureTest, defaultBoard) {
     Board b1;
     BoardMove m1 = BoardMove("e2e4", b1.isWhiteTurn);

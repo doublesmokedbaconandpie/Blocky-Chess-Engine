@@ -12,8 +12,8 @@ MovePicker::MovePicker(std::vector<BoardMove>&& a_moves) {
     this->movesPicked = 0;
 };
 
-// move score assignment is implemented that more promising moves are given higher scores
-// regular moves have a score of 0
+// Searching moves that are likely to be better helps with pruning in search. This is move ordering.
+// More promising moves are given higher scores and then searched first.
 void MovePicker::assignMoveScores(const Board& board) {
     size_t i = 0;
     for (BoardMove move: this->moves) {
@@ -34,8 +34,8 @@ bool MovePicker::movesLeft() const {
     return this->movesPicked < this->size;
 }
 
-// insertion sort is used to track picked moves because it is faster for very small sorted arrays
-// small sorted arrays can be expected with more pruning from search
+// Due to pruning, we don't need to sort the entire array of moves for move ordering.
+// When sorting only small portions of arrays, using insertion sort is faster.
 BoardMove MovePicker::pickMove() {
     auto begin = this->moveScores.begin() + this->movesPicked;
     auto end = this->moveScores.end();
