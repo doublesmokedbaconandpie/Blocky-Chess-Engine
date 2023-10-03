@@ -22,6 +22,7 @@ unset(MAKE_EXE CACHE)
 target_sources(Magic PRIVATE
     magic.cpp
 
+    ../src/attacks.cpp
     ../src/zobrist.cpp
     ../src/bitboard.cpp
 )

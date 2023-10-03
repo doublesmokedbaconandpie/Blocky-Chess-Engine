@@ -22,6 +22,7 @@ unset(MAKE_EXE CACHE)
 target_sources(Blocky PRIVATE
     src/zobrist.cpp
     src/bitboard.cpp
+    src/attacks.cpp
     src/move.cpp
     src/board.cpp
     src/moveGen.cpp
