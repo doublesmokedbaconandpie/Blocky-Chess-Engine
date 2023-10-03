@@ -432,7 +432,6 @@ TEST_F(MoveGenTest, moveGeneratorBlackMove) {
 }
 
 TEST_F(MoveGenTest, perftStartpos) {
-    GTEST_SKIP();
     Board board;
     ASSERT_EQ(MOVEGEN::perft(board, 0), 1);
     ASSERT_EQ(MOVEGEN::perft(board, 1), 20);
@@ -442,7 +441,6 @@ TEST_F(MoveGenTest, perftStartpos) {
 }
 
 TEST_F(MoveGenTest, perftKiwipete) {
-    GTEST_SKIP();
     Board board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
     ASSERT_EQ(MOVEGEN::perft(board, 1), 48);
     ASSERT_EQ(MOVEGEN::perft(board, 2), 2039);
