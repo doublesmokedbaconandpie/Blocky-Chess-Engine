@@ -1,4 +1,5 @@
 #include "board.hpp"
+#include "attacks.hpp"
 #include "zobrist.hpp"
 
 #include <gtest/gtest.h>
@@ -9,6 +10,7 @@ class BoardTest : public testing::Test {
     public:
         static void SetUpTestSuite() {
             Zobrist::init();
+            Attacks::init();
         }
 };
 

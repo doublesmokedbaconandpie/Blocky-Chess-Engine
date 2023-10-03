@@ -8,6 +8,7 @@
 
 enum {
     ALL_SQUARES = 0xFFFFFFFFFFFFFFFFull,
+    NO_SQUARES = 0ull,
 
     RANK_1 = 0xFF00000000000000ull,
     RANK_2 = 0x00FF000000000000ull,
@@ -71,8 +72,6 @@ uint64_t getRankMask(int square);
 uint64_t getDiagMask(int square);
 uint64_t getAntiDiagMask(int square);
 
-bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies);
-bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies);
 uint64_t knightSquares(uint64_t knights);
 bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn);
 bool kingAttackers(int square, uint64_t enemyKings);

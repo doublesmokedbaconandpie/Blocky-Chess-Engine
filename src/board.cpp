@@ -7,6 +7,7 @@
 
 #include "board.hpp"
 #include "move.hpp"
+#include "attacks.hpp"
 #include "bitboard.hpp"
 #include "zobrist.hpp"
 #include "types.hpp"
@@ -541,8 +542,8 @@ bool currKingInAttack(Board& board) {
     uint64_t enemyKnights = board.isWhiteTurn ? board.pieceSets[BKnight] : board.pieceSets[WKnight];
     uint64_t enemyPawns   = board.isWhiteTurn ? board.pieceSets[BPawn]   : board.pieceSets[WPawn];
 
-    return diagAttackers(kingSquare, allPieces, enemyQueens | enemyBishops)
-        || straightAttackers(kingSquare, allPieces, enemyQueens | enemyRooks)
+    return Attacks::bishopAttacks(kingSquare, allPieces) & (enemyBishops | enemyQueens)
+        || Attacks::rookAttacks(kingSquare, allPieces) & (enemyRooks | enemyQueens)
         || knightSquares(enemyKnights) & 1ull << kingSquare
         || pawnAttackers(kingSquare, enemyPawns, board.isWhiteTurn)
         || kingAttackers(kingSquare, enemyKings);

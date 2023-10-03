@@ -17,7 +17,7 @@ using namespace Attacks;
 int main() {
     Zobrist::init(); // this gives a seed to rand64()
 
-    int attacksSize = 0;
+    int attacksSize = 0; 
     std::cout << "Rook attacks: " << std::endl;
     for (int i = 0; i < BOARD_SIZE; i++) {
         uint64_t blockerMask = getRelevantBlockerMask(i, false);
@@ -32,7 +32,7 @@ int main() {
     std::cout << "Bishop attacks: " << std::endl;
     for (int i = 0; i < BOARD_SIZE; i++) {
         uint64_t blockerMask = getRelevantBlockerMask(i, true);
-        uint64_t magic = findMagic(rookSlidingAttacks, i, blockerMask, blockerBishopCombos[i]);
+        uint64_t magic = findMagic(bishopSlidingAttacks, i, blockerMask, blockerBishopCombos[i]);
         attacksSize += 1ull << blockerBishopCombos[i];
         printHex(magic);
     }
@@ -43,12 +43,13 @@ int main() {
 
 template<typename Function>
 uint64_t findMagic(Function slidingAttacks, int square, uint64_t blockerMask, int shift) {
-    std::vector<uint64_t> possibleBlockers = getPossibleBlockers(square, blockerMask);
+    std::vector<uint64_t> possibleBlockers = getPossibleBlockers(blockerMask);
+    std::array<uint64_t, 4096> moves{};
     uint64_t magic = 0;
     bool magicFound = false; 
     while (!magicFound) {
+        moves.fill(ALL_SQUARES);
         magicFound = true;
-        std::array<uint64_t, 4096> moves{};
         int maxIndex = 1ull << shift;
         // magic numbers with low number of 1s are better
         magic = Zobrist::rand64() & Zobrist::rand64() & Zobrist::rand64();
@@ -62,13 +63,14 @@ uint64_t findMagic(Function slidingAttacks, int square, uint64_t blockerMask, in
             } 
             
             uint64_t validAttacks = slidingAttacks(square, blocker);
-            if (moves[index] == 0) {
-                moves[index] = validAttacks;
-            } else 
             if (moves[index] != validAttacks) {
-                // unwanted collision has occurred
-                magicFound = false;
-                break;
+                if (moves[index] == ALL_SQUARES) {
+                    moves[index] = validAttacks;
+                }
+                else {
+                    magicFound = false;
+                    break;
+                }
             }
         }
     }
