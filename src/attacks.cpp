@@ -19,13 +19,11 @@ std::array<uint64_t, 5248> BISHOP_ATTACKS;
 
 // functions
 uint64_t rookAttacks(int square, uint64_t allPieces) {
-    uint64_t blockers = allPieces & getRelevantBlockerMask(square, false);
-    return ROOK_ATTACKS[getMagicIndex(ROOK_TABLE[square], blockers)];
+    return ROOK_ATTACKS[getMagicIndex(ROOK_TABLE[square], allPieces)];
 }
 
 uint64_t bishopAttacks(int square, uint64_t allPieces) {
-    uint64_t blockers = allPieces & getRelevantBlockerMask(square, true);
-    return BISHOP_ATTACKS[getMagicIndex(BISHOP_TABLE[square], blockers)];
+    return BISHOP_ATTACKS[getMagicIndex(BISHOP_TABLE[square], allPieces)];
 }
 
 void init() {
@@ -63,7 +61,8 @@ void initMagicTable(std::array<Magic, BOARD_SIZE>& table,
     } 
 }
 
-int getMagicIndex(Magic& entry, uint64_t blockers) {
+int getMagicIndex(Magic& entry, uint64_t allPieces) {
+    uint64_t blockers = allPieces & entry.slideMask;
     return ((blockers * entry.magic) >> entry.shift) + entry.offset;
 }
 
@@ -94,16 +93,14 @@ std::vector<uint64_t> getPossibleBlockers(uint64_t slideMask) {
 // Works for bishops and rooks
 uint64_t getRelevantBlockerMask(int square, bool isBishop) {
     uint64_t slideMask = isBishop ? getDiagMask(square) | getAntiDiagMask(square) : getFileMask(square) | getRankMask(square); 
-    uint64_t validBlockers = ~ALL_EDGES;
     // pieces on the edges are blocked by same edge pieces
-    validBlockers |= square / 8 == 0 ? RANK_8 : NO_SQUARES;
-    validBlockers |= square / 8 == 7 ? RANK_1 : NO_SQUARES;
-    validBlockers |= square % 8 == 0 ? FILE_A : NO_SQUARES;
-    validBlockers |= square % 8 == 7 ? FILE_H : NO_SQUARES;
-    // the current square and corners are never valid blockers
-    validBlockers &= ~(1ull << square);
-    validBlockers &= 0x7EFFFFFFFFFFFF7Eull;
-    return validBlockers & slideMask;
+    slideMask &= square / 8 != 0 ? ~RANK_8 : ALL_SQUARES;
+    slideMask &= square / 8 != 7 ? ~RANK_1 : ALL_SQUARES;
+    slideMask &= square % 8 != 0 ? ~FILE_A : ALL_SQUARES;
+    slideMask &= square % 8 != 7 ? ~FILE_H : ALL_SQUARES;
+    // the current square isn't a valid blocker
+    slideMask ^= 1ull << square;
+    return slideMask;
 }
 
 uint64_t rookSlidingAttacks(int square, uint64_t blockers) {
