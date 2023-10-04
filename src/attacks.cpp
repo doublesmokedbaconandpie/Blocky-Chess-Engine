@@ -80,7 +80,7 @@ std::vector<uint64_t> getPossibleBlockers(uint64_t slideMask) {
     for (uint64_t i = 0; i < numBlockerBoards; i++) {
         uint64_t currBlocker = 0ull;
         // convert binary iter to blocker bitboard
-        for (uint j = 0; j < blockerSquares.size(); j++) {
+        for (uint64_t j = 0; j < blockerSquares.size(); j++) {
             uint64_t currBit = i & (1ull << j) ? 1 : 0; 
             currBlocker |= currBit << blockerSquares[j];
         }
