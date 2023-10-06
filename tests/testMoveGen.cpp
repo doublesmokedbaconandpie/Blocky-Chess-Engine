@@ -30,32 +30,6 @@ TEST(MoveGenTest, isFriendlyPieceFalse) {
     ASSERT_EQ(result, false);
 }
 
-TEST(MoveGenTest, getPieceInDirectionStraight) {
-    Board board;
-    BoardSquare originSquare = BoardSquare(1, D); // black pawn
-    pieceTypes down = getPieceInDirection(board, originSquare, 1, 0);
-    pieceTypes up = getPieceInDirection(board, originSquare, -1, 0);
-    pieceTypes right = getPieceInDirection(board, originSquare, 0, 1);
-    pieceTypes left = getPieceInDirection(board, originSquare, 0, -1);
-    EXPECT_EQ(down, WPawn);
-    EXPECT_EQ(up, BQueen);
-    EXPECT_EQ(right, BPawn);
-    EXPECT_EQ(left, BPawn);
-}
-
-TEST(MoveGenTest, getPieceInDirectionDiag) {
-    Board board;
-    BoardSquare originSquare = BoardSquare(1, E); // black pawn
-    pieceTypes topRight = getPieceInDirection(board, originSquare, -1, 1);
-    pieceTypes topLeft = getPieceInDirection(board, originSquare, -1, -1);
-    pieceTypes bottomLeft = getPieceInDirection(board, originSquare, 1, -1);
-    pieceTypes bottomRight = getPieceInDirection(board, originSquare, 1, 1);
-    EXPECT_EQ(topRight, BBishop);
-    EXPECT_EQ(topLeft, BQueen);
-    EXPECT_EQ(bottomLeft, nullPiece);
-    EXPECT_EQ(bottomRight, nullPiece);
-}
-
 // there must be a king in each test to see for illegal moves
 
 TEST(MoveGenTest, validPawnMovesCaptures) {
@@ -69,7 +43,7 @@ TEST(MoveGenTest, validPawnMovesCaptures) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr);
+    Board board(boardArr);
     
     std::vector<BoardMove> validMoves;
     std::vector<BoardMove> expectedValidMoves = {
@@ -102,7 +76,7 @@ TEST(MoveGenTest, validPawnMovesPromotion) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr);
+    Board board(boardArr);
     
     std::vector<BoardMove> validMoves;
     std::vector<BoardMove> expectedValidMoves = {
@@ -130,7 +104,7 @@ TEST(MoveGenTest, validKnightMoves1) {
         EmptyPiece, EmptyPiece, BKnight   , EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece,
         WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr);
+    Board board(boardArr);
     
     std::vector<BoardMove> validMoves;
     std::vector<BoardMove> expectedValidMoves = {
@@ -165,7 +139,7 @@ TEST(MoveGenTest, validRookMoves1) {
         EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WRook     , WRook     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BRook     ,
     };
-    Board board = Board(boardArr, true);
+    Board board(boardArr, true);
     
     std::vector<BoardMove> validMoves;
     std::vector<BoardMove> expectedValidMoves;
@@ -195,7 +169,7 @@ TEST(MoveGenTest, validBishopMoves1) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WBishop   , WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr);
+    Board board(boardArr);
     
     std::vector<BoardMove> validMoves;
     std::vector<BoardMove> expectedValidMoves = {
@@ -235,7 +209,7 @@ TEST(MoveGenTest, validQueenMoves1) {
         EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WQueen    , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WQueen    ,
     };
-    Board board = Board(boardArr);
+    Board board(boardArr);
     
     std::vector<BoardMove> validMoves;
     std::vector<BoardMove> expectedValidMoves;
@@ -269,7 +243,7 @@ TEST(MoveGenTest, validKingMovesNoCastle) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
-    Board board = Board(boardArr);
+    Board board(boardArr);
     
     std::vector<BoardMove> validMoves;
     std::vector<BoardMove> expectedValidMoves = {
@@ -305,7 +279,7 @@ TEST(MoveGenTest, validKingMovesKingCastle) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WRook     , EmptyPiece, WBishop   , EmptyPiece, WKing     , EmptyPiece, EmptyPiece, WRook     ,
     };
-    Board board = Board(boardArr);
+    Board board(boardArr);
     
     std::vector<BoardMove> validMoves;
     std::vector<BoardMove> expectedValidMoves = {
@@ -336,7 +310,7 @@ TEST(MoveGenTest, validKingMovesQueenCastle) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WRook     , EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, WBishop   , WRook     ,
     };
-    Board board = Board(boardArr);
+    Board board(boardArr);
     
     std::vector<BoardMove> validMoves;
     std::vector<BoardMove> expectedValidMoves = {
@@ -367,7 +341,7 @@ TEST(MoveGenTest, validKingMovesInvalidCastle) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         WRook     , EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, WBishop   , WRook     ,
     };
-    Board board = Board(boardArr);
+    Board board(boardArr);
     
     std::vector<BoardMove> validMoves;
     std::vector<BoardMove> expectedValidMoves = {
@@ -384,7 +358,7 @@ TEST(MoveGenTest, validKingMovesInvalidCastle) {
 }
 
 TEST(MoveGenTest, moveGeneratorDefault) {
-    Board board = Board();
+    Board board;
     std::vector<BoardMove> expectedValidMoves;
     for (int file = A; file <= H; file++) {
         expectedValidMoves.push_back(BoardMove(BoardSquare(6, file), BoardSquare(5, file)));
@@ -400,6 +374,18 @@ TEST(MoveGenTest, moveGeneratorDefault) {
     std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
     ASSERT_EQ(board.isWhiteTurn, true);
     ASSERT_EQ(validMoves, expectedValidMoves);
+}
+
+TEST(MoveGenTest, validKingMovesInvalidCastle2) {
+    Board board("r2rk3/p4p1p/2p4b/2Q5/1P1Nq3/P1B2P1b/2P4P/R2K3R b q - 0 1");
+    std::vector<BoardMove> moves = moveGenerator(board);
+    EXPECT_EQ(moves.size(), 43);
+}
+
+TEST(MoveGenTest, validKingMovesValidCastle3) {
+    Board board("r3k3/pp1r1p1p/2B4b/5Q2/1P1Nq3/P1B4b/2P2P1P/R2K3R b q - 2 1");
+    std::vector<BoardMove> moves = moveGenerator(board);
+    EXPECT_EQ(moves.size(), 42);
 }
 
 TEST(MoveGenTest, moveGeneratorBlackMove) {
