@@ -377,7 +377,7 @@ TEST(MoveGenTest, moveGeneratorDefault) {
 }
 
 TEST(MoveGenTest, validKingMovesInvalidCastle2) {
-    Board board("r2rk3/pp3p1p/2B4b/2Q5/1P1Nq3/P1B4b/2P2P1P/R2K3R b q - 0 1");
+    Board board("r2rk3/p4p1p/2p4b/2Q5/1P1Nq3/P1B2P1b/2P4P/R2K3R b q - 0 1");
     std::vector<BoardMove> moves = moveGenerator(board);
     EXPECT_EQ(moves.size(), 43);
 }
