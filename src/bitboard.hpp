@@ -8,6 +8,7 @@
 
 enum {
     ALL_SQUARES = 0xFFFFFFFFFFFFFFFFull,
+    NO_SQUARES = 0ull,
 
     RANK_1 = 0xFF00000000000000ull,
     RANK_2 = 0x00FF000000000000ull,
@@ -31,6 +32,7 @@ enum {
     NOT_FILE_AB = (FILE_A | FILE_B) ^ ALL_SQUARES,
     NOT_FILE_H = FILE_H ^ ALL_SQUARES,
     NOT_FILE_HG = (FILE_H | FILE_G) ^ ALL_SQUARES,
+    ALL_EDGES = FILE_A | FILE_H | RANK_1 | RANK_8, 
 
     DIAG_0  = 0x0000000000000001ull,
     DIAG_1  = 0x0000000000000102ull,
@@ -49,15 +51,16 @@ enum {
     DIAG_14 = 0x8000000000000000ull,
 };
 
-const static std::array<uint64_t, 8> FILES_MASK = {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
-const static std::array<uint64_t, 8> RANKS_MASK = {RANK_8, RANK_7, RANK_6, RANK_5, RANK_4, RANK_3, RANK_2, RANK_1};
-const static std::array<uint64_t, 15> DIAGS_MASK = {DIAG_0, DIAG_1, DIAG_2, DIAG_3, DIAG_4, DIAG_5, DIAG_6, DIAG_7,
+constexpr std::array<uint64_t, 8> FILES_MASK = {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
+constexpr std::array<uint64_t, 8> RANKS_MASK = {RANK_8, RANK_7, RANK_6, RANK_5, RANK_4, RANK_3, RANK_2, RANK_1};
+constexpr std::array<uint64_t, 15> DIAGS_MASK = {DIAG_0, DIAG_1, DIAG_2, DIAG_3, DIAG_4, DIAG_5, DIAG_6, DIAG_7,
                                                  DIAG_8, DIAG_9, DIAG_10, DIAG_11, DIAG_12, DIAG_13, DIAG_14};
 
 int leadingBit(uint64_t bitboard);
 int trailingBit(uint64_t bitboard);
 int popLeadingBit(uint64_t& bitboard);
 int popTrailingBit(uint64_t& bitboard);
+int popCount(uint64_t bitboard);
 
 uint64_t flipVertical(uint64_t bitboard);
 
@@ -69,13 +72,12 @@ uint64_t getRankMask(int square);
 uint64_t getDiagMask(int square);
 uint64_t getAntiDiagMask(int square);
 
-bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies);
-bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies);
 uint64_t knightSquares(uint64_t knights);
 bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn);
 bool kingAttackers(int square, uint64_t enemyKings);
 
 // for debugging and testing
+void printHex(uint64_t bitboard);
 void printBitboard(uint64_t bitboard);
 uint64_t arrayToBitboardNotEmpty(std::array<pieceTypes, BOARD_SIZE> board);
 uint64_t arrayToBitboardPieceType(std::array<pieceTypes, BOARD_SIZE> board, pieceTypes piece);

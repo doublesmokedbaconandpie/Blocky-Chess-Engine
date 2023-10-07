@@ -27,6 +27,10 @@ int popTrailingBit(uint64_t& bitboard) {
     return pos;
 }
 
+int popCount(uint64_t bitboard) {
+    return __builtin_popcountll(bitboard);
+}
+
 uint64_t flipVertical(uint64_t bitboard) {
     uint64_t k1 = 0x00FF00FF00FF00FFull;
     uint64_t k2 = 0x0000FFFF0000FFFFull;
@@ -57,83 +61,6 @@ uint64_t getDiagMask(int square) {
 
 uint64_t getAntiDiagMask(int square) {
     return flipVertical(DIAGS_MASK[7 - getRank(square) + getFile(square)]);
-}
-
-bool diagAttackers(int square, uint64_t allPieces, uint64_t enemies) {
-    allPieces ^= (1ull << square) | enemies;
-
-    // 'a' or 'A' signifies anti-diagonal
-    uint64_t currDiag  = getDiagMask(square);
-    uint64_t aCurrDiag = getAntiDiagMask(square);
-
-    uint64_t allPiecesDiag  = allPieces & currDiag;
-    uint64_t allPiecesADiag = allPieces & aCurrDiag;
-    uint64_t enemyDiag  = enemies  & currDiag;
-    uint64_t enemyADiag = enemies  & aCurrDiag;
-
-    // get rid of pieces in the same diagonal but not part of the section we want
-    int nSquare = 63 - square;
-    uint64_t urBlock = (allPiecesDiag  << nSquare) >> nSquare;
-    uint64_t ulBlock = (allPiecesADiag << nSquare) >> nSquare;
-    uint64_t dlBlock = (allPiecesDiag  >> square)  << square;
-    uint64_t drBlock = (allPiecesADiag >> square)  << square;
-
-    uint64_t urEnemy = (enemyDiag  << nSquare) >> nSquare;
-    uint64_t ulEnemy = (enemyADiag << nSquare) >> nSquare;
-    uint64_t dlEnemy = (enemyDiag  >> square)  << square;
-    uint64_t drEnemy = (enemyADiag >> square)  << square;
-
-    int traiURBlock = trailingBit(urBlock) != -1 ? trailingBit(urBlock) : 64;
-    int traiULBlock = trailingBit(ulBlock) != -1 ? trailingBit(ulBlock) : 64;
-    int leadDLBlock = leadingBit(dlBlock) != -1 ? leadingBit(dlBlock) : 64;
-    int leadDRBlock = leadingBit(drBlock) != -1 ? leadingBit(drBlock) : 64;
-
-    // If an enemy section has no pieces, -1 will be returned from trailingBit and leadingBit
-    // However, no enemies means doing bitwise-or with 0, which doesn't change closestStraights
-    uint64_t closestDiags = 0ull;
-    closestDiags |= (traiURBlock > trailingBit(urEnemy)) ? urEnemy : 0ull;
-    closestDiags |= (traiULBlock > trailingBit(ulEnemy)) ? ulEnemy : 0ull;
-    closestDiags |= (leadDLBlock > leadingBit(dlEnemy)) ? dlEnemy : 0ull;
-    closestDiags |= (leadDRBlock > leadingBit(drEnemy)) ? drEnemy : 0ull;
-    return closestDiags & enemies;
-}
-
-bool straightAttackers(int square, uint64_t allPieces, uint64_t enemies) {
-    allPieces ^= (1ull << square) | enemies;
-
-    uint64_t currFile = getFileMask(square);
-    uint64_t currRank = getRankMask(square);
-
-    uint64_t allPiecesFile  = allPieces & currFile;
-    uint64_t allPiecesRank  = allPieces & currRank;
-    uint64_t enemyFile = enemies  & currFile;
-    uint64_t enemyRank = enemies  & currRank;
-
-    // get rid of pieces in the same straight but not part of the section we want
-    int nSquare = 63 - square;
-    uint64_t uBlock = (allPiecesFile << nSquare) >> nSquare;
-    uint64_t lBlock = (allPiecesRank << nSquare) >> nSquare;
-    uint64_t dBlock = (allPiecesFile >> square)  << square;
-    uint64_t rBlock = (allPiecesRank >> square)  << square;
-
-    uint64_t uEnemy = (enemyFile << nSquare) >> nSquare;
-    uint64_t lEnemy = (enemyRank << nSquare) >> nSquare;
-    uint64_t dEnemy = (enemyFile >> square)  << square;
-    uint64_t rEnemy = (enemyRank >> square)  << square;
-
-    int traiUBlock = trailingBit(uBlock) != -1 ? trailingBit(uBlock) : 64;
-    int traiLBlock = trailingBit(lBlock) != -1 ? trailingBit(lBlock) : 64;
-    int leadDBlock = leadingBit(dBlock) != -1 ? leadingBit(dBlock) : 64;
-    int leadRBlock = leadingBit(rBlock) != -1 ? leadingBit(rBlock) : 64;
-
-    // If an enemy section has no pieces, -1 will be returned from trailingBit and leadingBit
-    // However, no enemies means doing bitwise-or with 0, which doesn't change closestStraights
-    uint64_t closestStraights = 0ull;
-    closestStraights |= (traiUBlock > trailingBit(uEnemy)) ? uEnemy : 0ull;
-    closestStraights |= (traiLBlock > trailingBit(lEnemy)) ? lEnemy : 0ull;
-    closestStraights |= (leadDBlock > leadingBit(dEnemy)) ? dEnemy : 0ull;
-    closestStraights |= (leadRBlock > leadingBit(rEnemy)) ? rEnemy : 0ull;
-    return closestStraights & enemies;
 }
 
 uint64_t knightSquares(uint64_t knights) {
@@ -178,8 +105,20 @@ bool kingAttackers(int square, uint64_t enemyKings) {
 
 // below functions are for debugging and testing
 
+void printHex(uint64_t bitboard) {
+    std::cout << "0x" << std::setw(16) << std::setfill('0') << std::hex <<  bitboard << "ull\n" << std::dec;
+}
+
 void printBitboard(uint64_t bitboard) {
-    std::cout << "0x" << std::setw(16) << std::setfill('0') << std::hex <<  bitboard << "\n" << std::dec;
+    std::cout << "------------\n";
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            bool bit = 1ull << (8 * i + j) & bitboard;
+            std::cout << bit << ' ';
+        }
+        std::cout << '\n';
+    }
+    std::cout << "------------\n";
 }
 
 uint64_t arrayToBitboardNotEmpty(std::array<pieceTypes, BOARD_SIZE> board) {

@@ -1,4 +1,5 @@
 #include "moveGen.hpp"
+#include "attacks.hpp"
 
 #include <cstdint>
 #include <vector>
@@ -95,8 +96,9 @@ namespace MOVEGEN {
     void validKnightMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t knights) {
         uint64_t allies = currBoard.isWhiteTurn ? currBoard.pieceSets[WHITE_PIECES] : currBoard.pieceSets[BLACK_PIECES];
         while (knights) {
-            BoardSquare knight(popLeadingBit(knights));
-            uint64_t knightBitboard = 1ull << knight.toSquare();
+            int square = popLeadingBit(knights);
+            BoardSquare knight(square);
+            uint64_t knightBitboard = 1ull << square;
             uint64_t knightMoves = knightSquares(knightBitboard) & ~allies;
             while (knightMoves) {
                 int currSquare = popLeadingBit(knightMoves);
@@ -112,14 +114,15 @@ namespace MOVEGEN {
     }
 
     void validBishopMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t bishops) {
+        uint64_t allPieces = currBoard.pieceSets[WHITE_PIECES] | currBoard.pieceSets[BLACK_PIECES];
+        uint64_t friendlyPieces = currBoard.isWhiteTurn ? currBoard.pieceSets[WHITE_PIECES] : currBoard.pieceSets[BLACK_PIECES];
         while (bishops) {
-            BoardSquare bishop(popLeadingBit(bishops));
-            std::vector<BoardSquare> bishopMoves;
-            addMovesInDirection(currBoard, bishopMoves, bishop, 1, 1); // down right
-            addMovesInDirection(currBoard, bishopMoves, bishop, 1, -1); // down left
-            addMovesInDirection(currBoard, bishopMoves, bishop, -1, 1); // up right
-            addMovesInDirection(currBoard, bishopMoves, bishop, -1, -1); // up left
-            for (BoardSquare move: bishopMoves) {
+            int square = popLeadingBit(bishops);
+            BoardSquare bishop(square);
+            uint64_t bishopMoves = Attacks::bishopAttacks(square, allPieces) & ~friendlyPieces;
+            while (bishopMoves) {
+                int currSquare = popLeadingBit(bishopMoves);
+                BoardSquare move(currSquare);
                 currBoard.makeMove(bishop, move);
                 if (!currBoard.isIllegalPos) {
                     validMoves.push_back(BoardMove(bishop, move));
@@ -130,14 +133,15 @@ namespace MOVEGEN {
     }
 
     void validRookMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t rooks) {
+        uint64_t allPieces = currBoard.pieceSets[WHITE_PIECES] | currBoard.pieceSets[BLACK_PIECES];
+        uint64_t friendlyPieces = currBoard.isWhiteTurn ? currBoard.pieceSets[WHITE_PIECES] : currBoard.pieceSets[BLACK_PIECES];
         while (rooks) {
-            BoardSquare rook(popLeadingBit(rooks));
-            std::vector<BoardSquare> rookMoves;
-            addMovesInDirection(currBoard, rookMoves, rook, 1, 0); // down
-            addMovesInDirection(currBoard, rookMoves, rook, -1, 0); // up
-            addMovesInDirection(currBoard, rookMoves, rook, 0, -1); // left
-            addMovesInDirection(currBoard, rookMoves, rook, 0, 1); // right
-            for (BoardSquare move: rookMoves) {
+            int square = popLeadingBit(rooks);
+            BoardSquare rook(square);
+            uint64_t rookMoves = Attacks::rookAttacks(square, allPieces) & ~friendlyPieces;
+            while (rookMoves) {
+                int currSquare = popLeadingBit(rookMoves);
+                BoardSquare move(currSquare);
                 currBoard.makeMove(rook, move);
                 if (!currBoard.isIllegalPos) {
                     validMoves.push_back(BoardMove(rook, move));
@@ -154,7 +158,6 @@ namespace MOVEGEN {
 
 
     void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t kings) {
-        pieceTypes allyRook = currBoard.isWhiteTurn ? WRook : BRook;
         int kingUnmovedRank = currBoard.isWhiteTurn ? 7 : 0;
         
         while (kings) {
@@ -198,7 +201,7 @@ namespace MOVEGEN {
                 currBoard.undoMove();
 
                 // check for pieces in between king and rook
-                if (getPieceInDirection(currBoard, king, 0, kingFileDirection) == allyRook) {
+                if (unblockedCastleRook(currBoard, king, kingFileDirection)) {
                     kingMoves.push_back(BoardSquare(kingUnmovedRank, square.file));
                 }
             }
@@ -214,49 +217,22 @@ namespace MOVEGEN {
         }
     }
 
-    void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
-        // static/non-moves will not be appended
-        if (rankIncrement == 0 && fileIncrement == 0) {
-            throw std::invalid_argument("rankIncrement or fileIncrement must not be 0");
-        }
-        
-        pieceTypes currPiece;
-        int currRank = originSquare.rank + rankIncrement;
-        int currFile = originSquare.file + fileIncrement;
+    bool unblockedCastleRook(Board& currBoard, BoardSquare king, int xDir) {
+        int currFile = king.file + xDir;
+        int targetFile = xDir == 1 ? H : A;
+        pieceTypes allyRook = currBoard.isWhiteTurn ? WRook : BRook;
 
-        while(currRank >= 0 && currRank <= 7 && currFile >= A && currFile <= H) {
-            BoardSquare currSquare = BoardSquare(currRank, currFile);
-            currPiece = currBoard.getPiece(currSquare);
-            if (isFriendlyPiece(currBoard, currSquare)) {
+        while (currFile >= A && currFile <= H) {
+            pieceTypes currPiece = currBoard.getPiece(king.rank, currFile);
+            if (currPiece == allyRook) {
                 break;
             }
-            movesVec.push_back(BoardSquare(currRank, currFile));
-            if (currPiece != EmptyPiece) {
-                break;
+            else if (currPiece != EmptyPiece) {
+                return false;
             }
-            currRank += rankIncrement;
-            currFile += fileIncrement;
+            currFile += xDir;
         }
-    }
-
-    pieceTypes getPieceInDirection(Board& currBoard, BoardSquare originSquare, int rankIncrement, int fileIncrement) {
-        if (rankIncrement == 0 && fileIncrement == 0) {
-            throw std::invalid_argument("rankIncrement or fileIncrement must not be 0");
-        }
-        
-        pieceTypes currPiece;
-        int currRank = originSquare.rank + rankIncrement;
-        int currFile = originSquare.file + fileIncrement;
-
-        while(currRank >= 0 && currRank <= 7 && currFile >= A && currFile <= H) {
-            currPiece = currBoard.getPiece(currRank, currFile);
-            if (currPiece != EmptyPiece) {
-                return currPiece;
-            }
-            currRank += rankIncrement;
-            currFile += fileIncrement;
-        }
-        return nullPiece;
+        return currFile == targetFile;
     }
 
     bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare) {
@@ -280,7 +256,23 @@ namespace MOVEGEN {
         std::vector<BoardMove> moves = moveGenerator(board);
         for (auto move: moves) {
             board.makeMove(move);
-            leafNodeCount += perft(board, depthLeft - 1);
+            uint64_t moveCount = perftHelper(board, depthLeft - 1);
+            leafNodeCount += moveCount;
+            std::cout << move << ": " << moveCount << std::endl; 
+            board.undoMove();
+        }
+        return leafNodeCount;
+    }
+
+    uint64_t perftHelper(Board board, int depthLeft) {
+        if (depthLeft == 0) {
+            return 1;
+        }
+        uint64_t leafNodeCount = 0;
+        std::vector<BoardMove> moves = moveGenerator(board);
+        for (auto move: moves) {
+            board.makeMove(move);
+            leafNodeCount += perftHelper(board, depthLeft - 1);
             board.undoMove();
         }
         return leafNodeCount;
