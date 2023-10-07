@@ -15,7 +15,6 @@ namespace MOVEGEN {
     void validQueenMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t queens);
     void validKingMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t kings); // includes castling
 
-    void addMovesInDirection(Board& currBoard, std::vector<BoardSquare>& movesVec, BoardSquare originSquare, int rankIncrement, int fileIncrement);
     bool unblockedCastleRook(Board& currBoard, BoardSquare king, int xDir); 
     bool isFriendlyPiece(Board& currBoard, BoardSquare targetSquare);
 

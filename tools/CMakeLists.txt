@@ -4,7 +4,7 @@ option(MAKE_EXE "exe?" OFF)
 
 project(Blocky)
 
-add_executable(Blocky src/main.cpp)
+add_executable(Magic magic.cpp)
 
 if(MAKE_EXE)
     message("Compiling for Windows EXE")
@@ -19,22 +19,16 @@ if(MAKE_EXE)
 endif(MAKE_EXE)
 unset(MAKE_EXE CACHE)
 
-target_sources(Blocky PRIVATE
-    src/zobrist.cpp
-    src/bitboard.cpp
-    src/attacks.cpp
-    src/move.cpp
-    src/board.cpp
-    src/moveGen.cpp
-    src/movePicker.cpp
-    src/search.cpp
-    src/eval.cpp
-    src/timeman.cpp
-    src/uci.cpp
+target_sources(Magic PRIVATE
+    magic.cpp
+
+    ../src/attacks.cpp
+    ../src/zobrist.cpp
+    ../src/bitboard.cpp
 )
 
-target_include_directories(Blocky PRIVATE
-    src
+target_include_directories(
+    Magic PUBLIC "../src/"
 )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")

@@ -1,21 +1,30 @@
 #include "board.hpp"
 #include "moveGen.hpp"
+#include "attacks.hpp"
 #include "bitboard.hpp"
+#include "zobrist.hpp"
 
 #include <gtest/gtest.h>
 #include <vector>
 #include <algorithm>
 
 using namespace MOVEGEN;
+class MoveGenTest : public testing::Test {
+    public:
+        static void SetUpTestSuite() {
+            Zobrist::init();
+            Attacks::init();
+        }
+};
 
-TEST(MoveGenTest, isFriendlyPieceTrue1) {
+TEST_F(MoveGenTest, isFriendlyPieceTrue1) {
     Board board;
     BoardSquare whiteSquare = BoardSquare(7, H);
     bool result = isFriendlyPiece(board, whiteSquare);
     ASSERT_EQ(result, true);
 }
 
-TEST(MoveGenTest, isFriendlyPieceTrue2) {
+TEST_F(MoveGenTest, isFriendlyPieceTrue2) {
     Board board;
     board.isWhiteTurn = false;
     BoardSquare blackSquare = BoardSquare(1, H);
@@ -23,7 +32,7 @@ TEST(MoveGenTest, isFriendlyPieceTrue2) {
     ASSERT_EQ(result, true);
 }
 
-TEST(MoveGenTest, isFriendlyPieceFalse) {
+TEST_F(MoveGenTest, isFriendlyPieceFalse) {
     Board board;
     BoardSquare blackSquare = BoardSquare(1, H);
     bool result = isFriendlyPiece(board, blackSquare);
@@ -32,7 +41,7 @@ TEST(MoveGenTest, isFriendlyPieceFalse) {
 
 // there must be a king in each test to see for illegal moves
 
-TEST(MoveGenTest, validPawnMovesCaptures) {
+TEST_F(MoveGenTest, validPawnMovesCaptures) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -65,7 +74,7 @@ TEST(MoveGenTest, validPawnMovesCaptures) {
     ASSERT_EQ(validMoves, expectedValidMoves);
 }
 
-TEST(MoveGenTest, validPawnMovesPromotion) {
+TEST_F(MoveGenTest, validPawnMovesPromotion) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -93,7 +102,7 @@ TEST(MoveGenTest, validPawnMovesPromotion) {
     ASSERT_EQ(validMoves, expectedValidMoves);
 }
 
-TEST(MoveGenTest, validKnightMoves1) {
+TEST_F(MoveGenTest, validKnightMoves1) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -128,7 +137,7 @@ TEST(MoveGenTest, validKnightMoves1) {
     ASSERT_EQ(validMoves, expectedValidMoves);
 }
 
-TEST(MoveGenTest, validRookMoves1) {
+TEST_F(MoveGenTest, validRookMoves1) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         WBishop   , WBishop   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -158,7 +167,7 @@ TEST(MoveGenTest, validRookMoves1) {
     ASSERT_EQ(validMoves, expectedValidMoves);
 }
 
-TEST(MoveGenTest, validBishopMoves1) {
+TEST_F(MoveGenTest, validBishopMoves1) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -198,7 +207,7 @@ TEST(MoveGenTest, validBishopMoves1) {
     ASSERT_EQ(validMoves, expectedValidMoves);
 }
 
-TEST(MoveGenTest, validQueenMoves1) {
+TEST_F(MoveGenTest, validQueenMoves1) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -232,7 +241,7 @@ TEST(MoveGenTest, validQueenMoves1) {
     ASSERT_EQ(validMoves, expectedValidMoves);
 }
 
-TEST(MoveGenTest, validKingMovesNoCastle) {
+TEST_F(MoveGenTest, validKingMovesNoCastle) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -268,7 +277,7 @@ TEST(MoveGenTest, validKingMovesNoCastle) {
     ASSERT_EQ(validMoves, expectedValidMoves);
 }
 
-TEST(MoveGenTest, validKingMovesKingCastle) {
+TEST_F(MoveGenTest, validKingMovesKingCastle) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -299,7 +308,7 @@ TEST(MoveGenTest, validKingMovesKingCastle) {
     ASSERT_EQ(validMoves, expectedValidMoves);    
 }
 
-TEST(MoveGenTest, validKingMovesQueenCastle) {
+TEST_F(MoveGenTest, validKingMovesQueenCastle) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -330,7 +339,7 @@ TEST(MoveGenTest, validKingMovesQueenCastle) {
     ASSERT_EQ(validMoves, expectedValidMoves);    
 }
 
-TEST(MoveGenTest, validKingMovesInvalidCastle) {
+TEST_F(MoveGenTest, validKingMovesInvalidCastle) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, BQueen    , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -357,7 +366,7 @@ TEST(MoveGenTest, validKingMovesInvalidCastle) {
     ASSERT_EQ(validMoves, expectedValidMoves);    
 }
 
-TEST(MoveGenTest, moveGeneratorDefault) {
+TEST_F(MoveGenTest, moveGeneratorDefault) {
     Board board;
     std::vector<BoardMove> expectedValidMoves;
     for (int file = A; file <= H; file++) {
@@ -376,19 +385,19 @@ TEST(MoveGenTest, moveGeneratorDefault) {
     ASSERT_EQ(validMoves, expectedValidMoves);
 }
 
-TEST(MoveGenTest, validKingMovesInvalidCastle2) {
+TEST_F(MoveGenTest, validKingMovesInvalidCastle2) {
     Board board("r2rk3/p4p1p/2p4b/2Q5/1P1Nq3/P1B2P1b/2P4P/R2K3R b q - 0 1");
     std::vector<BoardMove> moves = moveGenerator(board);
     EXPECT_EQ(moves.size(), 43);
 }
 
-TEST(MoveGenTest, validKingMovesValidCastle3) {
+TEST_F(MoveGenTest, validKingMovesValidCastle3) {
     Board board("r3k3/pp1r1p1p/2B4b/5Q2/1P1Nq3/P1B4b/2P2P1P/R2K3R b q - 2 1");
     std::vector<BoardMove> moves = moveGenerator(board);
     EXPECT_EQ(moves.size(), 42);
 }
 
-TEST(MoveGenTest, moveGeneratorBlackMove) {
+TEST_F(MoveGenTest, moveGeneratorBlackMove) {
     Board board;
     board.makeMove(BoardSquare(6, E), BoardSquare(4, E));
     std::vector<BoardMove> expectedValidMoves;
@@ -408,7 +417,7 @@ TEST(MoveGenTest, moveGeneratorBlackMove) {
     ASSERT_EQ(validMoves, expectedValidMoves);
 }
 
-TEST(MoveGenTest, perftStartpos) {
+TEST_F(MoveGenTest, perftStartpos) {
     Board board;
     ASSERT_EQ(MOVEGEN::perft(board, 0), 1);
     ASSERT_EQ(MOVEGEN::perft(board, 1), 20);
@@ -417,7 +426,7 @@ TEST(MoveGenTest, perftStartpos) {
     ASSERT_EQ(MOVEGEN::perft(board, 4), 197281);
 }
 
-TEST(MoveGenTest, perftKiwipete) {
+TEST_F(MoveGenTest, perftKiwipete) {
     Board board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
     ASSERT_EQ(MOVEGEN::perft(board, 1), 48);
     ASSERT_EQ(MOVEGEN::perft(board, 2), 2039);
