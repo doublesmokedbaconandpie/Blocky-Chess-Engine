@@ -15,7 +15,7 @@
 using namespace Attacks;
 
 int main() {
-    Zobrist::init(); // this gives a seed to rand64()
+    Zobrist::seed = {0xf38f4541449b0fc3ull, 0x8432cf48703f8864ull, 0x1c8596ae5c1621d1ull, 0xf6d3be81a796f876ull};
 
     int attacksSize = 0; 
     std::cout << "Rook attacks: " << std::endl;
