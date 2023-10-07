@@ -41,7 +41,7 @@ struct Board {
     Board();
     Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn = true, 
             int a_fiftyMoveRule = 0, BoardSquare a_pawnJumpedSquare = BoardSquare(), 
-            bool a_isIllegalPos = false, castleRights a_castlingRights = All_Castle, int a_materialDifference = 0); 
+            castleRights a_castlingRights = All_Castle, int a_materialDifference = 0); 
     // for production
     Board(std::string fenStr);
     std::string toFen();
@@ -50,6 +50,7 @@ struct Board {
     void makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
     void makeMove(BoardMove move);
     void undoMove();
+    bool isLegalMove(const BoardMove move) const;
     bool moveIsCapture(BoardMove move);
     
     friend bool operator==(const Board& lhs, const Board& rhs);
@@ -69,7 +70,6 @@ struct Board {
     bool isWhiteTurn;
     castleRights castlingRights; // bitwise castling rights tracker
     int fiftyMoveRule;
-    bool isIllegalPos;
     BoardSquare pawnJumpedSquare; // en passant square
     int materialDifference; // updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
                             // Possibly could be combined with attributes
@@ -80,7 +80,7 @@ struct Board {
 };
 
 castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn);
-bool currKingInAttack(Board& board);
+bool currKingInAttack(std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn);
 
 // for debugging
 uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int target);

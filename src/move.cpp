@@ -1,5 +1,6 @@
 #include <string>
 #include <sstream>
+#include <iostream>
 #include <array>
 
 #include "move.hpp"
@@ -20,7 +21,7 @@ BoardSquare::BoardSquare(int square) {
     this->file = fileVals(square % 8);
 }
 
-int BoardSquare::toSquare() {
+int BoardSquare::toSquare() const {
     return this->rank * 8 + this->file;
 }
 

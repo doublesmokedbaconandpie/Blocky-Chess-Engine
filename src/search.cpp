@@ -54,7 +54,7 @@ namespace Search {
         // checkmate or stalemate
         std::vector<BoardMove> moves = MOVEGEN::moveGenerator(this->board);
         if (moves.size() == 0) {
-            if (currKingInAttack(board)) {
+            if (currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
                 result.eval = MIN_ALPHA + distanceFromRoot;
             }
             else {

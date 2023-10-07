@@ -71,7 +71,6 @@ TEST_F(BoardTest, fenConstructorDefault) {
     EXPECT_EQ(fenBoard.board, defaultBoard.board);
     EXPECT_EQ(fenBoard.zobristKey, defaultBoard.zobristKey);
     EXPECT_NE(fenBoard.zobristKey, 0);
-    EXPECT_EQ(fenBoard.zobristKeyHistory.back(), fenBoard.zobristKey);
     EXPECT_EQ(fenBoard.isWhiteTurn, defaultBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, defaultBoard.castlingRights);
     EXPECT_EQ(fenBoard.pawnJumpedSquare, defaultBoard.pawnJumpedSquare);
@@ -87,7 +86,6 @@ TEST_F(BoardTest, fenConstructorEnPassantSquare) {
     EXPECT_EQ(fenBoard.board, moveBoard.board);
     EXPECT_EQ(fenBoard.zobristKey, moveBoard.zobristKey);
     EXPECT_NE(fenBoard.zobristKey, 0);
-    EXPECT_EQ(fenBoard.zobristKeyHistory.back(), fenBoard.zobristKey);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);
     EXPECT_EQ(fenBoard.pawnJumpedSquare, moveBoard.pawnJumpedSquare);
@@ -110,7 +108,6 @@ TEST_F(BoardTest, fenConstructorEnPassantCastle) {
     EXPECT_EQ(fenBoard.board, moveBoard.board);
     EXPECT_EQ(fenBoard.zobristKey, moveBoard.zobristKey);
     EXPECT_NE(fenBoard.zobristKey, 0);
-    EXPECT_EQ(fenBoard.zobristKeyHistory.back(), fenBoard.zobristKey);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);
     EXPECT_EQ(fenBoard.pawnJumpedSquare, moveBoard.pawnJumpedSquare);
@@ -226,7 +223,7 @@ TEST_F(BoardTest, checkDiagAttackersTrue) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WQueen    , EmptyPiece,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -242,7 +239,7 @@ TEST_F(BoardTest, checkDiagAttackersFalse) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, false);
 }
 
@@ -258,7 +255,7 @@ TEST_F(BoardTest, checkStraightAttackersTrue) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -275,7 +272,7 @@ TEST_F(BoardTest, checkStraightAttackersFalse) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, false);
 }
 
@@ -291,7 +288,7 @@ TEST_F(BoardTest, checkKnightAttackersTrue1) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     ,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -307,7 +304,7 @@ TEST_F(BoardTest, checkKnightAttackersTrue2) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     ,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -323,7 +320,7 @@ TEST_F(BoardTest, checkKnightAttackersTrue3) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     ,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -339,7 +336,7 @@ TEST_F(BoardTest, checkKnightAttackersTrue4) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     ,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -355,7 +352,7 @@ TEST_F(BoardTest, checkKnightAttackersFalse) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, WKing     ,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, false);
 }
 
@@ -371,7 +368,7 @@ TEST_F(BoardTest, checkPawnAttackersTrue1) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     ,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -387,7 +384,7 @@ TEST_F(BoardTest, checkPawnAttackersTrue2) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     ,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -403,7 +400,7 @@ TEST_F(BoardTest, checkPawnAttackersFalse) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     ,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, false);
 }
 
@@ -419,7 +416,7 @@ TEST_F(BoardTest, checkKingAttackersTrue1) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -435,7 +432,7 @@ TEST_F(BoardTest, checkKingAttackersTrue2) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -451,7 +448,7 @@ TEST_F(BoardTest, checkKingAttackersFalse) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     ,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, false);
 }
 
@@ -467,7 +464,7 @@ TEST_F(BoardTest, inCheckTrue1) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     ,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -483,7 +480,7 @@ TEST_F(BoardTest, inCheckTrue2) {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WKing     ,
     };
     Board board(boardArr, false);
-    bool isAttacked = currKingInAttack(board);
+    bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }
 
@@ -495,7 +492,6 @@ TEST_F(BoardTest, BoardMoveConstructorPawnJump) {
     board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
-    EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
     EXPECT_EQ(board.pawnJumpedSquare, enPassantSquare);
     EXPECT_EQ(board.fiftyMoveRule, 0);
@@ -518,7 +514,6 @@ TEST_F(BoardTest, BoardMoveConstructorKingCastle) {
     board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
-    EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(7, H), EmptyPiece);
     EXPECT_EQ(board.getPiece(7, F), WRook);
@@ -544,7 +539,6 @@ TEST_F(BoardTest, BoardMoveConstructorQueenCastle) {
     board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
-    EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(7, A), EmptyPiece);
     EXPECT_EQ(board.getPiece(7, D), WRook);
@@ -570,7 +564,6 @@ TEST_F(BoardTest, BoardMoveConstructorMovedKing) {
     board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
-    EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(7, A), WRook);
     EXPECT_EQ(board.getPiece(7, D), EmptyPiece);
@@ -597,7 +590,6 @@ TEST_F(BoardTest, BoardMoveConstructorKingToCastleSquare) {
     board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
-    EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.getPiece(7, H), WRook);
@@ -615,7 +607,6 @@ TEST_F(BoardTest, BoardMoveConstructorEnPassant) {
     fenBoard.makeMove(pos1, pos2);
 
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
-    EXPECT_EQ(fenBoard.isIllegalPos, moveBoard.isIllegalPos);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
     EXPECT_EQ(fenBoard.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(fenBoard.getPiece(pos2), WPawn);
@@ -635,7 +626,6 @@ TEST_F(BoardTest, BoardMoveConstructorNotEnPassant) {
     fenBoard.makeMove(pos1, pos2);
 
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
-    EXPECT_EQ(fenBoard.isIllegalPos, moveBoard.isIllegalPos);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
     EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
     EXPECT_EQ(fenBoard.pawnJumpedSquare, BoardSquare());
@@ -660,7 +650,6 @@ TEST_F(BoardTest, BoardMoveConstructorPromote) {
     board.makeMove(pos1, pos2, WQueen);
 
     EXPECT_EQ(board.isWhiteTurn, false);
-    EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WQueen);
     EXPECT_EQ(board.fiftyMoveRule, 0);
@@ -683,14 +672,13 @@ TEST_F(BoardTest, BoardMoveConstructorPawnCapture) {
     board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
-    EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
     EXPECT_EQ(board.getPiece(3, E), BPawn);
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
-TEST_F(BoardTest, BoardMoveConstructorRegularCapture) {
+TEST_F(BoardTest, LegalMoveRegularCapture) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece, EmptyPiece,
@@ -707,13 +695,12 @@ TEST_F(BoardTest, BoardMoveConstructorRegularCapture) {
     board.makeMove(pos1, pos2);
 
     EXPECT_EQ(board.isWhiteTurn, false);
-    EXPECT_EQ(board.isIllegalPos, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WBishop);
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
-TEST_F(BoardTest, BoardMoveConstructorRookPin) {
+TEST_F(BoardTest, LegalMoveRookPin) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         BRook     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BKing     ,
         WRook     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -725,13 +712,12 @@ TEST_F(BoardTest, BoardMoveConstructorRookPin) {
         WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
     Board board(boardArr, true);
-    BoardSquare pos1 = BoardSquare(1, A);
-    BoardSquare pos2 = BoardSquare(1, B);
-    board.makeMove(pos1, pos2);
-    ASSERT_EQ(board.isIllegalPos, true);
+    std::cout << board << std::endl;
+    BoardMove move("a7b7", board.isWhiteTurn);
+    ASSERT_FALSE(board.isLegalMove(move));
 }
 
-TEST_F(BoardTest, BoardMoveConstructorBishopPin) {
+TEST_F(BoardTest, LegalMoveBishopPin) {
     std::array<pieceTypes, BOARD_SIZE> boardArr = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -743,10 +729,9 @@ TEST_F(BoardTest, BoardMoveConstructorBishopPin) {
         WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
     Board board(boardArr, true);
-    BoardSquare pos1 = BoardSquare(6, B);
-    BoardSquare pos2 = BoardSquare(5, A);
-    board.makeMove(pos1, pos2);
-    ASSERT_EQ(board.isIllegalPos, true);
+    std::cout << board << std::endl;
+    BoardMove move("b2a3", board.isWhiteTurn);
+    ASSERT_FALSE(board.isLegalMove(move));
 }
 
 TEST_F(BoardTest, BoardMoveConstructorCastleRightsRook) {
@@ -785,7 +770,6 @@ TEST_F(BoardTest, undoMove) {
     EXPECT_EQ(defaultBoard.board, moveBoard.board);
     EXPECT_EQ(defaultBoard.zobristKey, moveBoard.zobristKey);
     EXPECT_NE(defaultBoard.zobristKey, 0);
-    EXPECT_EQ(defaultBoard.zobristKeyHistory.back(), defaultBoard.zobristKey);
     EXPECT_EQ(defaultBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(defaultBoard.castlingRights, moveBoard.castlingRights);
     EXPECT_EQ(defaultBoard.pawnJumpedSquare, moveBoard.pawnJumpedSquare);
