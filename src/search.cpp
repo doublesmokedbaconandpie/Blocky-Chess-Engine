@@ -1,23 +1,39 @@
 #include <vector>
 #include <utility>
 #include <iostream>
+#include <chrono>
 
 #include "search.hpp"
 #include "movePicker.hpp"
 #include "eval.hpp"
 #include "moveGen.hpp"
 #include "board.hpp"
+#include "timeman.hpp"
 
 namespace Search {
-    Info Searcher::search(int depth) {
+    Info Searcher::search(/*int depth*/) {
         Info result;
-        Node root = this->alphaBeta(MIN_ALPHA, MAX_BETA, depth, 0);
-
-        result.nodes = this->nodes;
-        result.depth = this->max_depth;
+        Node root;
+        for(int i = 1; i <= 10; i++) {
+            root = this->alphaBeta(MIN_ALPHA, MAX_BETA, i, 0);
+            
+            if(this->tm.timeUp()) {
+                break;
+            }
+            else {
+                result.nodes = this->nodes;
+                result.depth = this->max_depth;
         
-        result.eval = root.eval;
-        result.move = root.move;
+                result.eval = root.eval;
+                result.move = root.move;
+            }
+        }
+
+        // result.nodes = this->nodes;
+        // result.depth = this->max_depth;
+        
+        // result.eval = root.eval;
+        // result.move = root.move;
         if (root.eval > MAX_BETA - 100) {
             result.mateIn = MAX_BETA - root.eval;
         }
@@ -29,6 +45,12 @@ namespace Search {
 
     Node Searcher::alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot) {
         Node result;
+
+        
+        if(this->tm.timeUp()) {
+            return result;
+        }
+
         this->nodes++;
         this->max_depth = distanceFromRoot > this->max_depth ? distanceFromRoot : this->max_depth;
 
@@ -95,6 +117,10 @@ namespace Search {
     }
 
     int Searcher::quiesce(int alpha, int beta, int depthLeft) {
+        if(this->tm.timeUp()) {
+            return -1;
+        }
+
         this->nodes++;
 
         int stand_pat = this->board.getEvalScore();

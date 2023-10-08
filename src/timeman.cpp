@@ -1,6 +1,6 @@
 #include "timeman.hpp"
 #include <iostream>
-namespace TIMEMAN {
+namespace Timeman {
     int timeToDepth(int ms) {
         // these values are completely arbitrary and only serve to be used to found development
         // for time management later on and prevent time outs for increasing depths
@@ -14,4 +14,8 @@ namespace TIMEMAN {
         if (ms >= 20) {return 2;}
         return 1;
     }
-} // namespace TIMEMAN
+
+    int moveTimeLimit(int ms) {
+        return ms * 100; //microseconds
+    }
+} // namespace Timeman

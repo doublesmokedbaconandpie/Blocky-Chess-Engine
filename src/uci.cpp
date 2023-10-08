@@ -108,7 +108,7 @@ namespace Uci {
 
     void go(std::istringstream& input, Board& board) {
         std::string token;
-        int wtime = TIMEMAN::INF_TIME, btime = TIMEMAN::INF_TIME, allytime;
+        int wtime = Timeman::INF_TIME, btime = Timeman::INF_TIME, allytime;
         std::string param, value;
         while (input >> param) {
             input >> value;
@@ -116,11 +116,11 @@ namespace Uci {
             else if (param == "btime") {btime = stoi(value);}
         }   
         allytime = board.isWhiteTurn ? wtime : btime;
-        int depthToUse = OPTIONS.depth < TIMEMAN::timeToDepth(allytime) ? OPTIONS.depth : TIMEMAN::timeToDepth(allytime);
+        //int depthToUse = OPTIONS.depth < TIMEMAN::timeToDepth(allytime) ? OPTIONS.depth : TIMEMAN::timeToDepth(allytime);
 
         auto start = std::chrono::high_resolution_clock::now();
-        Search::Searcher currSearch(board);
-        Search::Info result = currSearch.search(depthToUse);
+        Search::Searcher currSearch(board, allytime);
+        Search::Info result = currSearch.search(/*depthToUse*/);
         auto end = std::chrono::high_resolution_clock::now();
         int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         
