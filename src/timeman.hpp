@@ -1,10 +1,10 @@
 #pragma once
 
 #include <chrono>
+#include <cstdint>
 
 namespace Timeman {
     const int INF_TIME = 1000000000;
-    int timeToDepth(int ms);
 
     struct TimeManager
     {
@@ -22,9 +22,9 @@ namespace Timeman {
             timeLimit = ms * 100;
         }
 
-        bool timeUp() const {
-            return std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - startTime).count() > timeLimit;
-        }
+        bool timeUp() const;
+        
+        uint64_t getTimeElapsed() const;
     };
     
 } // namespace Timeman

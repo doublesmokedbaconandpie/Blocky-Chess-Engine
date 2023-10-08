@@ -116,26 +116,22 @@ namespace Uci {
             else if (param == "btime") {btime = stoi(value);}
         }   
         allytime = board.isWhiteTurn ? wtime : btime;
-        //int depthToUse = OPTIONS.depth < TIMEMAN::timeToDepth(allytime) ? OPTIONS.depth : TIMEMAN::timeToDepth(allytime);
 
-        auto start = std::chrono::high_resolution_clock::now();
         Search::Searcher currSearch(board, allytime);
-        Search::Info result = currSearch.search(/*depthToUse*/);
-        auto end = std::chrono::high_resolution_clock::now();
-        int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+        Search::Info result = currSearch.search();
         
-        info(result, duration);
+        info(result);
         std::cout << "bestmove " << result.move.toStr() << "\n";
     }
 
-    void info(Search::Info searchResult, int64_t searchDuration) {
+    void info(Search::Info searchResult) {
         std::cout << "info depth " << searchResult.depth << ' ';
         std::cout << "nodes " << searchResult.nodes << ' ';
-        if (searchDuration != 0) {
-            // time is output in milliseconds per the UCI protocol
-            std::cout << "time " << searchDuration / 1000 << ' ';
-            std::cout << "nps " << static_cast<int64_t>(searchResult.nodes) * 1000000 / searchDuration  << ' ';
-        }
+
+        // time is output in milliseconds per the UCI protocol
+        std::cout << "time " << searchResult.timeElapsed << ' ';
+        std::cout << "nps " << searchResult.nodes * 1000 / searchResult.timeElapsed  << ' ';
+        
         
         if (searchResult.mateIn == Search::NO_MATE) {
             std::cout << "score cp " << searchResult.eval << ' ';

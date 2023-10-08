@@ -21,6 +21,7 @@ namespace Search {
         int eval;
         int mateIn = NO_MATE;
         BoardMove move;
+        uint64_t timeElapsed;
     };
 
     // used for internal searching
@@ -37,7 +38,7 @@ namespace Search {
                 this->max_depth = 0;
                 tm = Timeman::TimeManager(ms);
             };
-            Info search(/*int depth*/);
+            Info search();
             Node alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot);
             int quiesce(int alpha, int beta, int depthLeft);
         private:

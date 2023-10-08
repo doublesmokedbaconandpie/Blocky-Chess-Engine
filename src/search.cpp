@@ -11,13 +11,14 @@
 #include "timeman.hpp"
 
 namespace Search {
-    Info Searcher::search(/*int depth*/) {
+    Info Searcher::search() {
         Info result;
         Node root;
         for(int i = 1; i <= 10; i++) {
             root = this->alphaBeta(MIN_ALPHA, MAX_BETA, i, 0);
             
             if(this->tm.timeUp()) {
+                result.timeElapsed = this->tm.getTimeElapsed();
                 break;
             }
             else {
@@ -29,11 +30,6 @@ namespace Search {
             }
         }
 
-        // result.nodes = this->nodes;
-        // result.depth = this->max_depth;
-        
-        // result.eval = root.eval;
-        // result.move = root.move;
         if (root.eval > MAX_BETA - 100) {
             result.mateIn = MAX_BETA - root.eval;
         }
