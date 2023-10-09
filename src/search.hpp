@@ -32,19 +32,21 @@ namespace Search {
     
     class Searcher {
         public:  
-            Searcher(Board a_board, int ms) {
+            Searcher(Board a_board, int ms, int depthLimit) {
                 this->board = a_board;
                 this->nodes = 0;
                 this->max_depth = 0;
-                tm = Timeman::TimeManager(ms);
+                this->tm = Timeman::TimeManager(ms);
+                this->depth_limit = depthLimit;
             };
-            Info search();
-            Node alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot);
+            Info startThinking();
+            Node search(int alpha, int beta, int depthLeft, int distanceFromRoot);
             int quiesce(int alpha, int beta, int depthLeft);
         private:
             Board board;
             uint64_t nodes;
             int max_depth;
             Timeman::TimeManager tm;
+            int depth_limit;
     };
 } // namespace Search

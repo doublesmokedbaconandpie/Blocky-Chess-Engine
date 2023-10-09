@@ -11,25 +11,27 @@
 #include "timeman.hpp"
 
 namespace Search {
-    Info Searcher::search() {
+    Info Searcher::startThinking() {
         Info result;
         Node root;
-        for(int i = 1; i <= 10; i++) {
-            root = this->alphaBeta(MIN_ALPHA, MAX_BETA, i, 0);
+
+        // perform iterative deepening
+        for(int i = 1; i <= this->depth_limit; i++) {
+            root = this->search(MIN_ALPHA, MAX_BETA, i, 0);
             
             if(this->tm.timeUp()) {
+                result.nodes = this->nodes;
                 result.timeElapsed = this->tm.getTimeElapsed();
                 break;
             }
             else {
-                result.nodes = this->nodes;
                 result.depth = this->max_depth;
-        
                 result.eval = root.eval;
                 result.move = root.move;
             }
         }
 
+        // compute mate-in
         if (root.eval > MAX_BETA - 100) {
             result.mateIn = MAX_BETA - root.eval;
         }
@@ -39,10 +41,8 @@ namespace Search {
         return result;
     }
 
-    Node Searcher::alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot) {
+    Node Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) {
         Node result;
-
-        
         if(this->tm.timeUp()) {
             return result;
         }
@@ -90,10 +90,10 @@ namespace Search {
         while (movePicker.movesLeft()) {
             BoardMove move = movePicker.pickMove();
             board.makeMove(move);
-            Node oppAlphaBeta = alphaBeta(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
+            Node opponent = search(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
             board.undoMove(); 
             
-            score = -1 * oppAlphaBeta.eval;
+            score = -1 * opponent.eval;
             
             // prune if a move is too good; opponent side will avoid playing into this node
             if (score >= beta) {
