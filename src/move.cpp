@@ -119,6 +119,8 @@ std::string BoardMove::toStr() const{
         case BKnight:
             move << 'n';
             break;
+        default:
+            break;
     }
     return move.str();
 }
