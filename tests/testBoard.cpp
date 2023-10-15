@@ -63,6 +63,11 @@ TEST_F(BoardTest, boardMoveStrConstructor2) {
     EXPECT_EQ(move.promotionPiece, WQueen);
 }
 
+TEST_F(BoardTest, assertFailNoKing) {
+    Board fenBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQ1BNR w KQkq - 0 1");
+    ASSERT_DEATH({fenBoard.makeMove(BoardMove("e2e4", fenBoard.isWhiteTurn));},"");
+}
+
 TEST_F(BoardTest, fenConstructorDefault) {
     Board fenBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     Board defaultBoard;

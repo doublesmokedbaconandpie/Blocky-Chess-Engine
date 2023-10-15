@@ -10,7 +10,7 @@
 
 TEST(BitboardTest, leadingBitEmpty) {
     uint64_t bitboard = 0ull;
-    ASSERT_EQ(leadingBit(bitboard), -1);
+    ASSERT_DEATH({leadingBit(bitboard);}, "");
 }
 
 TEST(BitboardTest, leadingBitOne) {
@@ -35,7 +35,7 @@ TEST(BitboardTest, leadingBitMultOnes) {
 
 TEST(BitboardTest, trailingBitEmpty) {
     uint64_t bitboard = 0ull;
-    ASSERT_EQ(trailingBit(bitboard), -1);
+    ASSERT_DEATH({trailingBit(bitboard);}, "");
 }
 
 TEST(BitboardTest, trailingBitOne) {
