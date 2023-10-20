@@ -530,8 +530,8 @@ castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn) {
 
 bool currKingInAttack(Board& board) {
     pieceTypes allyKing = board.isWhiteTurn ? WKing : BKing;
+    assert(board.pieceSets[allyKing]);
     int kingSquare = leadingBit(board.pieceSets[allyKing]);
-    assert(kingSquare != -1);
 
     uint64_t allPieces = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
 

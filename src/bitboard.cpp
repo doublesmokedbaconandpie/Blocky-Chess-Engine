@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <cassert>
 #include <iostream>
 #include <iomanip>
 
@@ -7,12 +8,14 @@
 
 int leadingBit(uint64_t bitboard) {
     // Counts from the first bit
-    return bitboard ? __builtin_ctzll(bitboard) : -1;
+    assert(bitboard);
+    return __builtin_ctzll(bitboard);
 }
 
 int trailingBit(uint64_t bitboard) {
     // Counts from the last bit
-    return bitboard ? __builtin_clzll(bitboard) : -1;
+    assert(bitboard);
+    return __builtin_clzll(bitboard);
 }
 
 int popLeadingBit(uint64_t& bitboard) {
