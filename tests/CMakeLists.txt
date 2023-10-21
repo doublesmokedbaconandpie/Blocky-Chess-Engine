@@ -31,6 +31,7 @@ add_executable(
     ../src/moveGen.cpp
     ../src/movePicker.cpp
     ../src/search.cpp
+    ../src/timeman.cpp
     ../src/eval.cpp
 )
 target_include_directories(
