@@ -40,14 +40,14 @@ jobs:
             c_compiler: cl
 
     steps:
-    - uses: actions/checkout@v3/tests
+    - uses: actions/checkout@v3
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       id: strings
       shell: bash
       run: |
-        echo "build-tests-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        echo "build-tests-dir=${{ github.workspace }}/tests/build" >> "$GITHUB_OUTPUT"
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -58,13 +58,16 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
+      working-directory: ./tests
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-tests-dir }} --config ${{ matrix.build_type }}
+      working-directory: ./tests
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-tests-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest --build-config ${{ matrix.build_type }}
+      working-directory: ./tests
