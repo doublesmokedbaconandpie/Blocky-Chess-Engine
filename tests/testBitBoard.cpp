@@ -128,7 +128,7 @@ TEST(BitboardTest, getDiagMaskTest) {
     EXPECT_EQ(getDiagMask(1 ), DIAG_1);
 }
 
-TEST(BitboardTest, knightSquares1) {
+TEST(BitboardTest, knightAttacks1) {
     std::array<pieceTypes, BOARD_SIZE> enemiesBoard = {
         WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -141,11 +141,11 @@ TEST(BitboardTest, knightSquares1) {
     };
 
     uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
-    uint64_t knightBitboard = knightSquares(enemies);
+    uint64_t knightBitboard = knightAttacks(enemies);
     EXPECT_EQ(knightBitboard, 0x0000000000020400ull);
 }
 
-TEST(BitboardTest, knightSquares2) {
+TEST(BitboardTest, knightAttacks2) {
     std::array<pieceTypes, BOARD_SIZE> enemiesBoard = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -158,11 +158,11 @@ TEST(BitboardTest, knightSquares2) {
     };
 
     uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
-    uint64_t knightBitboard = knightSquares(enemies);
+    uint64_t knightBitboard = knightAttacks(enemies);
     EXPECT_EQ(knightBitboard, 0x0000050800080500ull);
 }
 
-TEST(BitboardTest, knightSquares3) {
+TEST(BitboardTest, knightAttacks3) {
     std::array<pieceTypes, BOARD_SIZE> enemiesBoard = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -175,11 +175,11 @@ TEST(BitboardTest, knightSquares3) {
     };
 
     uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
-    uint64_t knightBitboard = knightSquares(enemies);
+    uint64_t knightBitboard = knightAttacks(enemies);
     EXPECT_EQ(knightBitboard, 0x0508000805000000ull);
 }
 
-TEST(BitboardTest, knightSquares4) {
+TEST(BitboardTest, knightAttacks4) {
     std::array<pieceTypes, BOARD_SIZE> enemiesBoard = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -192,11 +192,11 @@ TEST(BitboardTest, knightSquares4) {
     };
 
     uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
-    uint64_t knightBitboard = knightSquares(enemies);
+    uint64_t knightBitboard = knightAttacks(enemies);
     EXPECT_EQ(knightBitboard, 0x1100110A00000000ull);
 }
 
-TEST(BitboardTest, knightSquares5) {
+TEST(BitboardTest, knightAttacks5) {
     std::array<pieceTypes, BOARD_SIZE> enemiesBoard = {
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
         EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
@@ -209,7 +209,7 @@ TEST(BitboardTest, knightSquares5) {
     };
 
     uint64_t enemies = arrayToBitboardNotEmpty(enemiesBoard);
-    uint64_t knightBitboard = knightSquares(enemies);
+    uint64_t knightBitboard = knightAttacks(enemies);
     EXPECT_EQ(knightBitboard, 0x22442A1400000000ull);
 }
 

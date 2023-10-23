@@ -13,10 +13,14 @@ struct Magic {
     int offset;
 };
 
+// used to return attack table values
 uint64_t rookAttacks(int square, uint64_t allPieces);
 uint64_t bishopAttacks(int square, uint64_t allPieces);
+uint64_t pawnAttacks(int square, bool isWhiteTurn);
+uint64_t knightAttacks(int square);
+uint64_t kingAttacks(int square);
 
-// internal initialization
+// initilizes all tables 
 void init();
 template <typename Function, size_t SIZE>
 void initMagicTable(std::array<Magic, BOARD_SIZE>& table,
@@ -28,14 +32,22 @@ int getMagicIndex(Magic& entry, uint64_t blockers);
 uint64_t getRelevantBlockerMask(int square, bool isBishop);
 std::vector<uint64_t> getPossibleBlockers(uint64_t slideMask);
 
-uint64_t rookSlidingAttacks(int square, uint64_t blockers);
-uint64_t bishopSlidingAttacks(int square, uint64_t blockers);
+// bitboard functions
+uint64_t computeRookAttacks(int square, uint64_t blockers);
+uint64_t computeBishopAttacks(int square, uint64_t blockers);
 uint64_t fillInDir(int square, uint64_t blockers, int x, int y);
+uint64_t computeKnightAttacks(int square);
+uint64_t computeKingAttacks(int square);
+uint64_t computePawnAttacks(int square, bool isWhiteTurn);
 
+// table declarations
 extern std::array<Magic, BOARD_SIZE> ROOK_TABLE;
 extern std::array<Magic, BOARD_SIZE> BISHOP_TABLE;
 extern std::array<uint64_t, 102400> ROOK_ATTACKS;
 extern std::array<uint64_t, 5248> BISHOP_ATTACKS;
+extern std::array<std::array<uint64_t, BOARD_SIZE>, 2> PAWN_ATTACKS;
+extern std::array<uint64_t, BOARD_SIZE> KNIGHT_ATTACKS;
+extern std::array<uint64_t, BOARD_SIZE> KING_ATTACKS;
 
 // see ../tools/magic.cpp for how these magic numbers were generated
 constexpr std::array<uint64_t, BOARD_SIZE> ROOK_MAGICS{

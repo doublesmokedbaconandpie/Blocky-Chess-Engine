@@ -96,7 +96,7 @@ namespace MOVEGEN {
             int square = popLeadingBit(knights);
             BoardSquare knight(square);
             uint64_t knightBitboard = 1ull << square;
-            uint64_t knightMoves = knightSquares(knightBitboard) & ~allies;
+            uint64_t knightMoves = Attacks::knightAttacks(square) & ~allies;
             while (knightMoves) {
                 int currSquare = popLeadingBit(knightMoves);
                 BoardMove move(knight, BoardSquare(currSquare));
@@ -110,11 +110,11 @@ namespace MOVEGEN {
 
     void validBishopMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t bishops) {
         uint64_t allPieces = currBoard.pieceSets[WHITE_PIECES] | currBoard.pieceSets[BLACK_PIECES];
-        uint64_t friendlyPieces = currBoard.isWhiteTurn ? currBoard.pieceSets[WHITE_PIECES] : currBoard.pieceSets[BLACK_PIECES];
+        uint64_t allies = currBoard.isWhiteTurn ? currBoard.pieceSets[WHITE_PIECES] : currBoard.pieceSets[BLACK_PIECES];
         while (bishops) {
             int square = popLeadingBit(bishops);
             BoardSquare bishop(square);
-            uint64_t bishopMoves = Attacks::bishopAttacks(square, allPieces) & ~friendlyPieces;
+            uint64_t bishopMoves = Attacks::bishopAttacks(square, allPieces) & ~allies;
             while (bishopMoves) {
                 int currSquare = popLeadingBit(bishopMoves);
                 BoardMove move(bishop, BoardSquare(currSquare));
@@ -127,11 +127,11 @@ namespace MOVEGEN {
 
     void validRookMoves(Board& currBoard, std::vector<BoardMove>& validMoves, uint64_t rooks) {
         uint64_t allPieces = currBoard.pieceSets[WHITE_PIECES] | currBoard.pieceSets[BLACK_PIECES];
-        uint64_t friendlyPieces = currBoard.isWhiteTurn ? currBoard.pieceSets[WHITE_PIECES] : currBoard.pieceSets[BLACK_PIECES];
+        uint64_t allies = currBoard.isWhiteTurn ? currBoard.pieceSets[WHITE_PIECES] : currBoard.pieceSets[BLACK_PIECES];
         while (rooks) {
             int square = popLeadingBit(rooks);
             BoardSquare rook(square);
-            uint64_t rookMoves = Attacks::rookAttacks(square, allPieces) & ~friendlyPieces;
+            uint64_t rookMoves = Attacks::rookAttacks(square, allPieces) & ~allies;
             while (rookMoves) {
                 int currSquare = popLeadingBit(rookMoves);
                 BoardMove move(rook, BoardSquare(currSquare));
