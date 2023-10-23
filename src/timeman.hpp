@@ -19,7 +19,7 @@ namespace Timeman {
 
         TimeManager(int ms) {
             startTime = std::chrono::high_resolution_clock::now();
-            timeLimit = ms * 100;
+            timeLimit = ms * 1000 / 20;
         }
 
         bool timeUp() const;

@@ -8,7 +8,7 @@
 
 namespace Uci {
     struct UciOptions {
-        int depth = 6;
+        int depth = 100;
     };
 
     bool uci();
@@ -24,6 +24,6 @@ namespace Uci {
     void isready();
 
     // for debugging
-    void perft(Board& board);
+    void perft(std::istringstream& input, Board& board);
 
 } // namespace Uci

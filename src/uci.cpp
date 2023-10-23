@@ -23,7 +23,7 @@ namespace Uci {
         std::cout << "id name BLOCKY\n";
         std::cout << "id author BlockyTeam\n";
 
-        std::cout << "option name Depth type spin default 6 min 1 max 7\n";
+        std::cout << "option name maxDepth type spin default 100 min 1 max 200\n";
 
         std::cout << "uciok\n";
         return true;
@@ -46,10 +46,10 @@ namespace Uci {
         input >> token; 
         if (token != "name") {return;}
         input >> token;
-        if (token == "Depth") {
+        if (token == "maxDepth") {
             input >> token;
             input >> token;
-            OPTIONS.depth = stoi(token);
+            OPTIONS.depth = std::stoi(token);
             std::cout << "Depth set to: " << OPTIONS.depth << std::endl;
         };
     }
@@ -67,7 +67,7 @@ namespace Uci {
             else if (commandToken == "position") {currBoard = position(commandStream);}
             else if (commandToken == "go") {Uci::go(commandStream, currBoard);}
             else if (commandToken == "isready") {isready();}
-            else if (commandToken == "perft") {perft(currBoard);}
+            else if (commandToken == "perft") {perft(commandStream, currBoard);}
             else if (commandToken == "quit") {return;}
         }
     }
@@ -112,13 +112,13 @@ namespace Uci {
         std::string param, value;
         while (input >> param) {
             input >> value;
-            if (param == "wtime") {wtime = stoi(value);}
-            else if (param == "btime") {btime = stoi(value);}
+            if (param == "wtime") {wtime = std::stoi(value);}
+            else if (param == "btime") {btime = std::stoi(value);}
         }   
         allytime = board.isWhiteTurn ? wtime : btime;
 
-        Search::Searcher currSearch(board, allytime);
-        Search::Info result = currSearch.search();
+        Search::Searcher currSearch(board, allytime, OPTIONS.depth);
+        Search::Info result = currSearch.startThinking();
         
         info(result);
         std::cout << "bestmove " << result.move.toStr() << "\n";
@@ -130,7 +130,9 @@ namespace Uci {
 
         // time is output in milliseconds per the UCI protocol
         std::cout << "time " << searchResult.timeElapsed << ' ';
-        std::cout << "nps " << searchResult.nodes * 1000 / searchResult.timeElapsed  << ' ';
+        if (searchResult.timeElapsed > 0) { // prevents divide by 0
+            std::cout << "nps " << searchResult.nodes * 1000 / searchResult.timeElapsed  << ' ';
+        }
         
         
         if (searchResult.mateIn == Search::NO_MATE) {
@@ -146,9 +148,25 @@ namespace Uci {
         std::cout << "readyok\n";
     }
 
-    void perft(Board& board) {
+    void perft(std::istringstream& input, Board& board) {
+        // validate arguments
+        std::string token;
+        int depth;
+        if (!(input >> token)) {
+            std::cout << "ARGUMENT ERROR: Perft requires a depth to search to" << std::endl;
+            return;
+        }
+        try {
+            depth = std::stoi(token);
+        } 
+        catch(std::exception& e) {
+            std::cout << "ARGUMENT ERROR: Perft requires an integer to search to" << std::endl;
+            return;
+        }
+        
+        // perform perft
         auto start = std::chrono::high_resolution_clock::now();
-        uint64_t nodes = MOVEGEN::perft(board, OPTIONS.depth);
+        uint64_t nodes = MOVEGEN::perft(board, depth);
         auto end = std::chrono::high_resolution_clock::now();
         int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         std::cout << "perft result nodes " << nodes;
