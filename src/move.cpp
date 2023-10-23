@@ -100,31 +100,29 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
 }
 
 std::string BoardMove::toStr() const{
-    char pp;
-    switch (this->promotionPiece) {
-        case WQueen:
-        case BQueen:
-            pp = 'q';
-            break;
-        case WBishop:
-        case BBishop:
-            pp = 'b';
-            break;
-        case WRook:
-        case BRook:
-            pp = 'r';
-            break;
-        case WKnight:
-        case BKnight:
-            pp = 'n';
-            break;
-        default:
-            pp = ' ';
-    }
     std::ostringstream move;
     move << this->pos1;
     move << this->pos2;
-    move << pp;
+    switch (this->promotionPiece) {
+        case WQueen:
+        case BQueen:
+            move << 'q';
+            break;
+        case WBishop:
+        case BBishop:
+            move << 'b';
+            break;
+        case WRook:
+        case BRook:
+            move << 'r';
+            break;
+        case WKnight:
+        case BKnight:
+            move << 'n';
+            break;
+        default:
+            break;
+    }
     return move.str();
 }
 

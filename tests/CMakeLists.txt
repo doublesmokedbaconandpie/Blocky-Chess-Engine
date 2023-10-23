@@ -23,7 +23,6 @@ add_executable(
     testBitBoard.cpp
     testBoard.cpp
     testMoveGen.cpp
-    testSearch.cpp
     ../src/zobrist.cpp
     ../src/bitboard.cpp
     ../src/attacks.cpp
@@ -31,6 +30,7 @@ add_executable(
     ../src/board.cpp
     ../src/moveGen.cpp
     ../src/movePicker.cpp
+    ../src/timeman.cpp
     ../src/search.cpp
     ../src/eval.cpp
 )
