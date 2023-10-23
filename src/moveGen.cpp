@@ -42,22 +42,19 @@ namespace MOVEGEN {
             pawnCaptures(currBoard, pawnMoves, pawn, 1);
             pawnCaptures(currBoard, pawnMoves, pawn, -1);        
         
-            for (BoardSquare move: pawnMoves) {
-                currBoard.makeMove(pawn, move, allyKnight); // promotion piece is a placeholder
-                if (currBoard.isIllegalPos) {
-                    currBoard.undoMove();
+            for (BoardSquare target: pawnMoves) {
+                if (!currBoard.isLegalMove(BoardMove(pawn, target))) {
                     continue;
-                }
-                if (move.rank == promoteRank) {
-                    validMoves.push_back(BoardMove(pawn, move, allyKnight));
-                    validMoves.push_back(BoardMove(pawn, move, allyBishop));
-                    validMoves.push_back(BoardMove(pawn, move, allyRook));
-                    validMoves.push_back(BoardMove(pawn, move, allyQueen));
+                } 
+                if (target.rank == promoteRank) {
+                    validMoves.push_back(BoardMove(pawn, target, allyKnight));
+                    validMoves.push_back(BoardMove(pawn, target, allyBishop));
+                    validMoves.push_back(BoardMove(pawn, target, allyRook));
+                    validMoves.push_back(BoardMove(pawn, target, allyQueen));
                 }
                 else {
-                    validMoves.push_back(BoardMove(pawn, move));
+                    validMoves.push_back(BoardMove(pawn, target));
                 }
-                currBoard.undoMove();
             }
         }
     }
@@ -102,12 +99,10 @@ namespace MOVEGEN {
             uint64_t knightMoves = knightSquares(knightBitboard) & ~allies;
             while (knightMoves) {
                 int currSquare = popLeadingBit(knightMoves);
-                BoardSquare move(currSquare);
-                currBoard.makeMove(knight, move);
-                if (!currBoard.isIllegalPos) {
-                    validMoves.push_back(BoardMove(knight, move));
+                BoardMove move(knight, BoardSquare(currSquare));
+                if (currBoard.isLegalMove(move)) {
+                    validMoves.push_back(move);
                 }
-                currBoard.undoMove();
             }
 
         }
@@ -122,12 +117,10 @@ namespace MOVEGEN {
             uint64_t bishopMoves = Attacks::bishopAttacks(square, allPieces) & ~friendlyPieces;
             while (bishopMoves) {
                 int currSquare = popLeadingBit(bishopMoves);
-                BoardSquare move(currSquare);
-                currBoard.makeMove(bishop, move);
-                if (!currBoard.isIllegalPos) {
-                    validMoves.push_back(BoardMove(bishop, move));
+                BoardMove move(bishop, BoardSquare(currSquare));
+                if (currBoard.isLegalMove(move)) {
+                    validMoves.push_back(move);
                 }
-                currBoard.undoMove();
             }
         }
     }
@@ -141,12 +134,10 @@ namespace MOVEGEN {
             uint64_t rookMoves = Attacks::rookAttacks(square, allPieces) & ~friendlyPieces;
             while (rookMoves) {
                 int currSquare = popLeadingBit(rookMoves);
-                BoardSquare move(currSquare);
-                currBoard.makeMove(rook, move);
-                if (!currBoard.isIllegalPos) {
-                    validMoves.push_back(BoardMove(rook, move));
+                BoardMove move(rook, BoardSquare(currSquare));
+                if (currBoard.isLegalMove(move)) {
+                    validMoves.push_back(move);
                 }
-                currBoard.undoMove();
             }
         }
     }
@@ -188,30 +179,31 @@ namespace MOVEGEN {
             // castling
             for (BoardSquare square: potentialCastleMoves) {
                 // check for castling rights and validity
-                if (currKingInAttack(currBoard)) {break;}
+                if (currKingInAttack(currBoard.pieceSets, currBoard.isWhiteTurn)) {break;}
                 if (!(currBoard.castlingRights & castleRightsBit(square, currBoard.isWhiteTurn))) {continue;}
-                
+
+
                 // prevent castling through squares attacked by enemies
                 int kingFileDirection = square.file == G ? 1 : -1;
-                currBoard.makeMove(king, BoardSquare(king.rank, king.file + kingFileDirection));
-                if (currBoard.isIllegalPos) {
-                    currBoard.undoMove();
+                BoardMove oneOver(king, BoardSquare(king.rank, king.file + kingFileDirection));
+                if (!currBoard.isLegalMove(oneOver)) {
                     continue;
-                } 
-                currBoard.undoMove();
+                }
 
                 // check for pieces in between king and rook
                 if (unblockedCastleRook(currBoard, king, kingFileDirection)) {
                     kingMoves.push_back(BoardSquare(kingUnmovedRank, square.file));
                 }
             }
-            
-            for (BoardSquare move: kingMoves) {
-                currBoard.makeMove(king, move);
-                if (!currBoard.isIllegalPos) {
-                    validMoves.push_back(BoardMove(king, move));
+
+            for (BoardSquare target: kingMoves) {
+                BoardMove move(king, target);
+                if (!target.isValid()) {
+                    continue;
                 }
-                currBoard.undoMove();
+                if (currBoard.isLegalMove(move)) {
+                    validMoves.push_back(move);
+                }
             }
 
         }

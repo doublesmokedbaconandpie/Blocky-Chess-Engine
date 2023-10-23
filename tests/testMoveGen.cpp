@@ -253,6 +253,7 @@ TEST_F(MoveGenTest, validKingMovesNoCastle) {
         WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
     };
     Board board(boardArr);
+    board.castlingRights = noCastle;
     
     std::vector<BoardMove> validMoves;
     std::vector<BoardMove> expectedValidMoves = {

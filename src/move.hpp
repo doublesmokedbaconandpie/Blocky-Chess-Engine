@@ -11,7 +11,7 @@ struct BoardSquare {
     BoardSquare(std::string input);
     BoardSquare(int square); // from square
     std::string toStr();
-    int toSquare();
+    int toSquare() const;
     bool isValid() const;
 
     friend bool operator==(const BoardSquare& lhs, const BoardSquare& rhs);

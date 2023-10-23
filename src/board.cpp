@@ -28,7 +28,6 @@ Board::Board() {
     this->isWhiteTurn = true;
     this->fiftyMoveRule = 0;
     this->pawnJumpedSquare = BoardSquare();
-    this->isIllegalPos = false;
     this->castlingRights = All_Castle;
     this->materialDifference = 0;
     this->eval = EvalAttributes();
@@ -62,12 +61,11 @@ Board::Board() {
 // Used for debugging and testing
 Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn, 
             int a_fiftyMoveRule, BoardSquare a_pawnJumpedSquare, 
-            bool a_isIllegalPos, castleRights a_castlingRights, int a_materialDifference) {
+            castleRights a_castlingRights, int a_materialDifference) {
     this->board = a_board;
     this->isWhiteTurn = a_isWhiteTurn;
     this->fiftyMoveRule = a_fiftyMoveRule;
     this->pawnJumpedSquare = a_pawnJumpedSquare;
-    this->isIllegalPos = a_isIllegalPos;
     this->castlingRights = a_castlingRights;
     this->materialDifference = a_materialDifference;
 
@@ -154,8 +152,6 @@ Board::Board(std::string fenStr) {
 
     fenStream >> token;
     this->fiftyMoveRule = stoi(token);
-
-    this->isIllegalPos = false; // it is up to the UCI gui to not give illegal positions
 
     this->initZobristKey();
     // Board doesn't use Fullmove counter
@@ -373,9 +369,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->zobristKey ^= Zobrist::enPassKeys[oldPawnJumpedSquare.file];
     }	
     
-    // check for illegality 
-    this->isIllegalPos = currKingInAttack(*this);
-
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !this->isWhiteTurn; 
     this->zobristKey ^= Zobrist::isBlackKey;
@@ -421,12 +414,41 @@ void Board::undoMove() {
     this->pawnJumpedSquare = prev.pawnJumpedSquare;
     this->fiftyMoveRule = prev.fiftyMoveRule;
     this->materialDifference = prev.materialDifference;
-    this->isIllegalPos = false;
     this->eval = prev.eval;
 
     this->moveHistory.pop_back();
     this->zobristKeyHistory.pop_back();
     this->zobristKey = zobristKeyHistory.back();
+}
+
+bool Board::isLegalMove(const BoardMove move) const {
+    // This is a bitboard implementation to check whether a move leaves the ally king under attack
+    // The current move generation already checks whether castling is even valid 
+    // or squares unblocked so only the king final position needs to be checked
+
+    assert(move.isValid());
+
+    std::array<uint64_t, NUM_BITBOARDS> tmpPieceSets = this->pieceSets;
+    pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
+
+    uint64_t originSquare = (1ull << move.pos1.toSquare());
+    uint64_t targetSquare = (1ull << move.pos2.toSquare());
+    pieceTypes originPiece = this->getPiece(move.pos1);
+    pieceTypes targetPiece = this->getPiece(move.pos2);
+
+    // move ally piece 
+    tmpPieceSets[originColor] ^= originSquare;
+    tmpPieceSets[originPiece] ^= originSquare;
+    tmpPieceSets[originColor] ^= targetSquare;
+    tmpPieceSets[originPiece] ^= targetSquare;
+
+    if (targetPiece != EmptyPiece) {
+        pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
+        tmpPieceSets[targetColor] ^= targetSquare;
+        tmpPieceSets[targetPiece] ^= targetSquare;
+    }
+    
+    return !currKingInAttack(tmpPieceSets, this->isWhiteTurn);
 }
 
 // getPiece is not responsible for bounds checking
@@ -503,7 +525,6 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
     }
     os << "\n";
     os << "castlingRights: " << target.castlingRights << "\n";
-    os << "isIllegalPos: " << target.isIllegalPos << "\n";
     os << "isWhiteTurn: " << target.isWhiteTurn << "\n";
     os << "50MoveRule: " << target.fiftyMoveRule << "\n";
     os << "ZobristKey: " << target.zobristKey << "\n";
@@ -528,24 +549,24 @@ castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn) {
     }
 }
 
-bool currKingInAttack(Board& board) {
-    pieceTypes allyKing = board.isWhiteTurn ? WKing : BKing;
-    assert(board.pieceSets[allyKing]);
-    int kingSquare = leadingBit(board.pieceSets[allyKing]);
+bool currKingInAttack(std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn) {
+    pieceTypes allyKing = isWhiteTurn ? WKing : BKing;
+    assert(pieceSets[allyKing]);
+    int kingSquare = leadingBit(pieceSets[allyKing]);
 
-    uint64_t allPieces = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
+    uint64_t allPieces = pieceSets[WHITE_PIECES] | pieceSets[BLACK_PIECES];
 
-    uint64_t enemyKings   = board.isWhiteTurn ? board.pieceSets[BKing]   : board.pieceSets[WKing];
-    uint64_t enemyQueens  = board.isWhiteTurn ? board.pieceSets[BQueen]  : board.pieceSets[WQueen];
-    uint64_t enemyBishops = board.isWhiteTurn ? board.pieceSets[BBishop] : board.pieceSets[WBishop];
-    uint64_t enemyRooks   = board.isWhiteTurn ? board.pieceSets[BRook]   : board.pieceSets[WRook];
-    uint64_t enemyKnights = board.isWhiteTurn ? board.pieceSets[BKnight] : board.pieceSets[WKnight];
-    uint64_t enemyPawns   = board.isWhiteTurn ? board.pieceSets[BPawn]   : board.pieceSets[WPawn];
+    uint64_t enemyKings   = isWhiteTurn ? pieceSets[BKing]   : pieceSets[WKing];
+    uint64_t enemyQueens  = isWhiteTurn ? pieceSets[BQueen]  : pieceSets[WQueen];
+    uint64_t enemyBishops = isWhiteTurn ? pieceSets[BBishop] : pieceSets[WBishop];
+    uint64_t enemyRooks   = isWhiteTurn ? pieceSets[BRook]   : pieceSets[WRook];
+    uint64_t enemyKnights = isWhiteTurn ? pieceSets[BKnight] : pieceSets[WKnight];
+    uint64_t enemyPawns   = isWhiteTurn ? pieceSets[BPawn]   : pieceSets[WPawn];
 
     return Attacks::bishopAttacks(kingSquare, allPieces) & (enemyBishops | enemyQueens)
         || Attacks::rookAttacks(kingSquare, allPieces) & (enemyRooks | enemyQueens)
         || knightSquares(enemyKnights) & 1ull << kingSquare
-        || pawnAttackers(kingSquare, enemyPawns, board.isWhiteTurn)
+        || pawnAttackers(kingSquare, enemyPawns, isWhiteTurn)
         || kingAttackers(kingSquare, enemyKings);
 }
 
