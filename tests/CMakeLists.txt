@@ -30,6 +30,7 @@ add_executable(
     ../src/board.cpp
     ../src/moveGen.cpp
     ../src/movePicker.cpp
+    ../src/timeman.cpp
     ../src/search.cpp
     ../src/eval.cpp
 )

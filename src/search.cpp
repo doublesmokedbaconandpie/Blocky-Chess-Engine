@@ -1,23 +1,37 @@
 #include <vector>
 #include <utility>
 #include <iostream>
+#include <chrono>
 
 #include "search.hpp"
 #include "movePicker.hpp"
 #include "eval.hpp"
 #include "moveGen.hpp"
 #include "board.hpp"
+#include "timeman.hpp"
 
 namespace Search {
-    Info Searcher::search(int depth) {
+    Info Searcher::startThinking() {
         Info result;
-        Node root = this->alphaBeta(MIN_ALPHA, MAX_BETA, depth, 0);
+        Node root;
 
-        result.nodes = this->nodes;
-        result.depth = this->max_depth;
-        
-        result.eval = root.eval;
-        result.move = root.move;
+        // perform iterative deepening
+        for(int i = 1; i <= this->depth_limit; i++) {
+            root = this->search(MIN_ALPHA, MAX_BETA, i, 0);
+            
+            if(this->tm.timeUp()) {
+                result.nodes = this->nodes;
+                result.timeElapsed = this->tm.getTimeElapsed();
+                break;
+            }
+            else {
+                result.depth = this->max_depth;
+                result.eval = root.eval;
+                result.move = root.move;
+            }
+        }
+
+        // compute mate-in
         if (root.eval > MAX_BETA - 100) {
             result.mateIn = MAX_BETA - root.eval;
         }
@@ -27,8 +41,12 @@ namespace Search {
         return result;
     }
 
-    Node Searcher::alphaBeta(int alpha, int beta, int depthLeft, int distanceFromRoot) {
+    Node Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) {
         Node result;
+        if(this->tm.timeUp()) {
+            return result;
+        }
+
         this->nodes++;
         this->max_depth = distanceFromRoot > this->max_depth ? distanceFromRoot : this->max_depth;
 
@@ -48,7 +66,7 @@ namespace Search {
         }
         // max depth reached
         if (depthLeft == 0) {
-            result.eval = this->board.getEvalScore();
+            result.eval = quiesce(alpha, beta, 5);
             return result;
         }
         // checkmate or stalemate
@@ -72,10 +90,10 @@ namespace Search {
         while (movePicker.movesLeft()) {
             BoardMove move = movePicker.pickMove();
             board.makeMove(move);
-            Node oppAlphaBeta = alphaBeta(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
+            Node opponent = search(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
             board.undoMove(); 
             
-            score = -1 * oppAlphaBeta.eval;
+            score = -1 * opponent.eval;
             
             // prune if a move is too good; opponent side will avoid playing into this node
             if (score >= beta) {
@@ -94,6 +112,41 @@ namespace Search {
         return result;
     }
 
+    int Searcher::quiesce(int alpha, int beta, int depthLeft) {
+        if(this->tm.timeUp()) {
+            return -1;
+        }
 
+        this->nodes++;
+
+        int stand_pat = this->board.getEvalScore();
+        if(stand_pat >= beta)
+            return beta;
+        if(alpha < stand_pat)
+            alpha = stand_pat;
+        if(depthLeft == 0)
+            return stand_pat;
+
+        std::vector<BoardMove> moves = MOVEGEN::moveGenerator(this->board);
+        MovePicker movePicker(std::move(moves));
+        movePicker.assignMoveScores(board);
+
+        int score = MIN_ALPHA;
+        while (movePicker.movesLeft()) {
+            BoardMove move = movePicker.pickMove();
+            if(!board.moveIsCapture(move))
+                continue;
+            board.makeMove(move);
+            score = -1 * (quiesce(-1 * beta, -1 * alpha, depthLeft - 1));
+            board.undoMove(); 
+
+            if(score >= beta)
+                return beta;
+            if(score > alpha)
+                alpha = score;
+        }
+        return alpha;
+
+    }
 
 } // namespace Search
