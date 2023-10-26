@@ -2,11 +2,9 @@
 #include "types.hpp"
 
 #include <gtest/gtest.h>
-#include <cstdint>
-#include <bitset>
 #include <array>
-
-
+#include <bitset>
+#include <cstdint>
 
 TEST(BitboardTest, leadingBitEmpty) {
     uint64_t bitboard = 0ull;

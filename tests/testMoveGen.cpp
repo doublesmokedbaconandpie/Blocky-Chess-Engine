@@ -5,8 +5,8 @@
 #include "zobrist.hpp"
 
 #include <gtest/gtest.h>
-#include <vector>
 #include <algorithm>
+#include <vector>
 
 using namespace MOVEGEN;
 class MoveGenTest : public testing::Test {
