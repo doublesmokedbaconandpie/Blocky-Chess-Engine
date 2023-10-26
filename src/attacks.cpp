@@ -43,12 +43,12 @@ uint64_t kingAttacks(int square) {
 }
 
 // precompute attack table values
-
 void init() {
+    // init rook and bishop tables
     initMagicTable(ROOK_TABLE, ROOK_MAGICS, ROOK_ATTACKS, computeRookAttacks, false);
     initMagicTable(BISHOP_TABLE, BISHOP_MAGICS, BISHOP_ATTACKS, computeBishopAttacks, true);
 
-    // init other tables
+    // init king, knight, and pawn tables
     for (int i = 0; i < BOARD_SIZE; i++) {
         KNIGHT_ATTACKS[i] = computeKnightAttacks(i);
         KING_ATTACKS[i] = computeKingAttacks(i);
