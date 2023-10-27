@@ -429,19 +429,30 @@ bool Board::isLegalMove(const BoardMove move) const {
     assert(move.isValid());
 
     std::array<uint64_t, NUM_BITBOARDS> tmpPieceSets = this->pieceSets;
+
     pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
-
     uint64_t originSquare = (1ull << move.pos1.toSquare());
-    uint64_t targetSquare = (1ull << move.pos2.toSquare());
     pieceTypes originPiece = this->getPiece(move.pos1);
-    pieceTypes targetPiece = this->getPiece(move.pos2);
 
+    // account for all captures, including en passant
+    uint64_t targetSquare;
+    pieceTypes targetPiece;
+    pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
+    if (originPiece == allyPawn && move.pos2 == this->pawnJumpedSquare) {
+        int dir = this->isWhiteTurn ? 8 : -8;
+        targetSquare = 1ull << (move.pos2.toSquare() + dir);
+        targetPiece = this->isWhiteTurn ? BPawn : WPawn;
+    } else {
+        targetSquare = 1ull << move.pos2.toSquare();
+        targetPiece = this->getPiece(move.pos2);
+    }
     // move ally piece 
     tmpPieceSets[originColor] ^= originSquare;
     tmpPieceSets[originPiece] ^= originSquare;
     tmpPieceSets[originColor] ^= targetSquare;
     tmpPieceSets[originPiece] ^= targetSquare;
 
+    // check destination
     if (targetPiece != EmptyPiece) {
         pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
         tmpPieceSets[targetColor] ^= targetSquare;

@@ -458,6 +458,12 @@ TEST_F(BoardTest, LegalMoveBishopPin) {
     ASSERT_FALSE(board.isLegalMove(move));
 }
 
+TEST_F(BoardTest, LegalMoveEnPassant) {
+    Board board("2RQ4/R6p/6b1/1k5p/Ppp5/8/6P1/7K b - a3 0 42");
+    BoardMove move("b4a3", board.isWhiteTurn);
+    ASSERT_TRUE(board.isLegalMove(move));
+}
+
 TEST_F(BoardTest, MakeMoveCastleRightsRook) {
     Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1");
     board.makeMove(BoardMove("h1g1", board.isWhiteTurn));
