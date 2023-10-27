@@ -564,7 +564,7 @@ castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn) {
     }
 }
 
-bool currKingInAttack(std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn) {
+bool currKingInAttack(const std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn) {
     pieceTypes allyKing = isWhiteTurn ? WKing : BKing;
     assert(pieceSets[allyKing]);
     int kingSquare = leadingBit(pieceSets[allyKing]);

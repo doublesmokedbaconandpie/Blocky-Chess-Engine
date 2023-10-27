@@ -80,7 +80,7 @@ struct Board {
 };
 
 castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn);
-bool currKingInAttack(std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn);
+bool currKingInAttack(const std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn);
 
 // for debugging
 uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int target);

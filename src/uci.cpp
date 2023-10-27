@@ -144,7 +144,7 @@ namespace Uci {
         
         // perform perft
         auto start = std::chrono::high_resolution_clock::now();
-        uint64_t nodes = MOVEGEN::perft(board, depth);
+        uint64_t nodes = MoveGen::perft(board, depth);
         auto end = std::chrono::high_resolution_clock::now();
         int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         std::cout << "perft result nodes " << nodes;
