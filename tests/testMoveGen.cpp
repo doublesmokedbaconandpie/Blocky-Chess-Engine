@@ -17,354 +17,64 @@ class MoveGenTest : public testing::Test {
         }
 };
 
-TEST_F(MoveGenTest, isFriendlyPieceTrue1) {
-    Board board;
-    BoardSquare whiteSquare = BoardSquare(7, H);
-    bool result = isFriendlyPiece(board, whiteSquare);
-    ASSERT_EQ(result, true);
-}
-
-TEST_F(MoveGenTest, isFriendlyPieceTrue2) {
-    Board board;
-    board.isWhiteTurn = false;
-    BoardSquare blackSquare = BoardSquare(1, H);
-    bool result = isFriendlyPiece(board, blackSquare);
-    ASSERT_EQ(result, true);
-}
-
-TEST_F(MoveGenTest, isFriendlyPieceFalse) {
-    Board board;
-    BoardSquare blackSquare = BoardSquare(1, H);
-    bool result = isFriendlyPiece(board, blackSquare);
-    ASSERT_EQ(result, false);
-}
-
-// there must be a king in each test to see for illegal moves
-
 TEST_F(MoveGenTest, validPawnMovesCaptures) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        BPawn     , EmptyPiece, BPawn     , EmptyPiece, WQueen    , EmptyPiece, EmptyPiece, EmptyPiece,
-        WKing     , WPawn     , EmptyPiece, WPawn     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-    };
-    Board board(boardArr);
-    
-    std::vector<BoardMove> validMoves;
-    std::vector<BoardMove> expectedValidMoves = {
-        BoardMove(BoardSquare(4, B), BoardSquare(3, A)),
-        BoardMove(BoardSquare(4, B), BoardSquare(3, B)),
-        BoardMove(BoardSquare(4, B), BoardSquare(3, C)),
-
-        BoardMove(BoardSquare(4, D), BoardSquare(3, C)),
-        BoardMove(BoardSquare(4, D), BoardSquare(3, D)),
-
-        BoardMove(BoardSquare(6, G), BoardSquare(5, G)),
-        BoardMove(BoardSquare(6, G), BoardSquare(4, G)),
-    };
-    uint64_t whitePawns = arrayToBitboardPieceType(boardArr, WPawn);
-    validPawnMoves(board, validMoves, whitePawns);
-
-    std::sort(validMoves.begin(), validMoves.end());
-    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(validMoves, expectedValidMoves);
+    Board board("7k/8/8/p1p14/KP1P4/8/6P1/8 w - - 0 1");
+    std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+    ASSERT_EQ(moves.size(), 11);
 }
 
 TEST_F(MoveGenTest, validPawnMovesPromotion) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, WPawn     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-    };
-    Board board(boardArr);
-    
-    std::vector<BoardMove> validMoves;
-    std::vector<BoardMove> expectedValidMoves = {
-        BoardMove(BoardSquare(1, D), BoardSquare(0, D), WKnight),
-        BoardMove(BoardSquare(1, D), BoardSquare(0, D), WBishop),
-        BoardMove(BoardSquare(1, D), BoardSquare(0, D), WRook),
-        BoardMove(BoardSquare(1, D), BoardSquare(0, D), WQueen),
-    };
-    uint64_t whitePawns = arrayToBitboardPieceType(boardArr, WPawn);
-    validPawnMoves(board, validMoves, whitePawns);
-
-    std::sort(validMoves.begin(), validMoves.end());
-    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(validMoves, expectedValidMoves);
+    Board board("8/3P4/3K4/8/8/8/8/7k w - - 0 1");
+    std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+    ASSERT_EQ(moves.size(), 11);
 }
 
 TEST_F(MoveGenTest, validKnightMoves1) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, BKnight   , EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece,
-        WKnight   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-    };
-    Board board(boardArr);
-    
-    std::vector<BoardMove> validMoves;
-    std::vector<BoardMove> expectedValidMoves = {
-        BoardMove(BoardSquare(7, A), BoardSquare(5, B)),
-        BoardMove(BoardSquare(7, A), BoardSquare(6, C)),
-        
-        BoardMove(BoardSquare(4, D), BoardSquare(6, C)),
-        // BoardMove(BoardSquare(4, D), BoardSquare(6, E)), King located here
-        BoardMove(BoardSquare(4, D), BoardSquare(2, C)),
-        BoardMove(BoardSquare(4, D), BoardSquare(2, E)),
-        BoardMove(BoardSquare(4, D), BoardSquare(5, F)),
-        BoardMove(BoardSquare(4, D), BoardSquare(5, B)),
-        BoardMove(BoardSquare(4, D), BoardSquare(3, F)),
-        BoardMove(BoardSquare(4, D), BoardSquare(3, B)),
-    };
-    uint64_t whiteKnights = arrayToBitboardPieceType(boardArr, WKnight);
-    validKnightMoves(board, validMoves, whiteKnights);
-
-    std::sort(validMoves.begin(), validMoves.end());
-    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(validMoves, expectedValidMoves);
+    Board board("7k/8/8/8/3N4/8/2n1K3/N7 w - - 0 1");
+    std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+    ASSERT_EQ(moves.size(), 15);
 }
 
 TEST_F(MoveGenTest, validRookMoves1) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        WBishop   , WBishop   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        WRook     , WRook     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BRook     ,
-    };
-    Board board(boardArr, true);
-    
-    std::vector<BoardMove> validMoves;
-    std::vector<BoardMove> expectedValidMoves;
-    for (int rank = 6; rank >= 1; rank--) {
-        expectedValidMoves.push_back(BoardMove(BoardSquare(7, A), BoardSquare(rank, A)));
-        expectedValidMoves.push_back(BoardMove(BoardSquare(7, B), BoardSquare(rank, B)));
-    }
-    for (int file = H; file >= C; file--) {
-        expectedValidMoves.push_back(BoardMove(BoardSquare(7, B), BoardSquare(7, file)));
-    }
-    uint64_t whiteRooks = arrayToBitboardPieceType(boardArr, WRook);
-    validRookMoves(board, validMoves, whiteRooks);
-
-    std::sort(validMoves.begin(), validMoves.end());
-    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(validMoves, expectedValidMoves);
+    Board board("BB5k/8/8/8/8/8/2K5/RR5r w - - 0 1");
+    std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+    ASSERT_EQ(moves.size(), 37);
 }
 
 TEST_F(MoveGenTest, validBishopMoves1) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BBishop   , EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, WBishop   , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        WBishop   , WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-    };
-    Board board(boardArr);
-    
-    std::vector<BoardMove> validMoves;
-    std::vector<BoardMove> expectedValidMoves = {
-        BoardMove(BoardSquare(7, A), BoardSquare(6, B)),
-        BoardMove(BoardSquare(7, A), BoardSquare(5, C)),
-
-        BoardMove(BoardSquare(4, D), BoardSquare(5, C)),
-        BoardMove(BoardSquare(4, D), BoardSquare(6, B)),
-
-        BoardMove(BoardSquare(4, D), BoardSquare(3, C)),
-        BoardMove(BoardSquare(4, D), BoardSquare(2, B)),
-        BoardMove(BoardSquare(4, D), BoardSquare(1, A)),
-
-        BoardMove(BoardSquare(4, D), BoardSquare(5, E)),
-        BoardMove(BoardSquare(4, D), BoardSquare(6, F)),
-        BoardMove(BoardSquare(4, D), BoardSquare(7, G)),
-
-        BoardMove(BoardSquare(4, D), BoardSquare(3, E)),
-        BoardMove(BoardSquare(4, D), BoardSquare(2, F)),
-    };
-    uint64_t whiteBishops = arrayToBitboardPieceType(boardArr, WBishop);
-    validBishopMoves(board, validMoves, whiteBishops);
-
-    std::sort(validMoves.begin(), validMoves.end());
-    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(validMoves, expectedValidMoves);
+    Board board("7k/8/5b2/8/3B4/8/8/BK6 w - - 0 1");
+    std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+    ASSERT_EQ(moves.size(), 16);
 }
 
 TEST_F(MoveGenTest, validQueenMoves1) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        WQueen    , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WQueen    ,
-    };
-    Board board(boardArr);
-    
-    std::vector<BoardMove> validMoves;
-    std::vector<BoardMove> expectedValidMoves;
-    for (int i = 1; i <= 7; i++) {
-        expectedValidMoves.push_back(BoardMove(BoardSquare(7, A), BoardSquare(7 - i, A)));
-        expectedValidMoves.push_back(BoardMove(BoardSquare(7, A), BoardSquare(7 - i, A + i)));
-
-        expectedValidMoves.push_back(BoardMove(BoardSquare(7, H), BoardSquare(7 - i, H)));
-        expectedValidMoves.push_back(BoardMove(BoardSquare(7, H), BoardSquare(7 - i, H - i)));
-    }
-    for (int i = 1; i <= 6; i++) {
-        expectedValidMoves.push_back(BoardMove(BoardSquare(7, A), BoardSquare(7, A + i)));
-        expectedValidMoves.push_back(BoardMove(BoardSquare(7, H), BoardSquare(7, H - i)));
-    }
-    uint64_t whiteQueens = arrayToBitboardPieceType(boardArr, WQueen);
-    validQueenMoves(board, validMoves, whiteQueens);
-
-    std::sort(validMoves.begin(), validMoves.end());
-    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(validMoves, expectedValidMoves);
+    Board board("3k4/8/8/8/8/8/2K5/Q6Q w - - 0 1");
+    std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+    ASSERT_EQ(moves.size(), 48);
 }
 
 TEST_F(MoveGenTest, validKingMovesNoCastle) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, BPawn     , EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        WKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-    };
-    Board board(boardArr);
-    board.castlingRights = noCastle;
-    
-    std::vector<BoardMove> validMoves;
-    std::vector<BoardMove> expectedValidMoves = {
-        BoardMove(BoardSquare(7, A), BoardSquare(6, A)),
-        BoardMove(BoardSquare(7, A), BoardSquare(6, B)),
-        BoardMove(BoardSquare(7, A), BoardSquare(7, B)),
-
-        BoardMove(BoardSquare(4, D), BoardSquare(3, E)),
-        BoardMove(BoardSquare(4, D), BoardSquare(3, D)),
-        BoardMove(BoardSquare(4, D), BoardSquare(3, C)),
-        BoardMove(BoardSquare(4, D), BoardSquare(5, E)),
-        BoardMove(BoardSquare(4, D), BoardSquare(5, D)),
-        BoardMove(BoardSquare(4, D), BoardSquare(5, C)),
-        BoardMove(BoardSquare(4, D), BoardSquare(4, E)),
-        BoardMove(BoardSquare(4, D), BoardSquare(4, C)),
-    };
-    uint64_t whiteKings = arrayToBitboardPieceType(boardArr, WKing);
-    validKingMoves(board, validMoves, whiteKings);
-
-    std::sort(validMoves.begin(), validMoves.end());
-    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(validMoves, expectedValidMoves);
+    Board board("7k/8/8/8/8/4p3/8/4K3 w - - 0 1");
+    std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+    ASSERT_EQ(moves.size(), 3);
 }
 
 TEST_F(MoveGenTest, validKingMovesKingCastle) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        WRook     , EmptyPiece, WBishop   , EmptyPiece, WKing     , EmptyPiece, EmptyPiece, WRook     ,
-    };
-    Board board(boardArr);
-    
-    std::vector<BoardMove> validMoves;
-    std::vector<BoardMove> expectedValidMoves = {
-        BoardMove(BoardSquare(7, E), BoardSquare(6, D)),
-        BoardMove(BoardSquare(7, E), BoardSquare(6, E)),
-        BoardMove(BoardSquare(7, E), BoardSquare(6, F)),
-        BoardMove(BoardSquare(7, E), BoardSquare(7, D)),
-        BoardMove(BoardSquare(7, E), BoardSquare(7, F)),
-
-        BoardMove(BoardSquare(7, E), BoardSquare(7, G)),
-    };
-    uint64_t whiteKings = arrayToBitboardPieceType(boardArr, WKing);
-    validKingMoves(board, validMoves, whiteKings);
-
-    std::sort(validMoves.begin(), validMoves.end());
-    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(validMoves, expectedValidMoves);    
+    Board board("4k3/8/8/8/8/8/8/R1B1K2R w KQ - 0 1");
+    std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+    ASSERT_EQ(moves.size(), 30);
 }
 
 TEST_F(MoveGenTest, validKingMovesQueenCastle) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        WRook     , EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, WBishop   , WRook     ,
-    };
-    Board board(boardArr);
-    
-    std::vector<BoardMove> validMoves;
-    std::vector<BoardMove> expectedValidMoves = {
-        BoardMove(BoardSquare(7, E), BoardSquare(6, D)),
-        BoardMove(BoardSquare(7, E), BoardSquare(6, E)),
-        BoardMove(BoardSquare(7, E), BoardSquare(6, F)),
-        BoardMove(BoardSquare(7, E), BoardSquare(7, D)),
-        BoardMove(BoardSquare(7, E), BoardSquare(7, F)),
-
-        BoardMove(BoardSquare(7, E), BoardSquare(7, C)),
-    };
-    uint64_t whiteKings = arrayToBitboardPieceType(boardArr, WKing);
-    validKingMoves(board, validMoves, whiteKings);
-
-    std::sort(validMoves.begin(), validMoves.end());
-    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(validMoves, expectedValidMoves);    
+    Board board("4k3/8/8/8/8/8/8/R3K1BR w KQ - 0 1");
+    std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+    ASSERT_EQ(moves.size(), 30);
 }
 
 TEST_F(MoveGenTest, validKingMovesInvalidCastle) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        EmptyPiece, EmptyPiece, EmptyPiece, BQueen    , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        WRook     , EmptyPiece, EmptyPiece, EmptyPiece, WKing     , EmptyPiece, WBishop   , WRook     ,
-    };
-    Board board(boardArr);
-    
-    std::vector<BoardMove> validMoves;
-    std::vector<BoardMove> expectedValidMoves = {
-        BoardMove(BoardSquare(7, E), BoardSquare(6, E)),
-        BoardMove(BoardSquare(7, E), BoardSquare(6, F)),
-        BoardMove(BoardSquare(7, E), BoardSquare(7, F)),
-    };
-    uint64_t whiteKings = arrayToBitboardPieceType(boardArr, WKing);
-    validKingMoves(board, validMoves, whiteKings);
-
-    std::sort(validMoves.begin(), validMoves.end());
-    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(validMoves, expectedValidMoves);    
+    Board board("3qk3/8/8/8/8/8/8/R3K1BR w KQkq - 0 1");
+    std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+    ASSERT_EQ(moves.size(), 27);
 }
 
 TEST_F(MoveGenTest, moveGeneratorDefault) {

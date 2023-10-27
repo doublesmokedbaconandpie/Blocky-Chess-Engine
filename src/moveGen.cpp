@@ -118,24 +118,24 @@ uint64_t kingMoves(int square, MoveGenInfo& info) {
         int kingIndex = info.isWhiteTurn ? WKing : BKing;
 
         while (info.castlingRights) {
-            bool castleBlocked = false;
             int currRight = popLeadingBit(info.castlingRights);
-            uint64_t path = castlePaths[currRight];
 
-            // check each square for emptiness and being attacked
-            while (path) {
-                int currSquare = popLeadingBit(path);
-                info.pieceSets[kingIndex] = 1ull << currSquare;
-                if (1ull << currSquare & info.allPieces || 
-                    currKingInAttack(info.pieceSets, info.isWhiteTurn)) {
-                    castleBlocked = true;
-                    break;
-                }
+            // check for emptiness between rook and king
+            if (rookPaths[currRight] & info.allPieces) {
+                continue;
             }
 
-            if (!castleBlocked) {
-                moves |= castleDestination[currRight];
+            // check for king path being attacked
+            uint64_t path = kingPaths[currRight];
+            int currSquare = popLeadingBit(path);
+            info.pieceSets[kingIndex] = 1ull << currSquare;
+            if (1ull << currSquare & info.allPieces || 
+                currKingInAttack(info.pieceSets, info.isWhiteTurn)) {
+                    continue;
             }
+
+            // perform castle
+            moves |= castleDestination[currRight];
         }
     }
 
