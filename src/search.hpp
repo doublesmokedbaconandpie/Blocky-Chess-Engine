@@ -16,12 +16,12 @@ namespace Search {
 
     // used for outside UCI representation    
     struct Info {
-        uint64_t nodes;
-        int depth;
-        int eval;
+        uint64_t nodes = 0;
+        int depth = 0;
+        int eval = 0;
         int mateIn = NO_MATE;
         BoardMove move;
-        uint64_t timeElapsed;
+        uint64_t timeElapsed = 0;
     };
 
     // used for internal searching
