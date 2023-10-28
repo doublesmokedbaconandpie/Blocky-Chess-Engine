@@ -18,6 +18,7 @@ namespace Search {
         // perform iterative deepening
         for(int i = 1; i <= this->depth_limit; i++) {
             root = this->search(MIN_ALPHA, MAX_BETA, i, 0);
+            std::cout << i << ' ' << root.eval << std::endl;
             
             if(this->tm.timeUp()) {
                 result.nodes = this->nodes;
@@ -32,11 +33,11 @@ namespace Search {
         }
 
         // compute mate-in
-        if (root.eval > MAX_BETA - 100) {
-            result.mateIn = MAX_BETA - root.eval;
+        if (result.eval > MAX_BETA - 100) {
+            result.mateIn = MAX_BETA - result.eval;
         }
-        if (root.eval < MIN_ALPHA + 100) {
-            result.mateIn = root.eval - MIN_ALPHA;
+        if (result.eval < MIN_ALPHA + 100) {
+            result.mateIn = result.eval - MIN_ALPHA;
         }
         return result;
     }
