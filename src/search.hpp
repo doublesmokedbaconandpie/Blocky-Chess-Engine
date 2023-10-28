@@ -42,6 +42,8 @@ namespace Search {
             Info startThinking();
             Node search(int alpha, int beta, int depthLeft, int distanceFromRoot);
             int quiesce(int alpha, int beta, int depthLeft);
+
+            void outputUciInfo(Info searchResult);
         private:
             Board board;
             uint64_t nodes;

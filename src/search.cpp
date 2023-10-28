@@ -18,17 +18,17 @@ namespace Search {
         // perform iterative deepening
         for(int i = 1; i <= this->depth_limit; i++) {
             root = this->search(MIN_ALPHA, MAX_BETA, i, 0);
-            std::cout << i << ' ' << root.eval << std::endl;
+            result.nodes = this->nodes;
+            result.timeElapsed = this->tm.getTimeElapsed();
             
             if(this->tm.timeUp()) {
-                result.nodes = this->nodes;
-                result.timeElapsed = this->tm.getTimeElapsed();
                 break;
             }
             else {
                 result.depth = this->max_depth;
                 result.eval = root.eval;
                 result.move = root.move;
+                this->outputUciInfo(result);
             }
         }
 
@@ -147,6 +147,27 @@ namespace Search {
                 alpha = score;
         }
         return alpha;
+
+    }
+
+    void Searcher::outputUciInfo(Info searchResult) {
+        std::cout << "info depth " << searchResult.depth << ' ';
+        std::cout << "nodes " << searchResult.nodes << ' ';
+
+        // time is output in milliseconds per the UCI protocol
+        std::cout << "time " << searchResult.timeElapsed << ' ';
+        if (searchResult.timeElapsed > 0) { // prevents divide by 0
+            std::cout << "nps " << searchResult.nodes * 1000 / searchResult.timeElapsed  << ' ';
+        }
+
+        std::cout << "pv " << searchResult.move << ' ';
+        
+        if (searchResult.mateIn == Search::NO_MATE) {
+            std::cout << "score cp " << searchResult.eval << ' ';
+        } else { 
+            std::cout << "mate " << (searchResult.mateIn + 1) / 2 << ' '; // convert plies to moves
+        }
+        std::cout << std::endl;
 
     }
 

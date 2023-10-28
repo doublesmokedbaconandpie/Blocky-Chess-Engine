@@ -119,29 +119,7 @@ namespace Uci {
 
         Search::Searcher currSearch(board, allytime, OPTIONS.depth);
         Search::Info result = currSearch.startThinking();
-        
-        info(result);
         std::cout << "bestmove " << result.move.toStr() << "\n";
-    }
-
-    void info(Search::Info searchResult) {
-        std::cout << "info depth " << searchResult.depth << ' ';
-        std::cout << "nodes " << searchResult.nodes << ' ';
-
-        // time is output in milliseconds per the UCI protocol
-        std::cout << "time " << searchResult.timeElapsed << ' ';
-        if (searchResult.timeElapsed > 0) { // prevents divide by 0
-            std::cout << "nps " << searchResult.nodes * 1000 / searchResult.timeElapsed  << ' ';
-        }
-        
-        
-        if (searchResult.mateIn == Search::NO_MATE) {
-            std::cout << "score cp " << searchResult.eval << ' ';
-        }
-        else { 
-            std::cout << "mate " << (searchResult.mateIn + 1) / 2 << ' '; // convert plies to moves
-        }
-        std::cout << '\n';
     }
 
     void isready() {
