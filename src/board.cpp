@@ -433,17 +433,22 @@ bool Board::isLegalMove(const BoardMove move) const {
     pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
     uint64_t originSquare = (1ull << move.pos1.toSquare());
     pieceTypes originPiece = this->getPiece(move.pos1);
-
-    // account for all captures, including en passant
-    uint64_t targetSquare;
-    pieceTypes targetPiece;
     pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
+    pieceTypes enemyPawn = this->isWhiteTurn ? BPawn : WPawn;
+
+    // account for captures
+    uint64_t targetSquare = 1ull << move.pos2.toSquare();
+    pieceTypes targetPiece;
+    pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
+    
+    // en passant
     if (originPiece == allyPawn && move.pos2 == this->pawnJumpedSquare) {
+        targetPiece = EmptyPiece;
         int dir = this->isWhiteTurn ? 8 : -8;
-        targetSquare = 1ull << (move.pos2.toSquare() + dir);
-        targetPiece = this->isWhiteTurn ? BPawn : WPawn;
+        uint64_t enemyPawnSquare = 1ull << (move.pos2.toSquare() + dir);
+        tmpPieceSets[targetColor] ^= enemyPawnSquare;
+        tmpPieceSets[enemyPawn] ^= enemyPawnSquare;
     } else {
-        targetSquare = 1ull << move.pos2.toSquare();
         targetPiece = this->getPiece(move.pos2);
     }
     // move ally piece 
@@ -452,9 +457,8 @@ bool Board::isLegalMove(const BoardMove move) const {
     tmpPieceSets[originColor] ^= targetSquare;
     tmpPieceSets[originPiece] ^= targetSquare;
 
-    // check destination
+    // modify destination for non-empty square
     if (targetPiece != EmptyPiece) {
-        pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
         tmpPieceSets[targetColor] ^= targetSquare;
         tmpPieceSets[targetPiece] ^= targetSquare;
     }
