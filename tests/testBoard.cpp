@@ -464,6 +464,12 @@ TEST_F(BoardTest, LegalMoveEnPassant) {
     ASSERT_TRUE(board.isLegalMove(move));
 }
 
+TEST_F(BoardTest, LegalMoveEnPassantPin) {
+    Board board("6k1/8/7p/3K1Ppq/4n3/8/6p1/8 w - g6 0 1");
+    BoardMove move("f5g6", board.isWhiteTurn);
+    ASSERT_FALSE(board.isLegalMove(move));
+}
+
 TEST_F(BoardTest, MakeMoveCastleRightsRook) {
     Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1");
     board.makeMove(BoardMove("h1g1", board.isWhiteTurn));
