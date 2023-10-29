@@ -564,7 +564,7 @@ castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn) {
     }
 }
 
-bool currKingInAttack(std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn) {
+bool currKingInAttack(const std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn) {
     pieceTypes allyKing = isWhiteTurn ? WKing : BKing;
     assert(pieceSets[allyKing]);
     int kingSquare = leadingBit(pieceSets[allyKing]);
@@ -580,9 +580,9 @@ bool currKingInAttack(std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhi
 
     return Attacks::bishopAttacks(kingSquare, allPieces) & (enemyBishops | enemyQueens)
         || Attacks::rookAttacks(kingSquare, allPieces) & (enemyRooks | enemyQueens)
-        || knightSquares(enemyKnights) & 1ull << kingSquare
-        || pawnAttackers(kingSquare, enemyPawns, isWhiteTurn)
-        || kingAttackers(kingSquare, enemyKings);
+        || Attacks::pawnAttacks(kingSquare, isWhiteTurn) & enemyPawns
+        || Attacks::knightAttacks(kingSquare) & enemyKnights
+        || Attacks::kingAttacks(kingSquare) & enemyKings;
 }
 
 // used for debugging

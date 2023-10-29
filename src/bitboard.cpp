@@ -66,46 +66,6 @@ uint64_t getAntiDiagMask(int square) {
     return flipVertical(DIAGS_MASK[7 - getRank(square) + getFile(square)]);
 }
 
-uint64_t knightSquares(uint64_t knights) {
-    uint64_t left1 = (knights >> 1) & NOT_FILE_H;
-    uint64_t left2 = (knights >> 2) & NOT_FILE_HG;
-    uint64_t right1 = (knights << 1) & NOT_FILE_A;
-    uint64_t right2 = (knights << 2) & NOT_FILE_AB;
-
-    uint64_t height1 = left1 | right1;
-    uint64_t height2 = left2 | right2;
-    
-    uint64_t knightSquares = (height1 << 16) | (height1 >> 16) | (height2 << 8) | (height2 >> 8);
-    return knightSquares;
-}
-
-bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn) {
-    uint64_t currPiece = 1ull << square;
-
-    // prevent currPiece from teleporting to other side of the board with bit shifts
-    uint64_t left  = currPiece & NOT_FILE_A;
-    uint64_t right = currPiece & NOT_FILE_H;
-    
-    uint64_t upPawns   = (left >> 9) | (right >> 7); 
-    uint64_t downPawns = (left << 7) | (right << 9); 
-    return isWhiteTurn ? upPawns & enemyPawns : downPawns & enemyPawns;
-}
-
-bool kingAttackers(int square, uint64_t enemyKings) {
-    uint64_t currPiece = 1ull << square;
-
-    // prevent currPiece from teleporting to other side of the board with bit shifts
-    uint64_t left = currPiece & NOT_FILE_A;
-    uint64_t right = currPiece & NOT_FILE_H;
-    
-    currPiece |= (left >> 1);
-    currPiece |= (right << 1);
-    
-    // up one row and down one row respectively
-    currPiece |= (currPiece >> 8) | (currPiece << 8);
-    return currPiece & enemyKings;
-}
-
 // below functions are for debugging and testing
 
 void printHex(uint64_t bitboard) {

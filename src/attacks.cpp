@@ -16,8 +16,11 @@ std::array<Magic, BOARD_SIZE> ROOK_TABLE;
 std::array<Magic, BOARD_SIZE> BISHOP_TABLE;
 std::array<uint64_t, 102400> ROOK_ATTACKS;
 std::array<uint64_t, 5248> BISHOP_ATTACKS;
+std::array<std::array<uint64_t, BOARD_SIZE>, 2> PAWN_ATTACKS;
+std::array<uint64_t, BOARD_SIZE> KNIGHT_ATTACKS;
+std::array<uint64_t, BOARD_SIZE> KING_ATTACKS;
 
-// functions
+// return attack table values
 uint64_t rookAttacks(int square, uint64_t allPieces) {
     return ROOK_ATTACKS[getMagicIndex(ROOK_TABLE[square], allPieces)];
 }
@@ -26,9 +29,33 @@ uint64_t bishopAttacks(int square, uint64_t allPieces) {
     return BISHOP_ATTACKS[getMagicIndex(BISHOP_TABLE[square], allPieces)];
 }
 
+uint64_t pawnAttacks(int square, bool isWhiteTurn) {
+    int color = isWhiteTurn ? 0 : 1;
+    return PAWN_ATTACKS[color][square];
+}
+
+uint64_t knightAttacks(int square) {
+    return KNIGHT_ATTACKS[square];
+}
+
+uint64_t kingAttacks(int square) {
+    return KING_ATTACKS[square];
+}
+
+// precompute attack table values
 void init() {
-    initMagicTable(ROOK_TABLE, ROOK_MAGICS, ROOK_ATTACKS, rookSlidingAttacks, false);
-    initMagicTable(BISHOP_TABLE, BISHOP_MAGICS, BISHOP_ATTACKS, bishopSlidingAttacks, true);
+    // init rook and bishop tables
+    initMagicTable(ROOK_TABLE, ROOK_MAGICS, ROOK_ATTACKS, computeRookAttacks, false);
+    initMagicTable(BISHOP_TABLE, BISHOP_MAGICS, BISHOP_ATTACKS, computeBishopAttacks, true);
+
+    // init king, knight, and pawn tables
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        KNIGHT_ATTACKS[i] = computeKnightAttacks(i);
+        KING_ATTACKS[i] = computeKingAttacks(i);
+        PAWN_ATTACKS[0][i] = computePawnAttacks(i, true);
+        PAWN_ATTACKS[1][i] = computePawnAttacks(i, false);
+    }
+
 }
 
 template <typename Function, size_t SIZE>
@@ -103,7 +130,7 @@ uint64_t getRelevantBlockerMask(int square, bool isBishop) {
     return slideMask;
 }
 
-uint64_t rookSlidingAttacks(int square, uint64_t blockers) {
+uint64_t computeRookAttacks(int square, uint64_t blockers) {
     uint64_t attacks = 0ull;
     attacks |= fillInDir(square, blockers, 0, 1);
     attacks |= fillInDir(square, blockers, 0, -1);
@@ -112,7 +139,7 @@ uint64_t rookSlidingAttacks(int square, uint64_t blockers) {
     return attacks;
 }
 
-uint64_t bishopSlidingAttacks(int square, uint64_t blockers) {
+uint64_t computeBishopAttacks(int square, uint64_t blockers) {
     uint64_t attacks = 0ull;
     attacks |= fillInDir(square, blockers, 1, 1);
     attacks |= fillInDir(square, blockers, 1, -1);
@@ -135,6 +162,47 @@ uint64_t fillInDir(int square, uint64_t blockers, int x, int y) {
         currY += y;
     }
     return filled;
+}
+
+uint64_t computeKnightAttacks(int square) {
+    uint64_t currPiece = 1ull << square;
+    uint64_t left1 = (currPiece >> 1) & NOT_FILE_H;
+    uint64_t left2 = (currPiece >> 2) & NOT_FILE_HG;
+    uint64_t right1 = (currPiece << 1) & NOT_FILE_A;
+    uint64_t right2 = (currPiece << 2) & NOT_FILE_AB;
+
+    uint64_t height1 = left1 | right1;
+    uint64_t height2 = left2 | right2;
+    
+    uint64_t knightSquares = (height1 << 16) | (height1 >> 16) | (height2 << 8) | (height2 >> 8);
+    return knightSquares;
+}
+
+uint64_t computeKingAttacks(int square) {
+    uint64_t currPiece = 1ull << square;
+
+    // prevent currPiece from teleporting to other side of the board with bit shifts
+    uint64_t left = currPiece & NOT_FILE_A;
+    uint64_t right = currPiece & NOT_FILE_H;
+    
+    currPiece |= (left >> 1);
+    currPiece |= (right << 1);
+    
+    // up one row and down one row respectively
+    currPiece |= (currPiece >> 8) | (currPiece << 8);
+    return currPiece;
+}
+
+uint64_t computePawnAttacks(int square, bool isWhiteTurn) {
+    uint64_t currPiece = 1ull << square;
+
+    // prevent currPiece from teleporting to other side of the board with bit shifts
+    uint64_t left  = currPiece & NOT_FILE_A;
+    uint64_t right = currPiece & NOT_FILE_H;
+    
+    uint64_t upPawns   = (left >> 9) | (right >> 7); 
+    uint64_t downPawns = (left << 7) | (right << 9); 
+    return isWhiteTurn ? upPawns : downPawns;
 }
 
 } // namespace Attacks

@@ -71,7 +71,7 @@ namespace Search {
             return result;
         }
         // checkmate or stalemate
-        std::vector<BoardMove> moves = MOVEGEN::moveGenerator(this->board);
+        std::vector<BoardMove> moves = MoveGen::moveGenerator(this->board);
         if (moves.size() == 0) {
             if (currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
                 result.eval = MIN_ALPHA + distanceFromRoot;
@@ -128,7 +128,7 @@ namespace Search {
         if(depthLeft == 0)
             return stand_pat;
 
-        std::vector<BoardMove> moves = MOVEGEN::moveGenerator(this->board);
+        std::vector<BoardMove> moves = MoveGen::moveGenerator(this->board);
         MovePicker movePicker(std::move(moves));
         movePicker.assignMoveScores(board);
 

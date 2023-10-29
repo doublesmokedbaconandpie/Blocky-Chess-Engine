@@ -72,10 +72,6 @@ uint64_t getRankMask(int square);
 uint64_t getDiagMask(int square);
 uint64_t getAntiDiagMask(int square);
 
-uint64_t knightSquares(uint64_t knights);
-bool pawnAttackers(int square, uint64_t enemyPawns, bool isWhiteTurn);
-bool kingAttackers(int square, uint64_t enemyKings);
-
 // for debugging and testing
 void printHex(uint64_t bitboard);
 void printBitboard(uint64_t bitboard);
