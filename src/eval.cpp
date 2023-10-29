@@ -10,15 +10,21 @@ std::array<std::array<int, BOARD_SIZE>, 6> tablesOp;
 std::array<std::array<int, BOARD_SIZE>, 6> tablesEg; 
 
 // functions
-int getPlacementScore(int rank, int file, pieceTypes currPiece, gameProgress gameState) {
+
+// assumes that currPiece is not empty
+int getPlacementScoreOp(int rank, int file, pieceTypes currPiece) {
     if(currPiece >= WKing && currPiece <= WPawn) {
         return tablesOp[currPiece][rank * 8 + file];
     }
-    else if(currPiece >= BKing && currPiece <= BPawn) {
-        return -1 * tablesOp[currPiece - BKing][file + 56 - 8 * rank];
+    return -1 * tablesOp[currPiece - BKing][file + 56 - 8 * rank];
+}
+
+// assumes that currPiece is not empty
+int getPlacementScoreEg(int rank, int file, pieceTypes currPiece) {
+    if(currPiece >= WKing && currPiece <= WPawn) {
+        return tablesEg[currPiece][rank * 8 + file];
     }
-    
-    return 0;
+    return -1 * tablesEg[currPiece - BKing][file + 56 - 8 * rank];
 }
 
 void init() {

@@ -15,8 +15,8 @@ struct EvalAttributes {
 
     uint8_t piecesRemaining;
     int totalMaterial; 
-    int placementScore = 0;
-    gameProgress gameState = Opening;
+    int opScore = 0;
+    int egScore = 0;
 };
 
 struct BoardState {

@@ -4,7 +4,8 @@
 
 namespace Eval {
 
-int getPlacementScore(int rank, int file, pieceTypes currPiece, gameProgress gameState);
+int getPlacementScoreOp(int rank, int file, pieceTypes currPiece);
+int getPlacementScoreEg(int rank, int file, pieceTypes currPiece);
 void init();
 
 // opening tables
@@ -122,14 +123,14 @@ constexpr std::array<int, BOARD_SIZE> tableKnightEg = {
 };
 
 constexpr std::array<int, BOARD_SIZE> tableRookEg = {
+    10, 10, 10, 10, 10, 10, 10, 10,
+    20, 20, 20, 20, 20, 20, 20, 20,
+    10, 10, 10, 10, 10, 10, 10, 10,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
     0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
-    0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
-    0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
-    0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
-    0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
-    0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 
+    0 , 5 , 5 , 5 , 5 , 5 , 5 , 0 ,
+    0 , 0 , 10, 10, 10, 10, 0 , 0 
 };
 
 constexpr std::array<int, BOARD_SIZE> tablePawnEg = {
