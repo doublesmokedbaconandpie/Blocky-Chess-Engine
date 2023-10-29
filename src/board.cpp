@@ -35,8 +35,10 @@ Board::Board() {
     //sets up initial score for piece placement
     for(uint8_t i = 0; i < BOARD_SIZE; i++) {
         pieceTypes currPiece = board[i];
-        this->eval.opScore += Eval::getPlacementScoreOp(i / 8, i % 8, currPiece);
-        this->eval.egScore += Eval::getPlacementScoreEg(i / 8, i % 8, currPiece);
+        if (currPiece != EmptyPiece) {
+            this->eval.opScore += Eval::getPlacementScoreOp(i / 8, i % 8, currPiece);
+            this->eval.egScore += Eval::getPlacementScoreEg(i / 8, i % 8, currPiece);
+        }
     }
 
     this->pieceSets[WKing]   = 0x1000000000000000ull;
