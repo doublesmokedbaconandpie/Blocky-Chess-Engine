@@ -4,8 +4,9 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(Magic magic.cpp)
 
 target_sources(Magic PRIVATE
-    ../src/attacks.cpp
-    ../src/bitboard.cpp
+    ../../src/attacks.cpp
+    ../../src/zobrist.cpp
+    ../../src/bitboard.cpp
 )
 target_include_directories(Magic PUBLIC "../src/")
-target_compile_options(Magic PRIVATE -O3)
+target_compile_options(Magic PRIVATE -O3)et(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
