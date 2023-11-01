@@ -4,7 +4,6 @@
 
 int main() {
     Attacks::init();
-    Eval::init();
 
     Uci::printEngineInfo();
     Uci::setOptionLoop();

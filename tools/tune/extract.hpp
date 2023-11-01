@@ -6,11 +6,12 @@
 #include "move.hpp"
 
 enum WinningColor {
-    WHITE, DRAW, BLACK
+    WHITE, DRAW, BLACK, NA
 };
 
 WinningColor getGameResult(std::ifstream& file);
-std::vector<std::string> getFens(std::ifstream& file, const WinningColor result);
+std::string getStartFen(std::ifstream& file);
+std::vector<std::string> getPositions(std::ifstream& file, std::string startFen, const WinningColor result);
 BoardMove getMove(std::string input, Board& board);
 void storeFenResults(std::ofstream& file, std::vector<std::string> fens, WinningColor result);
 

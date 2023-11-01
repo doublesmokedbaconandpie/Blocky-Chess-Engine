@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "extract.hpp"
+#include "moveOrder.hpp"
 #include "moveGen.hpp"
 #include "board.hpp"
 #include "move.hpp"
@@ -14,21 +15,33 @@
 // This program is meant to convert the pgns from a Cutechess match into a data format
 // that is easy to parse; make sure not to have any incompleted games within those pgns
 
+int storedPositions = 0;
+
 int main() {
     Attacks::init();
 
-    std::string extractDest = "../data.pgn";
-    std::vector<std::string> cutechessPgns = {"../endgames.pgn", "../endgames2.pgn"};
+    std::string extractDest = "../data/positions.txt";
+    std::vector<std::string> cutechessPgns = {
+        "../data/tuneNMP.pgn", 
+    };
 
+    int games = 0;
     std::ofstream dest(extractDest);
     for (std::string cutechessPgn: cutechessPgns) {
+        std::cout << "Processing file: " << cutechessPgn << std::endl;
         std::ifstream file(cutechessPgn);
         while (!file.eof()) {
             WinningColor result = getGameResult(file);
-            std::vector<std::string> fens = getFens(file, result);
+            std::string startFen = getStartFen(file);
+            std::vector<std::string> fens = getPositions(file, startFen, result);
             storeFenResults(dest, fens, result);
+            ++games;
+            if (games % 500 == 0) {
+                std::cout << "Games processed: " << games << std::endl;
+            }
         }
     }
+    std::cout << "Total games processed: " << games << std::endl;
     return 0;
 }
 
@@ -45,17 +58,33 @@ WinningColor getGameResult(std::ifstream& file) {
 
     // check file open still
     if (file.eof()) {
-        return WHITE; // return value doesn't matter
+        return NA; // return value doesn't matter
     }
 
     std::string result = token.substr(1, token.length() - 3);
     if (result == "1-0") {return WHITE;}
     if (result == "1/2-1/2") {return DRAW;}
     if (result == "0-1") {return BLACK;}
+    // happens if cutechess is interrupted, result doesn't matter
+    if (token == "\"*\"]") {return NA;}
     throw std::runtime_error("Invalid result: " + token);
 }
 
-std::vector<std::string> getFens(std::ifstream& file, const WinningColor result) {
+std::string getStartFen(std::ifstream& file) {
+    // some opening books use moves from startpos, others start from a fen
+    std::string token, fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    while (token != "1." && !file.eof()) {
+        file >> token;
+        if (token == "[FEN") {
+            std::getline(file, fen, ']');
+            fen.erase(0, 2);
+            fen.erase(fen.size() - 1, 1);
+        }
+    }
+    return fen;
+}
+
+std::vector<std::string> getPositions(std::ifstream& file, std::string startFen, const WinningColor result) {
     // Games are generally stored in the following format:
     // 1. Nf3 {book} Nc6 {book} 2. b3 {book} d6 {book}
     // ...
@@ -69,17 +98,20 @@ std::vector<std::string> getFens(std::ifstream& file, const WinningColor result)
         return fens;
     }
 
-    // get to moves
-    while (token != "1."){
-        file >> token;
+    if (result == NA) {
+        while(!file.eof()) {
+            file >> token;
+        }
+        return fens;
     }
     
     // read moves
-    Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    Board board(startFen);
     BoardMove move;
     while (token != toStr(result)) {
         // two sides make moves
         for (int i = 0; i < 2; i++) {
+            std::string fen = board.toFen();
             // move
             file >> token;
             if (token == toStr(result)) {
@@ -92,7 +124,7 @@ std::vector<std::string> getFens(std::ifstream& file, const WinningColor result)
                 file >> token;
             }
             if (token != "{book}") {
-                fens.push_back(board.toFen());
+                fens.push_back(fen);
             }
         }
         file >> token; // load the next move number
@@ -114,9 +146,9 @@ BoardMove getMove(std::string input, Board& board) {
         int castleFile = input == "O-O" ? 6 : 2;
         pieceTypes allyKing = board.isWhiteTurn ? WKing : BKing;
         for (BoardMove move: moves) {
-            if (board.getPiece(move.pos1) == allyKing 
-                && castleRightsBit(move.pos2, board.isWhiteTurn)
-                && move.pos2.file == castleFile) {
+            if (board.getPiece(move.sqr1()) == allyKing 
+                && castleRightsBit(move.sqr2(), board.isWhiteTurn)
+                && getFile(move.sqr2()) == castleFile) {
                 board.makeMove(move);
                 return move;
             }
@@ -143,6 +175,8 @@ BoardMove getMove(std::string input, Board& board) {
         char pieceChar = board.isWhiteTurn ? input[0] : tolower(input[0]);
         currPiece = charToPiece.at(pieceChar);
         input.erase(input.begin());
+    } else {
+        currPiece = board.isWhiteTurn ? WPawn : BPawn;
     }
 
     // case where there is a file qualifier, trim first character
@@ -160,44 +194,37 @@ BoardMove getMove(std::string input, Board& board) {
     }
 
     // last two characters are guaranteed to be a destination square
-    BoardSquare dest(input);
+    Square dest = toSquare(input);
 
     // filter moves
     auto notCurrPiece = [board, currPiece](BoardMove move) {
-        return board.getPiece(move.pos1) != currPiece;};
+        return board.getPiece(move.sqr1()) != currPiece;};
     if (currPiece != EmptyPiece) {
         moves.erase(std::remove_if(moves.begin(), moves.end(), notCurrPiece), moves.end());
     }
 
     auto notPromotePiece = [board, promotePiece](BoardMove move) {
-        return move.promotionPiece != promotePiece;};
+        return move.getPromotePiece() != promotePiece;};
     if (promotePiece != EmptyPiece) {
         moves.erase(std::remove_if(moves.begin(), moves.end(), notPromotePiece), moves.end());
     }
     
     auto notRank = [board, rank](BoardMove move) {
-        return move.pos1.rank != rank;};
+        return getRank(move.sqr1()) != rank;};
     if (rank != -1) {
         moves.erase(std::remove_if(moves.begin(), moves.end(), notRank), moves.end());
     }
     
     auto notFile = [board, file](BoardMove move) {
-        return move.pos1.file != file;};
+        return getFile(move.sqr1()) != file;};
     if (file != -1) {
         moves.erase(std::remove_if(moves.begin(), moves.end(), notFile), moves.end());
     }
 
     auto notDest = [board, dest](BoardMove move) {
-        return move.pos2 != dest;
+        return move.sqr2() != dest;
     };
     moves.erase(std::remove_if(moves.begin(), moves.end(), notDest), moves.end());
-
-    // default pawn makes move
-    if (moves.size() > 1) {
-        pieceTypes allyPawn = board.isWhiteTurn ? WPawn : BPawn;
-        auto notPawn = [board, allyPawn](BoardMove move) {return board.getPiece(move.pos1) != allyPawn;};
-        moves.erase(std::remove_if(moves.begin(), moves.end(), notPawn), moves.end());
-    }
 
     if (moves.size() != 1) {
         std::cout << moves.size() << std::endl;
@@ -210,7 +237,14 @@ BoardMove getMove(std::string input, Board& board) {
 void storeFenResults(std::ofstream& file, std::vector<std::string> fens, WinningColor result) {
     std::string resultStr = toStr(result);
     for (std::string fen: fens) {
-        file << fen << " ; " << resultStr << '\n';
+        Board board(fen);
+        std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+        MoveOrder::MovePicker movePicker(std::move(moves));
+        // only store quiet positions and certain positions from each game
+        if (!board.moveIsCapture(movePicker.pickMove()) && !(storedPositions % 23)) {
+            file << fen << "; [" << resultStr << "]\n";
+        } 
+        ++storedPositions;
     }
 }
 

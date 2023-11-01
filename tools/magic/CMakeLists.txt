@@ -9,4 +9,4 @@ target_sources(Magic PRIVATE
     ../../src/bitboard.cpp
 )
 target_include_directories(Magic PUBLIC "../src/")
-target_compile_options(Magic PRIVATE -O3)et(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+target_compile_options(Magic PRIVATE -O3)
