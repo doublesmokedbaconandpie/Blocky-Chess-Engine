@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 project(BLOCKY-CHESS-ENGINE)
 
-option(MAKE_EXE "exe?" ON)
-
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 include(FetchContent)
 FetchContent_Declare(
   googletest
@@ -16,10 +13,8 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-
 enable_testing()
-add_executable(
-    allTests
+add_executable(allTests
     testBitBoard.cpp
     testBoard.cpp
     testMoveGen.cpp
@@ -34,15 +29,8 @@ add_executable(
     ../src/search.cpp
     ../src/eval.cpp
 )
-target_include_directories(
-    allTests PUBLIC "../src/"
-)
-target_link_libraries(
-    allTests
-    GTest::gtest_main
-)
-
+target_include_directories(allTests PUBLIC "../src/")
+target_compile_options(allTests PRIVATE -Wall -Wextra -Wfloat-equal -Wundef -Wcast-align -Wwrite-strings -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wshadow -Woverloaded-virtual)
+target_link_libraries(allTests GTest::gtest_main)
 include(GoogleTest)
 gtest_discover_tests(allTests)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wfloat-equal -Wundef -Wcast-align -Wwrite-strings -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wshadow -Woverloaded-virtual")

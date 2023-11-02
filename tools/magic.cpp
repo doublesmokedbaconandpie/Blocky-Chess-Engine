@@ -21,7 +21,7 @@ int main() {
     std::cout << "Rook attacks: " << std::endl;
     for (int i = 0; i < BOARD_SIZE; i++) {
         uint64_t blockerMask = getRelevantBlockerMask(i, false);
-        uint64_t magic = findMagic(rookSlidingAttacks, i, blockerMask, blockerRookCombos[i]);
+        uint64_t magic = findMagic(computeRookAttacks, i, blockerMask, blockerRookCombos[i]);
         attacksSize += 1ull << blockerRookCombos[i];
         printHex(magic);
     }
@@ -32,7 +32,7 @@ int main() {
     std::cout << "Bishop attacks: " << std::endl;
     for (int i = 0; i < BOARD_SIZE; i++) {
         uint64_t blockerMask = getRelevantBlockerMask(i, true);
-        uint64_t magic = findMagic(bishopSlidingAttacks, i, blockerMask, blockerBishopCombos[i]);
+        uint64_t magic = findMagic(computeBishopAttacks, i, blockerMask, blockerBishopCombos[i]);
         attacksSize += 1ull << blockerBishopCombos[i];
         printHex(magic);
     }
