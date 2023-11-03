@@ -15,65 +15,55 @@ class BitboardTest : public testing::Test {
         }
 };
 
-TEST_F(BitboardTest, leadingBitEmpty) {
-    uint64_t bitboard = 0ull;
-    ASSERT_DEATH({leadingBit(bitboard);}, "");
-}
-
-TEST_F(BitboardTest, leadingBitOne) {
+TEST_F(BitboardTest, msbOne) {
     uint64_t bitboard = 1ull;
-    ASSERT_EQ(leadingBit(bitboard), 0);
+    ASSERT_EQ(msb(bitboard), 0);
 }
 
-TEST_F(BitboardTest, leadingBitTrailingOne) {
+TEST_F(BitboardTest, msbTrailingOne) {
     uint64_t bitboard = 0x8000000000000000ull;
-    ASSERT_EQ(leadingBit(bitboard), 63);
+    ASSERT_EQ(msb(bitboard), 63);
 }
 
-TEST_F(BitboardTest, leadingBitMiddleOne) {
+TEST_F(BitboardTest, msbMiddleOne) {
     uint64_t bitboard = 0x0000000000001000ull;
-    ASSERT_EQ(leadingBit(bitboard), 12);
+    ASSERT_EQ(msb(bitboard), 12);
 }
 
-TEST_F(BitboardTest, leadingBitMultOnes) {
-    uint64_t bitboard = 0x0000001000100000ull;
-    ASSERT_EQ(leadingBit(bitboard), 20);
-}
-
-TEST_F(BitboardTest, trailingBitEmpty) {
-    uint64_t bitboard = 0ull;
-    ASSERT_DEATH({trailingBit(bitboard);}, "");
-}
-
-TEST_F(BitboardTest, trailingBitOne) {
-    uint64_t bitboard = 0x8000000000000000ull;
-    ASSERT_EQ(trailingBit(bitboard), 0);
-}
-
-TEST_F(BitboardTest, trailingBitForwardOne) {
-    uint64_t bitboard = 0x0000000000000001ull;
-    ASSERT_EQ(trailingBit(bitboard), 63);
-}
-
-TEST_F(BitboardTest, trailingBitMiddleOne) {
-    uint64_t bitboard = 0x0008000000000000ull;
-    ASSERT_EQ(trailingBit(bitboard), 12);
-}
-
-TEST_F(BitboardTest, trailingBitMultOnes) {
+TEST_F(BitboardTest, msbMultOnes) {
     uint64_t bitboard = 0x0000080010000000ull;
-    ASSERT_EQ(trailingBit(bitboard), 20);
+    ASSERT_EQ(msb(bitboard), 43);
 }
 
-TEST_F(BitboardTest, popLeadingBit1) {
+TEST_F(BitboardTest, lsbOne) {
+    uint64_t bitboard = 0x8000000000000000ull;
+    ASSERT_EQ(lsb(bitboard), 63);
+}
+
+TEST_F(BitboardTest, lsbForwardOne) {
+    uint64_t bitboard = 0x0000000000000001ull;
+    ASSERT_EQ(lsb(bitboard), 0);
+}
+
+TEST_F(BitboardTest, lsbMiddleOne) {
+    uint64_t bitboard = 0x0008000000000000ull;
+    ASSERT_EQ(lsb(bitboard), 51);
+}
+
+TEST_F(BitboardTest, lsbMultOnes) {
     uint64_t bitboard = 0x0000001000100000ull;
-    ASSERT_EQ(popLeadingBit(bitboard), 20);
+    ASSERT_EQ(lsb(bitboard), 20);
+}
+
+TEST_F(BitboardTest, popLsb1) {
+    uint64_t bitboard = 0x0000001000100000ull;
+    ASSERT_EQ(popLsb(bitboard), 20);
     ASSERT_EQ(bitboard, 0x0000001000000000ull);
 }
 
-TEST_F(BitboardTest, popTrailingBit1) {
+TEST_F(BitboardTest, popMsb1) {
     uint64_t bitboard = 0x0000080010000000ull;
-    ASSERT_EQ(popTrailingBit(bitboard), 20);
+    ASSERT_EQ(popMsb(bitboard), 43);
     ASSERT_EQ(bitboard, 0x0000000010000000ull);
 }
 

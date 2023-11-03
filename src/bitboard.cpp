@@ -1,3 +1,4 @@
+#include <bit>
 #include <cstdint>
 #include <cassert>
 #include <iostream>
@@ -6,32 +7,30 @@
 #include "bitboard.hpp"
 #include "types.hpp"
 
-int leadingBit(uint64_t bitboard) {
-    // Counts from the first bit
-    assert(bitboard);
-    return __builtin_ctzll(bitboard);
+// gets index of the least significant bit, 64 means no bits
+int lsb(uint64_t bitboard) {
+    return std::countr_zero(bitboard);
 }
 
-int trailingBit(uint64_t bitboard) {
-    // Counts from the last bit
-    assert(bitboard);
-    return __builtin_clzll(bitboard);
+// gets index of the most significant bit, 64 means no bits
+int msb(uint64_t bitboard) {
+    return 63 - std::countl_zero(bitboard);
 }
 
-int popLeadingBit(uint64_t& bitboard) {
-    int pos = leadingBit(bitboard);
+int popLsb(uint64_t& bitboard) {
+    int pos = lsb(bitboard);
     bitboard ^= 1ull << pos;
     return pos;
 }
 
-int popTrailingBit(uint64_t& bitboard) {
-    int pos = trailingBit(bitboard);
-    bitboard ^= 0x8000000000000000ull >> pos;
+int popMsb(uint64_t& bitboard) {
+    int pos = msb(bitboard);
+    bitboard ^= 1ull << pos;
     return pos;
 }
 
 int popCount(uint64_t bitboard) {
-    return __builtin_popcountll(bitboard);
+    return std::popcount(bitboard);
 }
 
 uint64_t flipVertical(uint64_t bitboard) {
