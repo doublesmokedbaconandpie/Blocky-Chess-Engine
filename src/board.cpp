@@ -78,7 +78,7 @@ Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn,
     for(pieceTypes piece: board) {
         if(piece != EmptyPiece) {
             pieceCount++;
-            totalMaterial += abs(pieceValues[piece]);
+            totalMaterial += pieceValues[piece];
         }
     }
     this->eval = EvalAttributes(pieceCount, totalMaterial);
@@ -126,9 +126,10 @@ Board::Board(std::string fenStr) {
             pieceTypes currPiece = charToPiece.at(iter); 
             this->setPiece(rank, file, currPiece);
 
-            this->materialDifference += pieceValues[currPiece];
+            int colorMat = isWhiteTurn ? 1 : -1;
+            this->materialDifference += pieceValues[currPiece] * colorMat;
             this->eval.piecesRemaining++;
-            this->eval.totalMaterial += abs(pieceValues[currPiece]);
+            this->eval.totalMaterial += pieceValues[currPiece];
 
             file += 1;
         }
@@ -297,9 +298,9 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
             this->materialDifference += pieceValues[promotionPiece] - 1;
         }
         else {
-            this->materialDifference += pieceValues[promotionPiece] + 1;
+            this->materialDifference -= pieceValues[promotionPiece] - 1;
         }
-        this->eval.totalMaterial += abs(pieceValues[promotionPiece]) - 1;
+        this->eval.totalMaterial += pieceValues[promotionPiece] - 1;
     }
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
