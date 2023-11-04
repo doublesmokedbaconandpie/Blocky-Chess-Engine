@@ -5,7 +5,6 @@ add_executable(Magic magic.cpp)
 
 target_sources(Magic PRIVATE
     ../src/attacks.cpp
-    ../src/zobrist.cpp
     ../src/bitboard.cpp
 )
 target_include_directories(Magic PUBLIC "../src/")

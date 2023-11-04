@@ -3,7 +3,6 @@
 #include "zobrist.hpp"
 
 int main() {
-    Zobrist::init();
     Attacks::init();
     Eval::init();
 
