@@ -7,7 +7,6 @@
 
 namespace TTable {
 
-constexpr uint64_t KEY_MASK = 0xFFFFull;
 constexpr int DEFAULT_SIZEMB = 128;
 
 struct Entry {
@@ -22,12 +21,12 @@ class TTable {
         TTable() {this->resize(DEFAULT_SIZEMB);};
         void clear();
 
-        bool entryExists(int index);
-        Entry getEntry(int index);
+        int getIndex(uint64_t key) const;
+        bool entryExists(uint64_t key) const;
+        Entry getEntry(int index) const;
         void storeEntry(int index, Entry entry);
-        int getIndex(uint64_t key);
-    private:
         std::vector<Entry> table;
+    private:
         int size;
 };
 

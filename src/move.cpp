@@ -139,6 +139,10 @@ bool operator==(const BoardMove& lhs, const BoardMove& rhs) {
     return (lhs.pos1 == rhs.pos1) && (lhs.pos2 == rhs.pos2) && (lhs.promotionPiece == rhs.promotionPiece);
 }
 
+bool operator!=(const BoardMove& lhs, const BoardMove& rhs) {
+    return !(lhs == rhs);
+}
+
 bool operator<(const BoardMove& lhs, const BoardMove& rhs) {
     if (lhs.pos1 != rhs.pos1) {
         return lhs.pos1 < rhs.pos1;

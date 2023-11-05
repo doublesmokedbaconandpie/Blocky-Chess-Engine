@@ -19,6 +19,7 @@ target_sources(Blocky PRIVATE
     src/moveGen.cpp
     src/movePicker.cpp
     src/search.cpp
+    src/ttable.cpp
     src/eval.cpp
     src/timeman.cpp
     src/uci.cpp

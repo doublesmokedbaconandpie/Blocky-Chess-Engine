@@ -6,6 +6,7 @@
 
 #include "board.hpp"
 #include "eval.hpp"
+#include "ttable.hpp"
 #include "timeman.hpp"
 
 namespace Search {
@@ -42,6 +43,7 @@ namespace Search {
             Info startThinking();
             Node search(int alpha, int beta, int depthLeft, int distanceFromRoot);
             int quiesce(int alpha, int beta, int depthLeft);
+            void storeInTT(TTable::Entry entry, Node result, int distanceFromRoot);
 
             void outputUciInfo(Info searchResult);
         private:

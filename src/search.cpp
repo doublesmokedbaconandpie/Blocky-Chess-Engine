@@ -4,6 +4,7 @@
 #include <chrono>
 
 #include "search.hpp"
+#include "ttable.hpp"
 #include "movePicker.hpp"
 #include "eval.hpp"
 #include "moveGen.hpp"
@@ -20,25 +21,25 @@ namespace Search {
             root = this->search(MIN_ALPHA, MAX_BETA, i, 0);
             result.nodes = this->nodes;
             result.timeElapsed = this->tm.getTimeElapsed();
+            if (root.move != BoardMove()) {
+                result.move = root.move;
+                result.depth = this->max_depth;
+                result.eval = root.eval;
+                // compute mate-in
+                if (result.eval > MAX_BETA - 100) {
+                    result.mateIn = MAX_BETA - result.eval;
+                }
+                if (result.eval < MIN_ALPHA + 100) {
+                    result.mateIn = result.eval - MIN_ALPHA;
+                }
+                this->outputUciInfo(result);
+            }
             
             if(this->tm.timeUp()) {
                 break;
             }
-            else {
-                result.depth = this->max_depth;
-                result.eval = root.eval;
-                result.move = root.move;
-                this->outputUciInfo(result);
-            }
         }
 
-        // compute mate-in
-        if (result.eval > MAX_BETA - 100) {
-            result.mateIn = MAX_BETA - result.eval;
-        }
-        if (result.eval < MIN_ALPHA + 100) {
-            result.mateIn = result.eval - MIN_ALPHA;
-        }
         return result;
     }
 
@@ -82,9 +83,18 @@ namespace Search {
             return result;
         }
 
+        // probe transposition table
+        BoardMove PVNode;
+        TTable::Entry entry;
+        int posIndex = TTable::table.getIndex(this->board.zobristKey);
+        if (TTable::table.entryExists(this->board.zobristKey)) {
+            entry = TTable::table.getEntry(posIndex);
+            PVNode = entry.move;
+        }
+
         // init movePicker
         MovePicker movePicker(std::move(moves));
-        movePicker.assignMoveScores(board);
+        movePicker.assignMoveScores(board, PVNode);
 
         // start search through moves
         int score, bestscore = MIN_ALPHA;
@@ -95,6 +105,11 @@ namespace Search {
             board.undoMove(); 
             
             score = -1 * opponent.eval;
+
+            // don't update best move if time is up
+            if (this->tm.timeUp()) {
+                break;
+            }
             
             // prune if a move is too good; opponent side will avoid playing into this node
             if (score >= beta) {
@@ -110,6 +125,7 @@ namespace Search {
                 }
             }
         }
+        this->storeInTT(entry, result, distanceFromRoot);
         return result;
     }
 
@@ -148,6 +164,17 @@ namespace Search {
         }
         return alpha;
 
+    }
+    
+    void Searcher::storeInTT(TTable::Entry entry, Node result, int distanceFromRoot) {
+        int posIndex = TTable::table.getIndex(this->board.zobristKey);
+        // only overwrite with certain conditions
+        if (distanceFromRoot >= entry.depth && result.move != BoardMove()) {
+            entry.key = static_cast<uint16_t>(this->board.zobristKey);
+            entry.depth = distanceFromRoot;
+            entry.move = result.move;
+            TTable::table.storeEntry(posIndex, entry);
+        }
     }
 
     void Searcher::outputUciInfo(Info searchResult) {
