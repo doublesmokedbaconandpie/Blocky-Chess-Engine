@@ -60,7 +60,7 @@ int lsb(uint64_t bitboard);
 int msb(uint64_t bitboard);
 int popLsb(uint64_t& bitboard);
 int popMsb(uint64_t& bitboard);
-int popCount(uint64_t bitboard);
+int popcount(uint64_t bitboard);
 
 uint64_t flipVertical(uint64_t bitboard);
 

@@ -1,4 +1,3 @@
-#include <bit>
 #include <cstdint>
 #include <cassert>
 #include <iostream>
@@ -7,14 +6,16 @@
 #include "bitboard.hpp"
 #include "types.hpp"
 
-// gets index of the least significant bit, 64 means no bits
+// gets index of the least significant bits
 int lsb(uint64_t bitboard) {
-    return std::countr_zero(bitboard);
+    assert(bitboard);
+    return __builtin_ctzll(bitboard);
 }
 
-// gets index of the most significant bit, 64 means no bits
+// gets index of the most significant bit
 int msb(uint64_t bitboard) {
-    return 63 - std::countl_zero(bitboard);
+    assert(bitboard);
+    return 63 - __builtin_clzll(bitboard);
 }
 
 int popLsb(uint64_t& bitboard) {
@@ -29,8 +30,8 @@ int popMsb(uint64_t& bitboard) {
     return pos;
 }
 
-int popCount(uint64_t bitboard) {
-    return std::popcount(bitboard);
+int popcount(uint64_t bitboard) {
+    return __builtin_popcountll(bitboard);
 }
 
 uint64_t flipVertical(uint64_t bitboard) {
