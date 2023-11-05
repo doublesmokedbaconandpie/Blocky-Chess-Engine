@@ -6,31 +6,31 @@
 #include "bitboard.hpp"
 #include "types.hpp"
 
-int leadingBit(uint64_t bitboard) {
-    // Counts from the first bit
+// gets index of the least significant bits
+int lsb(uint64_t bitboard) {
     assert(bitboard);
     return __builtin_ctzll(bitboard);
 }
 
-int trailingBit(uint64_t bitboard) {
-    // Counts from the last bit
+// gets index of the most significant bit
+int msb(uint64_t bitboard) {
     assert(bitboard);
-    return __builtin_clzll(bitboard);
+    return 63 - __builtin_clzll(bitboard);
 }
 
-int popLeadingBit(uint64_t& bitboard) {
-    int pos = leadingBit(bitboard);
+int popLsb(uint64_t& bitboard) {
+    int pos = lsb(bitboard);
     bitboard ^= 1ull << pos;
     return pos;
 }
 
-int popTrailingBit(uint64_t& bitboard) {
-    int pos = trailingBit(bitboard);
-    bitboard ^= 0x8000000000000000ull >> pos;
+int popMsb(uint64_t& bitboard) {
+    int pos = msb(bitboard);
+    bitboard ^= 1ull << pos;
     return pos;
 }
 
-int popCount(uint64_t bitboard) {
+int popcount(uint64_t bitboard) {
     return __builtin_popcountll(bitboard);
 }
 

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.16) 
 project(Blocky)
+set(CMAKE_CXX_STANDARD 20)
 add_executable(Blocky src/main.cpp)
 
 # Allow Windows binaries to be made from WSL
@@ -11,7 +12,6 @@ endif(MAKE_EXE)
 unset(MAKE_EXE CACHE)
 
 target_sources(Blocky PRIVATE
-    src/zobrist.cpp
     src/bitboard.cpp
     src/attacks.cpp
     src/move.cpp

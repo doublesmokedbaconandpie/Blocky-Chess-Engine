@@ -71,7 +71,7 @@ void initMagicTable(std::array<Magic, BOARD_SIZE>& table,
         uint64_t blockerMask = getRelevantBlockerMask(i, isBishop);
         table[i].slideMask = blockerMask;
         table[i].magic = magicTable[i];
-        table[i].shift = 64 - popCount(blockerMask);
+        table[i].shift = 64 - popcount(blockerMask);
         table[i].offset = attacksFilled;
 
         // attack table     
@@ -84,7 +84,7 @@ void initMagicTable(std::array<Magic, BOARD_SIZE>& table,
             }
             attackTable[index] = attacks;
         }
-        attacksFilled += 1 << popCount(blockerMask);   
+        attacksFilled += 1 << popcount(blockerMask);
     } 
 }
 

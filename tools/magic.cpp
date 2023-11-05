@@ -14,9 +14,9 @@
 
 using namespace Attacks;
 
-int main() {
-    Zobrist::seed = {0xf38f4541449b0fc3ull, 0x8432cf48703f8864ull, 0x1c8596ae5c1621d1ull, 0xf6d3be81a796f876ull};
+std::array<uint64_t, 4> seed = {0xf38f4541449b0fc3ull, 0x8432cf48703f8864ull, 0x1c8596ae5c1621d1ull, 0xf6d3be81a796f876ull};
 
+int main() {
     int attacksSize = 0; 
     std::cout << "Rook attacks: " << std::endl;
     for (int i = 0; i < BOARD_SIZE; i++) {
@@ -52,7 +52,7 @@ uint64_t findMagic(Function slidingAttacks, int square, uint64_t blockerMask, in
         magicFound = true;
         int maxIndex = 1ull << shift;
         // magic numbers with low number of 1s are better
-        magic = Zobrist::rand64() & Zobrist::rand64() & Zobrist::rand64();
+        magic = Zobrist::rand64(seed) & Zobrist::rand64(seed) & Zobrist::rand64(seed);
         
         // checks for collisions
         for (uint64_t blocker: possibleBlockers) {

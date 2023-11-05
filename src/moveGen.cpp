@@ -52,12 +52,12 @@ std::vector<BoardMove> moveGenerator(Board board) {
 template<typename Func>
 void validPieceMoves(uint64_t pieces, Func pieceMoves, MoveGenInfo& info, Board& board, std::vector<BoardMove>& validMoves) {
     while (pieces) {
-        int square = popLeadingBit(pieces);
+        int square = popLsb(pieces);
         BoardSquare piece(square);
 
         uint64_t moves = pieceMoves(square, info);
         while (moves) {
-            int currSquare = popLeadingBit(moves);
+            int currSquare = popLsb(moves);
             BoardMove move(piece, BoardSquare(currSquare));
             if (board.isLegalMove(move)) {
                 validMoves.push_back(move);
@@ -74,12 +74,12 @@ void validPawnMoves(uint64_t pawns, MoveGenInfo& info, Board& board, std::vector
     pieceTypes allyQueen = board.isWhiteTurn ? WQueen : BQueen;
 
     while (pawns) {
-        int square = popLeadingBit(pawns);
+        int square = popLsb(pawns);
         BoardSquare pawn(square);
         uint64_t moves = pawnMoves(square, info, board.isWhiteTurn);
 
         while (moves) {
-            BoardSquare target(popLeadingBit(moves));
+            BoardSquare target(popLsb(moves));
             if (!board.isLegalMove(BoardMove(pawn, target))) {
                 continue;
             } 
@@ -118,7 +118,7 @@ uint64_t kingMoves(int square, MoveGenInfo& info) {
         int kingIndex = info.isWhiteTurn ? WKing : BKing;
 
         while (info.castlingRights) {
-            int currRight = popLeadingBit(info.castlingRights);
+            int currRight = popLsb(info.castlingRights);
 
             // check for emptiness between rook and king
             if (rookPaths[currRight] & info.allPieces) {
@@ -127,7 +127,7 @@ uint64_t kingMoves(int square, MoveGenInfo& info) {
 
             // check for king path being attacked
             uint64_t path = kingPaths[currRight];
-            int currSquare = popLeadingBit(path);
+            int currSquare = popLsb(path);
             info.pieceSets[kingIndex] = 1ull << currSquare;
             if (1ull << currSquare & info.allPieces || 
                 currKingInAttack(info.pieceSets, info.isWhiteTurn)) {

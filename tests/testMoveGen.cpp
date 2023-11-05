@@ -12,7 +12,6 @@ using namespace MoveGen;
 class MoveGenTest : public testing::Test {
     public:
         static void SetUpTestSuite() {
-            Zobrist::init();
             Attacks::init();
         }
 };

@@ -8,7 +8,6 @@
 class BoardTest : public testing::Test {
     public:
         static void SetUpTestSuite() {
-            Zobrist::init();
             Attacks::init();
         }
 };
