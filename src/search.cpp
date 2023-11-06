@@ -26,11 +26,8 @@ namespace Search {
                 result.depth = this->max_depth;
                 result.eval = root.eval;
                 // compute mate-in
-                if (result.eval > MAX_BETA - 100) {
-                    result.mateIn = MAX_BETA - result.eval;
-                }
-                if (result.eval < MIN_ALPHA + 100) {
-                    result.mateIn = result.eval - MIN_ALPHA;
+                if (abs(result.eval) > MAX_BETA - 100) {
+                    result.mateIn = MAX_BETA - abs(result.eval);
                 }
                 this->outputUciInfo(result);
             }
@@ -192,7 +189,7 @@ namespace Search {
         if (searchResult.mateIn == Search::NO_MATE) {
             std::cout << "score cp " << searchResult.eval << ' ';
         } else { 
-            std::cout << "mate " << (searchResult.mateIn + 1) / 2 << ' '; // convert plies to moves
+            std::cout << "score mate " << (searchResult.mateIn + 1) / 2 << ' '; // convert plies to moves
         }
         std::cout << std::endl;
 
