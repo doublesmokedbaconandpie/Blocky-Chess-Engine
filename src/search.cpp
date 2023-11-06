@@ -21,13 +21,16 @@ namespace Search {
             root = this->search(MIN_ALPHA, MAX_BETA, i, 0);
             result.nodes = this->nodes;
             result.timeElapsed = this->tm.getTimeElapsed();
+            // only update the following results if search successfully checked a move in time
             if (root.move != BoardMove()) {
                 result.move = root.move;
                 result.depth = this->max_depth;
+                result.seldepth = this->max_seldepth;
                 result.eval = root.eval;
                 // compute mate-in
                 if (abs(result.eval) > MAX_BETA - 100) {
-                    result.mateIn = MAX_BETA - abs(result.eval);
+                    int colorToMate = result.eval < 0 ? -1 : 1;
+                    result.mateIn = colorToMate * (MAX_BETA - abs(result.eval));
                 }
                 this->outputUciInfo(result);
             }
@@ -46,8 +49,8 @@ namespace Search {
             return result;
         }
 
-        this->nodes++;
-        this->max_depth = distanceFromRoot > this->max_depth ? distanceFromRoot : this->max_depth;
+        ++this->nodes;
+        this->max_depth = std::max(distanceFromRoot, this->max_depth);
 
         // fifty move rule
         if (this->board.fiftyMoveRule == 100) {
@@ -65,7 +68,7 @@ namespace Search {
         }
         // max depth reached
         if (depthLeft == 0) {
-            result.eval = quiesce(alpha, beta, 5);
+            result.eval = quiesce(alpha, beta, 5, distanceFromRoot);
             return result;
         }
         // checkmate or stalemate
@@ -127,12 +130,13 @@ namespace Search {
         return result;
     }
 
-    int Searcher::quiesce(int alpha, int beta, int depthLeft) {
+    int Searcher::quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot) {
         if(this->tm.timeUp()) {
             return -1;
         }
 
-        this->nodes++;
+        ++this->nodes;
+        this->max_seldepth = std::max(distanceFromRoot, this->max_seldepth);
 
         int stand_pat = this->board.getEvalScore();
         if(stand_pat >= beta)
@@ -152,7 +156,7 @@ namespace Search {
             if(!board.moveIsCapture(move))
                 continue;
             board.makeMove(move);
-            score = -1 * (quiesce(-1 * beta, -1 * alpha, depthLeft - 1));
+            score = -1 * (quiesce(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1));
             board.undoMove(); 
 
             if(score >= beta)
@@ -185,6 +189,7 @@ namespace Search {
 
     void Searcher::outputUciInfo(Info searchResult) {
         std::cout << "info depth " << searchResult.depth << ' ';
+        std::cout << "seldepth " << searchResult.seldepth << ' ';
         std::cout << "nodes " << searchResult.nodes << ' ';
 
         // time is output in milliseconds per the UCI protocol
@@ -197,8 +202,9 @@ namespace Search {
         
         if (searchResult.mateIn == Search::NO_MATE) {
             std::cout << "score cp " << searchResult.eval << ' ';
-        } else { 
-            std::cout << "score mate " << (searchResult.mateIn + 1) / 2 << ' '; // convert plies to moves
+        } else {
+            int colorToMate = searchResult.eval < 0 ? -1 : 1;
+            std::cout << "score mate " << (searchResult.mateIn + colorToMate) / 2 << ' '; // convert plies to moves
         }
         std::cout << "hashfull " << TTable::table.hashFull() << ' ';
         std::cout << std::endl;
