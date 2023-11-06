@@ -80,7 +80,7 @@ namespace Search {
             return result;
         }
 
-        // probe transposition table
+        // probe transposition table for PVNodes, which help with move ordering
         BoardMove PVNode;
         TTable::Entry entry;
         int posIndex = TTable::table.getIndex(this->board.zobristKey);
@@ -122,6 +122,7 @@ namespace Search {
                 }
             }
         }
+        // A search for this depth is complete with a best move, so it can be stored in the transposition table
         this->storeInTT(entry, result, distanceFromRoot);
         return result;
     }
@@ -165,7 +166,13 @@ namespace Search {
     
     void Searcher::storeInTT(TTable::Entry entry, Node result, int distanceFromRoot) {
         int posIndex = TTable::table.getIndex(this->board.zobristKey);
-        // only overwrite with certain conditions
+        /* entries in the transposition table are overwritten under two conditions:
+        1. The current search depth is greater than the entry's depth, meaning that a better
+        search has been performed 
+        2. The age of the current position is greater than the previous age. Previous move searches
+        in hash are preserved in the table since there can be repeated boards, but replacing entries
+        with moves from more modern roots is better
+        */
         if ( (distanceFromRoot >= entry.depth || this->board.fiftyMoveRule >= entry.age)
             && result.move != BoardMove()) {
                 entry.key = static_cast<uint16_t>(this->board.zobristKey);
