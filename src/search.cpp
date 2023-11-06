@@ -4,6 +4,7 @@
 #include <chrono>
 
 #include "search.hpp"
+#include "ttable.hpp"
 #include "movePicker.hpp"
 #include "eval.hpp"
 #include "moveGen.hpp"
@@ -20,25 +21,22 @@ namespace Search {
             root = this->search(MIN_ALPHA, MAX_BETA, i, 0);
             result.nodes = this->nodes;
             result.timeElapsed = this->tm.getTimeElapsed();
+            if (root.move != BoardMove()) {
+                result.move = root.move;
+                result.depth = this->max_depth;
+                result.eval = root.eval;
+                // compute mate-in
+                if (abs(result.eval) > MAX_BETA - 100) {
+                    result.mateIn = MAX_BETA - abs(result.eval);
+                }
+                this->outputUciInfo(result);
+            }
             
             if(this->tm.timeUp()) {
                 break;
             }
-            else {
-                result.depth = this->max_depth;
-                result.eval = root.eval;
-                result.move = root.move;
-                this->outputUciInfo(result);
-            }
         }
 
-        // compute mate-in
-        if (result.eval > MAX_BETA - 100) {
-            result.mateIn = MAX_BETA - result.eval;
-        }
-        if (result.eval < MIN_ALPHA + 100) {
-            result.mateIn = result.eval - MIN_ALPHA;
-        }
         return result;
     }
 
@@ -82,9 +80,18 @@ namespace Search {
             return result;
         }
 
+        // probe transposition table for PVNodes, which help with move ordering
+        BoardMove PVNode;
+        TTable::Entry entry;
+        int posIndex = TTable::table.getIndex(this->board.zobristKey);
+        if (TTable::table.entryExists(this->board.zobristKey)) {
+            entry = TTable::table.getEntry(posIndex);
+            PVNode = entry.move;
+        }
+
         // init movePicker
         MovePicker movePicker(std::move(moves));
-        movePicker.assignMoveScores(board);
+        movePicker.assignMoveScores(board, PVNode);
 
         // start search through moves
         int score, bestscore = MIN_ALPHA;
@@ -95,6 +102,11 @@ namespace Search {
             board.undoMove(); 
             
             score = -1 * opponent.eval;
+
+            // don't update best move if time is up
+            if (this->tm.timeUp()) {
+                break;
+            }
             
             // prune if a move is too good; opponent side will avoid playing into this node
             if (score >= beta) {
@@ -110,6 +122,8 @@ namespace Search {
                 }
             }
         }
+        // A search for this depth is complete with a best move, so it can be stored in the transposition table
+        this->storeInTT(entry, result, distanceFromRoot);
         return result;
     }
 
@@ -149,6 +163,25 @@ namespace Search {
         return alpha;
 
     }
+    
+    void Searcher::storeInTT(TTable::Entry entry, Node result, int distanceFromRoot) {
+        int posIndex = TTable::table.getIndex(this->board.zobristKey);
+        /* entries in the transposition table are overwritten under two conditions:
+        1. The current search depth is greater than the entry's depth, meaning that a better
+        search has been performed 
+        2. The age of the current position is greater than the previous age. Previous move searches
+        in hash are preserved in the table since there can be repeated boards, but replacing entries
+        with moves from more modern roots is better
+        */
+        if ( (distanceFromRoot >= entry.depth || this->board.fiftyMoveRule >= entry.age)
+            && result.move != BoardMove()) {
+                entry.key = static_cast<uint16_t>(this->board.zobristKey);
+                entry.age = this->board.fiftyMoveRule;
+                entry.depth = distanceFromRoot;
+                entry.move = result.move;
+                TTable::table.storeEntry(posIndex, entry);
+        }
+    }
 
     void Searcher::outputUciInfo(Info searchResult) {
         std::cout << "info depth " << searchResult.depth << ' ';
@@ -165,8 +198,9 @@ namespace Search {
         if (searchResult.mateIn == Search::NO_MATE) {
             std::cout << "score cp " << searchResult.eval << ' ';
         } else { 
-            std::cout << "mate " << (searchResult.mateIn + 1) / 2 << ' '; // convert plies to moves
+            std::cout << "score mate " << (searchResult.mateIn + 1) / 2 << ' '; // convert plies to moves
         }
+        std::cout << "hashfull " << TTable::table.hashFull() << ' ';
         std::cout << std::endl;
 
     }

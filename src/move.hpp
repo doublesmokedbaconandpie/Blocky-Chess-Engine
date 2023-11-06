@@ -34,5 +34,6 @@ struct BoardMove {
 
     friend std::ostream& operator<<(std::ostream& os, const BoardMove& target);
     friend bool operator==(const BoardMove& lhs, const BoardMove& rhs);
+    friend bool operator!=(const BoardMove& lhs, const BoardMove& rhs);
     friend bool operator<(const BoardMove& lhs, const BoardMove& rhs);
 };

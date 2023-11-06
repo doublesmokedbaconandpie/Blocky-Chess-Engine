@@ -1,4 +1,5 @@
 #include <vector>
+#include <iostream>
 
 #include "movePicker.hpp"
 #include "board.hpp"
@@ -14,17 +15,17 @@ MovePicker::MovePicker(std::vector<BoardMove>&& a_moves) {
 
 // Searching moves that are likely to be better helps with pruning in search. This is move ordering.
 // More promising moves are given higher scores and then searched first.
-void MovePicker::assignMoveScores(const Board& board) {
+void MovePicker::assignMoveScores(const Board& board, BoardMove PVNode) {
     size_t i = 0;
     for (BoardMove move: this->moves) {
-        // capture
-        // moveGen outputs least valuable piece moves first, so least value captures is automatic 
-        if (board.getPiece(move.pos2) != EmptyPiece) {
-            this->moveScores[i] = 1;
+        if (move == PVNode) {
+            this->moveScores[i] = MoveScores::PVNode;
         }
-        // default
+        else if (board.getPiece(move.pos2) != EmptyPiece) {
+            this->moveScores[i] = MoveScores::Capture;
+        }
         else {
-            this->moveScores[i] = 0;
+            this->moveScores[i] = MoveScores::Quiet;
         }
         i++;
     }

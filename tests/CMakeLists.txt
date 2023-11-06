@@ -25,6 +25,7 @@ add_executable(allTests
     ../src/moveGen.cpp
     ../src/movePicker.cpp
     ../src/timeman.cpp
+    ../src/ttable.cpp
     ../src/search.cpp
     ../src/eval.cpp
 )
