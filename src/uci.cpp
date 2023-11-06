@@ -130,7 +130,6 @@ namespace Uci {
         Search::Searcher currSearch(board, allytime, OPTIONS.depth);
         Search::Info result = currSearch.startThinking();
         std::cout << "bestmove " << result.move.toStr() << "\n";
-        TTable::table.clear();
     }
 
     void isready() {

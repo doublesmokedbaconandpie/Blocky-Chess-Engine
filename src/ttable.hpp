@@ -11,6 +11,7 @@ constexpr int DEFAULT_SIZEMB = 128;
 
 struct Entry {
     uint16_t key = 0;
+    uint8_t age = 0;
     int depth = 0;
     BoardMove move = BoardMove();
 };

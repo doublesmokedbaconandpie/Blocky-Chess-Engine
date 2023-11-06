@@ -166,11 +166,13 @@ namespace Search {
     void Searcher::storeInTT(TTable::Entry entry, Node result, int distanceFromRoot) {
         int posIndex = TTable::table.getIndex(this->board.zobristKey);
         // only overwrite with certain conditions
-        if (distanceFromRoot >= entry.depth && result.move != BoardMove()) {
-            entry.key = static_cast<uint16_t>(this->board.zobristKey);
-            entry.depth = distanceFromRoot;
-            entry.move = result.move;
-            TTable::table.storeEntry(posIndex, entry);
+        if ( (distanceFromRoot >= entry.depth || this->board.fiftyMoveRule >= entry.age)
+            && result.move != BoardMove()) {
+                entry.key = static_cast<uint16_t>(this->board.zobristKey);
+                entry.age = this->board.fiftyMoveRule;
+                entry.depth = distanceFromRoot;
+                entry.move = result.move;
+                TTable::table.storeEntry(posIndex, entry);
         }
     }
 
