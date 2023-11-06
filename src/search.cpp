@@ -200,6 +200,7 @@ namespace Search {
         } else { 
             std::cout << "score mate " << (searchResult.mateIn + 1) / 2 << ' '; // convert plies to moves
         }
+        std::cout << "hashfull " << TTable::table.hashFull() << ' ';
         std::cout << std::endl;
 
     }

@@ -21,6 +21,7 @@ class TTable {
         void resize(int sizeMb);
         TTable() {this->resize(DEFAULT_SIZEMB);};
         void clear();
+        int hashFull();
 
         int getIndex(uint64_t key) const;
         bool entryExists(uint64_t key) const;
