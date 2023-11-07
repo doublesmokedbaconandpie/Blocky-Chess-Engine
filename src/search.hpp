@@ -10,15 +10,15 @@
 #include "timeman.hpp"
 
 namespace Search {
-    const int MIN_ALPHA = -1000000;
-    const int MAX_BETA = 1000000;
-    const int NO_MATE = -1;
-    const int TIME_LIMIT_TEST = 1000000; //time in microseconds
+    constexpr int MIN_ALPHA = -1000000;
+    constexpr int MAX_BETA = 1000000;
+    constexpr int NO_MATE = -1000000;
 
     // used for outside UCI representation    
     struct Info {
         uint64_t nodes = 0;
         int depth = 0;
+        int seldepth = 0;
         int eval = 0;
         int mateIn = NO_MATE;
         BoardMove move;
@@ -37,19 +37,20 @@ namespace Search {
                 this->board = a_board;
                 this->nodes = 0;
                 this->max_depth = 0;
+                this->max_seldepth = 0;
                 this->tm = Timeman::TimeManager(ms);
                 this->depth_limit = depthLimit;
             };
             Info startThinking();
             Node search(int alpha, int beta, int depthLeft, int distanceFromRoot);
-            int quiesce(int alpha, int beta, int depthLeft);
+            int quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot);
             void storeInTT(TTable::Entry entry, Node result, int distanceFromRoot);
 
             void outputUciInfo(Info searchResult);
         private:
             Board board;
             uint64_t nodes;
-            int max_depth;
+            int max_depth, max_seldepth;
             Timeman::TimeManager tm;
             int depth_limit;
     };
