@@ -7,7 +7,7 @@
 #include "types.hpp"
 
 enum MoveScores {
-    PVNode = 10000,
+    PV = 10000,
     Capture = 100,
     Quiet = 0,
 };
