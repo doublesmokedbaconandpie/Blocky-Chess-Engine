@@ -19,7 +19,7 @@ void MovePicker::assignMoveScores(const Board& board, BoardMove PVNode) {
     size_t i = 0;
     for (BoardMove move: this->moves) {
         if (move == PVNode) {
-            this->moveScores[i] = MoveScores::PVNode;
+            this->moveScores[i] = MoveScores::PV;
         }
         else if (board.getPiece(move.pos2) != EmptyPiece) {
             int attackerValue = pieceValues[board.getPiece(move.pos1)];
