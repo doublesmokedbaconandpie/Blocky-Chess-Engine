@@ -13,97 +13,6 @@
 #include "types.hpp"
 #include "eval.hpp" 
 
-// Used for debugging and testing
-Board::Board() {
-    this->board = {
-        BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook,
-        BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        WPawn, WPawn, WPawn, WPawn, WPawn, WPawn, WPawn, WPawn,
-        WRook, WKnight, WBishop, WQueen, WKing, WBishop, WKnight, WRook
-    };
-    this->isWhiteTurn = true;
-    this->fiftyMoveRule = 0;
-    this->pawnJumpedSquare = BoardSquare();
-    this->castlingRights = All_Castle;
-    this->materialDifference = 0;
-    this->eval = EvalAttributes();
-    
-    //sets up initial score for piece placement
-    for(uint8_t i = 0; i < BOARD_SIZE; i++) {
-        pieceTypes currPiece = board[i];
-        if (currPiece != EmptyPiece) {
-            this->eval.opScore += Eval::getPlacementScoreOp(i / 8, i % 8, currPiece);
-            this->eval.egScore += Eval::getPlacementScoreEg(i / 8, i % 8, currPiece);
-        }
-    }
-
-    this->pieceSets[WKing]   = 0x1000000000000000ull;
-    this->pieceSets[WQueen]  = 0x0800000000000000ull;
-    this->pieceSets[WBishop] = 0x2400000000000000ull;
-    this->pieceSets[WKnight] = 0x4200000000000000ull;
-    this->pieceSets[WRook]   = 0x8100000000000000ull;
-    this->pieceSets[WPawn]   = 0x00FF000000000000ull;
-
-    this->pieceSets[BKing]   = 0x0000000000000010ull;
-    this->pieceSets[BQueen]  = 0x0000000000000008ull;
-    this->pieceSets[BBishop] = 0x0000000000000024ull;
-    this->pieceSets[BKnight] = 0x0000000000000042ull;
-    this->pieceSets[BRook]   = 0x0000000000000081ull;
-    this->pieceSets[BPawn]   = 0x000000000000FF00ull;
-
-    this->pieceSets[WHITE_PIECES] = 0xFFFF000000000000ull;
-    this->pieceSets[BLACK_PIECES] = 0x000000000000FFFFull;
-
-    this->initZobristKey();
-}
-
-// Used for debugging and testing
-Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn, 
-            int a_fiftyMoveRule, BoardSquare a_pawnJumpedSquare, 
-            castleRights a_castlingRights, int a_materialDifference) {
-    this->board = a_board;
-    this->isWhiteTurn = a_isWhiteTurn;
-    this->fiftyMoveRule = a_fiftyMoveRule;
-    this->pawnJumpedSquare = a_pawnJumpedSquare;
-    this->castlingRights = a_castlingRights;
-    this->materialDifference = a_materialDifference;
-
-    uint8_t pieceCount = 0;
-    uint8_t totalMaterial = 0;
-
-    for(pieceTypes piece: board) {
-        if(piece != EmptyPiece) {
-            pieceCount++;
-            totalMaterial += pieceValues[piece];
-        }
-    }
-    this->eval = EvalAttributes(pieceCount, totalMaterial);
-    //sets up initial score for piece placement (This gets repeated so maybe could turn it into a function)
-    for(uint8_t i = 0; i < BOARD_SIZE; i++) {
-        pieceTypes currPiece = board[i];
-        if (currPiece != EmptyPiece) {
-            this->eval.opScore += Eval::getPlacementScoreOp(i / 8, i % 8, currPiece);
-            this->eval.egScore += Eval::getPlacementScoreEg(i / 8, i % 8, currPiece);
-        }
-    }
-
-    for (int i = WKing; i < WHITE_PIECES; i++) {
-        this->pieceSets[i] = makeBitboardFromArray(this->board, i);
-        if (i < BKing) {
-            this->pieceSets[WHITE_PIECES] |= makeBitboardFromArray(this->board, i);
-        }
-        else {
-            this->pieceSets[BLACK_PIECES] |= makeBitboardFromArray(this->board, i);
-        }
-    }
-    this->initZobristKey();
-}
-
-// Used in UCI
 Board::Board(std::string fenStr) {
     this->materialDifference = 0;
     std::string token; 
@@ -126,14 +35,13 @@ Board::Board(std::string fenStr) {
             pieceTypes currPiece = charToPiece.at(iter); 
             this->setPiece(rank, file, currPiece);
 
-            int colorMat = isWhiteTurn ? 1 : -1;
-            this->materialDifference += pieceValues[currPiece] * colorMat;
+            int pieceColor = isWhitePiece(currPiece) ? 1 : -1;
+            this->materialDifference += pieceValues[currPiece] * pieceColor;
             this->eval.piecesRemaining++;
             this->eval.totalMaterial += pieceValues[currPiece];
 
             file += 1;
         }
-
     }
 
     for(uint8_t i = 0; i < BOARD_SIZE; i++) {
@@ -347,7 +255,8 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 
     // updates the material score and piece count of the board on capture
     if (targetPiece != EmptyPiece) {
-        this->materialDifference -= pieceValues[targetPiece];
+        int pieceColor = isWhitePiece(targetPiece) ? 1 : -1;
+        this->materialDifference -= pieceValues[targetPiece] * pieceColor;
         this->eval.piecesRemaining--; 
         this->eval.totalMaterial -= abs(pieceValues[targetPiece]);
     }
@@ -457,6 +366,12 @@ bool Board::isLegalMove(const BoardMove move) const {
     return !currKingInAttack(tmpPieceSets, this->isWhiteTurn);
 }
 
+bool Board::moveIsCapture(BoardMove move) {
+    if(this->getPiece(move.pos1) % 6 == WPawn && this->pawnJumpedSquare == move.pos2)
+        return true;
+    return this->getPiece(move.pos2) != EmptyPiece;
+}
+
 // getPiece is not responsible for bounds checking
 pieceTypes Board::getPiece(int rank, int file) const {
     return this->board[rank * 8 + file];
@@ -508,19 +423,6 @@ void Board::setPiece(BoardSquare square, pieceTypes currPiece) {
 
 bool operator==(const Board& lhs, const Board& rhs) {
     return  (lhs.board == rhs.board) && (lhs.pieceSets == rhs.pieceSets) && (lhs.zobristKeyHistory == rhs.zobristKeyHistory);
-}
-
-bool operator<(const Board& lhs, const Board& rhs) {
-    for (int rank = 0; rank <= 7; rank++) {
-        for (int file = A; file <= H; file++) {
-            pieceTypes lhsPiece = lhs.getPiece(rank, file);
-            pieceTypes rhsPiece = rhs.getPiece(rank, file);
-            if (lhsPiece != rhsPiece) {
-                return lhsPiece < rhsPiece;
-            }
-        }
-    }
-    return false;
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& target) {
@@ -577,22 +479,4 @@ bool currKingInAttack(const std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool
         || Attacks::pawnAttacks(kingSquare, isWhiteTurn) & enemyPawns
         || Attacks::knightAttacks(kingSquare) & enemyKnights
         || Attacks::kingAttacks(kingSquare) & enemyKings;
-}
-
-// used for debugging
-uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int target) {
-    uint64_t result = 0ull;
-    for (size_t i = 0; i < board.size(); i++) {
-        if (board.at(i) == target) {
-            result |= (1ull << i);
-        }
-    }
-    return result;
-}
-
-bool Board::moveIsCapture(BoardMove move) {
-    if(this->getPiece(move.pos1) % 6 == WPawn && this->pawnJumpedSquare == move.pos2)
-        return true;
-
-    return this->getPiece(move.pos2) != EmptyPiece;
 }

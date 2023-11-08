@@ -37,13 +37,8 @@ struct BoardState {
 };
 
 struct Board {
-    // for debugging
-    Board();
-    Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn = true, 
-            int a_fiftyMoveRule = 0, BoardSquare a_pawnJumpedSquare = BoardSquare(), 
-            castleRights a_castlingRights = All_Castle, int a_materialDifference = 0); 
-    // for production
     Board(std::string fenStr);
+    Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {};
     std::string toFen();
     void initZobristKey();
     
@@ -54,7 +49,6 @@ struct Board {
     bool moveIsCapture(BoardMove move);
     
     friend bool operator==(const Board& lhs, const Board& rhs);
-    friend bool operator<(const Board& lhs, const Board& rhs);
     friend std::ostream& operator<<(std::ostream& os, const Board& target);
 
     pieceTypes getPiece(int rank, int file) const;
@@ -81,6 +75,3 @@ struct Board {
 
 castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn);
 bool currKingInAttack(const std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn);
-
-// for debugging
-uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int target);
