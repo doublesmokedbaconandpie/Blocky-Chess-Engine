@@ -282,7 +282,6 @@ void Board::makeMove(BoardMove move) {
     this->makeMove(move.pos1, move.pos2, move.promotionPiece);
 }
 
-
 void Board::undoMove() {
     if (this->moveHistory.size() == 0) {
         return;
@@ -319,51 +318,6 @@ void Board::undoMove() {
     this->moveHistory.pop_back();
     this->zobristKeyHistory.pop_back();
     this->zobristKey = zobristKeyHistory.back();
-}
-
-bool Board::isLegalMove(const BoardMove move) const {
-    // This is a bitboard implementation to check whether a move leaves the ally king under attack
-    // The current move generation already checks whether castling is even valid 
-    // or squares unblocked so only the king final position needs to be checked
-
-    assert(move.isValid());
-
-    std::array<uint64_t, NUM_BITBOARDS> tmpPieceSets = this->pieceSets;
-
-    pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
-    uint64_t originSquare = (1ull << move.pos1.toSquare());
-    pieceTypes originPiece = this->getPiece(move.pos1);
-    pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
-    pieceTypes enemyPawn = this->isWhiteTurn ? BPawn : WPawn;
-
-    // account for captures
-    uint64_t targetSquare = 1ull << move.pos2.toSquare();
-    pieceTypes targetPiece;
-    pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
-    
-    // en passant
-    if (originPiece == allyPawn && move.pos2 == this->pawnJumpedSquare) {
-        targetPiece = EmptyPiece;
-        int dir = this->isWhiteTurn ? 8 : -8;
-        uint64_t enemyPawnSquare = 1ull << (move.pos2.toSquare() + dir);
-        tmpPieceSets[targetColor] ^= enemyPawnSquare;
-        tmpPieceSets[enemyPawn] ^= enemyPawnSquare;
-    } else {
-        targetPiece = this->getPiece(move.pos2);
-    }
-    // move ally piece 
-    tmpPieceSets[originColor] ^= originSquare;
-    tmpPieceSets[originPiece] ^= originSquare;
-    tmpPieceSets[originColor] ^= targetSquare;
-    tmpPieceSets[originPiece] ^= targetSquare;
-
-    // modify destination for non-empty square
-    if (targetPiece != EmptyPiece) {
-        tmpPieceSets[targetColor] ^= targetSquare;
-        tmpPieceSets[targetPiece] ^= targetSquare;
-    }
-    
-    return !currKingInAttack(tmpPieceSets, this->isWhiteTurn);
 }
 
 bool Board::moveIsCapture(BoardMove move) {
@@ -410,15 +364,60 @@ void Board::setPiece(int rank, int file, pieceTypes currPiece) {
         this->eval.egScore += Eval::getPlacementScoreEg(rank, file, currPiece);
     }
 }
+
+void Board::setPiece(BoardSquare square, pieceTypes currPiece) {
+    this->setPiece(square.rank, square.file, currPiece);
+}
+
+bool Board::isLegalMove(const BoardMove move) const {
+    // This is a bitboard implementation to check whether a move leaves the ally king under attack
+    // The current move generation already checks whether castling is even valid 
+    // or squares unblocked so only the king final position needs to be checked
+
+    assert(move.isValid());
+
+    std::array<uint64_t, NUM_BITBOARDS> tmpPieceSets = this->pieceSets;
+
+    pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
+    uint64_t originSquare = (1ull << move.pos1.toSquare());
+    pieceTypes originPiece = this->getPiece(move.pos1);
+    pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
+    pieceTypes enemyPawn = this->isWhiteTurn ? BPawn : WPawn;
+
+    // account for captures
+    uint64_t targetSquare = 1ull << move.pos2.toSquare();
+    pieceTypes targetPiece;
+    pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
+    
+    // en passant
+    if (originPiece == allyPawn && move.pos2 == this->pawnJumpedSquare) {
+        targetPiece = EmptyPiece;
+        int dir = this->isWhiteTurn ? 8 : -8;
+        uint64_t enemyPawnSquare = 1ull << (move.pos2.toSquare() + dir);
+        tmpPieceSets[targetColor] ^= enemyPawnSquare;
+        tmpPieceSets[enemyPawn] ^= enemyPawnSquare;
+    } else {
+        targetPiece = this->getPiece(move.pos2);
+    }
+    // move ally piece 
+    tmpPieceSets[originColor] ^= originSquare;
+    tmpPieceSets[originPiece] ^= originSquare;
+    tmpPieceSets[originColor] ^= targetSquare;
+    tmpPieceSets[originPiece] ^= targetSquare;
+
+    // modify destination for non-empty square
+    if (targetPiece != EmptyPiece) {
+        tmpPieceSets[targetColor] ^= targetSquare;
+        tmpPieceSets[targetPiece] ^= targetSquare;
+    }
+    
+    return !currKingInAttack(tmpPieceSets, this->isWhiteTurn);
+}
     
 // positive return values means winning for the side to move, negative is opposite
 int Board::evaluate() const {
     int rawEval = this->eval.getRawEval();
     return this->isWhiteTurn ? rawEval : rawEval * -1;
-}
-
-void Board::setPiece(BoardSquare square, pieceTypes currPiece) {
-    this->setPiece(square.rank, square.file, currPiece);
 }
 
 bool operator==(const Board& lhs, const Board& rhs) {

@@ -35,17 +35,18 @@ struct Board {
     void makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
     void makeMove(BoardMove move);
     void undoMove();
-    bool isLegalMove(const BoardMove move) const;
-    bool moveIsCapture(BoardMove move);
     
-    friend bool operator==(const Board& lhs, const Board& rhs);
-    friend std::ostream& operator<<(std::ostream& os, const Board& target);
-
     pieceTypes getPiece(int rank, int file) const;
     pieceTypes getPiece(BoardSquare square) const;
     void setPiece(int rank, int file, pieceTypes currPiece);
     void setPiece(BoardSquare square, pieceTypes currPiece);
+    bool moveIsCapture(BoardMove move);
+    
+    bool isLegalMove(const BoardMove move) const;
     int evaluate() const;
+
+    friend bool operator==(const Board& lhs, const Board& rhs);
+    friend std::ostream& operator<<(std::ostream& os, const Board& target);
 
     std::array<uint64_t, NUM_BITBOARDS> pieceSets = {0ull};
     std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
