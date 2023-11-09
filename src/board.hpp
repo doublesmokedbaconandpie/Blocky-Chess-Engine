@@ -4,20 +4,10 @@
 #include <array>
 #include <vector>
 
+#include "eval.hpp"
 #include "move.hpp"
 #include "bitboard.hpp"
 #include "types.hpp"
-
-
-struct EvalAttributes {
-    EvalAttributes(uint8_t pieces = 32, uint8_t material = 78) :
-    piecesRemaining(pieces), totalMaterial(material){}; 
-
-    uint8_t piecesRemaining;
-    int totalMaterial; 
-    int opScore = 0;
-    int egScore = 0;
-};
 
 struct BoardState {
     BoardMove move = BoardMove();
@@ -27,10 +17,10 @@ struct BoardState {
     BoardSquare pawnJumpedSquare;
     int fiftyMoveRule;
     int materialDifference;
-    EvalAttributes eval;
+    Eval::Info eval;
     BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, 
                 castleRights a_castlingRights, BoardSquare a_pawnJumpedSquare, int a_fiftyMoveRule,
-                int a_materialDifference, EvalAttributes a_eval) : 
+                int a_materialDifference, Eval::Info a_eval) : 
                 move(a_move), originPiece(a_originPiece), targetPiece(a_targetPiece),
                 castlingRights(a_castlingRights), pawnJumpedSquare(a_pawnJumpedSquare), fiftyMoveRule(a_fiftyMoveRule),
                 materialDifference(a_materialDifference), eval(a_eval) {};
@@ -55,7 +45,7 @@ struct Board {
     pieceTypes getPiece(BoardSquare square) const;
     void setPiece(int rank, int file, pieceTypes currPiece);
     void setPiece(BoardSquare square, pieceTypes currPiece);
-    int getEvalScore() const;
+    int evaluate() const;
 
     std::array<uint64_t, NUM_BITBOARDS> pieceSets = {0ull};
     std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
@@ -67,7 +57,7 @@ struct Board {
     BoardSquare pawnJumpedSquare; // en passant square
     int materialDifference; // updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
                             // Possibly could be combined with attributes
-    EvalAttributes eval;
+    Eval::Info eval;
 
     std::vector<BoardState> moveHistory;
     std::vector<uint64_t> zobristKeyHistory;

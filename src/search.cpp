@@ -139,7 +139,7 @@ int Searcher::quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot) 
     ++this->nodes;
     this->max_seldepth = std::max(distanceFromRoot, this->max_seldepth);
 
-    int stand_pat = this->board.getEvalScore();
+    int stand_pat = this->board.evaluate();
     if(stand_pat >= beta)
         return beta;
     if(alpha < stand_pat)

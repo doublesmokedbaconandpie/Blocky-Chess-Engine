@@ -10,15 +10,15 @@
 #include "attacks.hpp"
 #include "bitboard.hpp"
 #include "zobrist.hpp"
-#include "types.hpp"
 #include "eval.hpp" 
+#include "types.hpp"
 
 Board::Board(std::string fenStr) {
-    this->materialDifference = 0;
-    std::string token; 
+    std::string token;
     std::istringstream fenStream(fenStr);
+
+    this->materialDifference = 0;
     this->zobristKeyHistory = {0ull}; // required for setPiece
-    this->eval = EvalAttributes(0, 0);
 
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
@@ -411,10 +411,10 @@ void Board::setPiece(int rank, int file, pieceTypes currPiece) {
     }
 }
     
-int Board::getEvalScore() const {
-    int scoreSum = this->eval.opScore * this->eval.piecesRemaining / 32 
-                 + this->eval.egScore * (32 - this->eval.piecesRemaining) / 32;
-    return this->isWhiteTurn ? scoreSum : scoreSum * -1;
+// positive return values means winning for the side to move, negative is opposite
+int Board::evaluate() const {
+    int rawEval = this->eval.getRawEval();
+    return this->isWhiteTurn ? rawEval : rawEval * -1;
 }
 
 void Board::setPiece(BoardSquare square, pieceTypes currPiece) {
@@ -422,7 +422,7 @@ void Board::setPiece(BoardSquare square, pieceTypes currPiece) {
 }
 
 bool operator==(const Board& lhs, const Board& rhs) {
-    return  (lhs.board == rhs.board) && (lhs.pieceSets == rhs.pieceSets) && (lhs.zobristKeyHistory == rhs.zobristKeyHistory);
+    return (lhs.board == rhs.board) && (lhs.pieceSets == rhs.pieceSets) && (lhs.zobristKeyHistory == rhs.zobristKeyHistory);
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& target) {
