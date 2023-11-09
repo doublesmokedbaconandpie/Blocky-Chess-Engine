@@ -1,6 +1,8 @@
-#include "timeman.hpp"
 #include <iostream>
 #include <cstdint>
+
+#include "timeman.hpp"
+
 namespace Timeman {
 
 bool TimeManager::timeUp() const {
@@ -8,7 +10,7 @@ bool TimeManager::timeUp() const {
     return std::chrono::duration_cast<std::chrono::microseconds>(currTime - startTime).count() > timeLimit;
 }
 
-uint64_t TimeManager::getTimeElapsed() const {
+int64_t TimeManager::getTimeElapsed() const {
     auto currTime = std::chrono::high_resolution_clock::now();
     return std::chrono::duration_cast<std::chrono::milliseconds>(currTime - startTime).count();
 }
