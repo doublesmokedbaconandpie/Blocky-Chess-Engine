@@ -23,7 +23,7 @@ add_executable(allTests
     ../src/move.cpp
     ../src/board.cpp
     ../src/moveGen.cpp
-    ../src/movePicker.cpp
+    ../src/moveOrder.cpp
     ../src/timeman.cpp
     ../src/ttable.cpp
     ../src/search.cpp

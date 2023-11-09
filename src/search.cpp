@@ -5,7 +5,7 @@
 
 #include "search.hpp"
 #include "ttable.hpp"
-#include "movePicker.hpp"
+#include "moveOrder.hpp"
 #include "eval.hpp"
 #include "moveGen.hpp"
 #include "board.hpp"
@@ -94,7 +94,7 @@ Node Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) 
     }
 
     // init movePicker
-    MovePicker movePicker(std::move(moves));
+    MoveOrder::MovePicker movePicker(std::move(moves));
     movePicker.assignMoveScores(board, PVNode);
 
     // start search through moves
@@ -148,7 +148,7 @@ int Searcher::quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot) 
         return stand_pat;
 
     std::vector<BoardMove> moves = MoveGen::moveGenerator(this->board);
-    MovePicker movePicker(std::move(moves));
+    MoveOrder::MovePicker movePicker(std::move(moves));
     movePicker.assignMoveScores(board);
 
     int score = MIN_ALPHA;
