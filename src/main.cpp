@@ -6,7 +6,7 @@ int main() {
     Attacks::init();
     Eval::init();
 
-    if (!Uci::uci()) {return 1;}
+    Uci::printEngineInfo();
     Uci::setOptionLoop();
     Uci::uciLoop();
 

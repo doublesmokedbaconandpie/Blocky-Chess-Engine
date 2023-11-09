@@ -16,21 +16,19 @@ namespace Uci {
 
 UciOptions OPTIONS;
 
-bool uci() {
+void printEngineInfo() {
     std::string input;
-    std::getline(std::cin, input);
-    if (input != "uci") {
-        std::cout << "This engine is only Uci";
-        return false;
+    while (input != "uci") {
+        std::getline(std::cin, input);
     }
+
     std::cout << "id name BLOCKY\n";
-    std::cout << "id author BlockyTeam\n";
+    std::cout << "id author Blocky Developers\n";
 
     std::cout << "option name maxDepth type spin default 100 min 1 max 200\n";
     std::cout << "option name Hash type spin default 128 min 128 max 1024\n";
 
     std::cout << "uciok\n";
-    return true;
 }
 
 void setOptionLoop() {
@@ -42,6 +40,23 @@ void setOptionLoop() {
 
         if (commandToken == "setoption") {setOption(commandStream);}
         else if (commandToken == "isready") {isready(); break;}
+    }
+}
+
+void uciLoop() {
+    std::string commandLine, commandToken;
+    Board currBoard;
+    while (true) {
+        std::getline(std::cin, commandLine);
+        std::istringstream commandStream(commandLine);
+        commandStream >> commandToken;
+
+        if (commandToken == "ucinewgame") {TTable::table.clear();}
+        else if (commandToken == "position") {currBoard = position(commandStream);}
+        else if (commandToken == "go") {Uci::go(commandStream, currBoard);}
+        else if (commandToken == "isready") {isready();}
+        else if (commandToken == "perft") {perft(commandStream, currBoard);}
+        else if (commandToken == "quit") {return;}
     }
 }
 
@@ -65,24 +80,6 @@ void setOption(std::istringstream& input){
         TTable::table.resize(std::stoi(value));
     }
 }
-
-void uciLoop() {
-    std::string commandLine, commandToken;
-    Board currBoard;
-    while (true) {
-        std::getline(std::cin, commandLine);
-        std::istringstream commandStream(commandLine);
-        commandStream >> commandToken;
-
-        if (commandToken == "ucinewgame") {TTable::table.clear();}
-        else if (commandToken == "position") {currBoard = position(commandStream);}
-        else if (commandToken == "go") {Uci::go(commandStream, currBoard);}
-        else if (commandToken == "isready") {isready();}
-        else if (commandToken == "perft") {perft(commandStream, currBoard);}
-        else if (commandToken == "quit") {return;}
-    }
-}
-
 
 Board position(std::istringstream& input) {
     std::string token;

@@ -12,15 +12,13 @@ struct UciOptions {
     int depth = 100;
 };
 
-bool uci();
-
+void printEngineInfo();
 void setOptionLoop();
-void setOption(std::istringstream& input);
-
 void uciLoop();
+
+void setOption(std::istringstream& input);
 Board position(std::istringstream& input);
 void go(std::istringstream& input, Board& board);
-
 void isready();
 
 // for debugging
