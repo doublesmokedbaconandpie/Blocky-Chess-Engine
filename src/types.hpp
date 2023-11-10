@@ -39,6 +39,10 @@ constexpr std::array<int, 13> pieceValues {
     0, 9, 3, 3, 5, 1,
     0, 9, 3, 3, 5, 1,};
 
+inline bool isWhitePiece(pieceTypes piece) {
+    return piece >= WKing && piece <= WPawn;
+}
+
 const std::unordered_map<pieceTypes, char> pieceToChar {
     {EmptyPiece, ' '},
     {WPawn, 'P'}, {WKnight, 'N'}, {WBishop, 'B'}, {WRook, 'R'}, {WQueen, 'Q'}, {WKing, 'K'}, 

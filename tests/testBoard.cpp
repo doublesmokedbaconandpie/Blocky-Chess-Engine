@@ -203,17 +203,7 @@ TEST(MaterialDifferenceTest, enPassantTests) {
 }
 
 TEST_F(BoardTest, checkDiagAttackersTrue) {
-    std::array<pieceTypes, BOARD_SIZE> boardArr = {
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, BKing     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, BRook     , EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, WQueen    , EmptyPiece,
-    };
-    Board board(boardArr, false);
+    Board board("8/8/8/8/3k4/3r4/8/6QK b - - 0 1");
     bool isAttacked = currKingInAttack(board.pieceSets, board.isWhiteTurn);
     ASSERT_EQ(isAttacked, true);
 }

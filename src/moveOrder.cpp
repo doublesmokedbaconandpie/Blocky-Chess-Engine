@@ -1,10 +1,12 @@
 #include <vector>
 #include <iostream>
 
-#include "movePicker.hpp"
+#include "moveOrder.hpp"
 #include "board.hpp"
 #include "move.hpp"
 #include "types.hpp"
+
+namespace MoveOrder {
 
 MovePicker::MovePicker(std::vector<BoardMove>&& a_moves) {
     this->moves = a_moves;
@@ -29,7 +31,7 @@ void MovePicker::assignMoveScores(const Board& board, BoardMove PVNode) {
         else {
             this->moveScores[i] = MoveScores::Quiet;
         }
-        i++;
+        ++i;
     }
 }
 
@@ -38,7 +40,7 @@ bool MovePicker::movesLeft() const {
 }
 
 // Due to pruning, we don't need to sort the entire array of moves for move ordering.
-// When sorting only small portions of arrays, using insertion sort is faster.
+// When sorting only small portions of arrays, using partial insertion sort is faster.
 BoardMove MovePicker::pickMove() {
     auto begin = this->moveScores.begin() + this->movesPicked;
     auto end = this->moveScores.end();
@@ -48,6 +50,8 @@ BoardMove MovePicker::pickMove() {
     std::swap(this->moves[maxIndex], this->moves[movesPicked]);
     BoardMove move = this->moves[movesPicked];
     
-    this->movesPicked++;
+    ++this->movesPicked;
     return move;
 }
+
+} // namespace MoveOrder

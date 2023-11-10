@@ -10,106 +10,15 @@
 #include "attacks.hpp"
 #include "bitboard.hpp"
 #include "zobrist.hpp"
-#include "types.hpp"
 #include "eval.hpp" 
+#include "types.hpp"
 
-// Used for debugging and testing
-Board::Board() {
-    this->board = {
-        BRook, BKnight, BBishop, BQueen, BKing, BBishop, BKnight, BRook,
-        BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn, BPawn,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece, EmptyPiece,
-        WPawn, WPawn, WPawn, WPawn, WPawn, WPawn, WPawn, WPawn,
-        WRook, WKnight, WBishop, WQueen, WKing, WBishop, WKnight, WRook
-    };
-    this->isWhiteTurn = true;
-    this->fiftyMoveRule = 0;
-    this->pawnJumpedSquare = BoardSquare();
-    this->castlingRights = All_Castle;
-    this->materialDifference = 0;
-    this->eval = EvalAttributes();
-    
-    //sets up initial score for piece placement
-    for(uint8_t i = 0; i < BOARD_SIZE; i++) {
-        pieceTypes currPiece = board[i];
-        if (currPiece != EmptyPiece) {
-            this->eval.opScore += Eval::getPlacementScoreOp(i / 8, i % 8, currPiece);
-            this->eval.egScore += Eval::getPlacementScoreEg(i / 8, i % 8, currPiece);
-        }
-    }
-
-    this->pieceSets[WKing]   = 0x1000000000000000ull;
-    this->pieceSets[WQueen]  = 0x0800000000000000ull;
-    this->pieceSets[WBishop] = 0x2400000000000000ull;
-    this->pieceSets[WKnight] = 0x4200000000000000ull;
-    this->pieceSets[WRook]   = 0x8100000000000000ull;
-    this->pieceSets[WPawn]   = 0x00FF000000000000ull;
-
-    this->pieceSets[BKing]   = 0x0000000000000010ull;
-    this->pieceSets[BQueen]  = 0x0000000000000008ull;
-    this->pieceSets[BBishop] = 0x0000000000000024ull;
-    this->pieceSets[BKnight] = 0x0000000000000042ull;
-    this->pieceSets[BRook]   = 0x0000000000000081ull;
-    this->pieceSets[BPawn]   = 0x000000000000FF00ull;
-
-    this->pieceSets[WHITE_PIECES] = 0xFFFF000000000000ull;
-    this->pieceSets[BLACK_PIECES] = 0x000000000000FFFFull;
-
-    this->initZobristKey();
-}
-
-// Used for debugging and testing
-Board::Board(std::array<pieceTypes, BOARD_SIZE> a_board, bool a_isWhiteTurn, 
-            int a_fiftyMoveRule, BoardSquare a_pawnJumpedSquare, 
-            castleRights a_castlingRights, int a_materialDifference) {
-    this->board = a_board;
-    this->isWhiteTurn = a_isWhiteTurn;
-    this->fiftyMoveRule = a_fiftyMoveRule;
-    this->pawnJumpedSquare = a_pawnJumpedSquare;
-    this->castlingRights = a_castlingRights;
-    this->materialDifference = a_materialDifference;
-
-    uint8_t pieceCount = 0;
-    uint8_t totalMaterial = 0;
-
-    for(pieceTypes piece: board) {
-        if(piece != EmptyPiece) {
-            pieceCount++;
-            totalMaterial += pieceValues[piece];
-        }
-    }
-    this->eval = EvalAttributes(pieceCount, totalMaterial);
-    //sets up initial score for piece placement (This gets repeated so maybe could turn it into a function)
-    for(uint8_t i = 0; i < BOARD_SIZE; i++) {
-        pieceTypes currPiece = board[i];
-        if (currPiece != EmptyPiece) {
-            this->eval.opScore += Eval::getPlacementScoreOp(i / 8, i % 8, currPiece);
-            this->eval.egScore += Eval::getPlacementScoreEg(i / 8, i % 8, currPiece);
-        }
-    }
-
-    for (int i = WKing; i < WHITE_PIECES; i++) {
-        this->pieceSets[i] = makeBitboardFromArray(this->board, i);
-        if (i < BKing) {
-            this->pieceSets[WHITE_PIECES] |= makeBitboardFromArray(this->board, i);
-        }
-        else {
-            this->pieceSets[BLACK_PIECES] |= makeBitboardFromArray(this->board, i);
-        }
-    }
-    this->initZobristKey();
-}
-
-// Used in UCI
 Board::Board(std::string fenStr) {
-    this->materialDifference = 0;
-    std::string token; 
+    std::string token;
     std::istringstream fenStream(fenStr);
+
+    this->materialDifference = 0;
     this->zobristKeyHistory = {0ull}; // required for setPiece
-    this->eval = EvalAttributes(0, 0);
 
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
@@ -126,14 +35,13 @@ Board::Board(std::string fenStr) {
             pieceTypes currPiece = charToPiece.at(iter); 
             this->setPiece(rank, file, currPiece);
 
-            int colorMat = isWhiteTurn ? 1 : -1;
-            this->materialDifference += pieceValues[currPiece] * colorMat;
+            int pieceColor = isWhitePiece(currPiece) ? 1 : -1;
+            this->materialDifference += pieceValues[currPiece] * pieceColor;
             this->eval.piecesRemaining++;
             this->eval.totalMaterial += pieceValues[currPiece];
 
             file += 1;
         }
-
     }
 
     for(uint8_t i = 0; i < BOARD_SIZE; i++) {
@@ -155,7 +63,7 @@ Board::Board(std::string fenStr) {
     this->castlingRights ^= token.find('q') != std::string::npos ? B_OOO : noCastle;
 
     fenStream >> token;
-    this->pawnJumpedSquare = BoardSquare(token);
+    this->enPassSquare = BoardSquare(token);
 
     fenStream >> token;
     this->fiftyMoveRule = stoi(token);
@@ -202,7 +110,7 @@ std::string Board::toFen() {
     this->castlingRights == noCastle ? fenStr.append("-") : ""; 
     fenStr.push_back(' ');
 
-    fenStr.append(this->pawnJumpedSquare.toStr());
+    fenStr.append(this->enPassSquare.toStr());
     fenStr.push_back(' ');
 
     fenStr.append(std::to_string(this->fiftyMoveRule));
@@ -230,8 +138,8 @@ void Board::initZobristKey() {
         }
     }
     // en passant
-    if (this->pawnJumpedSquare != BoardSquare()) {
-        this->zobristKey ^= Zobrist::enPassKeys[this->pawnJumpedSquare.file];
+    if (this->enPassSquare != BoardSquare()) {
+        this->zobristKey ^= Zobrist::enPassKeys[this->enPassSquare.file];
     }
     // color to move
     if (!this->isWhiteTurn) {
@@ -258,13 +166,13 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         originPiece,
         targetPiece,
         this->castlingRights,
-        this->pawnJumpedSquare,
+        this->enPassSquare,
         this->fiftyMoveRule,
         this->materialDifference,
         this->eval
     ));
 
-    BoardSquare oldPawnJumpedSquare = this->pawnJumpedSquare;
+    BoardSquare oldPawnJumpedSquare = this->enPassSquare;
     castleRights oldCastlingRights = this->castlingRights;
 
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
@@ -286,7 +194,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     else if (originPiece == allyPawn && pos2.rank == pos1.rank + pawnJumpDirection) { 
         // doesn't check if pawn's original position is rank 2
         int behindDirection = this->isWhiteTurn ? 1 : -1;
-        this->pawnJumpedSquare = BoardSquare(pos2.rank + behindDirection, pos2.file);
+        this->enPassSquare = BoardSquare(pos2.rank + behindDirection, pos2.file);
         this->zobristKey ^= Zobrist::enPassKeys[pos2.file];
     }
     // promoting pawn
@@ -303,9 +211,9 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->eval.totalMaterial += pieceValues[promotionPiece] - 1;
     }
     // en passant 
-    else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
+    else if (originPiece == allyPawn && pos2 == this->enPassSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
-        this->pawnJumpedSquare = BoardSquare();
+        this->enPassSquare = BoardSquare();
         this->eval.piecesRemaining--;
         this->eval.totalMaterial--;
         
@@ -347,14 +255,15 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 
     // updates the material score and piece count of the board on capture
     if (targetPiece != EmptyPiece) {
-        this->materialDifference -= pieceValues[targetPiece];
+        int pieceColor = isWhitePiece(targetPiece) ? 1 : -1;
+        this->materialDifference -= pieceValues[targetPiece] * pieceColor;
         this->eval.piecesRemaining--; 
         this->eval.totalMaterial -= abs(pieceValues[targetPiece]);
     }
 
     // handle old en passant square 
-    if (this->pawnJumpedSquare == oldPawnJumpedSquare) {
-        this->pawnJumpedSquare = BoardSquare(); 
+    if (this->enPassSquare == oldPawnJumpedSquare) {
+        this->enPassSquare = BoardSquare(); 
     }
     if (oldPawnJumpedSquare != BoardSquare()) {
         this->zobristKey ^= Zobrist::enPassKeys[oldPawnJumpedSquare.file];
@@ -372,7 +281,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 void Board::makeMove(BoardMove move) {
     this->makeMove(move.pos1, move.pos2, move.promotionPiece);
 }
-
 
 void Board::undoMove() {
     if (this->moveHistory.size() == 0) {
@@ -395,14 +303,14 @@ void Board::undoMove() {
         this->setPiece(prev.move.pos1.rank, rookFile, prevRook);
     }
     // en passant
-    else if (prev.originPiece == prevPawn && prev.move.pos2 == prev.pawnJumpedSquare) {
+    else if (prev.originPiece == prevPawn && prev.move.pos2 == prev.enPassSquare) {
         pieceTypes prevJumpedPawn = prevPawn == BPawn ? WPawn : BPawn;
         this->setPiece(prev.move.pos1.rank, prev.move.pos2.file, prevJumpedPawn);
     }
 
     this->isWhiteTurn = !this->isWhiteTurn;
     this->castlingRights = prev.castlingRights;
-    this->pawnJumpedSquare = prev.pawnJumpedSquare;
+    this->enPassSquare = prev.enPassSquare;
     this->fiftyMoveRule = prev.fiftyMoveRule;
     this->materialDifference = prev.materialDifference;
     this->eval = prev.eval;
@@ -412,49 +320,10 @@ void Board::undoMove() {
     this->zobristKey = zobristKeyHistory.back();
 }
 
-bool Board::isLegalMove(const BoardMove move) const {
-    // This is a bitboard implementation to check whether a move leaves the ally king under attack
-    // The current move generation already checks whether castling is even valid 
-    // or squares unblocked so only the king final position needs to be checked
-
-    assert(move.isValid());
-
-    std::array<uint64_t, NUM_BITBOARDS> tmpPieceSets = this->pieceSets;
-
-    pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
-    uint64_t originSquare = (1ull << move.pos1.toSquare());
-    pieceTypes originPiece = this->getPiece(move.pos1);
-    pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
-    pieceTypes enemyPawn = this->isWhiteTurn ? BPawn : WPawn;
-
-    // account for captures
-    uint64_t targetSquare = 1ull << move.pos2.toSquare();
-    pieceTypes targetPiece;
-    pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
-    
-    // en passant
-    if (originPiece == allyPawn && move.pos2 == this->pawnJumpedSquare) {
-        targetPiece = EmptyPiece;
-        int dir = this->isWhiteTurn ? 8 : -8;
-        uint64_t enemyPawnSquare = 1ull << (move.pos2.toSquare() + dir);
-        tmpPieceSets[targetColor] ^= enemyPawnSquare;
-        tmpPieceSets[enemyPawn] ^= enemyPawnSquare;
-    } else {
-        targetPiece = this->getPiece(move.pos2);
-    }
-    // move ally piece 
-    tmpPieceSets[originColor] ^= originSquare;
-    tmpPieceSets[originPiece] ^= originSquare;
-    tmpPieceSets[originColor] ^= targetSquare;
-    tmpPieceSets[originPiece] ^= targetSquare;
-
-    // modify destination for non-empty square
-    if (targetPiece != EmptyPiece) {
-        tmpPieceSets[targetColor] ^= targetSquare;
-        tmpPieceSets[targetPiece] ^= targetSquare;
-    }
-    
-    return !currKingInAttack(tmpPieceSets, this->isWhiteTurn);
+bool Board::moveIsCapture(BoardMove move) {
+    if(this->getPiece(move.pos1) % 6 == WPawn && this->enPassSquare == move.pos2)
+        return true;
+    return this->getPiece(move.pos2) != EmptyPiece;
 }
 
 // getPiece is not responsible for bounds checking
@@ -495,32 +364,64 @@ void Board::setPiece(int rank, int file, pieceTypes currPiece) {
         this->eval.egScore += Eval::getPlacementScoreEg(rank, file, currPiece);
     }
 }
-    
-int Board::getEvalScore() const {
-    int scoreSum = this->eval.opScore * this->eval.piecesRemaining / 32 
-                 + this->eval.egScore * (32 - this->eval.piecesRemaining) / 32;
-    return this->isWhiteTurn ? scoreSum : scoreSum * -1;
-}
 
 void Board::setPiece(BoardSquare square, pieceTypes currPiece) {
     this->setPiece(square.rank, square.file, currPiece);
 }
 
-bool operator==(const Board& lhs, const Board& rhs) {
-    return  (lhs.board == rhs.board) && (lhs.pieceSets == rhs.pieceSets) && (lhs.zobristKeyHistory == rhs.zobristKeyHistory);
+bool Board::isLegalMove(const BoardMove move) const {
+    // This is a bitboard implementation to check whether a move leaves the ally king under attack
+    // The current move generation already checks whether castling is even valid 
+    // or squares unblocked so only the king final position needs to be checked
+
+    assert(move.isValid());
+
+    std::array<uint64_t, NUM_BITBOARDS> tmpPieceSets = this->pieceSets;
+
+    pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
+    uint64_t originSquare = (1ull << move.pos1.toSquare());
+    pieceTypes originPiece = this->getPiece(move.pos1);
+    pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
+    pieceTypes enemyPawn = this->isWhiteTurn ? BPawn : WPawn;
+
+    // account for captures
+    uint64_t targetSquare = 1ull << move.pos2.toSquare();
+    pieceTypes targetPiece;
+    pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
+    
+    // en passant
+    if (originPiece == allyPawn && move.pos2 == this->enPassSquare) {
+        targetPiece = EmptyPiece;
+        int dir = this->isWhiteTurn ? 8 : -8;
+        uint64_t enemyPawnSquare = 1ull << (move.pos2.toSquare() + dir);
+        tmpPieceSets[targetColor] ^= enemyPawnSquare;
+        tmpPieceSets[enemyPawn] ^= enemyPawnSquare;
+    } else {
+        targetPiece = this->getPiece(move.pos2);
+    }
+    // move ally piece 
+    tmpPieceSets[originColor] ^= originSquare;
+    tmpPieceSets[originPiece] ^= originSquare;
+    tmpPieceSets[originColor] ^= targetSquare;
+    tmpPieceSets[originPiece] ^= targetSquare;
+
+    // modify destination for non-empty square
+    if (targetPiece != EmptyPiece) {
+        tmpPieceSets[targetColor] ^= targetSquare;
+        tmpPieceSets[targetPiece] ^= targetSquare;
+    }
+    
+    return !currKingInAttack(tmpPieceSets, this->isWhiteTurn);
+}
+    
+// positive return values means winning for the side to move, negative is opposite
+int Board::evaluate() const {
+    int rawEval = this->eval.getRawEval();
+    return this->isWhiteTurn ? rawEval : rawEval * -1;
 }
 
-bool operator<(const Board& lhs, const Board& rhs) {
-    for (int rank = 0; rank <= 7; rank++) {
-        for (int file = A; file <= H; file++) {
-            pieceTypes lhsPiece = lhs.getPiece(rank, file);
-            pieceTypes rhsPiece = rhs.getPiece(rank, file);
-            if (lhsPiece != rhsPiece) {
-                return lhsPiece < rhsPiece;
-            }
-        }
-    }
-    return false;
+bool operator==(const Board& lhs, const Board& rhs) {
+    return (lhs.board == rhs.board) && (lhs.pieceSets == rhs.pieceSets) && (lhs.zobristKeyHistory == rhs.zobristKeyHistory);
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& target) {
@@ -577,22 +478,4 @@ bool currKingInAttack(const std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool
         || Attacks::pawnAttacks(kingSquare, isWhiteTurn) & enemyPawns
         || Attacks::knightAttacks(kingSquare) & enemyKnights
         || Attacks::kingAttacks(kingSquare) & enemyKings;
-}
-
-// used for debugging
-uint64_t makeBitboardFromArray(std::array<pieceTypes, BOARD_SIZE> board, int target) {
-    uint64_t result = 0ull;
-    for (size_t i = 0; i < board.size(); i++) {
-        if (board.at(i) == target) {
-            result |= (1ull << i);
-        }
-    }
-    return result;
-}
-
-bool Board::moveIsCapture(BoardMove move) {
-    if(this->getPiece(move.pos1) % 6 == WPawn && this->pawnJumpedSquare == move.pos2)
-        return true;
-
-    return this->getPiece(move.pos2) != EmptyPiece;
 }

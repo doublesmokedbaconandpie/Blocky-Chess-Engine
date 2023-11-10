@@ -4,6 +4,17 @@
 
 namespace Eval {
 
+struct Info {
+    Info() = default;
+    int getRawEval() const;
+
+    uint8_t piecesRemaining = 0;
+    int totalMaterial = 0; 
+    int materialDifference = 0;
+    int opScore = 0;
+    int egScore = 0;
+};
+
 int getPlacementScoreOp(int rank, int file, pieceTypes currPiece);
 int getPlacementScoreEg(int rank, int file, pieceTypes currPiece);
 void init();

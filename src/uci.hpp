@@ -7,22 +7,21 @@
 #include "search.hpp"
 
 namespace Uci {
-    struct UciOptions {
-        int depth = 100;
-    };
 
-    bool uci();
+struct UciOptions {
+    int depth = 100;
+};
 
-    void setOptionLoop();
-    void setOption(std::istringstream& input);
+void printEngineInfo();
+void setOptionLoop();
+void uciLoop();
 
-    void uciLoop();
-    Board position(std::istringstream& input);
-    void go(std::istringstream& input, Board& board);
+void setOption(std::istringstream& input);
+Board position(std::istringstream& input);
+void go(std::istringstream& input, Board& board);
+void isready();
 
-    void isready();
-
-    // for debugging
-    void perft(std::istringstream& input, Board& board);
+// for debugging
+void perft(std::istringstream& input, Board& board);
 
 } // namespace Uci

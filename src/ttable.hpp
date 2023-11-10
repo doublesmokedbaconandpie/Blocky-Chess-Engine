@@ -27,8 +27,8 @@ class TTable {
         bool entryExists(uint64_t key) const;
         Entry getEntry(int index) const;
         void storeEntry(int index, Entry entry);
-        std::vector<Entry> table;
     private:
+        std::vector<Entry> table;
         int size;
 };
 
