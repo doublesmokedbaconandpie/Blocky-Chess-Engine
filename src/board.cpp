@@ -63,7 +63,7 @@ Board::Board(std::string fenStr) {
     this->castlingRights ^= token.find('q') != std::string::npos ? B_OOO : noCastle;
 
     fenStream >> token;
-    this->pawnJumpedSquare = BoardSquare(token);
+    this->enPassSquare = BoardSquare(token);
 
     fenStream >> token;
     this->fiftyMoveRule = stoi(token);
@@ -110,7 +110,7 @@ std::string Board::toFen() {
     this->castlingRights == noCastle ? fenStr.append("-") : ""; 
     fenStr.push_back(' ');
 
-    fenStr.append(this->pawnJumpedSquare.toStr());
+    fenStr.append(this->enPassSquare.toStr());
     fenStr.push_back(' ');
 
     fenStr.append(std::to_string(this->fiftyMoveRule));
@@ -138,8 +138,8 @@ void Board::initZobristKey() {
         }
     }
     // en passant
-    if (this->pawnJumpedSquare != BoardSquare()) {
-        this->zobristKey ^= Zobrist::enPassKeys[this->pawnJumpedSquare.file];
+    if (this->enPassSquare != BoardSquare()) {
+        this->zobristKey ^= Zobrist::enPassKeys[this->enPassSquare.file];
     }
     // color to move
     if (!this->isWhiteTurn) {
@@ -166,13 +166,13 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         originPiece,
         targetPiece,
         this->castlingRights,
-        this->pawnJumpedSquare,
+        this->enPassSquare,
         this->fiftyMoveRule,
         this->materialDifference,
         this->eval
     ));
 
-    BoardSquare oldPawnJumpedSquare = this->pawnJumpedSquare;
+    BoardSquare oldPawnJumpedSquare = this->enPassSquare;
     castleRights oldCastlingRights = this->castlingRights;
 
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
@@ -194,7 +194,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     else if (originPiece == allyPawn && pos2.rank == pos1.rank + pawnJumpDirection) { 
         // doesn't check if pawn's original position is rank 2
         int behindDirection = this->isWhiteTurn ? 1 : -1;
-        this->pawnJumpedSquare = BoardSquare(pos2.rank + behindDirection, pos2.file);
+        this->enPassSquare = BoardSquare(pos2.rank + behindDirection, pos2.file);
         this->zobristKey ^= Zobrist::enPassKeys[pos2.file];
     }
     // promoting pawn
@@ -211,9 +211,9 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->eval.totalMaterial += pieceValues[promotionPiece] - 1;
     }
     // en passant 
-    else if (originPiece == allyPawn && pos2 == this->pawnJumpedSquare) {
+    else if (originPiece == allyPawn && pos2 == this->enPassSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
-        this->pawnJumpedSquare = BoardSquare();
+        this->enPassSquare = BoardSquare();
         this->eval.piecesRemaining--;
         this->eval.totalMaterial--;
         
@@ -262,8 +262,8 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     }
 
     // handle old en passant square 
-    if (this->pawnJumpedSquare == oldPawnJumpedSquare) {
-        this->pawnJumpedSquare = BoardSquare(); 
+    if (this->enPassSquare == oldPawnJumpedSquare) {
+        this->enPassSquare = BoardSquare(); 
     }
     if (oldPawnJumpedSquare != BoardSquare()) {
         this->zobristKey ^= Zobrist::enPassKeys[oldPawnJumpedSquare.file];
@@ -303,14 +303,14 @@ void Board::undoMove() {
         this->setPiece(prev.move.pos1.rank, rookFile, prevRook);
     }
     // en passant
-    else if (prev.originPiece == prevPawn && prev.move.pos2 == prev.pawnJumpedSquare) {
+    else if (prev.originPiece == prevPawn && prev.move.pos2 == prev.enPassSquare) {
         pieceTypes prevJumpedPawn = prevPawn == BPawn ? WPawn : BPawn;
         this->setPiece(prev.move.pos1.rank, prev.move.pos2.file, prevJumpedPawn);
     }
 
     this->isWhiteTurn = !this->isWhiteTurn;
     this->castlingRights = prev.castlingRights;
-    this->pawnJumpedSquare = prev.pawnJumpedSquare;
+    this->enPassSquare = prev.enPassSquare;
     this->fiftyMoveRule = prev.fiftyMoveRule;
     this->materialDifference = prev.materialDifference;
     this->eval = prev.eval;
@@ -321,7 +321,7 @@ void Board::undoMove() {
 }
 
 bool Board::moveIsCapture(BoardMove move) {
-    if(this->getPiece(move.pos1) % 6 == WPawn && this->pawnJumpedSquare == move.pos2)
+    if(this->getPiece(move.pos1) % 6 == WPawn && this->enPassSquare == move.pos2)
         return true;
     return this->getPiece(move.pos2) != EmptyPiece;
 }
@@ -390,7 +390,7 @@ bool Board::isLegalMove(const BoardMove move) const {
     pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
     
     // en passant
-    if (originPiece == allyPawn && move.pos2 == this->pawnJumpedSquare) {
+    if (originPiece == allyPawn && move.pos2 == this->enPassSquare) {
         targetPiece = EmptyPiece;
         int dir = this->isWhiteTurn ? 8 : -8;
         uint64_t enemyPawnSquare = 1ull << (move.pos2.toSquare() + dir);

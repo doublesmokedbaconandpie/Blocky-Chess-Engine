@@ -30,8 +30,8 @@ Info Searcher::startThinking() {
             result.eval = root.eval;
             // compute mate-in
             if (abs(result.eval) > MAX_BETA - 100) {
-                int colorToMate = result.eval < 0 ? -1 : 1;
-                result.mateIn = colorToMate * (MAX_BETA - abs(result.eval));
+                int playerMating = result.eval < 0 ? -1 : 1;
+                result.mateIn = playerMating * (MAX_BETA - abs(result.eval));
             }
             this->outputUciInfo(result);
         }
@@ -204,8 +204,8 @@ void Searcher::outputUciInfo(Info searchResult) {
     if (searchResult.mateIn == Search::NO_MATE) {
         std::cout << "score cp " << searchResult.eval << ' ';
     } else {
-        int colorToMate = searchResult.eval < 0 ? -1 : 1;
-        std::cout << "score mate " << (searchResult.mateIn + colorToMate) / 2 << ' '; // convert plies to moves
+        int playerMating = searchResult.eval < 0 ? -1 : 1;
+        std::cout << "score mate " << (searchResult.mateIn + playerMating) / 2 << ' '; // convert plies to moves
     }
     std::cout << "hashfull " << TTable::table.hashFull() << ' ';
     std::cout << std::endl;

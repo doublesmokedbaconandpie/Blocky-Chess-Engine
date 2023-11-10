@@ -13,15 +13,15 @@ struct BoardState {
     pieceTypes originPiece;
     pieceTypes targetPiece;
     castleRights castlingRights;
-    BoardSquare pawnJumpedSquare;
+    BoardSquare enPassSquare;
     int fiftyMoveRule;
     int materialDifference;
     Eval::Info eval;
     BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, 
-                castleRights a_castlingRights, BoardSquare a_pawnJumpedSquare, int a_fiftyMoveRule,
+                castleRights a_castlingRights, BoardSquare a_enPassSquare, int a_fiftyMoveRule,
                 int a_materialDifference, Eval::Info a_eval) : 
                 move(a_move), originPiece(a_originPiece), targetPiece(a_targetPiece),
-                castlingRights(a_castlingRights), pawnJumpedSquare(a_pawnJumpedSquare), fiftyMoveRule(a_fiftyMoveRule),
+                castlingRights(a_castlingRights), enPassSquare(a_enPassSquare), fiftyMoveRule(a_fiftyMoveRule),
                 materialDifference(a_materialDifference), eval(a_eval) {};
 };
 
@@ -54,7 +54,7 @@ struct Board {
     bool isWhiteTurn;
     castleRights castlingRights; // bitwise castling rights tracker
     int fiftyMoveRule;
-    BoardSquare pawnJumpedSquare; // en passant square
+    BoardSquare enPassSquare; // en passant square
     int materialDifference; // updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
                             // Possibly could be combined with attributes
     Eval::Info eval;
