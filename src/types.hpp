@@ -13,6 +13,7 @@ constexpr int MAX_PLY = 250;
 
 using Square = uint8_t;
 using PieceSets = std::array<uint64_t, NUM_BITBOARDS>;
+using HistoryTable = std::array<std::array<uint64_t, BOARD_SIZE>, BOARD_SIZE>;
 
 enum pieceTypes {EmptyPiece = -1,
                 WKing, WQueen, WBishop, WKnight, WRook, WPawn, 

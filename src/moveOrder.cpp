@@ -9,6 +9,9 @@
 
 namespace MoveOrder {
 
+// a butterfly history heuristic table (global)
+HistoryTable History;
+
 MovePicker::MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove, BoardMove a_killerMove) {
     this->moveList = MoveList(board);
     this->moveScores = std::array<int, MAX_MOVES>{};
@@ -42,19 +45,24 @@ void MovePicker::assignMoveScores(const Board& board) {
 
     for (size_t i = this->movesPicked; i < this->moveList.moves.size(); ++i) {
         const auto move = this->moveList.moves[i];
+        // Transposition Table Move, or PV Move
         if (ASSIGN_TTMOVE && move == this->TTMove) {
             this->moveScores[i] = MoveScores::PV;
         }
+	// Captures
         else if (ASSIGN_CAPTURES && board.moveIsCapture(move)) {
+	    // Score using MVV-LVA
             const int victimValue = this->getVictimScore(board, move) << 8;
             const int attackerValue = pieceValues[board.getPiece(move.sqr1())];
             this->moveScores[i] = MoveScores::Capture + victimValue - attackerValue;
         }
+        // Killer Moves
         else if (move == this->killerMove) {
             this->moveScores[i] = MoveScores::Killer;
         }
+        // Quiet Moves, ordered by history
         else {
-            this->moveScores[i] = MoveScores::Quiet;
+            this->moveScores[i] = MoveScores::Quiet + History[move.sqr1()][move.sqr2()];
         }
     }
 }
@@ -100,6 +108,12 @@ int MovePicker::getVictimScore(const Board& board, BoardMove move) const {
     else if (move.getPromotePiece() != EmptyPiece)
         return pieceValues[move.getPromotePiece()];
     return pieceValues[board.getPiece(move.sqr2())];
+}
+
+void clearHistory() {
+    for (auto& table: History) {
+        std::fill(table.begin(), table.end(), 0);
+    }
 }
 
 } // namespace MoveOrder
