@@ -22,6 +22,7 @@ target_sources(Blocky PRIVATE
     src/ttable.cpp
     src/eval.cpp
     src/timeman.cpp
+    src/bench.cpp
     src/uci.cpp
 )
 target_include_directories(Blocky PRIVATE src)

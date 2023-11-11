@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 #include "uci.hpp"
+#include "bench.hpp"
 #include "timeman.hpp"
 #include "ttable.hpp"
 #include "search.hpp"
@@ -51,10 +52,11 @@ void uciLoop() {
         std::istringstream commandStream(commandLine);
         commandStream >> commandToken;
 
-        if (commandToken == "ucinewgame") {TTable::table.clear();}
+        if (commandToken == "ucinewgame") {uciNewGame();}
         else if (commandToken == "position") {currBoard = position(commandStream);}
         else if (commandToken == "go") {Uci::go(commandStream, currBoard);}
         else if (commandToken == "isready") {isready();}
+        else if (commandToken == "bench") {bench();}
         else if (commandToken == "perft") {perft(commandStream, currBoard);}
         else if (commandToken == "quit") {return;}
     }
@@ -79,6 +81,10 @@ void setOption(std::istringstream& input){
     else if (id == "hash") {
         TTable::table.resize(std::stoi(value));
     }
+}
+
+void uciNewGame() {
+    TTable::table.clear();
 }
 
 Board position(std::istringstream& input) {
@@ -132,6 +138,12 @@ void go(std::istringstream& input, Board& board) {
 
 void isready() {
     std::cout << "readyok\n";
+}
+
+void bench() {
+    uciNewGame(); // required to make benches consistent
+    uint64_t result = Bench::start();
+    std::cout << "Bench results: " << result << '\n';
 }
 
 void perft(std::istringstream& input, Board& board) {

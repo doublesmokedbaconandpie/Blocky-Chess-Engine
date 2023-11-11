@@ -22,18 +22,23 @@ Info Searcher::startThinking() {
         root = this->search(MIN_ALPHA, MAX_BETA, i, 0);
         result.nodes = this->nodes;
         result.timeElapsed = this->tm.getTimeElapsed();
+
         // only update the following results if search successfully checked a move in time
         if (root.move != BoardMove()) {
             result.move = root.move;
             result.depth = this->max_depth;
             result.seldepth = this->max_seldepth;
             result.eval = root.eval;
+
             // compute mate-in
             if (abs(result.eval) > MAX_BETA - 100) {
                 int playerMating = result.eval < 0 ? -1 : 1;
                 result.mateIn = playerMating * (MAX_BETA - abs(result.eval));
             }
-            this->outputUciInfo(result);
+
+            if (this->printInfo) {
+                this->outputUciInfo(result);
+            }
         }
         
         if(this->tm.timeUp()) {
