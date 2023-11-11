@@ -48,12 +48,15 @@ class Searcher {
         void storeInTT(TTable::Entry entry, Node result, int distanceFromRoot);
 
         void outputUciInfo(Info searchResult);
+        void setPrintInfo(bool flag) {this->printInfo = flag;}; 
     private:
         Board board;
         uint64_t nodes;
         int max_depth, max_seldepth;
         Timeman::TimeManager tm;
         int depth_limit;
+
+        bool printInfo = true;
 };
 
 } // namespace Search

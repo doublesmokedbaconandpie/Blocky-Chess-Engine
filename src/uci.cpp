@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 #include "uci.hpp"
+#include "bench.hpp"
 #include "timeman.hpp"
 #include "ttable.hpp"
 #include "search.hpp"
@@ -55,6 +56,7 @@ void uciLoop() {
         else if (commandToken == "position") {currBoard = position(commandStream);}
         else if (commandToken == "go") {Uci::go(commandStream, currBoard);}
         else if (commandToken == "isready") {isready();}
+        else if (commandToken == "bench") {bench();}
         else if (commandToken == "perft") {perft(commandStream, currBoard);}
         else if (commandToken == "quit") {return;}
     }
@@ -132,6 +134,11 @@ void go(std::istringstream& input, Board& board) {
 
 void isready() {
     std::cout << "readyok\n";
+}
+
+void bench() {
+    uint64_t result = Bench::start();
+    std::cout << "Bench results: " << result << '\n';
 }
 
 void perft(std::istringstream& input, Board& board) {

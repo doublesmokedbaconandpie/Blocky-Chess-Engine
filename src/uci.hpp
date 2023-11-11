@@ -22,6 +22,7 @@ void go(std::istringstream& input, Board& board);
 void isready();
 
 // for debugging
+void bench();
 void perft(std::istringstream& input, Board& board);
 
 } // namespace Uci

@@ -5,7 +5,7 @@
 
 namespace Timeman {
 
-constexpr int INF_TIME = 1000000000;
+constexpr uint64_t INF_TIME = 1 << 28;
 
 struct TimeManager
 {
