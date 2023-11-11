@@ -17,6 +17,7 @@ void setOptionLoop();
 void uciLoop();
 
 void setOption(std::istringstream& input);
+void uciNewGame();
 Board position(std::istringstream& input);
 void go(std::istringstream& input, Board& board);
 void isready();
