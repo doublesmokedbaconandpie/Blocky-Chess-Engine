@@ -1,7 +1,5 @@
-#include <vector>
-#include <utility>
 #include <iostream>
-#include <chrono>
+#include <vector>
 
 #include "search.hpp"
 #include "ttable.hpp"
@@ -51,7 +49,7 @@ Info Searcher::startThinking() {
 }
 
 template <NodeTypes NODE>
-int Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) {
+int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
 
     // time up
     int score = 0;
@@ -75,7 +73,7 @@ int Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) {
         return score;
     }
     // max depth reached
-    if (depthLeft == 0) {
+    if (depth == 0) {
         return quiesce(alpha, beta, 5, distanceFromRoot);
     }
     // checkmate or stalemate
@@ -106,7 +104,7 @@ int Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) {
     while (movePicker.movesLeft()) {
         BoardMove move = movePicker.pickMove();
         board.makeMove(move);
-        score = -search<PV>(-beta, -alpha, depthLeft - 1, distanceFromRoot + 1);
+        score = -search<PV>(-beta, -alpha, depth - 1, distanceFromRoot + 1);
         board.undoMove(); 
 
         // don't update best move if time is up
@@ -136,9 +134,9 @@ int Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) {
     return score;
 }
 
-int Searcher::quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot) {
+int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
     if(this->tm.timeUp()) {
-        return -1;
+        return 0;
     }
 
     ++this->nodes;
@@ -149,7 +147,7 @@ int Searcher::quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot) 
         return beta;
     if(alpha < stand_pat)
         alpha = stand_pat;
-    if(depthLeft == 0)
+    if(depth == 0)
         return stand_pat;
 
     std::vector<BoardMove> moves = MoveGen::moveGenerator(this->board);
@@ -162,7 +160,7 @@ int Searcher::quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot) 
         if(!board.moveIsCapture(move))
             continue;
         board.makeMove(move);
-        score = -quiesce(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
+        score = -quiesce(-beta, -alpha, depth - 1, distanceFromRoot + 1);
         board.undoMove(); 
 
         if(score >= beta)

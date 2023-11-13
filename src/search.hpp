@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <utility>
-#include <chrono>
 
 #include "board.hpp"
 #include "eval.hpp"
@@ -38,8 +36,8 @@ class Searcher {
         Info startThinking();
 
         template <NodeTypes NODE>
-        int search(int alpha, int beta, int depthLeft, int distanceFromRoot);
-        int quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot);
+        int search(int alpha, int beta, int depth, int distanceFromRoot);
+        int quiesce(int alpha, int beta, int depth, int distanceFromRoot);
         void storeInTT(TTable::Entry entry, BoardMove move, int distanceFromRoot);
 
         void outputUciInfo(Info searchResult);
