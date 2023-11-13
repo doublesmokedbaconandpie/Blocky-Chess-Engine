@@ -34,6 +34,10 @@ enum castleRights {
     All_Castle = W_Castle | B_Castle,
 };
 
+enum NodeTypes {
+    ROOT, PV,
+};
+
 // indices are equal to the enumerated pieceTypes
 constexpr std::array<int, 13> pieceValues {
     0, 9, 3, 3, 5, 1,
