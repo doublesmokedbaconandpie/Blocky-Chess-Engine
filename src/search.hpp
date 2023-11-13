@@ -26,12 +26,6 @@ struct Info {
     uint64_t timeElapsed = 0;
 };
 
-// used for internal searching
-struct Node {
-    int eval;
-    BoardMove move;
-};
-
 class Searcher {
     public:  
         Searcher(Board a_board, int ms, int depthLimit) {
@@ -43,9 +37,11 @@ class Searcher {
             this->depth_limit = depthLimit;
         };
         Info startThinking();
-        Node search(int alpha, int beta, int depthLeft, int distanceFromRoot);
+
+        template <NodeTypes NODE>
+        int search(int alpha, int beta, int depthLeft, int distanceFromRoot);
         int quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot);
-        void storeInTT(TTable::Entry entry, Node result, int distanceFromRoot);
+        void storeInTT(TTable::Entry entry, BoardMove move, int distanceFromRoot);
 
         void outputUciInfo(Info searchResult);
         void setPrintInfo(bool flag) {this->printInfo = flag;}; 
@@ -55,6 +51,7 @@ class Searcher {
         int max_depth, max_seldepth;
         Timeman::TimeManager tm;
         int depth_limit;
+        BoardMove finalMove;
 
         bool printInfo = true;
 };

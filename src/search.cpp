@@ -15,30 +15,25 @@ namespace Search {
 
 Info Searcher::startThinking() {
     Info result;
-    Node root;
 
     // perform iterative deepening
     for(int i = 1; i <= this->depth_limit; i++) {
-        root = this->search(MIN_ALPHA, MAX_BETA, i, 0);
+        result.eval = this->search<ROOT>(MIN_ALPHA, MAX_BETA, i, 0);
+        result.move = this->finalMove;
         result.nodes = this->nodes;
         result.timeElapsed = this->tm.getTimeElapsed();
+        result.depth = this->max_depth;
+        result.seldepth = this->max_seldepth;
 
-        // only update the following results if search successfully checked a move in time
-        if (root.move != BoardMove()) {
-            result.move = root.move;
-            result.depth = this->max_depth;
-            result.seldepth = this->max_seldepth;
-            result.eval = root.eval;
+        // compute mate-in
+        if (abs(result.eval) > MAX_BETA - 100) {
+            int playerMating = result.eval < 0 ? -1 : 1;
+            result.mateIn = playerMating * (MAX_BETA - abs(result.eval)); // convert eval to ply
+            result.mateIn = (result.mateIn + playerMating) / 2; // convert ply to moves
+        }
 
-            // compute mate-in
-            if (abs(result.eval) > MAX_BETA - 100) {
-                int playerMating = result.eval < 0 ? -1 : 1;
-                result.mateIn = playerMating * (MAX_BETA - abs(result.eval));
-            }
-
-            if (this->printInfo) {
-                this->outputUciInfo(result);
-            }
+        if (this->printInfo) {
+            this->outputUciInfo(result);
         }
         
         if(this->tm.timeUp()) {
@@ -49,10 +44,13 @@ Info Searcher::startThinking() {
     return result;
 }
 
-Node Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) {
-    Node result;
+template <NodeTypes NODE>
+int Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) {
+
+    // time up
+    int score = 0;
     if(this->tm.timeUp()) {
-        return result;
+        return score;
     }
 
     ++this->nodes;
@@ -60,8 +58,7 @@ Node Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) 
 
     // fifty move rule
     if (this->board.fiftyMoveRule == 100) {
-        result.eval = 0;
-        return result;
+        return score;
     }
     // three-fold repetition
     std::vector<uint64_t> currKeyHistory = this->board.zobristKeyHistory;
@@ -69,24 +66,19 @@ Node Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) 
     auto lBound = std::lower_bound(currKeyHistory.begin(), currKeyHistory.end(), this->board.zobristKey);
     auto rBound = std::upper_bound(currKeyHistory.begin(), currKeyHistory.end(), this->board.zobristKey);
     if (distance(lBound, rBound) == 3) {
-        result.eval = 0;
-        return result;
+        return score;
     }
     // max depth reached
     if (depthLeft == 0) {
-        result.eval = quiesce(alpha, beta, 5, distanceFromRoot);
-        return result;
+        return quiesce(alpha, beta, 5, distanceFromRoot);
     }
     // checkmate or stalemate
     std::vector<BoardMove> moves = MoveGen::moveGenerator(this->board);
     if (moves.size() == 0) {
         if (currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
-            result.eval = MIN_ALPHA + distanceFromRoot;
+            score = MIN_ALPHA + distanceFromRoot;
         }
-        else {
-            result.eval = 0;
-        }
-        return result;
+        return score;
     }
 
     // probe transposition table for PVNodes, which help with move ordering
@@ -103,37 +95,39 @@ Node Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) 
     movePicker.assignMoveScores(board, PVNode);
 
     // start search through moves
-    int score, bestscore = MIN_ALPHA;
+    int bestscore = MIN_ALPHA;
+    BoardMove bestMove;
     while (movePicker.movesLeft()) {
         BoardMove move = movePicker.pickMove();
         board.makeMove(move);
-        Node opponent = search(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
+        score = -search<PV>(-beta, -alpha, depthLeft - 1, distanceFromRoot + 1);
         board.undoMove(); 
-        
-        score = -1 * opponent.eval;
 
         // don't update best move if time is up
         if (this->tm.timeUp()) {
-            break;
+            return score;
         }
         
         // prune if a move is too good; opponent side will avoid playing into this node
         if (score >= beta) {
-            result.eval = beta;
+            score = beta;
             break;
         }
         // fail-soft stabilizes the search and allows for returned values outside the alpha-beta bounds
         if (score > bestscore) {
-            result.eval = bestscore = score;
-            result.move = move;
+            bestscore = score;
+            bestMove = move;
+            if constexpr (NODE == ROOT) {
+                this->finalMove = bestMove;
+            }
             if (score > alpha) {
                 alpha = score;
             }
         }
     }
     // A search for this depth is complete with a best move, so it can be stored in the transposition table
-    this->storeInTT(entry, result, distanceFromRoot);
-    return result;
+    this->storeInTT(entry, bestMove, distanceFromRoot);
+    return score;
 }
 
 int Searcher::quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot) {
@@ -162,7 +156,7 @@ int Searcher::quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot) 
         if(!board.moveIsCapture(move))
             continue;
         board.makeMove(move);
-        score = -1 * (quiesce(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1));
+        score = -quiesce(-1 * beta, -1 * alpha, depthLeft - 1, distanceFromRoot + 1);
         board.undoMove(); 
 
         if(score >= beta)
@@ -174,7 +168,7 @@ int Searcher::quiesce(int alpha, int beta, int depthLeft, int distanceFromRoot) 
 
 }
 
-void Searcher::storeInTT(TTable::Entry entry, Node result, int distanceFromRoot) {
+void Searcher::storeInTT(TTable::Entry entry, BoardMove move, int distanceFromRoot) {
     int posIndex = TTable::table.getIndex(this->board.zobristKey);
     /* entries in the transposition table are overwritten under two conditions:
     1. The current search depth is greater than the entry's depth, meaning that a better
@@ -183,12 +177,12 @@ void Searcher::storeInTT(TTable::Entry entry, Node result, int distanceFromRoot)
     in hash are preserved in the table since there can be repeated boards, but replacing entries
     with moves from more modern roots is better
     */
-    if ( (distanceFromRoot >= entry.depth || this->board.fiftyMoveRule >= entry.age)
-        && result.move != BoardMove()) {
+    if ( (distanceFromRoot >= entry.depth || this->board.fiftyMoveRule >= entry.age) 
+        && move != BoardMove()) {
             entry.key = static_cast<uint16_t>(this->board.zobristKey);
             entry.age = this->board.fiftyMoveRule;
             entry.depth = distanceFromRoot;
-            entry.move = result.move;
+            entry.move = move;
             TTable::table.storeEntry(posIndex, entry);
     }
 }
@@ -210,7 +204,7 @@ void Searcher::outputUciInfo(Info searchResult) {
         std::cout << "score cp " << searchResult.eval << ' ';
     } else {
         int playerMating = searchResult.eval < 0 ? -1 : 1;
-        std::cout << "score mate " << (searchResult.mateIn + playerMating) / 2 << ' '; // convert plies to moves
+        std::cout << "score mate " << searchResult.mateIn << ' ';
     }
     std::cout << "hashfull " << TTable::table.hashFull() << ' ';
     std::cout << std::endl;
