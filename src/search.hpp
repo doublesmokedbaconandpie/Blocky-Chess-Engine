@@ -31,7 +31,6 @@ class Searcher {
         Searcher(Board a_board, int ms, int depthLimit) {
             this->board = a_board;
             this->nodes = 0;
-            this->max_depth = 0;
             this->max_seldepth = 0;
             this->tm = Timeman::TimeManager(ms);
             this->depth_limit = depthLimit;
@@ -48,11 +47,11 @@ class Searcher {
     private:
         Board board;
         uint64_t nodes;
-        int max_depth, max_seldepth;
-        Timeman::TimeManager tm;
-        int depth_limit;
+        int max_seldepth;
         BoardMove finalMove;
 
+        Timeman::TimeManager tm;
+        int depth_limit;
         bool printInfo = true;
 };
 

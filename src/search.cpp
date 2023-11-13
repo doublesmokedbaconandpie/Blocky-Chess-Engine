@@ -22,8 +22,14 @@ Info Searcher::startThinking() {
         result.move = this->finalMove;
         result.nodes = this->nodes;
         result.timeElapsed = this->tm.getTimeElapsed();
-        result.depth = this->max_depth;
-        result.seldepth = this->max_seldepth;
+
+        // if it's not possible to search deeper, stop searching 
+        if (this->max_seldepth < i) {
+            break;
+        } else {
+            result.depth = i;
+            result.seldepth = result.seldepth;
+        }
 
         // compute mate-in
         if (abs(result.eval) > MAX_BETA - 100) {
@@ -36,7 +42,7 @@ Info Searcher::startThinking() {
             this->outputUciInfo(result);
         }
         
-        if(this->tm.timeUp()) {
+        if (this->tm.timeUp()) {
             break;
         }
     }
@@ -54,7 +60,7 @@ int Searcher::search(int alpha, int beta, int depthLeft, int distanceFromRoot) {
     }
 
     ++this->nodes;
-    this->max_depth = std::max(distanceFromRoot, this->max_depth);
+    this->max_seldepth = std::max(distanceFromRoot, this->max_seldepth);
 
     // fifty move rule
     if (this->board.fiftyMoveRule == 100) {
