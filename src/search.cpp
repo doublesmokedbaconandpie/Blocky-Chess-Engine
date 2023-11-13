@@ -26,7 +26,7 @@ Info Searcher::startThinking() {
             break;
         } else {
             result.depth = i;
-            result.seldepth = result.seldepth;
+            result.seldepth = this->max_seldepth;
         }
 
         // compute mate-in
