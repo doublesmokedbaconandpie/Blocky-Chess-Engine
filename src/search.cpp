@@ -1,3 +1,4 @@
+#include <cassert>
 #include <iostream>
 #include <vector>
 
@@ -56,6 +57,8 @@ Info Searcher::startThinking() {
 
 template <NodeTypes NODE>
 int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
+    constexpr bool ISROOT = NODE == ROOT;
+    const int oldAlpha = alpha;
     constexpr bool ISPV = NODE != NOTPV;
 
     // time up
@@ -92,18 +95,27 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         return score;
     }
 
-    // probe transposition table for PVNodes, which help with move ordering
-    BoardMove PVNode;
+    /************
+     * Probe Tranposition Table
+    *************/
+    BoardMove TTMove;
     TTable::Entry entry;
     int posIndex = TTable::table.getIndex(this->board.zobristKey);
     if (TTable::table.entryExists(this->board.zobristKey)) {
         entry = TTable::table.getEntry(posIndex);
-        PVNode = entry.move;
+
+        if (!ISROOT && entry.depth >= depth) {
+            if (entry.flag == TTable::EvalType::EXACT) {
+                return entry.eval;
+            }
+        }
+
+        TTMove = entry.move;
     }
 
     // init movePicker
     MoveOrder::MovePicker movePicker(std::move(moves));
-    movePicker.assignMoveScores(board, PVNode);
+    movePicker.assignMoveScores(board, TTMove);
 
     // start search through moves
     int bestscore = MIN_ALPHA;
@@ -137,7 +149,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         if (score > bestscore) {
             bestscore = score;
             bestMove = move;
-            if constexpr (NODE == ROOT) {
+            if (ISROOT) {
                 this->finalMove = bestMove;
             }
             if (score > alpha) {
@@ -146,7 +158,9 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         }
     }
     // A search for this depth is complete with a best move, so it can be stored in the transposition table
-    this->storeInTT(entry, bestMove, depth);
+    entry.flag = (bestscore >= beta) ? TTable::EvalType::LOWER :
+                    (alpha == oldAlpha) ? TTable::EvalType::UPPER : TTable::EvalType::EXACT;
+    this->storeInTT(entry, bestscore, bestMove, depth);
     return bestscore;
 }
 
@@ -188,7 +202,7 @@ int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
 
 }
 
-void Searcher::storeInTT(TTable::Entry entry, BoardMove move, int depth) {
+void Searcher::storeInTT(TTable::Entry entry, int eval, BoardMove move, int depth) {
     int posIndex = TTable::table.getIndex(this->board.zobristKey);
     /* entries in the transposition table are overwritten under two conditions:
     1. The current search depth is greater than the entry's depth, meaning that a better
@@ -202,6 +216,7 @@ void Searcher::storeInTT(TTable::Entry entry, BoardMove move, int depth) {
             entry.key = this->board.zobristKey;
             entry.age = this->board.age;
             entry.depth = depth;
+            entry.eval = eval;
             entry.move = move;
             TTable::table.storeEntry(posIndex, entry);
     }

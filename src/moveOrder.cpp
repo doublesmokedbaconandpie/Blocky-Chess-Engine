@@ -17,10 +17,10 @@ MovePicker::MovePicker(std::vector<BoardMove>&& a_moves) {
 
 // Searching moves that are likely to be better helps with pruning in search. This is move ordering.
 // More promising moves are given higher scores and then searched first.
-void MovePicker::assignMoveScores(const Board& board, BoardMove PVNode) {
+void MovePicker::assignMoveScores(const Board& board, BoardMove TTMove) {
     size_t i = 0;
     for (BoardMove move: this->moves) {
-        if (move == PVNode) {
+        if (move == TTMove) {
             this->moveScores[i] = MoveScores::PV;
         }
         else if (board.getPiece(move.pos2) != EmptyPiece) {

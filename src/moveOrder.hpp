@@ -17,7 +17,7 @@ enum MoveScores {
 class MovePicker {
     public:
         MovePicker(std::vector<BoardMove>&& a_moves); 
-        void assignMoveScores(const Board& board, BoardMove PVNode = BoardMove());
+        void assignMoveScores(const Board& board, BoardMove TTMove = BoardMove());
         bool movesLeft() const;
         int getMovesPicked() const;
         BoardMove pickMove();

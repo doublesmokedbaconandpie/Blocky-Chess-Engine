@@ -9,13 +9,18 @@ namespace TTable {
 
 constexpr int DEFAULT_SIZEMB = 128;
 
+enum EvalType {
+    UPPER, LOWER, EXACT, NONE
+};
+
 struct Entry {
     uint64_t key = 0;
     uint8_t age = 0;
     int depth = 0;
+    int eval = 0;
+    EvalType flag = NONE;
     BoardMove move = BoardMove();
 };
-
 class TTable {
     public:
         void resize(int sizeMb);
