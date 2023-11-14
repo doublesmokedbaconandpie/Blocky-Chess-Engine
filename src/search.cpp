@@ -183,7 +183,7 @@ void Searcher::storeInTT(TTable::Entry entry, BoardMove move, int depth) {
     */
     if ( (depth >= entry.depth || this->board.fiftyMoveRule >= entry.age) 
         && move != BoardMove()) {
-            entry.key = static_cast<uint16_t>(this->board.zobristKey);
+            entry.key = this->board.zobristKey;
             entry.age = this->board.fiftyMoveRule;
             entry.depth = depth;
             entry.move = move;
