@@ -181,10 +181,10 @@ void Searcher::storeInTT(TTable::Entry entry, BoardMove move, int depth) {
     in hash are preserved in the table since there can be repeated boards, but replacing entries
     with moves from more modern roots is better
     */
-    if ( (depth >= entry.depth || this->board.fiftyMoveRule >= entry.age) 
+    if ( (depth >= entry.depth || this->board.age >= entry.age)
         && move != BoardMove()) {
             entry.key = this->board.zobristKey;
-            entry.age = this->board.fiftyMoveRule;
+            entry.age = this->board.age;
             entry.depth = depth;
             entry.move = move;
             TTable::table.storeEntry(posIndex, entry);
