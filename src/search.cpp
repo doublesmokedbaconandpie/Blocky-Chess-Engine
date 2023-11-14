@@ -58,8 +58,8 @@ Info Searcher::startThinking() {
 template <NodeTypes NODE>
 int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     constexpr bool ISROOT = NODE == ROOT;
-    const int oldAlpha = alpha;
     constexpr bool ISPV = NODE != NOTPV;
+    const int oldAlpha = alpha;
 
     // time up
     int score = 0;
@@ -100,14 +100,13 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     *************/
     BoardMove TTMove;
     TTable::Entry entry;
-    int posIndex = TTable::table.getIndex(this->board.zobristKey);
     if (TTable::table.entryExists(this->board.zobristKey)) {
-        entry = TTable::table.getEntry(posIndex);
+        entry = TTable::table.getEntry(this->board.zobristKey);
 
         if (!ISROOT && entry.depth >= depth) {
-            if (entry.flag == TTable::EvalType::EXACT
-                || (entry.flag == TTable::EvalType::UPPER && entry.eval <= alpha)
-                || (entry.flag == TTable::EvalType::LOWER && entry.eval >= beta)) {
+            if (entry.flag == EvalType::EXACT
+                || (entry.flag == EvalType::UPPER && entry.eval <= alpha)
+                || (entry.flag == EvalType::LOWER && entry.eval >= beta)) {
                 return entry.eval;
             }
         }
@@ -160,8 +159,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         }
     }
     // A search for this depth is complete with a best move, so it can be stored in the transposition table
-    entry.flag = (bestscore >= beta) ? TTable::EvalType::LOWER :
-                    (alpha == oldAlpha) ? TTable::EvalType::UPPER : TTable::EvalType::EXACT;
+    entry.flag = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
     this->storeInTT(entry, bestscore, bestMove, depth);
     return bestscore;
 }
@@ -205,7 +203,6 @@ int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
 }
 
 void Searcher::storeInTT(TTable::Entry entry, int eval, BoardMove move, int depth) {
-    int posIndex = TTable::table.getIndex(this->board.zobristKey);
     /* entries in the transposition table are overwritten under two conditions:
     1. The current search depth is greater than the entry's depth, meaning that a better
     search has been performed 
@@ -220,7 +217,7 @@ void Searcher::storeInTT(TTable::Entry entry, int eval, BoardMove move, int dept
             entry.depth = depth;
             entry.eval = eval;
             entry.move = move;
-            TTable::table.storeEntry(posIndex, entry);
+            TTable::table.storeEntry(entry.key, entry);
     }
 }
 

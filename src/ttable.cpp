@@ -37,12 +37,12 @@ bool TTable::entryExists(uint64_t key) const {
     return key == this->table[index].key;
 }
 
-Entry TTable::getEntry(int index) const {
-    return this->table[index];
+Entry TTable::getEntry(uint64_t key) const {
+    return this->table[this->getIndex(key)];
 }
 
-void TTable::storeEntry(int index, Entry entry) {
-    this->table[index] = entry;
+void TTable::storeEntry(uint64_t key, Entry entry) {
+    this->table[this->getIndex(key)] = entry;
 }
 
 int TTable::getIndex(uint64_t key) const {

@@ -5,13 +5,14 @@
 
 #include "move.hpp"
 
+enum EvalType {
+    UPPER, LOWER, EXACT, NONE
+};
+
 namespace TTable {
 
 constexpr int DEFAULT_SIZEMB = 128;
 
-enum EvalType {
-    UPPER, LOWER, EXACT, NONE
-};
 
 struct Entry {
     uint64_t key = 0;
@@ -21,6 +22,7 @@ struct Entry {
     EvalType flag = NONE;
     BoardMove move = BoardMove();
 };
+
 class TTable {
     public:
         void resize(int sizeMb);
@@ -28,10 +30,10 @@ class TTable {
         void clear();
         int hashFull();
 
-        int getIndex(uint64_t key) const;
         bool entryExists(uint64_t key) const;
-        Entry getEntry(int index) const;
-        void storeEntry(int index, Entry entry);
+        Entry getEntry(uint64_t key) const;
+        void storeEntry(uint64_t key, Entry entry);
+        int getIndex(uint64_t key) const;
     private:
         std::vector<Entry> table;
         int size;
