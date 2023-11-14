@@ -105,7 +105,9 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         entry = TTable::table.getEntry(posIndex);
 
         if (!ISROOT && entry.depth >= depth) {
-            if (entry.flag == TTable::EvalType::EXACT) {
+            if (entry.flag == TTable::EvalType::EXACT
+                || (entry.flag == TTable::EvalType::UPPER && entry.eval <= alpha)
+                || (entry.flag == TTable::EvalType::LOWER && entry.eval >= beta)) {
                 return entry.eval;
             }
         }
@@ -137,7 +139,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
 
         // don't update best move if time is up
         if (this->tm.hardTimeUp()) {
-            return score;
+            return bestscore;
         }
         
         // prune if a move is too good; opponent side will avoid playing into this node
