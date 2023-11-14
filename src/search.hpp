@@ -38,7 +38,7 @@ class Searcher {
         template <NodeTypes NODE>
         int search(int alpha, int beta, int depth, int distanceFromRoot);
         int quiesce(int alpha, int beta, int depth, int distanceFromRoot);
-        void storeInTT(TTable::Entry entry, BoardMove move, int distanceFromRoot);
+        void storeInTT(TTable::Entry entry, BoardMove move, int depth);
 
         void outputUciInfo(Info searchResult);
         void setPrintInfo(bool flag) {this->printInfo = flag;}; 
