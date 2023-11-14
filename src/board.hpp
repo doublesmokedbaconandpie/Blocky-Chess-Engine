@@ -54,6 +54,7 @@ struct Board {
     bool isWhiteTurn;
     castleRights castlingRights; // bitwise castling rights tracker
     int fiftyMoveRule;
+    int age = 0;
     BoardSquare enPassSquare; // en passant square
     int materialDifference; // updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
                             // Possibly could be combined with attributes

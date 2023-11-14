@@ -34,7 +34,7 @@ int TTable::hashFull() {
 
 bool TTable::entryExists(uint64_t key) const {
     int index = this->getIndex(key);
-    return static_cast<uint16_t>(key) == this->table[index].key;
+    return key == this->table[index].key;
 }
 
 Entry TTable::getEntry(int index) const {

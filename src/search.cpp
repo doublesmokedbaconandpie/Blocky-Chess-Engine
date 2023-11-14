@@ -130,7 +130,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         }
     }
     // A search for this depth is complete with a best move, so it can be stored in the transposition table
-    this->storeInTT(entry, bestMove, distanceFromRoot);
+    this->storeInTT(entry, bestMove, depth);
     return score;
 }
 
@@ -172,7 +172,7 @@ int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
 
 }
 
-void Searcher::storeInTT(TTable::Entry entry, BoardMove move, int distanceFromRoot) {
+void Searcher::storeInTT(TTable::Entry entry, BoardMove move, int depth) {
     int posIndex = TTable::table.getIndex(this->board.zobristKey);
     /* entries in the transposition table are overwritten under two conditions:
     1. The current search depth is greater than the entry's depth, meaning that a better
@@ -181,11 +181,11 @@ void Searcher::storeInTT(TTable::Entry entry, BoardMove move, int distanceFromRo
     in hash are preserved in the table since there can be repeated boards, but replacing entries
     with moves from more modern roots is better
     */
-    if ( (distanceFromRoot >= entry.depth || this->board.fiftyMoveRule >= entry.age) 
+    if ( (depth >= entry.depth || this->board.age >= entry.age)
         && move != BoardMove()) {
-            entry.key = static_cast<uint16_t>(this->board.zobristKey);
-            entry.age = this->board.fiftyMoveRule;
-            entry.depth = distanceFromRoot;
+            entry.key = this->board.zobristKey;
+            entry.age = this->board.age;
+            entry.depth = depth;
             entry.move = move;
             TTable::table.storeEntry(posIndex, entry);
     }

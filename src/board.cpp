@@ -272,6 +272,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     // after finalizing move logic, now switch turns
     this->isWhiteTurn = !this->isWhiteTurn; 
     this->zobristKey ^= Zobrist::isBlackKey;
+    this->age++;
 
     // update history to include curr key
     this->zobristKeyHistory.push_back(this->zobristKey);
@@ -312,6 +313,7 @@ void Board::undoMove() {
     this->castlingRights = prev.castlingRights;
     this->enPassSquare = prev.enPassSquare;
     this->fiftyMoveRule = prev.fiftyMoveRule;
+    this->age--;
     this->materialDifference = prev.materialDifference;
     this->eval = prev.eval;
 
