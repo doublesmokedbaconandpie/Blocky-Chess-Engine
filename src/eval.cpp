@@ -30,12 +30,14 @@ void Info::addPiece(int rank, int file, pieceTypes piece) {
     this->opScore += Eval::getPlacementScoreOp(rank, file, piece);
     this->egScore += Eval::getPlacementScoreEg(rank, file, piece);
     this->totalMaterial += pieceValues[piece];
+    this->piecesRemaining++;
 }
 
 void Info::removePiece(int rank, int file, pieceTypes piece) {
     this->opScore -= Eval::getPlacementScoreOp(rank, file, piece);
     this->egScore -= Eval::getPlacementScoreEg(rank, file, piece);
     this->totalMaterial -= pieceValues[piece];
+    this->piecesRemaining--;
 }
 
 // assumes that currPiece is not empty
