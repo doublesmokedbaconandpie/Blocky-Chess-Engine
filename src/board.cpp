@@ -352,18 +352,14 @@ void Board::setPiece(int rank, int file, pieceTypes currPiece) {
         this->pieceSets[originColor] &= clearSquare;
         this->pieceSets[originPiece] &= clearSquare;
         this->zobristKey ^= Zobrist::pieceKeys[originPiece][square];
-
-        this->eval.opScore -= Eval::getPlacementScoreOp(rank, file, originPiece);
-        this->eval.egScore -= Eval::getPlacementScoreEg(rank, file, originPiece);
+        this->eval.removePiece(rank, file, originPiece);
     }
     if (currPiece != EmptyPiece) {
         pieceTypes currColor = currPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
         this->pieceSets[currColor] ^= setSquare;
         this->pieceSets[currPiece] ^= setSquare;
         this->zobristKey ^= Zobrist::pieceKeys[currPiece][square];
-        
-        this->eval.opScore += Eval::getPlacementScoreOp(rank, file, currPiece);
-        this->eval.egScore += Eval::getPlacementScoreEg(rank, file, currPiece);
+        this->eval.addPiece(rank, file, currPiece);
     }
 }
 

@@ -20,6 +20,22 @@ void init() {
     }
 }
 
+int Info::getRawEval() const {
+    // positive values means white is winning, negative means black
+    return this->opScore * this->piecesRemaining / 32 
+         + this->egScore * (32 - this->piecesRemaining) / 32;
+}
+
+void Info::addPiece(int rank, int file, pieceTypes piece) {
+    this->opScore += Eval::getPlacementScoreOp(rank, file, piece);
+    this->egScore += Eval::getPlacementScoreEg(rank, file, piece);
+}
+
+void Info::removePiece(int rank, int file, pieceTypes piece) {
+    this->opScore -= Eval::getPlacementScoreOp(rank, file, piece);
+    this->egScore -= Eval::getPlacementScoreEg(rank, file, piece);
+}
+
 // assumes that currPiece is not empty
 int getPlacementScoreOp(int rank, int file, pieceTypes currPiece) {
     if(currPiece >= WKing && currPiece <= WPawn) {
@@ -34,12 +50,6 @@ int getPlacementScoreEg(int rank, int file, pieceTypes currPiece) {
         return tablesEg[currPiece][rank * 8 + file];
     }
     return -1 * tablesEg[currPiece - BKing][file + 56 - 8 * rank];
-}
-
-int Info::getRawEval() const {
-    // positive values means white is winning, negative means black
-    return this->opScore * this->piecesRemaining / 32 
-         + this->egScore * (32 - this->piecesRemaining) / 32;
 }
 
 } // namespace Eval
