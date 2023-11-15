@@ -15,13 +15,10 @@ struct BoardState {
     castleRights castlingRights;
     BoardSquare enPassSquare;
     int fiftyMoveRule;
-    Eval::Info eval;
     BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, 
-                castleRights a_castlingRights, BoardSquare a_enPassSquare, int a_fiftyMoveRule,
-                Eval::Info a_eval) : 
+                castleRights a_castlingRights, BoardSquare a_enPassSquare, int a_fiftyMoveRule) : 
                 move(a_move), originPiece(a_originPiece), targetPiece(a_targetPiece),
-                castlingRights(a_castlingRights), enPassSquare(a_enPassSquare), fiftyMoveRule(a_fiftyMoveRule),
-                eval(a_eval) {};
+                castlingRights(a_castlingRights), enPassSquare(a_enPassSquare), fiftyMoveRule(a_fiftyMoveRule) {};
 };
 
 struct Board {
