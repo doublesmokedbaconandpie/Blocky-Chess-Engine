@@ -160,8 +160,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         targetPiece,
         this->castlingRights,
         this->enPassSquare,
-        this->fiftyMoveRule,
-        this->eval
+        this->fiftyMoveRule
     ));
 
     BoardSquare oldPawnJumpedSquare = this->enPassSquare;
@@ -282,7 +281,6 @@ void Board::undoMove() {
     this->enPassSquare = prev.enPassSquare;
     this->fiftyMoveRule = prev.fiftyMoveRule;
     this->age--;
-    this->eval = prev.eval;
 
     this->moveHistory.pop_back();
     this->zobristKeyHistory.pop_back();
