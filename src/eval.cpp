@@ -29,11 +29,13 @@ int Info::getRawEval() const {
 void Info::addPiece(int rank, int file, pieceTypes piece) {
     this->opScore += Eval::getPlacementScoreOp(rank, file, piece);
     this->egScore += Eval::getPlacementScoreEg(rank, file, piece);
+    this->totalMaterial += pieceValues[piece];
 }
 
 void Info::removePiece(int rank, int file, pieceTypes piece) {
     this->opScore -= Eval::getPlacementScoreOp(rank, file, piece);
     this->egScore -= Eval::getPlacementScoreEg(rank, file, piece);
+    this->totalMaterial -= pieceValues[piece];
 }
 
 // assumes that currPiece is not empty

@@ -38,7 +38,6 @@ Board::Board(std::string fenStr) {
             int pieceColor = isWhitePiece(currPiece) ? 1 : -1;
             this->materialDifference += pieceValues[currPiece] * pieceColor;
             this->eval.piecesRemaining++;
-            this->eval.totalMaterial += pieceValues[currPiece];
 
             file += 1;
         }
@@ -208,14 +207,12 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         else {
             this->materialDifference -= pieceValues[promotionPiece] - 1;
         }
-        this->eval.totalMaterial += pieceValues[promotionPiece] - 1;
     }
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->enPassSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
         this->enPassSquare = BoardSquare();
         this->eval.piecesRemaining--;
-        this->eval.totalMaterial--;
         
         if(this->isWhiteTurn)
             materialDifference++;
@@ -258,7 +255,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         int pieceColor = isWhitePiece(targetPiece) ? 1 : -1;
         this->materialDifference -= pieceValues[targetPiece] * pieceColor;
         this->eval.piecesRemaining--; 
-        this->eval.totalMaterial -= abs(pieceValues[targetPiece]);
     }
 
     // handle old en passant square 
