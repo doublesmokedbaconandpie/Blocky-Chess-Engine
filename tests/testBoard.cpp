@@ -139,8 +139,8 @@ TEST(CastleRightsBitTest, defaultBoard) {
 TEST(MaterialDifferenceTest, defaultBoard) {
     Board board;
     Board fenDefaultBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    EXPECT_EQ(board.materialDifference, 0);
-    EXPECT_EQ(fenDefaultBoard.materialDifference, 0);
+    EXPECT_EQ(board.eval.materialDifference, 0);
+    EXPECT_EQ(fenDefaultBoard.eval.materialDifference, 0);
 }
 
 TEST(MaterialDifferenceTest, fenBoards) {
@@ -148,9 +148,9 @@ TEST(MaterialDifferenceTest, fenBoards) {
     Board fenBoard2("r1bqkbnr/pp1ppppp/8/8/3nP3/8/PPP2PPP/RNBQKB1R w KQkq - 0 1");
     Board fenBoard3("rnbqkbnr/8/8/8/PP4PP/8/2PPPP2/3QK3 w kq - 0 1");
 
-    EXPECT_EQ(fenBoard1.materialDifference, 3);
-    EXPECT_EQ(fenBoard2.materialDifference, -3);
-    EXPECT_EQ(fenBoard3.materialDifference, -14);
+    EXPECT_EQ(fenBoard1.eval.materialDifference, 3);
+    EXPECT_EQ(fenBoard2.eval.materialDifference, -3);
+    EXPECT_EQ(fenBoard3.eval.materialDifference, -14);
 }
 
 TEST(MaterialDifferenceTest, captureTests) {
@@ -160,15 +160,15 @@ TEST(MaterialDifferenceTest, captureTests) {
     b1.makeMove(BoardMove("e4d5", b1.isWhiteTurn));
     b1.makeMove(BoardMove("c8h3", b1.isWhiteTurn));
     b1.makeMove(BoardMove("d5d6", b1.isWhiteTurn)); //+1
-    int eval1 = b1.materialDifference;
+    int eval1 = b1.eval.materialDifference;
     b1.makeMove(BoardMove("h3g2", b1.isWhiteTurn)); //+-0
-    int eval2 = b1.materialDifference;
+    int eval2 = b1.eval.materialDifference;
     b1.makeMove(BoardMove("d6c7", b1.isWhiteTurn)); //+1
-    int eval3 = b1.materialDifference;
+    int eval3 = b1.eval.materialDifference;
     b1.makeMove(BoardMove("g2h1", b1.isWhiteTurn)); //-4
-    int eval4 = b1.materialDifference;
+    int eval4 = b1.eval.materialDifference;
     b1.makeMove(BoardMove("c7b8q", b1.isWhiteTurn)); //+7
-    int eval5 = b1.materialDifference;
+    int eval5 = b1.eval.materialDifference;
 
     EXPECT_EQ(eval1, 1);
     EXPECT_EQ(eval2, 0);
@@ -186,16 +186,16 @@ TEST(MaterialDifferenceTest, enPassantTests) {
     b1.makeMove(BoardMove("h2h3", b1.isWhiteTurn));
     b1.makeMove(BoardMove("f7f5", b1.isWhiteTurn));
     b1.makeMove(BoardMove("e5f6", b1.isWhiteTurn)); //+1
-    int eval1 = b1.materialDifference;
+    int eval1 = b1.eval.materialDifference;
     b1.makeMove(BoardMove("g7f6", b1.isWhiteTurn)); //+-0
     b1.makeMove(BoardMove("c2c4", b1.isWhiteTurn));
     b1.makeMove(BoardMove("d4c3", b1.isWhiteTurn)); //-1
-    int eval2 = b1.materialDifference;
+    int eval2 = b1.eval.materialDifference;
     b1.makeMove(BoardMove("d2d4", b1.isWhiteTurn));
     b1.makeMove(BoardMove("c3b2", b1.isWhiteTurn)); //-2
     b1.makeMove(BoardMove("d4d5", b1.isWhiteTurn));
     b1.makeMove(BoardMove("b2a1r", b1.isWhiteTurn)); //-11
-    int eval3 = b1.materialDifference;
+    int eval3 = b1.eval.materialDifference;
     
     EXPECT_EQ(eval1, 1);
     EXPECT_EQ(eval2, -1);

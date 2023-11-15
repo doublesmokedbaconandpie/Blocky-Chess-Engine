@@ -7,6 +7,8 @@ namespace Eval {
 struct Info {
     Info() = default;
     int getRawEval() const;
+    void addPiece(int rank, int file, pieceTypes piece);
+    void removePiece(int rank, int file, pieceTypes piece);
 
     uint8_t piecesRemaining = 0;
     int totalMaterial = 0; 

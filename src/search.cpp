@@ -207,7 +207,6 @@ void Searcher::outputUciInfo(Info searchResult) {
     if (searchResult.mateIn == Search::NO_MATE) {
         std::cout << "score cp " << searchResult.eval << ' ';
     } else {
-        int playerMating = searchResult.eval < 0 ? -1 : 1;
         std::cout << "score mate " << searchResult.mateIn << ' ';
     }
     std::cout << "hashfull " << TTable::table.hashFull() << ' ';
