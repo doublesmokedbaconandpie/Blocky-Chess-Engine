@@ -22,21 +22,25 @@ void init() {
 
 int Info::getRawEval() const {
     // positive values means white is winning, negative means black
-    return this->opScore * this->piecesRemaining / 32 
+    return this->opScore * this->piecesRemaining / 32
          + this->egScore * (32 - this->piecesRemaining) / 32;
 }
 
 void Info::addPiece(int rank, int file, pieceTypes piece) {
+    int pieceColor = isWhitePiece(piece) ? 1 : -1;
     this->opScore += Eval::getPlacementScoreOp(rank, file, piece);
     this->egScore += Eval::getPlacementScoreEg(rank, file, piece);
     this->totalMaterial += pieceValues[piece];
+    this->materialDifference += pieceValues[piece] * pieceColor;
     this->piecesRemaining++;
 }
 
 void Info::removePiece(int rank, int file, pieceTypes piece) {
+    int pieceColor = isWhitePiece(piece) ? 1 : -1;
     this->opScore -= Eval::getPlacementScoreOp(rank, file, piece);
     this->egScore -= Eval::getPlacementScoreEg(rank, file, piece);
     this->totalMaterial -= pieceValues[piece];
+    this->materialDifference -= pieceValues[piece] * pieceColor;
     this->piecesRemaining--;
 }
 

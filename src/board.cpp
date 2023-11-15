@@ -17,7 +17,6 @@ Board::Board(std::string fenStr) {
     std::string token;
     std::istringstream fenStream(fenStr);
 
-    this->materialDifference = 0;
     this->zobristKeyHistory = {0ull}; // required for setPiece
 
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
@@ -34,10 +33,6 @@ Board::Board(std::string fenStr) {
         else { // must be a piece character
             pieceTypes currPiece = charToPiece.at(iter); 
             this->setPiece(rank, file, currPiece);
-
-            int pieceColor = isWhitePiece(currPiece) ? 1 : -1;
-            this->materialDifference += pieceValues[currPiece] * pieceColor;
-
             file += 1;
         }
     }
@@ -166,7 +161,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         this->castlingRights,
         this->enPassSquare,
         this->fiftyMoveRule,
-        this->materialDifference,
         this->eval
     ));
 
@@ -198,24 +192,11 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
     // promoting pawn
     else if (originPiece == allyPawn && pos2.rank == promotionRank) {
         this->setPiece(pos2, promotionPiece);
-
-        //updates material score of the board on promotion
-        if(this->isWhiteTurn) {
-            this->materialDifference += pieceValues[promotionPiece] - 1;
-        }
-        else {
-            this->materialDifference -= pieceValues[promotionPiece] - 1;
-        }
     }
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->enPassSquare) {
         this->setPiece(pos1.rank, pos2.file, EmptyPiece);
         this->enPassSquare = BoardSquare();
-        
-        if(this->isWhiteTurn)
-            materialDifference++;
-        else
-            materialDifference--;
     }
 
     // reset fifty move rule on captures or pawn moves
@@ -246,12 +227,6 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
         if ((oldCastlingRights & mask) && !(this->castlingRights & mask)) {
             this->zobristKey ^= Zobrist::castlingKeys[i];
         }
-    }
-
-    // updates the material score and piece count of the board on capture
-    if (targetPiece != EmptyPiece) {
-        int pieceColor = isWhitePiece(targetPiece) ? 1 : -1;
-        this->materialDifference -= pieceValues[targetPiece] * pieceColor;
     }
 
     // handle old en passant square 
@@ -307,7 +282,6 @@ void Board::undoMove() {
     this->enPassSquare = prev.enPassSquare;
     this->fiftyMoveRule = prev.fiftyMoveRule;
     this->age--;
-    this->materialDifference = prev.materialDifference;
     this->eval = prev.eval;
 
     this->moveHistory.pop_back();

@@ -15,14 +15,13 @@ struct BoardState {
     castleRights castlingRights;
     BoardSquare enPassSquare;
     int fiftyMoveRule;
-    int materialDifference;
     Eval::Info eval;
     BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, 
                 castleRights a_castlingRights, BoardSquare a_enPassSquare, int a_fiftyMoveRule,
-                int a_materialDifference, Eval::Info a_eval) : 
+                Eval::Info a_eval) : 
                 move(a_move), originPiece(a_originPiece), targetPiece(a_targetPiece),
                 castlingRights(a_castlingRights), enPassSquare(a_enPassSquare), fiftyMoveRule(a_fiftyMoveRule),
-                materialDifference(a_materialDifference), eval(a_eval) {};
+                eval(a_eval) {};
 };
 
 struct Board {
@@ -56,8 +55,6 @@ struct Board {
     int fiftyMoveRule;
     int age = 0;
     BoardSquare enPassSquare; // en passant square
-    int materialDifference; // updates on capture or promotion, so the eval doesn't have to calculate for each board, positive is white advantage
-                            // Possibly could be combined with attributes
     Eval::Info eval;
 
     std::vector<BoardState> moveHistory;
