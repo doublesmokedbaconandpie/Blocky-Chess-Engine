@@ -33,8 +33,8 @@ void printEngineInfo() {
 }
 
 void setOptionLoop() {
-    std::string commandLine, commandToken;
     while (true) {
+        std::string commandLine, commandToken;
         std::getline(std::cin, commandLine);
         std::istringstream commandStream(commandLine);
         commandStream >> commandToken;
@@ -45,9 +45,9 @@ void setOptionLoop() {
 }
 
 void uciLoop() {
-    std::string commandLine, commandToken;
     Board currBoard;
     while (true) {
+        std::string commandLine, commandToken;
         std::getline(std::cin, commandLine);
         std::istringstream commandStream(commandLine);
         commandStream >> commandToken;
