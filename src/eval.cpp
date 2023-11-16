@@ -26,23 +26,15 @@ int Info::getRawEval() const {
 }
 
 void Info::addPiece(int rank, int file, pieceTypes piece) {
-    int pieceColor = isWhitePiece(piece) ? 1 : -1;
     this->opScore += Eval::getPlacementScoreOp(rank, file, piece);
     this->egScore += Eval::getPlacementScoreEg(rank, file, piece);
     this->phase += getPiecePhase(piece);
-    this->totalMaterial += pieceValues[piece];
-    this->materialDifference += pieceValues[piece] * pieceColor;
-    this->piecesRemaining++;
 }
 
 void Info::removePiece(int rank, int file, pieceTypes piece) {
-    int pieceColor = isWhitePiece(piece) ? 1 : -1;
     this->opScore -= Eval::getPlacementScoreOp(rank, file, piece);
     this->egScore -= Eval::getPlacementScoreEg(rank, file, piece);
     this->phase -= getPiecePhase(piece);
-    this->totalMaterial -= pieceValues[piece];
-    this->materialDifference -= pieceValues[piece] * pieceColor;
-    this->piecesRemaining--;
 }
 
 int getPiecePhase(pieceTypes piece) {
