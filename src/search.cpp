@@ -16,7 +16,7 @@ Info Searcher::startThinking() {
 
     // perform iterative deepening
     for(int i = 1; i <= this->depth_limit; i++) {
-        result.eval = this->search<ROOT>(MIN_ALPHA, MAX_BETA, i, 0);
+        int score = this->search<ROOT>(MIN_ALPHA, MAX_BETA, i, 0);
         result.move = this->finalMove;
         result.nodes = this->nodes;
         result.timeElapsed = this->tm.getTimeElapsed();
@@ -27,6 +27,11 @@ Info Searcher::startThinking() {
         } else {
             result.depth = i;
             result.seldepth = this->max_seldepth;
+        }
+
+        // only update eval for completed searches
+        if (!tm.timeUp()) {
+            result.eval = score;
         }
 
         // compute mate-in
