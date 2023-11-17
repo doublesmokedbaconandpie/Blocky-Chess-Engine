@@ -22,26 +22,38 @@ void init() {
 
 int Info::getRawEval() const {
     // positive values means white is winning, negative means black
-    return this->opScore * this->piecesRemaining / 32
-         + this->egScore * (32 - this->piecesRemaining) / 32;
+    return (this->opScore * phase + this->egScore * (totalPhase - phase)) / totalPhase;
 }
 
 void Info::addPiece(int rank, int file, pieceTypes piece) {
-    int pieceColor = isWhitePiece(piece) ? 1 : -1;
     this->opScore += Eval::getPlacementScoreOp(rank, file, piece);
     this->egScore += Eval::getPlacementScoreEg(rank, file, piece);
-    this->totalMaterial += pieceValues[piece];
-    this->materialDifference += pieceValues[piece] * pieceColor;
-    this->piecesRemaining++;
+    this->phase += getPiecePhase(piece);
 }
 
 void Info::removePiece(int rank, int file, pieceTypes piece) {
-    int pieceColor = isWhitePiece(piece) ? 1 : -1;
     this->opScore -= Eval::getPlacementScoreOp(rank, file, piece);
     this->egScore -= Eval::getPlacementScoreEg(rank, file, piece);
-    this->totalMaterial -= pieceValues[piece];
-    this->materialDifference -= pieceValues[piece] * pieceColor;
-    this->piecesRemaining--;
+    this->phase -= getPiecePhase(piece);
+}
+
+int getPiecePhase(pieceTypes piece) {
+    switch (piece)
+    {
+        case WKnight:
+        case BKnight:
+        case WBishop:
+        case BBishop:
+            return 1;
+        case WRook:
+        case BRook:
+            return 2;
+        case WQueen:
+        case BQueen:
+            return 4;
+        default:
+            return 0;
+    }
 }
 
 // assumes that currPiece is not empty

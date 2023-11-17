@@ -4,19 +4,20 @@
 
 namespace Eval {
 
+constexpr int totalPhase = 24;
+
 struct Info {
     Info() = default;
     int getRawEval() const;
     void addPiece(int rank, int file, pieceTypes piece);
     void removePiece(int rank, int file, pieceTypes piece);
 
-    uint8_t piecesRemaining = 0;
-    int totalMaterial = 0; 
-    int materialDifference = 0;
     int opScore = 0;
     int egScore = 0;
+    int phase = 0;
 };
 
+int getPiecePhase(pieceTypes piece);
 int getPlacementScoreOp(int rank, int file, pieceTypes currPiece);
 int getPlacementScoreEg(int rank, int file, pieceTypes currPiece);
 void init();
