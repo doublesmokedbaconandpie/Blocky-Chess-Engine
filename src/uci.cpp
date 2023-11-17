@@ -136,7 +136,7 @@ void go(std::istringstream& input, Board& board) {
         else if (param == "btime") {btime = std::stoi(value);}
         else if (param == "winc") {winc = std::stoi(value);}
         else if (param == "binc") {binc = std::stoi(value);}
-    }   
+    }
     int allytime = board.isWhiteTurn ? wtime : btime;
     int allyInc = board.isWhiteTurn ? winc : binc;
     Timeman::TimeManager tm(allytime, allyInc);

@@ -35,7 +35,7 @@ enum castleRights {
 };
 
 enum NodeTypes {
-    ROOT, PV,
+    ROOT, PV, NOTPV
 };
 
 // indices are equal to the enumerated pieceTypes
