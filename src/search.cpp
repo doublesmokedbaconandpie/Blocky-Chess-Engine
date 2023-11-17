@@ -30,7 +30,7 @@ Info Searcher::startThinking() {
         }
 
         // only update eval for completed searches
-        if (!tm.timeUp()) {
+        if (!tm.hardTimeUp()) {
             result.eval = score;
         }
 
@@ -45,7 +45,8 @@ Info Searcher::startThinking() {
             this->outputUciInfo(result);
         }
         
-        if (this->tm.timeUp()) {
+        // only break out of search early for optimistic time used
+        if (this->tm.softTimeUp()) {
             break;
         }
     }
@@ -58,7 +59,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
 
     // time up
     int score = 0;
-    if(this->tm.timeUp()) {
+    if(this->tm.hardTimeUp()) {
         return score;
     }
 
@@ -113,7 +114,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         board.undoMove(); 
 
         // don't update best move if time is up
-        if (this->tm.timeUp()) {
+        if (this->tm.hardTimeUp()) {
             return score;
         }
         
@@ -140,7 +141,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
 }
 
 int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
-    if(this->tm.timeUp()) {
+    if(this->tm.hardTimeUp()) {
         return 0;
     }
 
