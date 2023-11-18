@@ -20,7 +20,7 @@ std::vector<BoardMove> moveGenerator(Board board) {
 
     // helper bitboards for pawn generation 
     info.pawnEnemies = board.isWhiteTurn ? board.pieceSets[BLACK_PIECES] : board.pieceSets[WHITE_PIECES]; 
-    info.pawnEnemies |= board.enPassSquare != BoardSquare() ? 1ull << board.enPassSquare.toSquare() : 0ull;
+    info.pawnEnemies |= board.enPassSquare != BoardSquare() ? c_u64(1) << board.enPassSquare.toSquare() : 0;
     info.pawnStartRank = board.isWhiteTurn ? RANK_2 : RANK_7;
     info.pawnJumpRank  = board.isWhiteTurn ? RANK_4 : RANK_5;
 
@@ -128,8 +128,8 @@ uint64_t kingMoves(int square, MoveGenInfo& info) {
             // check for king path being attacked
             uint64_t path = kingPaths[currRight];
             int currSquare = popLsb(path);
-            info.pieceSets[kingIndex] = 1ull << currSquare;
-            if (1ull << currSquare & info.allPieces || 
+            info.pieceSets[kingIndex] = c_u64(1) << currSquare;
+            if (c_u64(1) << currSquare & info.allPieces || 
                 currKingInAttack(info.pieceSets, info.isWhiteTurn)) {
                     continue;
             }
@@ -143,7 +143,7 @@ uint64_t kingMoves(int square, MoveGenInfo& info) {
 }
 
 uint64_t pawnMoves(int square, MoveGenInfo& bitboards, bool isWhiteTurn) {
-    uint64_t moves, pawn = 1ull << square;
+    uint64_t moves, pawn = c_u64(1) << square;
     uint64_t currFile = FILES_MASK[getFile(square)];
     // one space forward
     if (isWhiteTurn) {

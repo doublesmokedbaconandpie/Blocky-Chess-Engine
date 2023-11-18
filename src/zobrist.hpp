@@ -25,7 +25,7 @@ constexpr uint64_t rand64(std::array<uint64_t, 4>& seed) {
 }
 
 constexpr auto pieceKeys = [] {
-    std::array<uint64_t, 4> seed = {0x360baff383999633ull, 0x68ee16f8479f8123ull, 0xa89adf4551b3b25bull, 0x4887b5a003b21d40ull};
+    std::array<uint64_t, 4> seed = {0x360baff383999633, 0x68ee16f8479f8123, 0xa89adf4551b3b25b, 0x4887b5a003b21d40};
     std::array<std::array<uint64_t, BOARD_SIZE>, NUM_PIECE_TYPES> keyTable{};
     for (auto& piece: keyTable) {
         for (auto& key: piece) {
@@ -36,7 +36,7 @@ constexpr auto pieceKeys = [] {
 }();
 
 constexpr auto castlingKeys = [] {
-    std::array<uint64_t, 4> seed = {0x19b7b1bb3c2d8fe5ull, 0x8d989b67e947c8f4ull, 0x2e3d29cda1ecff47ull, 0x9c1872c99fdb5a3cull};
+    std::array<uint64_t, 4> seed = {0x19b7b1bb3c2d8fe5, 0x8d989b67e947c8f4, 0x2e3d29cda1ecff47, 0x9c1872c99fdb5a3c};
     std::array<uint64_t, 4> keyTable{};
     for (auto& key: keyTable) {
         key = rand64(seed);
@@ -45,7 +45,7 @@ constexpr auto castlingKeys = [] {
 }();
 
 constexpr auto enPassKeys = [] {
-    std::array<uint64_t, 4> seed = {0x3e9da55e408ecafeull, 0x6d569800e894469eull, 0x974a657968409560ull, 0xcb37386a2913c636ull};
+    std::array<uint64_t, 4> seed = {0x3e9da55e408ecafe, 0x6d569800e894469e, 0x974a657968409560, 0xcb37386a2913c636};
     std::array<uint64_t, 8> keyTable{};
     for (auto& key: keyTable) {
         key = rand64(seed);
@@ -54,7 +54,7 @@ constexpr auto enPassKeys = [] {
 }();
 
 constexpr auto isBlackKey = []{
-    std::array<uint64_t, 4> seed = {0x078279f6872cb95eull, 0xd675a7617f43a9b5ull, 0x55c511df8850988full, 0x22789bd6bcf41f28ull};
+    std::array<uint64_t, 4> seed = {0x078279f6872cb95e, 0xd675a7617f43a9b5, 0x55c511df8850988f, 0x22789bd6bcf41f28};
     uint64_t key = rand64(seed);
     return key;
 }();

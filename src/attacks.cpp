@@ -97,18 +97,18 @@ std::vector<uint64_t> getPossibleBlockers(uint64_t slideMask) {
     std::vector<uint64_t> blockerBoards;
     std::vector<int> blockerSquares;
     for (int i = 0; i < BOARD_SIZE; i++) {
-        if ((1ull << i) & slideMask) {
+        if ((c_u64(1) << i) & slideMask) {
             blockerSquares.push_back(i);
         }
     }
 
     // binary iteration will be used to iterate through the possible blockers
-    uint64_t numBlockerBoards = 1ull << blockerSquares.size();
+    uint64_t numBlockerBoards = c_u64(1) << blockerSquares.size();
     for (uint64_t i = 0; i < numBlockerBoards; i++) {
-        uint64_t currBlocker = 0ull;
+        uint64_t currBlocker = 0;
         // convert binary iter to blocker bitboard
         for (uint64_t j = 0; j < blockerSquares.size(); j++) {
-            uint64_t currBit = i & (1ull << j) ? 1 : 0; 
+            uint64_t currBit = i & (c_u64(1) << j) ? 1 : 0; 
             currBlocker |= currBit << blockerSquares[j];
         }
         blockerBoards.push_back(currBlocker);
@@ -126,12 +126,12 @@ uint64_t getRelevantBlockerMask(int square, bool isBishop) {
     slideMask &= square % 8 != 0 ? ~FILE_A : ALL_SQUARES;
     slideMask &= square % 8 != 7 ? ~FILE_H : ALL_SQUARES;
     // the current square isn't a valid blocker
-    slideMask ^= 1ull << square;
+    slideMask ^= c_u64(1) << square;
     return slideMask;
 }
 
 uint64_t computeRookAttacks(int square, uint64_t blockers) {
-    uint64_t attacks = 0ull;
+    uint64_t attacks = 0;
     attacks |= fillInDir(square, blockers, 0, 1);
     attacks |= fillInDir(square, blockers, 0, -1);
     attacks |= fillInDir(square, blockers, 1, 0);
@@ -140,7 +140,7 @@ uint64_t computeRookAttacks(int square, uint64_t blockers) {
 }
 
 uint64_t computeBishopAttacks(int square, uint64_t blockers) {
-    uint64_t attacks = 0ull;
+    uint64_t attacks = 0;
     attacks |= fillInDir(square, blockers, 1, 1);
     attacks |= fillInDir(square, blockers, 1, -1);
     attacks |= fillInDir(square, blockers, -1, 1);
@@ -151,13 +151,13 @@ uint64_t computeBishopAttacks(int square, uint64_t blockers) {
 uint64_t fillInDir(int square, uint64_t blockers, int x, int y) {
     int currX = square % 8 + x;
     int currY = square / 8 + y;
-    uint64_t filled = 0ull;
+    uint64_t filled = 0;
     while ( !(filled & blockers) && 
         currX >= 0 && currX < 8 &&
         currY >= 0 && currY < 8) {
 
         square = 8 * currY + currX;
-        filled |= 1ull << square;
+        filled |= c_u64(1) << square;
         currX += x; 
         currY += y;
     }
@@ -165,7 +165,7 @@ uint64_t fillInDir(int square, uint64_t blockers, int x, int y) {
 }
 
 uint64_t computeKnightAttacks(int square) {
-    uint64_t currPiece = 1ull << square;
+    uint64_t currPiece = c_u64(1) << square;
     uint64_t left1 = (currPiece >> 1) & NOT_FILE_H;
     uint64_t left2 = (currPiece >> 2) & NOT_FILE_HG;
     uint64_t right1 = (currPiece << 1) & NOT_FILE_A;
@@ -179,7 +179,7 @@ uint64_t computeKnightAttacks(int square) {
 }
 
 uint64_t computeKingAttacks(int square) {
-    uint64_t currPiece = 1ull << square;
+    uint64_t currPiece = c_u64(1) << square;
 
     // prevent currPiece from teleporting to other side of the board with bit shifts
     uint64_t left = currPiece & NOT_FILE_A;
@@ -194,7 +194,7 @@ uint64_t computeKingAttacks(int square) {
 }
 
 uint64_t computePawnAttacks(int square, bool isWhiteTurn) {
-    uint64_t currPiece = 1ull << square;
+    uint64_t currPiece = c_u64(1) << square;
 
     // prevent currPiece from teleporting to other side of the board with bit shifts
     uint64_t left  = currPiece & NOT_FILE_A;

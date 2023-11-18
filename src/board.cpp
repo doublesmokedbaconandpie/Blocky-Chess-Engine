@@ -17,7 +17,7 @@ Board::Board(std::string fenStr) {
     std::string token;
     std::istringstream fenStream(fenStr);
 
-    this->zobristKeyHistory = {0ull}; // required for setPiece
+    this->zobristKeyHistory = {0}; // required for setPiece
 
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
@@ -116,7 +116,7 @@ std::string Board::toFen() {
 
 // assumes no move history
 void Board::initZobristKey() {
-    this->zobristKey = 0ull;
+    this->zobristKey = 0;
 
     // pieces on board
     for (size_t i = 0; i < BOARD_SIZE; i++) {
@@ -126,7 +126,7 @@ void Board::initZobristKey() {
     }
     // castling
     for (size_t i = 0; i < 4; i++) {
-        if (this->castlingRights & 1ull << i) {
+        if (this->castlingRights & c_u64(1) << i) {
             this->zobristKey ^= Zobrist::castlingKeys[i];
         }
     }
@@ -222,7 +222,7 @@ void Board::makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPie
 
     // update zobrist key for changed castling rights; castling rights can only decrease in chess
     for (int i = 0; i < 4; i++) {
-        int mask = 1ull << i;
+        int mask = c_u64(1) << i;
         if ((oldCastlingRights & mask) && !(this->castlingRights & mask)) {
             this->zobristKey ^= Zobrist::castlingKeys[i];
         }
@@ -306,7 +306,7 @@ pieceTypes Board::getPiece(BoardSquare square) const{
 // handles board, pieceSets, and zobristKey (not including en passant and castling)
 void Board::setPiece(int rank, int file, pieceTypes currPiece) {
     int square = rank * 8 + file;
-    uint64_t setSquare = (1ull << square);
+    uint64_t setSquare = (c_u64(1) << square);
     uint64_t clearSquare = ALL_SQUARES ^ setSquare;
 
     pieceTypes originPiece = this->getPiece(rank, file);
@@ -342,13 +342,13 @@ bool Board::isLegalMove(const BoardMove move) const {
     std::array<uint64_t, NUM_BITBOARDS> tmpPieceSets = this->pieceSets;
 
     pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
-    uint64_t originSquare = (1ull << move.pos1.toSquare());
+    uint64_t originSquare = (c_u64(1) << move.pos1.toSquare());
     pieceTypes originPiece = this->getPiece(move.pos1);
     pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
     pieceTypes enemyPawn = this->isWhiteTurn ? BPawn : WPawn;
 
     // account for captures
-    uint64_t targetSquare = 1ull << move.pos2.toSquare();
+    uint64_t targetSquare = c_u64(1) << move.pos2.toSquare();
     pieceTypes targetPiece;
     pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
     
@@ -356,7 +356,7 @@ bool Board::isLegalMove(const BoardMove move) const {
     if (originPiece == allyPawn && move.pos2 == this->enPassSquare) {
         targetPiece = EmptyPiece;
         int dir = this->isWhiteTurn ? 8 : -8;
-        uint64_t enemyPawnSquare = 1ull << (move.pos2.toSquare() + dir);
+        uint64_t enemyPawnSquare = c_u64(1) << (move.pos2.toSquare() + dir);
         tmpPieceSets[targetColor] ^= enemyPawnSquare;
         tmpPieceSets[enemyPawn] ^= enemyPawnSquare;
     } else {
