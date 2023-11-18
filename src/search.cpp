@@ -56,6 +56,7 @@ Info Searcher::startThinking() {
 
 template <NodeTypes NODE>
 int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
+    constexpr bool ISPV = NODE != NOTPV;
 
     // time up
     int score = 0;
@@ -109,8 +110,17 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     BoardMove bestMove;
     while (movePicker.movesLeft()) {
         BoardMove move = movePicker.pickMove();
+        /*************
+         * Principle Variation Search:
+        **************/
         board.makeMove(move);
-        score = -search<PV>(-beta, -alpha, depth - 1, distanceFromRoot + 1);
+        if (ISPV && movePicker.getMovesPicked() == 1) {
+            score = -search<PV>(-beta, -alpha, depth - 1, distanceFromRoot + 1);
+        } else {
+            score = -search<NOTPV>(-alpha - 1, -alpha, depth - 1, distanceFromRoot + 1);
+            if (score > alpha && score < beta)
+                score = -search<PV>(-beta, -alpha, depth - 1, distanceFromRoot + 1);
+        }
         board.undoMove(); 
 
         // don't update best move if time is up

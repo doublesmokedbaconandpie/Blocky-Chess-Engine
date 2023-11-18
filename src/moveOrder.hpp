@@ -19,6 +19,7 @@ class MovePicker {
         MovePicker(std::vector<BoardMove>&& a_moves); 
         void assignMoveScores(const Board& board, BoardMove PVNode = BoardMove());
         bool movesLeft() const;
+        int getMovesPicked() const;
         BoardMove pickMove();
 
     private:
