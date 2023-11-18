@@ -120,7 +120,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         
         // prune if a move is too good; opponent side will avoid playing into this node
         if (score >= beta) {
-            score = beta;
+            bestscore = score;
             break;
         }
         // fail-soft stabilizes the search and allows for returned values outside the alpha-beta bounds
@@ -137,7 +137,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     }
     // A search for this depth is complete with a best move, so it can be stored in the transposition table
     this->storeInTT(entry, bestMove, depth);
-    return score;
+    return bestscore;
 }
 
 int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
