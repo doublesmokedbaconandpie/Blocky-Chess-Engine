@@ -5,14 +5,21 @@
 
 namespace Timeman {
 
-bool TimeManager::timeUp() const {
-    auto currTime = std::chrono::high_resolution_clock::now();
-    return std::chrono::duration_cast<std::chrono::microseconds>(currTime - startTime).count() > timeLimit;
+using namespace std::chrono;
+
+bool TimeManager::hardTimeUp() const {
+    auto currTime = high_resolution_clock::now();
+    return duration_cast<microseconds>(currTime - startTime).count() > hardTimeLimit;
+}
+
+bool TimeManager::softTimeUp() const {
+    auto currTime = high_resolution_clock::now();
+    return duration_cast<microseconds>(currTime - startTime).count() > softTimeLimit;
 }
 
 int64_t TimeManager::getTimeElapsed() const {
-    auto currTime = std::chrono::high_resolution_clock::now();
-    return std::chrono::duration_cast<std::chrono::milliseconds>(currTime - startTime).count();
+    auto currTime = high_resolution_clock::now();
+    return duration_cast<milliseconds>(currTime - startTime).count();
 }
 
 } // namespace Timeman

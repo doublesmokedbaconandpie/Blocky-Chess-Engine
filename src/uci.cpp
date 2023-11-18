@@ -122,16 +122,27 @@ Board position(std::istringstream& input) {
 
 void go(std::istringstream& input, Board& board) {
     std::string token;
-    int wtime = Timeman::INF_TIME, btime = Timeman::INF_TIME, allytime;
+
+    // initialize time parameters
+    int wtime, btime, winc, binc;
+    wtime = btime = Timeman::INF_TIME;
+    winc = binc = 0;
+
+    // input time parameters
     std::string param, value;
     while (input >> param) {
         input >> value;
         if (param == "wtime") {wtime = std::stoi(value);}
         else if (param == "btime") {btime = std::stoi(value);}
+        else if (param == "winc") {winc = std::stoi(value);}
+        else if (param == "binc") {binc = std::stoi(value);}
     }   
-    allytime = board.isWhiteTurn ? wtime : btime;
+    int allytime = board.isWhiteTurn ? wtime : btime;
+    int allyInc = board.isWhiteTurn ? winc : binc;
+    Timeman::TimeManager tm(allytime, allyInc);
 
-    Search::Searcher currSearch(board, allytime, OPTIONS.depth);
+    // begin search
+    Search::Searcher currSearch(board, tm, OPTIONS.depth);
     Search::Info result = currSearch.startThinking();
     std::cout << "bestmove " << result.move.toStr() << "\n";
 }

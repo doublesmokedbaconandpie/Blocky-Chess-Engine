@@ -26,11 +26,11 @@ struct Info {
 
 class Searcher {
     public:  
-        Searcher(Board a_board, int ms, int depthLimit) {
+        Searcher(Board a_board, Timeman::TimeManager a_tm, int depthLimit) {
             this->board = a_board;
             this->nodes = 0;
             this->max_seldepth = 0;
-            this->tm = Timeman::TimeManager(ms);
+            this->tm = a_tm;
             this->depth_limit = depthLimit;
         };
         Info startThinking();
