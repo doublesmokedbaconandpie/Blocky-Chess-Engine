@@ -71,7 +71,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     this->max_seldepth = std::max(distanceFromRoot, this->max_seldepth);
 
     // fifty move rule
-    if (this->board.fiftyMoveRule == 100) {
+    if (this->board.fiftyMoveRule >= 100) {
         return score;
     }
     // three-fold repetition
@@ -79,7 +79,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     std::sort(currKeyHistory.begin(), currKeyHistory.end());
     auto lBound = std::lower_bound(currKeyHistory.begin(), currKeyHistory.end(), this->board.zobristKey);
     auto rBound = std::upper_bound(currKeyHistory.begin(), currKeyHistory.end(), this->board.zobristKey);
-    if (distance(lBound, rBound) == 3) {
+    if (distance(lBound, rBound) >= 3) {
         return score;
     }
     // max depth reached
@@ -107,6 +107,9 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
             if (entry.flag == EvalType::EXACT
                 || (entry.flag == EvalType::UPPER && entry.eval <= alpha)
                 || (entry.flag == EvalType::LOWER && entry.eval >= beta)) {
+                
+                // prevents premature search ends
+                this->max_seldepth = std::max(entry.depth, this->max_seldepth);
                 return entry.eval;
             }
         }
