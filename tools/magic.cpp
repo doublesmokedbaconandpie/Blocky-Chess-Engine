@@ -14,7 +14,7 @@
 
 using namespace Attacks;
 
-std::array<uint64_t, 4> seed = {0xf38f4541449b0fc3ull, 0x8432cf48703f8864ull, 0x1c8596ae5c1621d1ull, 0xf6d3be81a796f876ull};
+std::array<uint64_t, 4> seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
 
 int main() {
     int attacksSize = 0; 
@@ -22,7 +22,7 @@ int main() {
     for (int i = 0; i < BOARD_SIZE; i++) {
         uint64_t blockerMask = getRelevantBlockerMask(i, false);
         uint64_t magic = findMagic(computeRookAttacks, i, blockerMask, blockerRookCombos[i]);
-        attacksSize += 1ull << blockerRookCombos[i];
+        attacksSize += c_u64(1) << blockerRookCombos[i];
         printHex(magic);
     }
     std::cout << "Rook attacks size: " << attacksSize << std::endl;
@@ -33,7 +33,7 @@ int main() {
     for (int i = 0; i < BOARD_SIZE; i++) {
         uint64_t blockerMask = getRelevantBlockerMask(i, true);
         uint64_t magic = findMagic(computeBishopAttacks, i, blockerMask, blockerBishopCombos[i]);
-        attacksSize += 1ull << blockerBishopCombos[i];
+        attacksSize += c_u64(1) << blockerBishopCombos[i];
         printHex(magic);
     }
     std::cout << "Bishop attacks size: " << attacksSize << std::endl;
@@ -50,7 +50,7 @@ uint64_t findMagic(Function slidingAttacks, int square, uint64_t blockerMask, in
     while (!magicFound) {
         moves.fill(ALL_SQUARES);
         magicFound = true;
-        int maxIndex = 1ull << shift;
+        int maxIndex = c_u64(1) << shift;
         // magic numbers with low number of 1s are better
         magic = Zobrist::rand64(seed) & Zobrist::rand64(seed) & Zobrist::rand64(seed);
         
