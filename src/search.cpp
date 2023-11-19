@@ -1,4 +1,3 @@
-#include <cassert>
 #include <iostream>
 #include <vector>
 
@@ -103,13 +102,10 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     if (TTable::table.entryExists(this->board.zobristKey)) {
         entry = TTable::table.getEntry(this->board.zobristKey);
 
-        if (!ISROOT && entry.depth >= depth) {
+        if (!ISPV && entry.depth >= depth) {
             if (entry.flag == EvalType::EXACT
                 || (entry.flag == EvalType::UPPER && entry.eval <= alpha)
                 || (entry.flag == EvalType::LOWER && entry.eval >= beta)) {
-                
-                // prevents premature search ends
-                this->max_seldepth = std::max(entry.depth, this->max_seldepth);
                 return entry.eval;
             }
         }
