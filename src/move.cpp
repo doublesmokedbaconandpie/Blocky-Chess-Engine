@@ -5,70 +5,9 @@
 
 #include "move.hpp"
 
-// BoardSquare
-
-BoardSquare::BoardSquare(std::string input) {
-    if (input == "-") { // fen-style invalid square
-        *this = BoardSquare();
-        return;
-    }
-    this->file = fileVals(input.at(0) - 'a');
-    this->rank = 8 - int(input.at(1) - '1') - 1;
+BoardMove::BoardMove(Square square1, Square square2, pieceTypes promotePiece) {
+    data =  square1 | (square2 << 6) | (toInt(promotePiece) << 12);
 }
-
-BoardSquare::BoardSquare(int square) {
-    this->rank = square / 8;
-    this->file = fileVals(square % 8);
-}
-
-int BoardSquare::toSquare() const {
-    return this->rank * 8 + this->file;
-}
-
-std::string BoardSquare::toStr() {
-    std::ostringstream move;
-    move << *this;
-    return move.str();
-}
-
-bool BoardSquare::isValid() const {
-    return this->rank >= 0 && this->file >= 0 && this->rank <= 7 && this->file <= 7;
-}
-
-bool operator==(const BoardSquare& lhs, const BoardSquare& rhs) {
-    return (lhs.rank == rhs.rank) && (lhs.file == rhs.file);
-}
-
-bool operator!=(const BoardSquare& lhs, const BoardSquare& rhs) {
-    return (lhs.rank != rhs.rank) || (lhs.file != rhs.file);
-}
-
-bool operator<(const BoardSquare& lhs, const BoardSquare& rhs) {
-    if (lhs.rank != rhs.rank) {
-        return lhs.rank < rhs.rank;
-    }
-    if (lhs.file != rhs.file) {
-        return lhs.file < rhs.file;
-    }
-    return false;
-}
-
-std::ostream& operator<<(std::ostream& os, const BoardSquare& target) {
-    if (target == BoardSquare()) {
-        os << "-";
-        return os;
-    }
-    if (target.rank < 0 || target.rank > 7 || target.file < A || target.file > H) {
-        os << target.file << ' ' << target.rank << ' ';
-        return os;    
-    }
-    std::array<char, 8> fileRep = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-    std::array<char, 8> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
-    os << fileRep.at(target.file) << rankRep.at(target.rank);
-    return os;
-}
-
-// BoardMove
 
 BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
     pieceTypes allyQueen = isWhiteTurn ? WQueen : BQueen;
@@ -76,79 +15,143 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
     pieceTypes allyKnight = isWhiteTurn ? WKnight : BKnight;
     pieceTypes allyRook = isWhiteTurn ? WRook : BRook;
     
-    this->pos1 = BoardSquare(input.substr(0, 2));
-    this->pos2 = BoardSquare(input.substr(2, 2));
-
+    Square square1 = fromStr(input.substr(0, 2));
+    Square square2 = fromStr(input.substr(2, 2));
+    pieceTypes promotePiece;
     if (input.length() == 5) {
         switch (input.at(4)) {
             case 'q':
-                this->promotionPiece = allyQueen;
+                promotePiece = allyQueen;
                 break;
             case 'n':
-                this->promotionPiece = allyKnight;
+                promotePiece = allyKnight;
                 break;
             case 'b':
-                this->promotionPiece = allyBishop;
+                promotePiece = allyBishop;
                 break;
             case 'r':
-                this->promotionPiece = allyRook;
+                promotePiece = allyRook;
                 break;
             default:
-                this->promotionPiece = nullPiece;
+                promotePiece = EmptyPiece;
         }
     }
+    data =  square1 | (square2 << 6) | (toInt(promotePiece) << 12);
 }
 
-std::string BoardMove::toStr() const{
-    std::ostringstream move;
-    move << this->pos1;
-    move << this->pos2;
-    switch (this->promotionPiece) {
+std::string BoardMove::toStr() const {
+    auto square1 = toStr(getSquare1());
+    auto square2 = toStr(getSquare2());
+    auto promotePiece = toStr(getPromotePiece());
+    return square1 + square2 + promotePiece;
+}
+
+uint8_t BoardMove::getSquare1() const{
+    constexpr uint16_t mask = 0x003F;
+    return data & mask;
+}
+
+uint8_t BoardMove::getSquare2() const{
+    constexpr uint16_t mask = 0x003F;
+    return (data >> 6) & mask;
+}
+
+pieceTypes BoardMove::getPromotePiece() const {
+    constexpr uint16_t mask = 0x000F;
+    int piece = (data >> 12) & mask;
+    return toPromotePiece(piece);
+}
+
+BoardMove::operator bool() const {
+    return data;
+}
+
+int BoardMove::toInt(pieceTypes piece) const {
+    switch (piece)
+    {
         case WQueen:
-        case BQueen:
-            move << 'q';
-            break;
+            return 1;
         case WBishop:
-        case BBishop:
-            move << 'b';
-            break;
-        case WRook:
-        case BRook:
-            move << 'r';
-            break;
+            return 2;
         case WKnight:
+            return 3;
+        case WRook:
+            return 4;
+        case BQueen:
+            return 5;
+        case BBishop:
+            return 6;
         case BKnight:
-            move << 'n';
-            break;
+            return 7;
+        case BRook:
+            return 8;
         default:
-            break;
+            return 0;
     }
-    return move.str();
 }
 
-bool BoardMove::isValid() const {
-    return this->pos1.isValid() && this->pos2.isValid();
+pieceTypes BoardMove::toPromotePiece(int integer) const {
+    switch (integer)
+    {
+        case 1:
+            return WQueen;
+        case 2:
+            return WBishop;
+        case 3:
+            return WKnight;
+        case 4:
+            return WRook;
+        case 5:
+            return BQueen;
+        case 6:
+            return BBishop;
+        case 7:
+            return BKnight;
+        case 8:
+            return BRook;
+        default:
+            return EmptyPiece;
+    }
+}
+
+std::string BoardMove::toStr(Square square) const {
+    constexpr std::array<char, 8> fileRep = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    constexpr std::array<char, 8> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
+
+    int file = getFile(square);
+    int rank = getRank(square);
+    return std::string(1, fileRep[file]) + std::string(1, rankRep[rank]);
+}
+
+std::string BoardMove::toStr(pieceTypes piece) const {
+    switch (piece) {
+            case WQueen:
+            case BQueen:
+                return "q";
+            case WBishop:
+            case BBishop:
+                return "b";
+            case WRook:
+            case BRook:
+                return "r";
+            case WKnight:
+            case BKnight:
+                return "n";
+            default:
+                return "";
+    }
+}
+        
+Square BoardMove::fromStr(std::string input) {
+    if (input == "-") { // fen-style invalid square
+        return -1;
+    }
+    int file = input.at(0) - 'a';
+    int rank = 8 - int(input.at(1) - '1') - 1;
+    return 8 * rank + file;
 }
 
 std::ostream& operator<<(std::ostream& os, const BoardMove& target) {
     os << target.toStr();
     return os;
-}
-
-bool operator==(const BoardMove& lhs, const BoardMove& rhs) {
-    return (lhs.pos1 == rhs.pos1) && (lhs.pos2 == rhs.pos2) && (lhs.promotionPiece == rhs.promotionPiece);
-}
-
-bool operator!=(const BoardMove& lhs, const BoardMove& rhs) {
-    return !(lhs == rhs);
-}
-
-bool operator<(const BoardMove& lhs, const BoardMove& rhs) {
-    if (lhs.pos1 != rhs.pos1) {
-        return lhs.pos1 < rhs.pos1;
-    }
-    if (lhs.pos2 != rhs.pos2) {
-        return lhs.pos2 < rhs.pos2;
-    }
-    return false;
 }
