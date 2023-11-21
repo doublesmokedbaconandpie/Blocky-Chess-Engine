@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
@@ -74,11 +75,8 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         return score;
     }
     // three-fold repetition
-    std::vector<uint64_t> currKeyHistory = this->board.zobristKeyHistory;
-    std::sort(currKeyHistory.begin(), currKeyHistory.end());
-    auto lBound = std::lower_bound(currKeyHistory.begin(), currKeyHistory.end(), this->board.zobristKey);
-    auto rBound = std::upper_bound(currKeyHistory.begin(), currKeyHistory.end(), this->board.zobristKey);
-    if (distance(lBound, rBound) >= 3) {
+    int occurrences = std::count(this->board.zobristKeyHistory.begin(), this->board.zobristKeyHistory.end(), this->board.zobristKey);
+    if (occurrences >= 3) {
         return score;
     }
     // max depth reached
