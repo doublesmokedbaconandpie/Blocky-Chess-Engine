@@ -140,7 +140,7 @@ std::string BoardMove::toStr(pieceTypes piece) const {
                 return "";
     }
 }
-        
+
 std::ostream& operator<<(std::ostream& os, const BoardMove& target) {
     os << target.toStr();
     return os;

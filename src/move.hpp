@@ -15,13 +15,13 @@ class BoardMove {
         BoardMove(Square square1, Square square2, pieceTypes promotePiece = EmptyPiece);
         BoardMove(std::string input, bool isWhiteTurn);
         std::string toStr() const;
-        
+
         Square getSquare1() const;
         Square getSquare2() const;
         pieceTypes getPromotePiece() const;
 
         operator bool() const;
-    private: 
+    private:
         pieceTypes toPromotePiece(int integer) const;
         int toInt(pieceTypes piece) const;
         std::string toStr(pieceTypes piece) const;

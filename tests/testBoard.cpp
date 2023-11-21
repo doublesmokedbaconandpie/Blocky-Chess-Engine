@@ -127,8 +127,8 @@ TEST(CastleRightsBitTest, defaultBoard) {
     EXPECT_EQ(castleRightsBit(toSquare("g8"), board.isWhiteTurn) && board.castlingRights, false); // is not black's turn
     EXPECT_EQ(castleRightsBit(toSquare("c8"), board.isWhiteTurn) && board.castlingRights, false); // is not black's turn
     EXPECT_EQ(castleRightsBit(toSquare("g1"), board.isWhiteTurn) && board.castlingRights, true);
-    EXPECT_EQ(castleRightsBit(toSquare("c1"), board.isWhiteTurn) && board.castlingRights, true);    
-    EXPECT_EQ(castleRightsBit(toSquare("e3"), board.isWhiteTurn) && board.castlingRights, false);    
+    EXPECT_EQ(castleRightsBit(toSquare("c1"), board.isWhiteTurn) && board.castlingRights, true);
+    EXPECT_EQ(castleRightsBit(toSquare("e3"), board.isWhiteTurn) && board.castlingRights, false);
 }
 
 TEST_F(BoardTest, checkDiagAttackersTrue) {
@@ -295,7 +295,7 @@ TEST_F(BoardTest, MakeMoveEnPassant) {
     Board fenBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
     Board moveBoard("rnbqkb1r/ppp1pppp/3P1n2/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3");
     Square pos1 = toSquare("e5");
-    Square pos2 = toSquare("d6"); 
+    Square pos2 = toSquare("d6");
     Square enemyPawn = toSquare("d5");
     EXPECT_EQ(fenBoard.getPiece(enemyPawn), BPawn);
     fenBoard.makeMove(BoardMove(pos1, pos2));
@@ -314,7 +314,7 @@ TEST_F(BoardTest, MakeMoveNotEnPassant) {
     Board fenBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
     Board moveBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 3");
     Square pos1 = toSquare("g1");
-    Square pos2 = toSquare("f3"); 
+    Square pos2 = toSquare("f3");
     Square enemyPawn = toSquare("d5");
     EXPECT_EQ(fenBoard.getPiece(enemyPawn), BPawn);
     fenBoard.makeMove(BoardMove(pos1, pos2));
