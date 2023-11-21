@@ -20,7 +20,7 @@ struct Entry {
     int depth = 0;
     int eval = 0;
     EvalType flag = NONE;
-    BoardMove move = BoardMove();
+    BoardMove move;
 };
 
 class TTable {

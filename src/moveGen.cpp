@@ -20,7 +20,7 @@ std::vector<BoardMove> moveGenerator(Board board) {
 
     // helper bitboards for pawn generation 
     info.pawnEnemies = board.isWhiteTurn ? board.pieceSets[BLACK_PIECES] : board.pieceSets[WHITE_PIECES]; 
-    info.pawnEnemies |= board.enPassSquare ? c_u64(1) << board.enPassSquare : 0;
+    info.pawnEnemies |= board.enPassSquare != NULLSQUARE ? c_u64(1) << board.enPassSquare : 0;
     info.pawnStartRank = board.isWhiteTurn ? RANK_2 : RANK_7;
     info.pawnJumpRank  = board.isWhiteTurn ? RANK_4 : RANK_5;
 

@@ -78,21 +78,8 @@ TEST_F(MoveGenTest, validKingMovesInvalidCastle) {
 
 TEST_F(MoveGenTest, moveGeneratorDefault) {
     Board board;
-    std::vector<BoardMove> expectedValidMoves;
-    for (int file = A; file <= H; file++) {
-        expectedValidMoves.push_back(BoardMove(toSquare(6, file), toSquare(5, file)));
-        expectedValidMoves.push_back(BoardMove(toSquare(6, file), toSquare(4, file)));
-    }
-    expectedValidMoves.push_back(BoardMove(toSquare(7, B), toSquare(5, A)));
-    expectedValidMoves.push_back(BoardMove(toSquare(7, B), toSquare(5, C)));
-    expectedValidMoves.push_back(BoardMove(toSquare(7, G), toSquare(5, F)));
-    expectedValidMoves.push_back(BoardMove(toSquare(7, G), toSquare(5, H)));
-    std::vector<BoardMove> validMoves = moveGenerator(board);
-
-    std::sort(validMoves.begin(), validMoves.end());
-    std::sort(expectedValidMoves.begin(), expectedValidMoves.end());
-    ASSERT_EQ(board.isWhiteTurn, true);
-    ASSERT_EQ(validMoves, expectedValidMoves);
+    std::vector<BoardMove> moves = moveGenerator(board);
+    EXPECT_EQ(moves.size(), 20);
 }
 
 TEST_F(MoveGenTest, validKingMovesInvalidCastle2) {

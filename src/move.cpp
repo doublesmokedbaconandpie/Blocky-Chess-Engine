@@ -152,7 +152,7 @@ Square toSquare(std::string input) {
     }
     int file = input.at(0) - 'a';
     int rank = 8 - int(input.at(1) - '1') - 1;
-    return toSquare(file, rank);
+    return toSquare(rank, file);
 }
 
 int getFile(Square square) {
@@ -168,6 +168,10 @@ int toSquare(int rank, int file) {
 }
 
 std::string squareToStr(Square square) {
+    if (square == NULLSQUARE) {
+        return "-";
+    }
+
     constexpr std::array<char, 8> fileRep = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
     constexpr std::array<char, 8> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
 

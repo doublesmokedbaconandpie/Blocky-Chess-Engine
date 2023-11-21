@@ -124,7 +124,7 @@ void Board::initZobristKey() {
         }
     }
     // en passant
-    if (this->enPassSquare != Square()) {
+    if (this->enPassSquare != NULLSQUARE){
         this->zobristKey ^= Zobrist::enPassKeys[getFile(this->enPassSquare)];
     }
     // color to move
@@ -136,18 +136,17 @@ void Board::initZobristKey() {
 
 // makeMove will not check if the move is invalid
 void Board::makeMove(BoardMove move) {
-    Square pos1 = move.getSquare1();
-    Square pos2 = move.getSquare2();
-    pieceTypes promotionPiece = move.getPromotePiece();
+    const Square pos1 = move.getSquare1();
+    const Square pos2 = move.getSquare2();
+    const pieceTypes promotionPiece = move.getPromotePiece();
 
     // allies haven't made a move yet
     pieceTypes allyKing = this->isWhiteTurn ? WKing : BKing;
     pieceTypes allyRook = this->isWhiteTurn ? WRook : BRook;
     pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
     pieceTypes enemyRook = this->isWhiteTurn ? BRook : WRook;
-    int pawnJumpDirection = this->isWhiteTurn ? -16 : 16;
     int behindDirection = this->isWhiteTurn ? 8 : -8;
-    
+
     pieceTypes originPiece = this->getPiece(pos1);
     pieceTypes targetPiece = this->getPiece(pos2);
 
@@ -160,11 +159,11 @@ void Board::makeMove(BoardMove move) {
         this->fiftyMoveRule
     ));
 
-    Square oldPawnJumpedSquare = this->enPassSquare;
+    Square oldEnPassSquare = this->enPassSquare;
     castleRights oldCastlingRights = this->castlingRights;
 
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
-    this->setPiece(pos2, originPiece); // pretty much all possible moves translates the original piece to pos 2
+    this->setPiece(pos2, originPiece); // pretty much all possible moves translates the original piece to pos2
 
     // castling
     // doesn't check for emptiness between rook and king
@@ -179,18 +178,18 @@ void Board::makeMove(BoardMove move) {
         this->castlingRights &= this->isWhiteTurn ? B_Castle : W_Castle;
     }
     // jumping pawn
-    else if (originPiece == allyPawn && pos2 - pos1 == pawnJumpDirection) { 
+    else if (originPiece == allyPawn && abs(pos2 - pos1) == 16) {
         // doesn't check if pawn's original position is rank 2
-        this->enPassSquare = pos2 - pos1 + behindDirection;
+        this->enPassSquare = pos2 + behindDirection;
         this->zobristKey ^= Zobrist::enPassKeys[getFile(pos2)];
     }
     // promoting pawn
-    else if (promotionPiece) {
+    else if (promotionPiece != EmptyPiece) {
         this->setPiece(pos2, promotionPiece);
     }
     // en passant 
     else if (originPiece == allyPawn && pos2 == this->enPassSquare) {
-        this->setPiece(pos2 - behindDirection, EmptyPiece);
+        this->setPiece(pos2 + behindDirection, EmptyPiece);
         this->enPassSquare = NULLSQUARE;
     }
 
@@ -225,11 +224,11 @@ void Board::makeMove(BoardMove move) {
     }
 
     // handle old en passant square 
-    if (this->enPassSquare == oldPawnJumpedSquare) {
-        this->enPassSquare = NULLSQUARE; 
+    if (this->enPassSquare == oldEnPassSquare) {
+        this->enPassSquare = NULLSQUARE;
     }
-    if (oldPawnJumpedSquare != NULLSQUARE) {
-        this->zobristKey ^= Zobrist::enPassKeys[getFile(oldPawnJumpedSquare)];
+    if (oldEnPassSquare != NULLSQUARE) {
+        this->zobristKey ^= Zobrist::enPassKeys[getFile(oldEnPassSquare)];
     }	
     
     // after finalizing move logic, now switch turns
@@ -263,8 +262,8 @@ void Board::undoMove() {
     }
     // en passant
     else if (prev.originPiece == prevPawn && prev.move.getSquare2() == prev.enPassSquare) {
-        int behindDirection = this->isWhiteTurn ? 8 : -8;
-        pieceTypes prevJumpedPawn = this->isWhiteTurn ? BPawn : WPawn;
+        int behindDirection = this->isWhiteTurn ? -8 : 8;
+        pieceTypes prevJumpedPawn = this->isWhiteTurn ? WPawn : BPawn;
         this->setPiece(prev.move.getSquare2() + behindDirection, prevJumpedPawn);
     }
 
@@ -382,6 +381,7 @@ std::ostream& operator<<(std::ostream& os, const Board& target) {
     }
     os << "\n";
     os << "castlingRights: " << target.castlingRights << "\n";
+    os << "enPassSquare: " << squareToStr(target.enPassSquare) << "\n";
     os << "isWhiteTurn: " << target.isWhiteTurn << "\n";
     os << "50MoveRule: " << target.fiftyMoveRule << "\n";
     os << "ZobristKey: " << target.zobristKey << "\n";
