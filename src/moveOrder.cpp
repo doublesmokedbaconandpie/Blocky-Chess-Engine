@@ -23,9 +23,9 @@ void MovePicker::assignMoveScores(const Board& board, BoardMove TTMove) {
         if (move == TTMove) {
             this->moveScores[i] = MoveScores::PV;
         }
-        else if (board.getPiece(move.getSquare2()) != EmptyPiece) {
-            int attackerValue = pieceValues[board.getPiece(move.getSquare1())];
-            int victimValue = pieceValues[board.getPiece(move.getSquare2())];
+        else if (board.getPiece(move.sqr2()) != EmptyPiece) {
+            int attackerValue = pieceValues[board.getPiece(move.sqr1())];
+            int victimValue = pieceValues[board.getPiece(move.sqr2())];
             this->moveScores[i] = MoveScores::Capture + victimValue - attackerValue;
         }
         else {

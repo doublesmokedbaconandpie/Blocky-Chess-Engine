@@ -136,8 +136,8 @@ void Board::initZobristKey() {
 
 // makeMove will not check if the move is invalid
 void Board::makeMove(BoardMove move) {
-    const Square pos1 = move.getSquare1();
-    const Square pos2 = move.getSquare2();
+    const Square pos1 = move.sqr1();
+    const Square pos2 = move.sqr2();
     const pieceTypes promotionPiece = move.getPromotePiece();
 
     // allies haven't made a move yet
@@ -250,21 +250,21 @@ void Board::undoMove() {
     pieceTypes prevRook = this->isWhiteTurn ? BRook : WRook;
     pieceTypes prevPawn = this->isWhiteTurn ? BPawn : WPawn;
 
-    this->setPiece(prev.move.getSquare1(), prev.originPiece);
-    this->setPiece(prev.move.getSquare2(), prev.targetPiece);
+    this->setPiece(prev.move.sqr1(), prev.originPiece);
+    this->setPiece(prev.move.sqr2(), prev.targetPiece);
 
     // castling
-    if (prev.originPiece == prevKing && (prev.castlingRights & castleRightsBit(prev.move.getSquare2(), !this->isWhiteTurn)) ) {
-        int kingFileDirection = prev.move.getSquare2() > prev.move.getSquare1() ? 1 : -1;
+    if (prev.originPiece == prevKing && (prev.castlingRights & castleRightsBit(prev.move.sqr2(), !this->isWhiteTurn)) ) {
+        int kingFileDirection = prev.move.sqr2() > prev.move.sqr1() ? 1 : -1;
         fileVals rookFile = kingFileDirection == 1 ? H : A;
-        this->setPiece(prev.move.getSquare1() + kingFileDirection, EmptyPiece);
-        this->setPiece(prev.move.getSquare1() - getFile(prev.move.getSquare1()) + rookFile, prevRook);
+        this->setPiece(prev.move.sqr1() + kingFileDirection, EmptyPiece);
+        this->setPiece(prev.move.sqr1() - getFile(prev.move.sqr1()) + rookFile, prevRook);
     }
     // en passant
-    else if (prev.originPiece == prevPawn && prev.move.getSquare2() == prev.enPassSquare) {
+    else if (prev.originPiece == prevPawn && prev.move.sqr2() == prev.enPassSquare) {
         int behindDirection = this->isWhiteTurn ? -8 : 8;
         pieceTypes prevJumpedPawn = this->isWhiteTurn ? WPawn : BPawn;
-        this->setPiece(prev.move.getSquare2() + behindDirection, prevJumpedPawn);
+        this->setPiece(prev.move.sqr2() + behindDirection, prevJumpedPawn);
     }
 
     this->isWhiteTurn = !this->isWhiteTurn;
@@ -279,9 +279,9 @@ void Board::undoMove() {
 }
 
 bool Board::moveIsCapture(BoardMove move) {
-    if(this->getPiece(move.getSquare1()) % 6 == WPawn && this->enPassSquare == move.getSquare2())
+    if(this->getPiece(move.sqr1()) % 6 == WPawn && this->enPassSquare == move.sqr2())
         return true;
-    return this->getPiece(move.getSquare2()) != EmptyPiece;
+    return this->getPiece(move.sqr2()) != EmptyPiece;
 }
 
 // getPiece is not responsible for bounds checking
@@ -325,25 +325,25 @@ bool Board::isLegalMove(const BoardMove move) const {
     std::array<uint64_t, NUM_BITBOARDS> tmpPieceSets = this->pieceSets;
 
     pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
-    uint64_t originSquare = (c_u64(1) << move.getSquare1());
-    pieceTypes originPiece = this->getPiece(move.getSquare1());
+    uint64_t originSquare = (c_u64(1) << move.sqr1());
+    pieceTypes originPiece = this->getPiece(move.sqr1());
     pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
     pieceTypes enemyPawn = this->isWhiteTurn ? BPawn : WPawn;
 
     // account for captures
-    uint64_t targetSquare = c_u64(1) << move.getSquare2();
+    uint64_t targetSquare = c_u64(1) << move.sqr2();
     pieceTypes targetPiece;
     pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
     
     // en passant
-    if (originPiece == allyPawn && move.getSquare2() == this->enPassSquare) {
+    if (originPiece == allyPawn && move.sqr2() == this->enPassSquare) {
         targetPiece = EmptyPiece;
         int dir = this->isWhiteTurn ? 8 : -8;
-        uint64_t enemyPawnSquare = c_u64(1) << (move.getSquare2() + dir);
+        uint64_t enemyPawnSquare = c_u64(1) << (move.sqr2() + dir);
         tmpPieceSets[targetColor] ^= enemyPawnSquare;
         tmpPieceSets[enemyPawn] ^= enemyPawnSquare;
     } else {
-        targetPiece = this->getPiece(move.getSquare2());
+        targetPiece = this->getPiece(move.sqr2());
     }
     // move ally piece 
     tmpPieceSets[originColor] ^= originSquare;

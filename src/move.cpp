@@ -40,18 +40,18 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
 }
 
 std::string BoardMove::toStr() const {
-    auto square1 = squareToStr(getSquare1());
-    auto square2 = squareToStr(getSquare2());
+    auto square1 = squareToStr(sqr1());
+    auto square2 = squareToStr(sqr2());
     auto promotePiece = toStr(getPromotePiece());
     return square1 + square2 + promotePiece;
 }
 
-uint8_t BoardMove::getSquare1() const{
+uint8_t BoardMove::sqr1() const{
     constexpr uint16_t mask = 0x003F;
     return data & mask;
 }
 
-uint8_t BoardMove::getSquare2() const{
+uint8_t BoardMove::sqr2() const{
     constexpr uint16_t mask = 0x003F;
     return (data >> 6) & mask;
 }

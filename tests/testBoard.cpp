@@ -24,14 +24,14 @@ TEST(SquareTest, SquareStrConstructorNeg) {
 
 TEST(MoveTest, MoveStrConstructor) {
     BoardMove move = BoardMove("e2e4", true);
-    EXPECT_EQ(move.getSquare1(), 52);
-    EXPECT_EQ(move.getSquare2(), 36);
+    EXPECT_EQ(move.sqr1(), 52);
+    EXPECT_EQ(move.sqr2(), 36);
 }
 
 TEST(MoveTest, MoveStrConstructor2) {
     BoardMove move = BoardMove("a7a8q", true);
-    EXPECT_EQ(move.getSquare1(), 8);
-    EXPECT_EQ(move.getSquare2(), 0);
+    EXPECT_EQ(move.sqr1(), 8);
+    EXPECT_EQ(move.sqr2(), 0);
     EXPECT_EQ(move.getPromotePiece(), WQueen);
 }
 
