@@ -17,6 +17,7 @@ Board::Board(std::string fenStr) {
     std::string token;
     std::istringstream fenStream(fenStr);
 
+    this->zobristKey = 0;
     this->zobristKeyHistory = {0}; // required for setPiece
 
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
@@ -116,14 +117,6 @@ std::string Board::toFen() {
 
 // assumes no move history
 void Board::initZobristKey() {
-    this->zobristKey = 0;
-
-    // pieces on board
-    for (size_t i = 0; i < BOARD_SIZE; i++) {
-        pieceTypes currPiece = this->board[i];
-        if (currPiece == EmptyPiece) {continue;}
-        this->zobristKey ^= Zobrist::pieceKeys[currPiece][i];
-    }
     // castling
     for (size_t i = 0; i < 4; i++) {
         if (this->castlingRights & c_u64(1) << i) {
