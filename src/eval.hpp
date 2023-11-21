@@ -1,5 +1,6 @@
 #pragma once
 
+#include "move.hpp"
 #include "types.hpp"
 
 namespace Eval {
@@ -9,8 +10,8 @@ constexpr int totalPhase = 24;
 struct Info {
     Info() = default;
     int getRawEval() const;
-    void addPiece(int rank, int file, pieceTypes piece);
-    void removePiece(int rank, int file, pieceTypes piece);
+    void addPiece(Square square, pieceTypes piece);
+    void removePiece(Square square, pieceTypes piece);
 
     int opScore = 0;
     int egScore = 0;
@@ -18,8 +19,8 @@ struct Info {
 };
 
 int getPiecePhase(pieceTypes piece);
-int getPlacementScoreOp(int rank, int file, pieceTypes currPiece);
-int getPlacementScoreEg(int rank, int file, pieceTypes currPiece);
+int getPlacementScoreOp(Square square, pieceTypes currPiece);
+int getPlacementScoreEg(Square square, pieceTypes currPiece);
 void init();
 
 // opening tables

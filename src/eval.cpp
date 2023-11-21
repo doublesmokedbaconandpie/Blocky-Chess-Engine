@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "eval.hpp"
+#include "move.hpp"
 #include "types.hpp"
 
 namespace Eval {
@@ -25,15 +26,15 @@ int Info::getRawEval() const {
     return (this->opScore * phase + this->egScore * (totalPhase - phase)) / totalPhase;
 }
 
-void Info::addPiece(int rank, int file, pieceTypes piece) {
-    this->opScore += Eval::getPlacementScoreOp(rank, file, piece);
-    this->egScore += Eval::getPlacementScoreEg(rank, file, piece);
+void Info::addPiece(Square square, pieceTypes piece) {
+    this->opScore += Eval::getPlacementScoreOp(square, piece);
+    this->egScore += Eval::getPlacementScoreEg(square, piece);
     this->phase += getPiecePhase(piece);
 }
 
-void Info::removePiece(int rank, int file, pieceTypes piece) {
-    this->opScore -= Eval::getPlacementScoreOp(rank, file, piece);
-    this->egScore -= Eval::getPlacementScoreEg(rank, file, piece);
+void Info::removePiece(Square square, pieceTypes piece) {
+    this->opScore -= Eval::getPlacementScoreOp(square, piece);
+    this->egScore -= Eval::getPlacementScoreEg(square, piece);
     this->phase -= getPiecePhase(piece);
 }
 
@@ -57,19 +58,19 @@ int getPiecePhase(pieceTypes piece) {
 }
 
 // assumes that currPiece is not empty
-int getPlacementScoreOp(int rank, int file, pieceTypes currPiece) {
+int getPlacementScoreOp(Square square, pieceTypes currPiece) {
     if(currPiece >= WKing && currPiece <= WPawn) {
-        return tablesOp[currPiece][rank * 8 + file];
+        return tablesOp[currPiece][square];
     }
-    return -1 * tablesOp[currPiece - BKing][file + 56 - 8 * rank];
+    return -1 * tablesOp[currPiece - BKing][square ^ 56];
 }
 
 // assumes that currPiece is not empty
-int getPlacementScoreEg(int rank, int file, pieceTypes currPiece) {
+int getPlacementScoreEg(Square square, pieceTypes currPiece) {
     if(currPiece >= WKing && currPiece <= WPawn) {
-        return tablesEg[currPiece][rank * 8 + file];
+        return tablesEg[currPiece][square];
     }
-    return -1 * tablesEg[currPiece - BKing][file + 56 - 8 * rank];
+    return -1 * tablesEg[currPiece - BKing][square ^ 56];
 }
 
 } // namespace Eval

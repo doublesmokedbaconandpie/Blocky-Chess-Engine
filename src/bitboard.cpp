@@ -4,6 +4,7 @@
 #include <iomanip>
 
 #include "bitboard.hpp"
+#include "move.hpp"
 #include "types.hpp"
 
 // gets index of the least significant bits
@@ -41,13 +42,6 @@ uint64_t flipVertical(uint64_t bitboard) {
     bitboard = ((bitboard >> 16) & k2) | ((bitboard & k2) << 16);
     bitboard = ( bitboard >> 32)       | ( bitboard       << 32);
     return bitboard;
-}
-
-int getFile(int square) {
-    return square % 8;
-}
-int getRank(int square) {
-    return square / 8;
 }
 
 uint64_t getFileMask(int square) {

@@ -20,7 +20,7 @@ std::vector<BoardMove> moveGenerator(Board board) {
 
     // helper bitboards for pawn generation 
     info.pawnEnemies = board.isWhiteTurn ? board.pieceSets[BLACK_PIECES] : board.pieceSets[WHITE_PIECES]; 
-    info.pawnEnemies |= board.enPassSquare != BoardSquare() ? c_u64(1) << board.enPassSquare.toSquare() : 0;
+    info.pawnEnemies |= board.enPassSquare ? c_u64(1) << board.enPassSquare : 0;
     info.pawnStartRank = board.isWhiteTurn ? RANK_2 : RANK_7;
     info.pawnJumpRank  = board.isWhiteTurn ? RANK_4 : RANK_5;
 
@@ -52,13 +52,11 @@ std::vector<BoardMove> moveGenerator(Board board) {
 template<typename Func>
 void validPieceMoves(uint64_t pieces, Func pieceMoves, MoveGenInfo& info, Board& board, std::vector<BoardMove>& validMoves) {
     while (pieces) {
-        int square = popLsb(pieces);
-        BoardSquare piece(square);
-
-        uint64_t moves = pieceMoves(square, info);
+        Square piece = popLsb(pieces);
+        uint64_t moves = pieceMoves(piece, info);
         while (moves) {
-            int currSquare = popLsb(moves);
-            BoardMove move(piece, BoardSquare(currSquare));
+            int target = popLsb(moves);
+            BoardMove move(piece, target);
             if (board.isLegalMove(move)) {
                 validMoves.push_back(move);
             }
@@ -74,16 +72,14 @@ void validPawnMoves(uint64_t pawns, MoveGenInfo& info, Board& board, std::vector
     pieceTypes allyQueen = board.isWhiteTurn ? WQueen : BQueen;
 
     while (pawns) {
-        int square = popLsb(pawns);
-        BoardSquare pawn(square);
-        uint64_t moves = pawnMoves(square, info, board.isWhiteTurn);
-
+        Square pawn = popLsb(pawns);
+        uint64_t moves = pawnMoves(pawn, info, board.isWhiteTurn);
         while (moves) {
-            BoardSquare target(popLsb(moves));
+            Square target(popLsb(moves));
             if (!board.isLegalMove(BoardMove(pawn, target))) {
                 continue;
             } 
-            if (target.rank == promoteRank) {
+            if (getRank(target) == promoteRank) {
                 validMoves.push_back(BoardMove(pawn, target, allyKnight));
                 validMoves.push_back(BoardMove(pawn, target, allyBishop));
                 validMoves.push_back(BoardMove(pawn, target, allyRook));
