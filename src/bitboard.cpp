@@ -4,7 +4,6 @@
 #include <iomanip>
 
 #include "bitboard.hpp"
-#include "move.hpp"
 #include "types.hpp"
 
 // gets index of the least significant bits

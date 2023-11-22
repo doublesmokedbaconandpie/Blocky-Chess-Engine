@@ -155,15 +155,7 @@ Square toSquare(std::string input) {
     return toSquare(rank, file);
 }
 
-int getFile(Square square) {
-    return square % 8;
-}
-
-int getRank(Square square) {
-    return square / 8;
-}
-
-int toSquare(int rank, int file) {
+Square toSquare(int rank, int file) {
     return rank * 8 + file;
 }
 

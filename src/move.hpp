@@ -4,8 +4,6 @@
 
 #include "types.hpp"
 
-#define Square uint8_t
-
 constexpr Square NULLSQUARE = 0xFF;
 constexpr uint16_t NULLMOVE = 0xFFFF;
 
@@ -33,8 +31,6 @@ class BoardMove {
     friend bool operator!=(const BoardMove& lhs, const BoardMove& rhs);
 };
 
-int getFile(Square square);
-int getRank(Square square);
-int toSquare(int rank, int file);
+Square toSquare(int rank, int file);
 Square toSquare(std::string input);
 std::string squareToStr(Square square);
