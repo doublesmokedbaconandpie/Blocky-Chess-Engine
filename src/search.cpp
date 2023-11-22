@@ -208,7 +208,7 @@ void Searcher::storeInTT(TTable::Entry entry, int eval, BoardMove move, int dept
     with moves from more modern roots is better
     */
     if ( (depth >= entry.depth || this->board.age >= entry.age)
-        && move != BoardMove()) {
+        && move) {
             entry.key = this->board.zobristKey;
             entry.age = this->board.age;
             entry.depth = depth;

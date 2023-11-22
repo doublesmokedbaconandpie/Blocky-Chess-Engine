@@ -13,48 +13,43 @@ class BoardTest : public testing::Test {
 };
 
 TEST(SquareTest, SquareStrConstructor) {
-    BoardSquare square = BoardSquare("a8");
-    EXPECT_EQ(square.rank, 0);
-    EXPECT_EQ(square.file, 0);
+    Square square = toSquare("a8");
+    EXPECT_EQ(square, 0);
 }
 
 TEST(SquareTest, SquareStrConstructorNeg) {
-    BoardSquare square = BoardSquare("-");
-    EXPECT_EQ(square, BoardSquare());
+    Square square = toSquare("-");
+    EXPECT_EQ(square, NULLSQUARE);
 }
 
 TEST(MoveTest, MoveStrConstructor) {
     BoardMove move = BoardMove("e2e4", true);
-    EXPECT_EQ(move.pos1.rank, 6);
-    EXPECT_EQ(move.pos1.file, 4);
-    EXPECT_EQ(move.pos2.rank, 4);
-    EXPECT_EQ(move.pos2.file, 4);
+    EXPECT_EQ(move.sqr1(), 52);
+    EXPECT_EQ(move.sqr2(), 36);
 }
 
 TEST(MoveTest, MoveStrConstructor2) {
     BoardMove move = BoardMove("a7a8q", true);
-    EXPECT_EQ(move.pos1.rank, 1);
-    EXPECT_EQ(move.pos1.file, 0);
-    EXPECT_EQ(move.pos2.rank, 0);
-    EXPECT_EQ(move.pos2.file, 0);
-    EXPECT_EQ(move.promotionPiece, WQueen);
+    EXPECT_EQ(move.sqr1(), 8);
+    EXPECT_EQ(move.sqr2(), 0);
+    EXPECT_EQ(move.getPromotePiece(), WQueen);
 }
 
 TEST_F(BoardTest, getPieceValidSquare) {
     Board defaultBoard;
-    BoardSquare square("a8");
+    Square square = toSquare("a8");
     ASSERT_EQ(defaultBoard.getPiece(square), BRook);
 }
 
 TEST_F(BoardTest, getPieceValidSquare2) {
     Board defaultBoard;
-    BoardSquare square("a7");
+    Square square = toSquare("a7");
     ASSERT_EQ(defaultBoard.getPiece(square), BPawn);
 }
 
 TEST_F(BoardTest, getPieceValidSquare3) {
     Board defaultBoard;
-    BoardSquare square("d2");
+    Square square = toSquare("d2");
     ASSERT_EQ(defaultBoard.getPiece(square), WPawn);
 }
 
@@ -129,11 +124,11 @@ TEST_F(BoardTest, toFenCastling) {
 
 TEST(CastleRightsBitTest, defaultBoard) {
     Board board;
-    EXPECT_EQ(castleRightsBit(BoardSquare(0, G), board.isWhiteTurn) && board.castlingRights, false); // is not black's turn
-    EXPECT_EQ(castleRightsBit(BoardSquare(0, C), board.isWhiteTurn) && board.castlingRights, false); // is not black's turn
-    EXPECT_EQ(castleRightsBit(BoardSquare(7, G), board.isWhiteTurn) && board.castlingRights, true);
-    EXPECT_EQ(castleRightsBit(BoardSquare(7, C), board.isWhiteTurn) && board.castlingRights, true);    
-    EXPECT_EQ(castleRightsBit(BoardSquare(4, E), board.isWhiteTurn) && board.castlingRights, false);    
+    EXPECT_EQ(castleRightsBit(toSquare("g8"), board.isWhiteTurn) && board.castlingRights, false); // is not black's turn
+    EXPECT_EQ(castleRightsBit(toSquare("c8"), board.isWhiteTurn) && board.castlingRights, false); // is not black's turn
+    EXPECT_EQ(castleRightsBit(toSquare("g1"), board.isWhiteTurn) && board.castlingRights, true);
+    EXPECT_EQ(castleRightsBit(toSquare("c1"), board.isWhiteTurn) && board.castlingRights, true);
+    EXPECT_EQ(castleRightsBit(toSquare("e3"), board.isWhiteTurn) && board.castlingRights, false);
 }
 
 TEST_F(BoardTest, checkDiagAttackersTrue) {
@@ -224,10 +219,10 @@ TEST_F(BoardTest, inCheckTrue2) {
 
 TEST_F(BoardTest, MakeMovePawnJump) {
     Board board;
-    BoardSquare pos1 = BoardSquare("e2");
-    BoardSquare pos2 = BoardSquare("e4");
-    BoardSquare enPassantSquare = BoardSquare("e3");
-    board.makeMove(pos1, pos2);
+    Square pos1 = toSquare("e2");
+    Square pos2 = toSquare("e4");
+    Square enPassantSquare = toSquare("e3");
+    board.makeMove(BoardMove(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
@@ -237,11 +232,11 @@ TEST_F(BoardTest, MakeMovePawnJump) {
 
 TEST_F(BoardTest, MakeMoveKingCastle) {
     Board board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQK2R w KQkq - 0 1");
-    BoardSquare pos1("e1");
-    BoardSquare pos2("g1");
-    BoardSquare rookStart("h1");
-    BoardSquare rookEnd("f1");
-    board.makeMove(pos1, pos2);
+    Square pos1 = toSquare("e1");
+    Square pos2 = toSquare("g1");
+    Square rookStart = toSquare("h1");
+    Square rookEnd = toSquare("f1");
+    board.makeMove(BoardMove(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -254,11 +249,11 @@ TEST_F(BoardTest, MakeMoveKingCastle) {
 
 TEST_F(BoardTest, MakeMoveQueenCastle) {
     Board board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/R3KBNR w KQkq - 0 1");
-    BoardSquare pos1("e1");
-    BoardSquare pos2("c1");
-    BoardSquare rookStart("a1");
-    BoardSquare rookEnd("d1");
-    board.makeMove(pos1, pos2);
+    Square pos1 = toSquare("e1");
+    Square pos2 = toSquare("c1");
+    Square rookStart = toSquare("a1");
+    Square rookEnd = toSquare("d1");
+    board.makeMove(BoardMove(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -271,9 +266,9 @@ TEST_F(BoardTest, MakeMoveQueenCastle) {
 
 TEST_F(BoardTest, MakeMoveMovedKing) {
     Board board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/R3KBNR w KQkq - 0 1");
-    BoardSquare pos1 = BoardSquare("e1");
-    BoardSquare pos2 = BoardSquare("e2");
-    board.makeMove(pos1, pos2);
+    Square pos1 = toSquare("e1");
+    Square pos2 = toSquare("e2");
+    board.makeMove(BoardMove(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -284,14 +279,14 @@ TEST_F(BoardTest, MakeMoveMovedKing) {
 
 TEST_F(BoardTest, MakeMoveKingToCastleSquare) {
     Board board("k7/8/8/8/8/8/8/5K1R w kq - 0 1");
-    BoardSquare pos1 = BoardSquare("f1");
-    BoardSquare pos2 = BoardSquare("g1");
-    board.makeMove(pos1, pos2);
+    Square pos1 = toSquare("f1");
+    Square pos2 = toSquare("g1");
+    board.makeMove(BoardMove(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WKing);
-    EXPECT_EQ(board.getPiece(7, H), WRook);
+    EXPECT_EQ(board.getPiece(toSquare("h1")), WRook);
     EXPECT_EQ(board.fiftyMoveRule, 1);
     EXPECT_EQ(board.castlingRights, B_Castle);
 }
@@ -299,18 +294,18 @@ TEST_F(BoardTest, MakeMoveKingToCastleSquare) {
 TEST_F(BoardTest, MakeMoveEnPassant) {
     Board fenBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
     Board moveBoard("rnbqkb1r/ppp1pppp/3P1n2/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3");
-    BoardSquare pos1("e5");
-    BoardSquare pos2("d6"); 
-    BoardSquare enemyPawn("d5");
+    Square pos1 = toSquare("e5");
+    Square pos2 = toSquare("d6");
+    Square enemyPawn = toSquare("d5");
     EXPECT_EQ(fenBoard.getPiece(enemyPawn), BPawn);
-    fenBoard.makeMove(pos1, pos2);
+    fenBoard.makeMove(BoardMove(pos1, pos2));
 
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
     EXPECT_EQ(fenBoard.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(fenBoard.getPiece(pos2), WPawn);
     EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
-    EXPECT_EQ(fenBoard.enPassSquare, BoardSquare());
+    EXPECT_EQ(fenBoard.enPassSquare, NULLSQUARE);
     EXPECT_EQ(fenBoard.zobristKey, moveBoard.zobristKey);
     EXPECT_EQ(fenBoard.fiftyMoveRule, 0);   
 }
@@ -318,25 +313,25 @@ TEST_F(BoardTest, MakeMoveEnPassant) {
 TEST_F(BoardTest, MakeMoveNotEnPassant) {
     Board fenBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3");
     Board moveBoard("rnbqkb1r/ppp1pppp/5n2/3pP3/8/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 3");
-    BoardSquare pos1("g1");
-    BoardSquare pos2("f3"); 
-    BoardSquare enemyPawn("d5");
+    Square pos1 = toSquare("g1");
+    Square pos2 = toSquare("f3");
+    Square enemyPawn = toSquare("d5");
     EXPECT_EQ(fenBoard.getPiece(enemyPawn), BPawn);
-    fenBoard.makeMove(pos1, pos2);
+    fenBoard.makeMove(BoardMove(pos1, pos2));
 
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
     EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
-    EXPECT_EQ(fenBoard.enPassSquare, BoardSquare());
+    EXPECT_EQ(fenBoard.enPassSquare, NULLSQUARE);
     EXPECT_EQ(fenBoard.zobristKey, moveBoard.zobristKey);
     EXPECT_EQ(fenBoard.fiftyMoveRule, 1);   
 }
 
 TEST_F(BoardTest, MakeMovePromote) {
     Board board("8/PK6/8/8/8/8/8/7k w KQkq - 0 1");
-    BoardSquare pos1 = BoardSquare("a7");
-    BoardSquare pos2 = BoardSquare("a8");
-    board.makeMove(pos1, pos2, WQueen);
+    Square pos1 = toSquare("a7");
+    Square pos2 = toSquare("a8");
+    board.makeMove(BoardMove(pos1, pos2, WQueen));
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -346,22 +341,22 @@ TEST_F(BoardTest, MakeMovePromote) {
 
 TEST_F(BoardTest, MakeMovePawnCapture) {
     Board board("8/8/4p3/3Pp3/8/K7/8/k7 w KQkq - 0 1");
-    BoardSquare pos1 = BoardSquare("d5");
-    BoardSquare pos2 = BoardSquare("e6");
-    board.makeMove(pos1, pos2);
+    Square pos1 = toSquare("d5");
+    Square pos2 = toSquare("e6");
+    board.makeMove(BoardMove(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
-    EXPECT_EQ(board.getPiece(BoardSquare("e5")), BPawn);
+    EXPECT_EQ(board.getPiece(toSquare("e5")), BPawn);
     EXPECT_EQ(board.fiftyMoveRule, 0);
 }
 
 TEST_F(BoardTest, LegalMoveRegularCapture) {
     Board board("8/5p2/8/3Bp3/8/K7/8/k7 w KQkq - 0 1");
-    BoardSquare pos1 = BoardSquare("d5");
-    BoardSquare pos2 = BoardSquare("f7");
-    board.makeMove(pos1, pos2);
+    Square pos1 = toSquare("d5");
+    Square pos2 = toSquare("f7");
+    board.makeMove(BoardMove(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);

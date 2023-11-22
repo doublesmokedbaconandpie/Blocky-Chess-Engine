@@ -69,9 +69,6 @@ int popcount(uint64_t bitboard);
 
 uint64_t flipVertical(uint64_t bitboard);
 
-int getFile(int square);
-int getRank(int square);
-
 uint64_t getFileMask(int square);
 uint64_t getRankMask(int square);
 uint64_t getDiagMask(int square);

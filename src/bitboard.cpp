@@ -43,13 +43,6 @@ uint64_t flipVertical(uint64_t bitboard) {
     return bitboard;
 }
 
-int getFile(int square) {
-    return square % 8;
-}
-int getRank(int square) {
-    return square / 8;
-}
-
 uint64_t getFileMask(int square) {
     return FILES_MASK[getFile(square)];
 }

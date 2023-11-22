@@ -9,14 +9,14 @@
 #include "types.hpp"
 
 struct BoardState {
-    BoardMove move = BoardMove();
+    BoardMove move;
     pieceTypes originPiece;
     pieceTypes targetPiece;
     castleRights castlingRights;
-    BoardSquare enPassSquare;
+    Square enPassSquare;
     int fiftyMoveRule;
     BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, 
-                castleRights a_castlingRights, BoardSquare a_enPassSquare, int a_fiftyMoveRule) : 
+                castleRights a_castlingRights, Square a_enPassSquare, int a_fiftyMoveRule) : 
                 move(a_move), originPiece(a_originPiece), targetPiece(a_targetPiece),
                 castlingRights(a_castlingRights), enPassSquare(a_enPassSquare), fiftyMoveRule(a_fiftyMoveRule) {};
 };
@@ -27,14 +27,11 @@ struct Board {
     std::string toFen();
     void initZobristKey();
     
-    void makeMove(BoardSquare pos1, BoardSquare pos2, pieceTypes promotionPiece = nullPiece);
     void makeMove(BoardMove move);
     void undoMove();
     
-    pieceTypes getPiece(int rank, int file) const;
-    pieceTypes getPiece(BoardSquare square) const;
-    void setPiece(int rank, int file, pieceTypes currPiece);
-    void setPiece(BoardSquare square, pieceTypes currPiece);
+    pieceTypes getPiece(Square square) const;
+    void setPiece(Square square, pieceTypes currPiece);
     bool moveIsCapture(BoardMove move);
     
     bool isLegalMove(const BoardMove move) const;
@@ -51,12 +48,12 @@ struct Board {
     castleRights castlingRights; // bitwise castling rights tracker
     int fiftyMoveRule;
     int age = 0;
-    BoardSquare enPassSquare; // en passant square
+    Square enPassSquare; // en passant square
     Eval::Info eval;
 
     std::vector<BoardState> moveHistory;
     std::vector<uint64_t> zobristKeyHistory;
 };
 
-castleRights castleRightsBit(BoardSquare finalKingPos, bool isWhiteTurn);
+castleRights castleRightsBit(Square finalKingPos, bool isWhiteTurn);
 bool currKingInAttack(const std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn);

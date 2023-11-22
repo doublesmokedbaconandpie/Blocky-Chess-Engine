@@ -3,6 +3,8 @@
 #include <array>
 #include <unordered_map>
 
+#define Square uint8_t
+
 constexpr int BOARD_SIZE = 64;
 constexpr int NUM_BITBOARDS = 14;
 constexpr int NUM_PIECE_TYPES = 12;
@@ -45,6 +47,14 @@ constexpr std::array<int, 13> pieceValues {
 
 inline bool isWhitePiece(pieceTypes piece) {
     return piece >= WKing && piece <= WPawn;
+}
+
+inline int getFile(Square square) {
+    return square % 8;
+}
+
+inline int getRank(Square square) {
+    return square / 8;
 }
 
 const std::unordered_map<pieceTypes, char> pieceToChar {
