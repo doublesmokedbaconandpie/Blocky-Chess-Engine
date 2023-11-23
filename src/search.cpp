@@ -80,7 +80,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         return score;
     }
     // max depth reached
-    if (depth == 0) {
+    if (depth <= 0) {
         return quiesce(alpha, beta, 5, distanceFromRoot);
     }
     // checkmate or stalemate
@@ -109,6 +109,18 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         }
 
         TTMove = entry.move;
+    }
+
+    /************
+     * Null Move Pruning
+    *************/
+    if (depth >= 2) { // turn changes work weird with depth = 1
+        board.makeNullMove();
+        int nullMoveScore = -search<NOTPV>(-beta, -beta + 1, depth - 1, distanceFromRoot + 1);
+        board.unmakeNullMove();
+        if (nullMoveScore >= beta) {
+            return nullMoveScore;
+        }
     }
 
     // init movePicker
