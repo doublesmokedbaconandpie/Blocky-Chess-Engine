@@ -291,7 +291,7 @@ void Board::makeNullMove() {
         this->zobristKey ^= Zobrist::enPassKeys[getFile(this->enPassSquare)];
         this->enPassSquare = NULLSQUARE;
     }
-    this->isWhiteTurn = !this->isWhiteTurn; 
+    this->isWhiteTurn = !this->isWhiteTurn;
     this->fiftyMoveRule++;
     this->age++;
 
@@ -301,7 +301,7 @@ void Board::makeNullMove() {
 
 void Board::unmakeNullMove() {
     this->enPassSquare = moveHistory.back().enPassSquare;
-    this->isWhiteTurn = !this->isWhiteTurn; 
+    this->isWhiteTurn = !this->isWhiteTurn;
     this->fiftyMoveRule--;
     this->age--;
 

@@ -58,7 +58,8 @@ Info Searcher::startThinking() {
 template <NodeTypes NODE>
 int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     constexpr bool ISROOT = NODE == ROOT;
-    constexpr bool ISPV = NODE != NOTPV;
+    constexpr bool ISPV = NODE == ROOT || NODE == PV;
+    constexpr bool ISNMP = NODE == NMP;
     const int oldAlpha = alpha;
 
     // time up
@@ -114,9 +115,9 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     /************
      * Null Move Pruning
     *************/
-    if (depth >= 2 && !currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
+    if (!ISNMP && depth >= 2 && !currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
         board.makeNullMove();
-        int nullMoveScore = -search<NOTPV>(-beta, -beta + 1, depth - 2, distanceFromRoot + 1);
+        int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - 2, distanceFromRoot + 1);
         board.unmakeNullMove();
         if (nullMoveScore >= beta) {
             return nullMoveScore;
