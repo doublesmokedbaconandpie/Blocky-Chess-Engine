@@ -114,7 +114,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     /************
      * Null Move Pruning
     *************/
-    if (depth >= 2) { // turn changes work weird with depth = 1
+    if (depth >= 2 && !currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
         board.makeNullMove();
         int nullMoveScore = -search<NOTPV>(-beta, -beta + 1, depth - 1, distanceFromRoot + 1);
         board.unmakeNullMove();
