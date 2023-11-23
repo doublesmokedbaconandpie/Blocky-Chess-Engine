@@ -105,6 +105,14 @@ uint64_t rookMoves(int square, MoveGenInfo& info) {
 }
 
 uint64_t kingMoves(int square, MoveGenInfo& info) {
+    // indexes based on castle rights defined in "types.hpp"
+    constexpr std::array<uint64_t, 4> rookPaths = {
+        0x6000000000000000, 0x0E00000000000000, 0x0000000000000060, 0x000000000000000E};
+    constexpr std::array<uint64_t, 4> kingPaths = {
+        0x2000000000000000, 0x0800000000000000, 0x0000000000000020, 0x0000000000000008};
+    constexpr std::array<uint64_t, 4> castleDestination = {
+        0x4000000000000000, 0x0400000000000000, 0x0000000000000040, 0x0000000000000004};
+
     // regular moves
     uint64_t moves = Attacks::kingAttacks(square) & info.notAllies;
     
@@ -122,12 +130,9 @@ uint64_t kingMoves(int square, MoveGenInfo& info) {
             }
 
             // check for king path being attacked
-            uint64_t path = kingPaths[currRight];
-            int currSquare = popLsb(path);
-            info.pieceSets[kingIndex] = c_u64(1) << currSquare;
-            if (c_u64(1) << currSquare & info.allPieces || 
-                currKingInAttack(info.pieceSets, info.isWhiteTurn)) {
-                    continue;
+            info.pieceSets[kingIndex] = kingPaths[currRight];
+            if (currKingInAttack(info.pieceSets, info.isWhiteTurn)) {
+                continue;
             }
 
             // perform castle
