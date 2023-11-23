@@ -116,7 +116,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     *************/
     if (depth >= 2 && !currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
         board.makeNullMove();
-        int nullMoveScore = -search<NOTPV>(-beta, -beta + 1, depth - 1, distanceFromRoot + 1);
+        int nullMoveScore = -search<NOTPV>(-beta, -beta + 1, depth - 2, distanceFromRoot + 1);
         board.unmakeNullMove();
         if (nullMoveScore >= beta) {
             return nullMoveScore;
