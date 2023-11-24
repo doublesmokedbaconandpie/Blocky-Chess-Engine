@@ -4,9 +4,13 @@
 
 Blocky is a UCI-compliant chess engine. It has implemented the following techniques below thus far: 
 
-* Alpha-beta search with fail-soft
-* Magic Bitboards
-* Zobrist-Hashing
+* Search:
+** Alpha-beta search with fail-soft
+** Null Move Pruning
+** Transposition Tables
+* Bitboards:
+** Magic Bitboards
+** Zobrist-Hashing
 * Piece-Square Tables
 
 ## Compiling Blocky
