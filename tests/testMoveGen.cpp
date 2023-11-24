@@ -1,5 +1,6 @@
 #include "board.hpp"
 #include "moveGen.hpp"
+#include "perft.hpp"
 #include "attacks.hpp"
 #include "bitboard.hpp"
 #include "zobrist.hpp"
@@ -116,17 +117,17 @@ TEST_F(MoveGenTest, moveGeneratorBlackMove) {
 
 TEST_F(MoveGenTest, perftStartpos) {
     Board board;
-    ASSERT_EQ(MoveGen::perft(board, 0), 1);
-    ASSERT_EQ(MoveGen::perft(board, 1), 20);
-    ASSERT_EQ(MoveGen::perft(board, 2), 400);
-    ASSERT_EQ(MoveGen::perft(board, 3), 8902);
-    ASSERT_EQ(MoveGen::perft(board, 4), 197281);
+    ASSERT_EQ(perft<true>(board, 0), 1);
+    ASSERT_EQ(perft<true>(board, 1), 20);
+    ASSERT_EQ(perft<true>(board, 2), 400);
+    ASSERT_EQ(perft<true>(board, 3), 8902);
+    ASSERT_EQ(perft<true>(board, 4), 197281);
 }
 
 TEST_F(MoveGenTest, perftKiwipete) {
     Board board("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1");
-    ASSERT_EQ(MoveGen::perft(board, 1), 48);
-    ASSERT_EQ(MoveGen::perft(board, 2), 2039);
-    ASSERT_EQ(MoveGen::perft(board, 3), 97862);
-    ASSERT_EQ(MoveGen::perft(board, 4), 4085603);
+    ASSERT_EQ(perft<true>(board, 1), 48);
+    ASSERT_EQ(perft<true>(board, 2), 2039);
+    ASSERT_EQ(perft<true>(board, 3), 97862);
+    ASSERT_EQ(perft<true>(board, 4), 4085603);
 }
