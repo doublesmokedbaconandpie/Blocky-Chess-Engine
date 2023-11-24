@@ -161,37 +161,4 @@ uint64_t pawnMoves(int square, MoveGenInfo& bitboards, bool isWhiteTurn) {
     return moves;
 }
 
-// perft is a method of determining correctness of move generators
-// positions can be input and number of total leaf nodes determined
-// the number determined can be compared to a table to established values from others
-uint64_t perft(Board board, int depthLeft) {
-    if (depthLeft == 0) {
-        return 1;
-    }
-    uint64_t leafNodeCount = 0;
-    std::vector<BoardMove> moves = moveGenerator(board);
-    for (auto move: moves) {
-        board.makeMove(move);
-        uint64_t moveCount = perftHelper(board, depthLeft - 1);
-        leafNodeCount += moveCount;
-        std::cout << move << ": " << moveCount << std::endl; 
-        board.undoMove();
-    }
-    return leafNodeCount;
-}
-
-uint64_t perftHelper(Board board, int depthLeft) {
-    if (depthLeft == 0) {
-        return 1;
-    }
-    uint64_t leafNodeCount = 0;
-    std::vector<BoardMove> moves = moveGenerator(board);
-    for (auto move: moves) {
-        board.makeMove(move);
-        leafNodeCount += perftHelper(board, depthLeft - 1);
-        board.undoMove();
-    }
-    return leafNodeCount;
-}
-
 } // namespace MoveGen

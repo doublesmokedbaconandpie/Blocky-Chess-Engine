@@ -28,9 +28,4 @@ uint64_t rookMoves(int square, MoveGenInfo& info);
 uint64_t kingMoves(int square, MoveGenInfo& info);
 uint64_t pawnMoves(int square, MoveGenInfo& info, bool isWhiteTurn);
 
-// for debugging
-uint64_t perft(Board board, int depthLeft);
-uint64_t perftHelper(Board board, int depthLeft);
-
-
 } // namespace MoveGen

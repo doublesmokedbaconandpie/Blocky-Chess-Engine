@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 #include "uci.hpp"
+#include "perft.hpp"
 #include "bench.hpp"
 #include "timeman.hpp"
 #include "ttable.hpp"
@@ -175,7 +176,7 @@ void perft(std::istringstream& input, Board& board) {
     
     // perform perft
     auto start = std::chrono::high_resolution_clock::now();
-    uint64_t nodes = MoveGen::perft(board, depth);
+    uint64_t nodes = perft<true>(board, depth);
     auto end = std::chrono::high_resolution_clock::now();
     int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     std::cout << "perft result nodes " << nodes;
