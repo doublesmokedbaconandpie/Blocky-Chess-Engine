@@ -278,6 +278,38 @@ void Board::undoMove() {
     this->zobristKey = zobristKeyHistory.back();
 }
 
+void Board::makeNullMove() {
+    this->moveHistory.push_back(BoardState(
+        BoardMove(),
+        EmptyPiece,
+        EmptyPiece,
+        this->castlingRights,
+        this->enPassSquare,
+        this->fiftyMoveRule
+    ));
+    if (this->enPassSquare) {
+        this->zobristKey ^= Zobrist::enPassKeys[getFile(this->enPassSquare)];
+        this->enPassSquare = NULLSQUARE;
+    }
+    this->isWhiteTurn = !this->isWhiteTurn;
+    this->fiftyMoveRule++;
+    this->age++;
+
+    this->zobristKey ^= Zobrist::isBlackKey;
+    this->zobristKeyHistory.push_back(this->zobristKey);
+}
+
+void Board::unmakeNullMove() {
+    this->enPassSquare = moveHistory.back().enPassSquare;
+    this->isWhiteTurn = !this->isWhiteTurn;
+    this->fiftyMoveRule--;
+    this->age--;
+
+    this->moveHistory.pop_back();
+    this->zobristKeyHistory.pop_back();
+    this->zobristKey = zobristKeyHistory.back();
+}
+
 bool Board::moveIsCapture(BoardMove move) {
     if(this->getPiece(move.sqr1()) % 6 == WPawn && this->enPassSquare == move.sqr2())
         return true;
@@ -367,7 +399,11 @@ int Board::evaluate() const {
 }
 
 bool operator==(const Board& lhs, const Board& rhs) {
-    return (lhs.board == rhs.board) && (lhs.pieceSets == rhs.pieceSets) && (lhs.zobristKeyHistory == rhs.zobristKeyHistory);
+    return lhs.board == rhs.board
+        && lhs.pieceSets == rhs.pieceSets
+        && lhs.zobristKeyHistory == rhs.zobristKeyHistory
+        && lhs.isWhiteTurn == rhs.isWhiteTurn
+        && lhs.enPassSquare == rhs.enPassSquare;
 }
 
 std::ostream& operator<<(std::ostream& os, const Board& target) {

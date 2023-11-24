@@ -29,6 +29,8 @@ struct Board {
     
     void makeMove(BoardMove move);
     void undoMove();
+    void makeNullMove();
+    void unmakeNullMove();
     
     pieceTypes getPiece(Square square) const;
     void setPiece(Square square, pieceTypes currPiece);

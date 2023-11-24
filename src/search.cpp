@@ -58,7 +58,8 @@ Info Searcher::startThinking() {
 template <NodeTypes NODE>
 int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     constexpr bool ISROOT = NODE == ROOT;
-    constexpr bool ISPV = NODE != NOTPV;
+    constexpr bool ISPV = NODE == ROOT || NODE == PV;
+    constexpr bool ISNMP = NODE == NMP;
     const int oldAlpha = alpha;
 
     // time up
@@ -80,7 +81,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         return score;
     }
     // max depth reached
-    if (depth == 0) {
+    if (depth <= 0) {
         return quiesce(alpha, beta, 5, distanceFromRoot);
     }
     // checkmate or stalemate
@@ -109,6 +110,18 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         }
 
         TTMove = entry.move;
+    }
+
+    /************
+     * Null Move Pruning
+    *************/
+    if (!ISNMP && depth >= 2 && !currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
+        board.makeNullMove();
+        int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - 2, distanceFromRoot + 1);
+        board.unmakeNullMove();
+        if (nullMoveScore >= beta) {
+            return nullMoveScore;
+        }
     }
 
     // init movePicker
