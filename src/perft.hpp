@@ -14,13 +14,18 @@ uint64_t perft(Board board, int depthLeft) {
     if (depthLeft == 0) {
         return 1;
     }
-    uint64_t leafNodeCount = 0;
+
     std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
+    if (depthLeft == 1 && !printMoves) {
+       return moves.size();
+    }
+
+    uint64_t leafNodeCount = 0;
     for (auto move: moves) {
         board.makeMove(move);
         uint64_t moveCount = perft<false>(board, depthLeft - 1);
         leafNodeCount += moveCount;
-        if constexpr (printMoves) {
+        if (printMoves) {
             std::cout << move << ": " << moveCount << std::endl; 
         }
         board.undoMove();
