@@ -14,7 +14,7 @@ TimeManager::TimeManager(uint64_t time, uint64_t inc) {
 
     this->startTime = std::chrono::high_resolution_clock::now();
     this->hardTimeLimit = time / 20 + inc / 2;
-    this->softTimeLimit = this->hardTimeLimit / 2;
+    this->softTimeLimit = this->hardTimeLimit / 3;
 }
 
 bool TimeManager::hardTimeUp() const {
