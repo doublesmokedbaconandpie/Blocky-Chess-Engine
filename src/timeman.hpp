@@ -9,16 +9,8 @@ constexpr uint64_t INF_TIME = 1 << 28;
 
 struct TimeManager
 {
-    TimeManager(uint64_t time = INF_TIME, uint64_t inc = 0) {
-        // convert into microseconds
-        time *= 1000;
-        inc *= 1000;
-
-        this->startTime = std::chrono::high_resolution_clock::now();
-        this->hardTimeLimit = time / 20 + inc / 2;
-        this->softTimeLimit = this->hardTimeLimit / 2;
-    }
-
+    TimeManager() : TimeManager(INF_TIME, 0){};
+    TimeManager(uint64_t time, uint64_t inc);
     bool hardTimeUp() const;
     bool softTimeUp() const;
     int64_t getTimeElapsed() const;
