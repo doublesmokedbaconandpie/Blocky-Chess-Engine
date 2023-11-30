@@ -26,4 +26,4 @@ target_sources(Blocky PRIVATE
     src/uci.cpp
 )
 target_include_directories(Blocky PRIVATE src)
-target_compile_options(Blocky PRIVATE -O3)
+target_compile_options(Blocky PRIVATE -O3 -flto)
