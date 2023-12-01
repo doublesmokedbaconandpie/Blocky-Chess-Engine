@@ -24,4 +24,4 @@ target_sources(tune PRIVATE
     ../../src/bitboard.cpp
 )
 target_include_directories(tune PUBLIC "../../src/")
-target_compile_options(tune PRIVATE -O3)
+target_compile_options(tune PRIVATE -O3 -flto)

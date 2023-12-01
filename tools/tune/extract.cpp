@@ -15,8 +15,6 @@
 // This program is meant to convert the pgns from a Cutechess match into a data format
 // that is easy to parse; make sure not to have any incompleted games within those pgns
 
-int storedPositions = 0;
-
 int main() {
     Attacks::init();
 
@@ -236,12 +234,13 @@ BoardMove getMove(std::string input, Board& board) {
 
 void storeFenResults(std::ofstream& file, std::vector<std::string> fens, WinningColor result) {
     std::string resultStr = toStr(result);
+    int storedPositions = 0;
     for (std::string fen: fens) {
         Board board(fen);
         std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
         MoveOrder::MovePicker movePicker(std::move(moves));
         // only store quiet positions and certain positions from each game
-        if (!board.moveIsCapture(movePicker.pickMove()) && !(storedPositions % 23)) {
+        if (!board.moveIsCapture(movePicker.pickMove())) {
             file << fen << "; [" << resultStr << "]\n";
         } 
         ++storedPositions;

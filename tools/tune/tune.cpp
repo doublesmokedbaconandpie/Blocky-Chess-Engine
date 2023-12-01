@@ -15,91 +15,56 @@
 const std::string data = "../data/positions.txt";
 const std::string tmpFileDest = "../output/tmpParams.txt";
 const std::string finalFileDest = "../output/finalParams.txt";
-int adjustVal = 4; 
-constexpr double errorUncertainty = 0.0001;
-// K constant in sigmoid function to fit 100 centipawns = 0.7 score
-// using equation f(s) = 1 / (e ^ (Ks))
-constexpr double K = 0.003567;     
+constexpr double KPRECISION = 10;
 
 // global variables
 std::vector<PositionData> dataVals;
-double bestError;
-int iterations;
 
 int main() {
     // init
     Attacks::init();
     extractData();
+    const double K = computeOptK();
 
-    // variables 
-    bestError = meanSquareError();
-    double oldError;
-
-    std::cout << "Original error: " << bestError << std::endl;
-    // tune until local maximum found
-    while (adjustVal) {
-        std::cout << "Using adjust val: " << adjustVal << std::endl;
-        while (true) {
-            oldError = bestError;
-            tuneTables(Eval::tablesOp);
-            tuneTables(Eval::tablesEg);
-            if (oldError - bestError < errorUncertainty) {
-                break;
-            } else {
-                storeParams(tmpFileDest);
-                std::cout << "Old Error: " << oldError << " New Error: " << bestError 
-                << " Iterations: " << iterations << " Adjust Val: " << adjustVal << std::endl;
-            }
-        } 
-        // fine tune the adjusting
-        adjustVal = adjustVal >> 1;
-    }
-    std::cout << "Final Params Stored with: " << bestError << std::endl;
-    storeParams(finalFileDest);
+    return 0;
 }
 
-void tuneTables(std::array<std::array<int, 64UL>, 6UL>& PSQT) {
-    double newError = 0.0;
-    for (auto& pieceArr: PSQT) {
-        for (int& i: pieceArr) {
-            ++iterations;
-            // try moving up by adjust val
-            i += adjustVal;
-            newError = meanSquareError();
-            if (newError < bestError) {
-                bestError = newError;
-                continue;
-            } 
+double computeOptK(){
+    double start = 0, end = 10, step = 1;
+    double curr = start, currErr;
+    double bestErr = meanSquareError(start);
 
-            // try moving down by adjust val
-            i -= 2 * adjustVal;
-            newError = meanSquareError();
-            if (newError < bestError) {
-                bestError = newError;
-                continue;
+    for (int i = 0; i < KPRECISION; ++i) {
+
+        // find the minimum between the current range: [start, end]
+        curr = start - step;
+        while (curr < end) {
+            curr += step;
+            currErr = meanSquareError(curr);
+            if (currErr <= bestErr) {
+                bestErr = currErr;
+                start = curr;
             }
-
-            // reset to starting if both directions perform worse
-            i += adjustVal;
         }
+
+        // adjust the search space
+        end = start + step;
+        start -= step;
+        step /= 10;
+
+        // report status
+        std::cout << "Computing K: " << "iter = " << i << ", K = " << start << '\n';
     }
+
+    return start;
 }
 
-double meanSquareError() {
-    std::string fen, result;
+double meanSquareError(double K) {
     double error = 0.0, sigmoid;
-    double eval;
-    
-    for (const PositionData& i: dataVals) {
-        // get board score from fen
-        Board board(i.fen);
-        eval = board.evaluate();
-
-        // calculate eval error
-        sigmoid = 1 / (1 + pow(M_E,  K * eval));
+    for (const auto& i: dataVals) {
+        sigmoid = 1 / (1 + pow(M_E,  K * i.eval));
         error += pow(i.result - sigmoid, 2);
     }
-
     return error / static_cast<double>(dataVals.size());
 }
 
@@ -116,17 +81,18 @@ void extractData() {
 
         // store
         PositionData position;
-        position.fen = fen;
+        position.board = Board(fen);
         position.result = getResult(result);
+        position.eval = position.board.evaluate();
         dataVals.push_back(position);
     }
 }
 
 void storeParams(std::string file) {
     std::ofstream output(file);
-    for (auto& gameStateTable: {Eval::tablesOp, Eval::tablesEg}) {
-        for (auto& pieceArr: gameStateTable) {
-            for (auto& i: pieceArr) {
+    for (const auto& gameStateTable: {Eval::tablesOp, Eval::tablesEg}) {
+        for (const auto& pieceArr: gameStateTable) {
+            for (const auto& i: pieceArr) {
                 output << i << ",\n";
             }
         }

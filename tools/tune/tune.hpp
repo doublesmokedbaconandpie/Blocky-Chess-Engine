@@ -1,13 +1,20 @@
 #include <array>
 #include <string>
 
+#include "board.hpp"
+
 struct PositionData {
-    std::string fen;
+    Board board;
     double result;
+    double eval;
 };
 
-void tuneTables(std::array<std::array<int, 64UL>, 6UL>& PSQT);
-double meanSquareError();
+double computeOptK();
+double meanSquareError(double K);
 void extractData();
 void storeParams(std::string file);
 double getResult(std::string result);
+
+double linearEval();
+void updateSingleGradient();
+void computeGradient();
