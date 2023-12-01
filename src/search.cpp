@@ -117,7 +117,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     *************/
     if (!ISNMP && depth >= 2 && !currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
         board.makeNullMove();
-        int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - 2, distanceFromRoot + 1);
+        int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - 3, distanceFromRoot + 1);
         board.unmakeNullMove();
         if (nullMoveScore >= beta) {
             return nullMoveScore;
