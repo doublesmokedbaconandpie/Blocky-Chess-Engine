@@ -10,9 +10,7 @@ constexpr int BOARD_SIZE = 64;
 constexpr int NUM_BITBOARDS = 14;
 constexpr int NUM_PIECE_TYPES = 12;
 
-enum fileVals {nullFile = -1, A, B, C, D, E, F, G, H};
-
-enum pieceTypes {nullPiece = -2, EmptyPiece,
+enum pieceTypes {EmptyPiece = -1,
                 WKing, WQueen, WBishop, WKnight, WRook, WPawn, 
                 BKing, BQueen, BBishop, BKnight, BRook, BPawn,
                 WHITE_PIECES, BLACK_PIECES};
@@ -37,6 +35,10 @@ enum castleRights {
     All_Castle = W_Castle | B_Castle,
 };
 
+enum EvalType {
+    UPPER, LOWER, EXACT, NONE
+};
+
 enum NodeTypes {
     ROOT, PV, NOTPV, NMP
 };
@@ -45,10 +47,6 @@ enum NodeTypes {
 constexpr std::array<int, 13> pieceValues {
     0, 9, 3, 3, 5, 1,
     0, 9, 3, 3, 5, 1,};
-
-inline bool isWhitePiece(pieceTypes piece) {
-    return piece >= WKing && piece <= WPawn;
-}
 
 inline int getFile(Square square) {
     return square % 8;
