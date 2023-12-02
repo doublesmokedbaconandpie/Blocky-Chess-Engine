@@ -22,11 +22,11 @@ Board::Board(std::string fenStr) {
 
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
-    int rank = 0, file = A;
+    int rank = 0, file = 0;
     for (char& iter: token) {
         if (iter == '/') {
             rank++;
-            file = A;
+            file = 0;
         }
         else if (isdigit(iter))  { 
             file += int(iter - '0');
@@ -169,7 +169,7 @@ void Board::makeMove(BoardMove move) {
     // doesn't check for emptiness between rook and king
     if (originPiece == allyKing && (this->castlingRights & castleRightsBit(pos2, this->isWhiteTurn))) {
         int kingFileDirection = pos2 > pos1 ? 1 : -1;
-        fileVals rookFile = kingFileDirection == 1 ? H : A;
+        int rookFile = kingFileDirection == 1 ? 7 : 0;
         this->setPiece(pos1 + kingFileDirection, allyRook);
         this->setPiece(pos1 - getFile(pos1) + rookFile, EmptyPiece);
         this->castlingRights &= this->isWhiteTurn ? B_Castle : W_Castle;
@@ -256,7 +256,7 @@ void Board::undoMove() {
     // castling
     if (prev.originPiece == prevKing && (prev.castlingRights & castleRightsBit(prev.move.sqr2(), !this->isWhiteTurn)) ) {
         int kingFileDirection = prev.move.sqr2() > prev.move.sqr1() ? 1 : -1;
-        fileVals rookFile = kingFileDirection == 1 ? H : A;
+        int rookFile = kingFileDirection == 1 ? 7 : 0;
         this->setPiece(prev.move.sqr1() + kingFileDirection, EmptyPiece);
         this->setPiece(prev.move.sqr1() - getFile(prev.move.sqr1()) + rookFile, prevRook);
     }
@@ -409,7 +409,7 @@ bool operator==(const Board& lhs, const Board& rhs) {
 std::ostream& operator<<(std::ostream& os, const Board& target) {
     for (int rank = 0; rank <= 7; rank++) {
         os << "[";
-        for (int file = A; file <= 7; file++) {
+        for (int file = 0; file <= 7; file++) {
             os << pieceToChar.at(target.getPiece(toSquare(rank, file)));
             os << ',';
         }

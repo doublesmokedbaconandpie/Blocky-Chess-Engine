@@ -4,15 +4,11 @@
 #include <vector>
 
 #include "move.hpp"
-
-enum EvalType {
-    UPPER, LOWER, EXACT, NONE
-};
+#include "types.hpp"
 
 namespace TTable {
 
 constexpr int DEFAULT_SIZEMB = 128;
-
 
 struct Entry {
     uint64_t key = 0;

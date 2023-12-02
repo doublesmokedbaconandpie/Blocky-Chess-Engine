@@ -99,14 +99,14 @@ TEST_F(MoveGenTest, moveGeneratorBlackMove) {
     Board board;
     board.makeMove(BoardMove(toSquare("e2"), toSquare("e3")));
     std::vector<BoardMove> expectedValidMoves;
-    for (int file = A; file <= H; file++) {
+    for (int file = 0; file <= 7; file++) {
         expectedValidMoves.push_back(BoardMove(toSquare(1, file), toSquare(2, file)));
         expectedValidMoves.push_back(BoardMove(toSquare(1, file), toSquare(3, file)));
     }
-    expectedValidMoves.push_back(BoardMove(toSquare(0, B), toSquare(2, A)));
-    expectedValidMoves.push_back(BoardMove(toSquare(0, B), toSquare(2, C)));
-    expectedValidMoves.push_back(BoardMove(toSquare(0, G), toSquare(2, F)));
-    expectedValidMoves.push_back(BoardMove(toSquare(0, G), toSquare(2, H)));
+    expectedValidMoves.push_back(BoardMove("b8a6", false));
+    expectedValidMoves.push_back(BoardMove("b8c6", false));
+    expectedValidMoves.push_back(BoardMove("g8f6", false));
+    expectedValidMoves.push_back(BoardMove("g8h6", false));
     std::vector<BoardMove> validMoves = moveGenerator(board);
 
     std::sort(validMoves.begin(), validMoves.end());
