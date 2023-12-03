@@ -237,12 +237,7 @@ void storeFenResults(std::ofstream& file, std::vector<std::string> fens, Winning
     int storedPositions = 0;
     for (std::string fen: fens) {
         Board board(fen);
-        std::vector<BoardMove> moves = MoveGen::moveGenerator(board);
-        MoveOrder::MovePicker movePicker(std::move(moves));
-        // only store quiet positions and certain positions from each game
-        if (!board.moveIsCapture(movePicker.pickMove())) {
-            file << fen << "; [" << resultStr << "]\n";
-        } 
+        file << fen << "; [" << resultStr << "]\n";
         ++storedPositions;
     }
 }
