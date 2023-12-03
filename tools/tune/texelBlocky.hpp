@@ -1,6 +1,8 @@
 #include "texel-tuner/src/base.h"
 #include "texel-tuner/src/external/chess.hpp"
 
+namespace Blocky {
+
 class BlockyEval
     {
     public:
@@ -12,3 +14,7 @@ class BlockyEval
         static EvalResult get_external_eval_result(const chess::Board& board); // unused
         static void print_parameters(const parameters_t& parameters);
     };
+
+void printTable(const parameters_t& parameters, int index);
+
+}; // namespace Blocky

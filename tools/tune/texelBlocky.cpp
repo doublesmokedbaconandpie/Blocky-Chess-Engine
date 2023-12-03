@@ -6,6 +6,8 @@
 #include "../../src/eval.hpp"
 #include "../../src/types.hpp"
 
+namespace Blocky {
+
 parameters_t BlockyEval::get_initial_parameters() {
     Eval::init();
     parameters_t params;
@@ -50,20 +52,22 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
 
 void BlockyEval::print_parameters(const parameters_t& parameters) {
     std::cout << "Midgame Tables: \n";
-    for (int i = 0; i < NUM_PIECE_TYPES / 2; ++i) {
-        std::cout << "Table " << pieceToChar.at(pieceTypes(i)) << ": \n";
-        for (int j = 0; j < BOARD_SIZE; ++j) {
-            std::cout << parameters[i * BOARD_SIZE + j][0] << ", ";
-        }
-        std::cout << "\n\n";
-    }
+    printTable(parameters, 0);
 
     std::cout << "Endgame Tables: \n";
+    printTable(parameters, 1);
+}
+
+void printTable(const parameters_t& parameters, int index) {
     for (int i = 0; i < NUM_PIECE_TYPES / 2; ++i) {
         std::cout << "Table " << pieceToChar.at(pieceTypes(i)) << ": \n";
+        std::cout << "[";
         for (int j = 0; j < BOARD_SIZE; ++j) {
-            std::cout << parameters[i * BOARD_SIZE + j][1] << ", ";
+            std::cout << parameters[i * BOARD_SIZE + j][index] << ", ";
+            if (j % 8 == 7) {std::cout << "\n";}
         }
-        std::cout << "\n\n";
+        std::cout << "]\n\n";
     }
 }
+
+} // namespace Blocky
