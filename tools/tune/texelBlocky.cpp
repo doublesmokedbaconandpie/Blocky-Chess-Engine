@@ -34,11 +34,11 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
     for (int i = 0; i < BOARD_SIZE; ++i) {
         pieceTypes piece = board.getPiece(i);
         // only squares with pieces shift the coefficients from zero
-        if (piece != EmptyPiece) {
+        if (piece == EmptyPiece) {
             continue;
         }
         // white and black pieces use different eval indices
-        pieceIndex = (piece / 2) * BOARD_SIZE; 
+        pieceIndex = piece % 6 * BOARD_SIZE; 
         if (isWhitePiece(piece)) {
             result.coefficients[pieceIndex + i]++;
         } else {
@@ -59,13 +59,12 @@ void BlockyEval::print_parameters(const parameters_t& parameters) {
 
 void printTable(const parameters_t& parameters, int index) {
     for (int i = 0; i < NUM_PIECE_TYPES / 2; ++i) {
-        std::cout << "Table " << pieceToChar.at(pieceTypes(i)) << ": \n";
-        std::cout << "[";
+        std::cout << "Table " << pieceToChar.at(pieceTypes(i)) << ": {\n";
         for (int j = 0; j < BOARD_SIZE; ++j) {
             std::cout << parameters[i * BOARD_SIZE + j][index] << ", ";
             if (j % 8 == 7) {std::cout << "\n";}
         }
-        std::cout << "]\n\n";
+        std::cout << "};\n\n";
     }
 }
 
