@@ -21,7 +21,6 @@ struct Info {
 int getPiecePhase(pieceTypes piece);
 int getPlacementScoreOp(Square square, pieceTypes currPiece);
 int getPlacementScoreEg(Square square, pieceTypes currPiece);
-void init();
 
 // opening tables
 

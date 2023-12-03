@@ -9,7 +9,6 @@
 namespace Blocky {
 
 parameters_t BlockyEval::get_initial_parameters() {
-    Eval::init();
     parameters_t params;
     tune_t op, eg;
     for (int i = 0; i < NUM_PIECE_TYPES / 2; ++i) {
