@@ -11,16 +11,6 @@ namespace Eval {
 std::array<std::array<int, BOARD_SIZE>, 6> tablesOp = {tableKingOp, tableQueenOp, tableBishopOp, tableKnightOp, tableRookOp, tablePawnOp};
 std::array<std::array<int, BOARD_SIZE>, 6> tablesEg = {tableKingEg, tableQueenEg, tableBishopEg, tableKnightEg, tableRookEg, tablePawnEg};
 
-void init() {
-    for (int i = WKing; i <= WPawn; i++) {
-        int pieceVal = pieceValues[i] * 100;
-        for (int j = 0; j < BOARD_SIZE; j++) {
-            tablesOp[i][j] += pieceVal;
-            tablesEg[i][j] += pieceVal;
-        }
-    }
-}
-
 int Info::getRawEval() const {
     // positive values means white is winning, negative means black
     return (this->opScore * phase + this->egScore * (totalPhase - phase)) / totalPhase;
