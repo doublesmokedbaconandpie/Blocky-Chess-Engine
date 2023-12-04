@@ -1,3 +1,4 @@
+#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -16,31 +17,56 @@
 // that is easy to parse; make sure not to have any incompleted games within those pgns
 
 int main() {
+    // initialize prerequisites
     Attacks::init();
+    std::vector<std::string> pgns, dests;
+    readFileNames(pgns, dests);
+    assert(pgns.size() == dests.size());
 
-    std::string extractDest = "../data/positions.txt";
-    std::vector<std::string> cutechessPgns = {
-        "../data/tuneNMP.pgn", 
-    };
-
+    // main file reading loop
     int games = 0;
-    std::ofstream dest(extractDest);
-    for (std::string cutechessPgn: cutechessPgns) {
-        std::cout << "Processing file: " << cutechessPgn << std::endl;
-        std::ifstream file(cutechessPgn);
-        while (!file.eof()) {
-            WinningColor result = getGameResult(file);
-            std::string startFen = getStartFen(file);
-            std::vector<std::string> fens = getPositions(file, startFen, result);
-            storeFenResults(dest, fens, result);
-            ++games;
-            if (games % 500 == 0) {
-                std::cout << "Games processed: " << games << std::endl;
-            }
-        }
+    for (int i = 0; i < dests.size(); ++i) {
+        auto pgn = pgns[i];
+        auto destName = dests[i];
+        std::cout << "Processing file: " << pgn << ", Dest: " << destName << std::endl;
+        extractFromFile(pgn, destName, games);
     }
     std::cout << "Total games processed: " << games << std::endl;
     return 0;
+}
+
+void extractFromFile(std::string pgn, std::string destName, int& games) {
+    std::ifstream file(pgn);
+    std::ofstream dest(destName);
+    assert(file);
+    assert(dest);
+
+    while (!file.eof()) {
+        auto result = getGameResult(file);
+        auto startFen = getStartFen(file);
+        auto fens = getPositions(file, startFen, result);
+        storeFenResults(dest, fens, result);
+        ++games;
+        if (games % 500 == 0) {
+            std::cout << "Games processed: " << games << std::endl;
+        }
+    }
+}
+
+// reads pgn names from ../sources.csv 
+// sources.csv has each line with a cutechess pgn input and output
+// Ex: main.pgn,main.txt
+void readFileNames(std::vector<std::string>& pgns, std::vector<std::string>& dests) {
+    std::ifstream file("sources.csv");
+    std::string pgn, dest;
+    while (!file.eof()) {
+        // read a line in the csv
+        std::getline(file, pgn, ',');
+        std::getline(file, dest);
+        // save corresponding input and outputs
+        pgns.push_back(pgn);
+        dests.push_back(dest);
+    }
 }
 
 WinningColor getGameResult(std::ifstream& file) {
@@ -68,8 +94,9 @@ WinningColor getGameResult(std::ifstream& file) {
     throw std::runtime_error("Invalid result: " + token);
 }
 
+// for each game, there is a starting position, which can then be incremented with moves
+// some opening books use moves from startpos, others start from a fen
 std::string getStartFen(std::ifstream& file) {
-    // some opening books use moves from startpos, others start from a fen
     std::string token, fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     while (token != "1." && !file.eof()) {
         file >> token;

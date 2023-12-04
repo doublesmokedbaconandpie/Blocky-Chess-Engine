@@ -3,6 +3,8 @@
 
 namespace Blocky {
 
+// This is an interface for a texel-tuner used for the development for Blocky:
+// https://github.com/GediminasMasaitis/texel-tuner
 class BlockyEval
     {
     public:
