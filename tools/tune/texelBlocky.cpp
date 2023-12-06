@@ -1,3 +1,4 @@
+#include <cmath>
 #include <iostream>
 
 #include "texelBlocky.hpp"
@@ -61,7 +62,7 @@ void printTable(const parameters_t& parameters, int index) {
     for (int i = 0; i < NUM_PIECE_TYPES / 2; ++i) {
         std::cout << "Table " << pieceToChar.at(pieceTypes(i)) << ": {\n";
         for (int j = 0; j < BOARD_SIZE; ++j) {
-            std::cout << parameters[i * BOARD_SIZE + j][index] << ", ";
+            std::cout << std::round(parameters[i * BOARD_SIZE + j][index]) << ", ";
             if (j % 8 == 7) {std::cout << "\n";}
         }
         std::cout << "};\n\n";
