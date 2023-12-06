@@ -158,7 +158,7 @@ constexpr std::array<int, BOARD_SIZE> tablePawnEg = {
 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-extern std::array<std::array<int, BOARD_SIZE>, 6> tablesOp;
-extern std::array<std::array<int, BOARD_SIZE>, 6> tablesEg; 
+constexpr std::array<std::array<int, BOARD_SIZE>, 6> tablesOp = {tableKingOp, tableQueenOp, tableBishopOp, tableKnightOp, tableRookOp, tablePawnOp};
+constexpr std::array<std::array<int, BOARD_SIZE>, 6> tablesEg = {tableKingEg, tableQueenEg, tableBishopEg, tableKnightEg, tableRookEg, tablePawnEg};
 
 } // namespace eval

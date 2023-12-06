@@ -7,10 +7,6 @@
 
 namespace Eval {
 
-// global variables
-std::array<std::array<int, BOARD_SIZE>, 6> tablesOp = {tableKingOp, tableQueenOp, tableBishopOp, tableKnightOp, tableRookOp, tablePawnOp};
-std::array<std::array<int, BOARD_SIZE>, 6> tablesEg = {tableKingEg, tableQueenEg, tableBishopEg, tableKnightEg, tableRookEg, tablePawnEg};
-
 int Info::getRawEval() const {
     // positive values means white is winning, negative means black
     return (this->opScore * phase + this->egScore * (totalPhase - phase)) / totalPhase;
