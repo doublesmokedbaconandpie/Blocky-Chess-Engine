@@ -7,10 +7,6 @@
 
 namespace Eval {
 
-// global variables
-std::array<std::array<int, BOARD_SIZE>, 6> tablesOp = {tableKingOp, tableQueenOp, tableBishopOp, tableKnightOp, tableRookOp, tablePawnOp};
-std::array<std::array<int, BOARD_SIZE>, 6> tablesEg = {tableKingEg, tableQueenEg, tableBishopEg, tableKnightEg, tableRookEg, tablePawnEg};
-
 int Info::getRawEval() const {
     // positive values means white is winning, negative means black
     return (this->opScore * phase + this->egScore * (totalPhase - phase)) / totalPhase;
@@ -52,7 +48,7 @@ int getPlacementScoreOp(Square square, pieceTypes currPiece) {
     if(currPiece >= WKing && currPiece <= WPawn) {
         return tablesOp[currPiece][square];
     }
-    return -1 * tablesOp[currPiece - BKing][square ^ 56];
+    return -tablesOp[currPiece - BKing][square ^ 56];
 }
 
 // assumes that currPiece is not empty
@@ -60,7 +56,7 @@ int getPlacementScoreEg(Square square, pieceTypes currPiece) {
     if(currPiece >= WKing && currPiece <= WPawn) {
         return tablesEg[currPiece][square];
     }
-    return -1 * tablesEg[currPiece - BKing][square ^ 56];
+    return -tablesEg[currPiece - BKing][square ^ 56];
 }
 
 } // namespace Eval
