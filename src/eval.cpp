@@ -48,7 +48,7 @@ int getPlacementScoreOp(Square square, pieceTypes currPiece) {
     if(currPiece >= WKing && currPiece <= WPawn) {
         return tablesOp[currPiece][square];
     }
-    return -1 * tablesOp[currPiece - BKing][square ^ 56];
+    return -tablesOp[currPiece - BKing][square ^ 56];
 }
 
 // assumes that currPiece is not empty
@@ -56,7 +56,7 @@ int getPlacementScoreEg(Square square, pieceTypes currPiece) {
     if(currPiece >= WKing && currPiece <= WPawn) {
         return tablesEg[currPiece][square];
     }
-    return -1 * tablesEg[currPiece - BKing][square ^ 56];
+    return -tablesEg[currPiece - BKing][square ^ 56];
 }
 
 } // namespace Eval
