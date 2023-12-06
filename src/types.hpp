@@ -8,7 +8,8 @@
 
 constexpr int BOARD_SIZE = 64;
 constexpr int NUM_BITBOARDS = 14;
-constexpr int NUM_PIECE_TYPES = 12;
+constexpr int NUM_COLORED_PIECES = 12;
+constexpr int NUM_PIECES = 6;
 
 enum pieceTypes {EmptyPiece = -1,
                 WKing, WQueen, WBishop, WKnight, WRook, WPawn, 

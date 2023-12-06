@@ -26,7 +26,7 @@ constexpr uint64_t rand64(std::array<uint64_t, 4>& seed) {
 
 constexpr auto pieceKeys = [] {
     std::array<uint64_t, 4> seed = {0x360baff383999633, 0x68ee16f8479f8123, 0xa89adf4551b3b25b, 0x4887b5a003b21d40};
-    std::array<std::array<uint64_t, BOARD_SIZE>, NUM_PIECE_TYPES> keyTable{};
+    std::array<std::array<uint64_t, BOARD_SIZE>, NUM_COLORED_PIECES> keyTable{};
     for (auto& piece: keyTable) {
         for (auto& key: piece) {
             key = rand64(seed);
