@@ -18,8 +18,8 @@ parameters_t BlockyEval::get_initial_parameters() {
     tune_t op, eg;
     for (int i = 0; i < NUM_PIECES; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
-            op = Eval::tablesOp[i][j];
-            eg = Eval::tablesEg[i][j];
+            op = Eval::tablesOp[i][j] - Eval::pieceValsOp[i];
+            eg = Eval::tablesEg[i][j] - Eval::pieceValsEg[i];
             params.push_back(pair_t{op, eg});
         }
     }
