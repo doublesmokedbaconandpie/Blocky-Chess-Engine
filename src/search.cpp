@@ -82,7 +82,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     }
     // max depth reached
     if (depth <= 0) {
-        return quiesce(alpha, beta, 5, distanceFromRoot);
+        return quiesce(alpha, beta, 6, distanceFromRoot);
     }
     // checkmate or stalemate
     std::vector<BoardMove> moves = MoveGen::moveGenerator(this->board);
