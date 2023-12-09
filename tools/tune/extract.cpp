@@ -11,6 +11,7 @@
 #include "board.hpp"
 #include "move.hpp"
 #include "attacks.hpp"
+#include "bitboard.hpp"
 #include "types.hpp"
 
 // This program is meant to convert the pgns from a Cutechess match into a data format
@@ -264,6 +265,14 @@ void storeFenResults(std::ofstream& file, std::vector<std::string> fens, Winning
     int storedPositions = 0;
     for (std::string fen: fens) {
         Board board(fen);
+
+        // filter unwanted positions
+        uint64_t nonPawns = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
+        nonPawns ^= board.pieceSets[WPawn] | board.pieceSets[BPawn];
+        if (popcount(nonPawns) <= 4) {
+            continue;
+        }
+
         file << fen << "; [" << resultStr << "]\n";
         ++storedPositions;
     }
