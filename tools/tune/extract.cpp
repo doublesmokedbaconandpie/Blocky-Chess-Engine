@@ -91,7 +91,7 @@ WinningColor getGameResult(std::ifstream& file) {
     if (result == "1/2-1/2") {return DRAW;}
     if (result == "0-1") {return BLACK;}
     // happens if cutechess is interrupted, result doesn't matter
-    if (token == "\"*\"]") {return NA;}
+    if (result == "*") {return NA;}
     throw std::runtime_error("Invalid result: " + token);
 }
 
@@ -121,13 +121,6 @@ std::vector<std::string> getPositions(std::ifstream& file, std::string startFen,
 
     // check for file open
     if (file.eof()) {
-        return fens;
-    }
-
-    if (result == NA) {
-        while(!file.eof()) {
-            file >> token;
-        }
         return fens;
     }
     
@@ -261,6 +254,8 @@ BoardMove getMove(std::string input, Board& board) {
 }
 
 void storeFenResults(std::ofstream& file, std::vector<std::string> fens, WinningColor result) {
+    if (result == NA) return;
+
     std::string resultStr = toStr(result);
     int storedPositions = 0;
     for (std::string fen: fens) {
@@ -282,5 +277,5 @@ std::string toStr(const WinningColor result) {
     if (result == WHITE) {return "1-0";}
     else if (result == DRAW) {return "1/2-1/2";}
     else if (result == BLACK) {return "0-1";}
-    return "";
+    return "*";
 }
