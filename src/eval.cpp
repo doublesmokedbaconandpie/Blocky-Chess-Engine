@@ -4,14 +4,48 @@
 #include "eval.hpp"
 #include "bitboard.hpp"
 #include "move.hpp"
+#include "bitboard.hpp"
 #include "types.hpp"
 
 namespace Eval {
 
 int Info::getRawEval(const PieceSets& pieceSets) const {
     // positive values means white is winning, negative means black
-    const int score = (this->opScore * phase + this->egScore * (totalPhase - phase)) / totalPhase;
+    int op = this->opScore + evalPawns<true>(pieceSets);
+    int eg = this->egScore + evalPawns<false>(pieceSets);
+    int score = (op * phase + eg * (totalPhase - phase)) / totalPhase;
     return score + mopUpScore(pieceSets, score);
+}
+
+template<bool ISOPENING>
+int Info::evalPawns(const PieceSets& pieceSets) const {
+    int score = 0;
+
+    score += evalPassedPawns<ISOPENING, true>(pieceSets);
+    score -= evalPassedPawns<ISOPENING, false>(pieceSets);
+
+    return score;
+}
+
+template<bool ISOPENING, bool ISWHITE>
+int Info::evalPassedPawns(const PieceSets& pieceSets) const {
+    constexpr auto PASSED_PAWNS = ISOPENING ? passedPawnOp : passedPawnEg;
+    constexpr auto allyPawn = ISWHITE ? WPawn : BPawn;
+    constexpr auto enemyPawn = ISWHITE ? BPawn : WPawn;
+
+    uint64_t allyPawnSet = pieceSets[allyPawn];
+    uint64_t enemyPawnSet = pieceSets[enemyPawn];
+    int score = 0;
+
+    while (allyPawnSet) {
+        Square pawn = popLsb(allyPawnSet);
+        int file = getFile(pawn);
+        if (ADJ_FILES_MASK[file] & enemyPawnSet) 
+            continue;
+        score += PASSED_PAWNS[getFile(pawn)];
+    }
+
+    return score;
 }
 
 void Info::addPiece(Square square, pieceTypes piece) {
