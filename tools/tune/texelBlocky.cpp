@@ -5,11 +5,13 @@
 #include "texel-tuner/src/base.h"
 #include "../../src/board.hpp"
 #include "../../src/eval.hpp"
+#include "../../src/bitboard.hpp"
 #include "../../src/types.hpp"
 
 namespace Blocky {
 
-constexpr int PSQTOffset = NUM_PIECES * BOARD_SIZE;
+constexpr int PIECE_VALS_OFFSET = NUM_PIECES * BOARD_SIZE;
+constexpr int PASSED_PAWNS_OFFSET = PIECE_VALS_OFFSET + NUM_PIECES;
 
 parameters_t BlockyEval::get_initial_parameters() {
     parameters_t params;
@@ -31,6 +33,13 @@ parameters_t BlockyEval::get_initial_parameters() {
         params.push_back(pair_t{op, eg});
     }
 
+    // passed pawns
+    for (int i = 0; i < NUM_FILES; ++i) {
+        op = Eval::passedPawnOp[i];
+        eg = Eval::passedPawnEg[i];
+        params.push_back(pair_t{op, eg});
+    }
+
     return params;
 }
 
@@ -40,12 +49,14 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
     const auto isWhitePiece = [](pieceTypes piece) {
         return piece >= WKing && piece <= WPawn;
     };
-    int arrSize;
+
+    int colorlessPiece, pieceOffset;
+    int passedPawnFlag;
 
     /************
      * Initialize coefficients to zero-weights, which should fit most of them
     *************/
-    arrSize = PSQTOffset + NUM_PIECES;
+    int arrSize = PASSED_PAWNS_OFFSET + NUM_FILES;
     result.coefficients.resize(arrSize);
 
     /************
@@ -58,15 +69,26 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
             continue;
         }
 
-        // white and black pieces use different eval indices in piece square tables
         const int colorlessPiece = piece % 6;
         const int pieceOffset = colorlessPiece * BOARD_SIZE;
+
+        // adjust coefficients
+        if (colorlessPiece == WPawn) {
+            if (piece == WPawn) {
+                passedPawnFlag = static_cast<int>(isPassedPawn(i, board.pieceSets[BPawn], true));
+            } else {
+                passedPawnFlag = -static_cast<int>(isPassedPawn(i, board.pieceSets[WPawn], false));
+            }
+            result.coefficients[PASSED_PAWNS_OFFSET + getFile(i)] += passedPawnFlag;
+        }
+
+        // white and black pieces use different eval indices in piece square tables
         if (isWhitePiece(piece)) {
             result.coefficients[pieceOffset + i]++;
-            result.coefficients[PSQTOffset + colorlessPiece]++;
+            result.coefficients[PIECE_VALS_OFFSET + colorlessPiece]++;
         } else {
             result.coefficients[pieceOffset + (i ^ 56)]--;
-            result.coefficients[PSQTOffset + colorlessPiece]--;
+            result.coefficients[PIECE_VALS_OFFSET + colorlessPiece]--;
         }
     }
 
@@ -75,11 +97,17 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
 }
 
 void BlockyEval::print_parameters(const parameters_t& parameters) {
-    std::cout << "Opening Pieces: {\n";
-    printArr(parameters, PSQTOffset, 0);
+    std::cout << "PieceValsOp: \n{";
+    printArr(parameters, PIECE_VALS_OFFSET, 0, NUM_PIECES);
 
-    std::cout << "Ending Pieces: {\n";
-    printArr(parameters, PSQTOffset, 1);
+    std::cout << "PieceValsEg: \n{";
+    printArr(parameters, PIECE_VALS_OFFSET, 1, NUM_PIECES);
+
+    std::cout << "PassedPawnsOp: \n{";
+    printArr(parameters, PASSED_PAWNS_OFFSET, 0, NUM_FILES);
+
+    std::cout << "PassedPawnsEg: \n{";
+    printArr(parameters, PASSED_PAWNS_OFFSET, 1, NUM_FILES);
 
     std::cout << "Opening PSQT: \n";
     printPSQT(parameters, 0);
@@ -99,8 +127,8 @@ void printPSQT(const parameters_t& parameters, int index) {
     }
 }
 
-void printArr(const parameters_t& parameters, int offset, int index) {
-    for (int i = 0; i < NUM_PIECES; ++i) {
+void printArr(const parameters_t& parameters, int offset, int index, int size) {
+    for (int i = 0; i < size; ++i) {
         std::cout << std::round(parameters[offset + i][index]) << ", ";
     }
     std::cout << "};\n\n";

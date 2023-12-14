@@ -18,7 +18,7 @@ class BlockyEval
     };
 
 void printPSQT(const parameters_t& parameters, int index);
-void printArr(const parameters_t& parameters, int offset, int index);
+void printArr(const parameters_t& parameters, int offset, int index, int size);
 void printCoeff(const parameters_t& parameters, int index); // for debugging
 
 }; // namespace Blocky

@@ -1,4 +1,5 @@
 #include <array>
+#include <cassert>
 #include <iostream>
 
 #include "eval.hpp"
@@ -30,19 +31,19 @@ int Info::evalPawns(const PieceSets& pieceSets) const {
 template<bool ISOPENING, bool ISWHITE>
 int Info::evalPassedPawns(const PieceSets& pieceSets) const {
     constexpr auto PASSED_PAWNS = ISOPENING ? passedPawnOp : passedPawnEg;
-    constexpr auto allyPawn = ISWHITE ? WPawn : BPawn;
+    constexpr auto allyPawn  = ISWHITE ? WPawn : BPawn;
     constexpr auto enemyPawn = ISWHITE ? BPawn : WPawn;
 
-    uint64_t allyPawnSet = pieceSets[allyPawn];
-    uint64_t enemyPawnSet = pieceSets[enemyPawn];
-    int score = 0;
+    auto allyPawnSet = pieceSets[allyPawn];
+    const auto enemyPawnSet = pieceSets[enemyPawn];
+
+    int score = 0, pawn;
 
     while (allyPawnSet) {
-        Square pawn = popLsb(allyPawnSet);
-        int file = getFile(pawn);
-        if (ADJ_FILES_MASK[file] & enemyPawnSet) 
-            continue;
-        score += PASSED_PAWNS[getFile(pawn)];
+        pawn = popLsb(allyPawnSet);
+        if (isPassedPawn(pawn, enemyPawnSet, ISWHITE)) {
+            score += PASSED_PAWNS[getFile(pawn)];
+        }
     }
 
     return score;
