@@ -8,6 +8,7 @@
 
 class MoveList {
     public:
+        MoveList() = default;
         MoveList(const Board& board);
         void generateAllMoves(const Board& board);
         void generateCaptures(const Board& board);

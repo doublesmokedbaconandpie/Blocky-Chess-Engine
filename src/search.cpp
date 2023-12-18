@@ -84,14 +84,6 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     if (depth <= 0) {
         return quiesce(alpha, beta, 6, distanceFromRoot);
     }
-    // checkmate or stalemate
-    std::vector<BoardMove> moves = MoveGen::moveGenerator(this->board);
-    if (moves.size() == 0) {
-        if (currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
-            score = MIN_ALPHA + distanceFromRoot;
-        }
-        return score;
-    }
 
     /************
      * Probe Tranposition Table
@@ -125,13 +117,12 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     }
 
     // init movePicker
-    MoveOrder::MovePicker movePicker(std::move(moves));
-    movePicker.assignMoveScores(board, TTMove);
+    MoveOrder::MovePicker movePicker(board, MoveOrder::All, TTMove);
 
     // start search through moves
     int bestscore = MIN_ALPHA;
     BoardMove bestMove;
-    while (movePicker.movesLeft()) {
+    while (movePicker.movesLeft(board)) {
         BoardMove move = movePicker.pickMove();
         /*************
          * Principle Variation Search:
@@ -168,6 +159,14 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
             }
         }
     }
+    // checkmate or stalemate
+    if (movePicker.getMovesPicked() == 0) {
+        if (currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
+            score = MIN_ALPHA + distanceFromRoot;
+        }
+        return score;
+    }
+
     // A search for this depth is complete with a best move, so it can be stored in the transposition table
     entry.flag = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
     this->storeInTT(entry, bestscore, bestMove, depth);
@@ -190,15 +189,10 @@ int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
     if(depth == 0)
         return stand_pat;
 
-    std::vector<BoardMove> moves = MoveGen::moveGenerator(this->board);
-    MoveOrder::MovePicker movePicker(std::move(moves));
-    movePicker.assignMoveScores(board);
-
+    MoveOrder::MovePicker movePicker(board, MoveOrder::Captures, BoardMove());
     int score = MIN_ALPHA;
-    while (movePicker.movesLeft()) {
+    while (movePicker.movesLeft(board)) {
         BoardMove move = movePicker.pickMove();
-        if(!board.moveIsCapture(move))
-            continue;
         board.makeMove(move);
         score = -quiesce(-beta, -alpha, depth - 1, distanceFromRoot + 1);
         board.undoMove(); 

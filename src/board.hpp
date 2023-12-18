@@ -34,7 +34,7 @@ struct Board {
     
     pieceTypes getPiece(Square square) const;
     void setPiece(Square square, pieceTypes currPiece);
-    bool moveIsCapture(BoardMove move);
+    bool moveIsCapture(BoardMove move) const;
     
     bool isLegalMove(const BoardMove move) const;
     int evaluate() const;

@@ -2,31 +2,37 @@
 
 #include <vector>
 
+#include "moveGen.hpp"
 #include "board.hpp"
 #include "move.hpp"
 #include "types.hpp"
 
 namespace MoveOrder { 
 
-enum MoveScores {
-    PV = 1 << 20,
-    Capture = 1 << 10,
-    Quiet = 0,
+enum Stage {
+    Captures = 0b01, Quiets = 0b10, All = Captures | Quiets
 };
 
 class MovePicker {
     public:
-        MovePicker(std::vector<BoardMove>&& a_moves); 
-        void assignMoveScores(const Board& board, BoardMove TTMove = BoardMove());
-        bool movesLeft() const;
+        MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove = BoardMove());
+        bool movesLeft(const Board& board);
         int getMovesPicked() const;
         BoardMove pickMove();
-
     private:
-        std::vector<BoardMove> moves;
+        enum MoveScores {
+            PV = 1 << 20,
+            Capture = 1 << 10,
+            Quiet = 0,
+        };
+
+        void assignMoveScores(const Board& board);
+
+        MoveList moveList;
         std::vector<int> moveScores;
-        int movesPicked;
-        int size;
+        Stage stage;
+        BoardMove TTMove;
+        unsigned int movesPicked;
 };
 
 } // namespace MoveOrder

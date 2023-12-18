@@ -8,22 +8,22 @@
 
 namespace MoveOrder {
 
-MovePicker::MovePicker(std::vector<BoardMove>&& a_moves) {
-    this->moves = a_moves;
-    this->moveScores = std::vector<int>(moves.size());
-    this->size = moves.size();
+MovePicker::MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove) {
+    this->moveList = MoveList(board);
+    this->stage = a_stage;
+    this->TTMove = a_TTMove;
     this->movesPicked = 0;
-};
+}
 
 // Searching moves that are likely to be better helps with pruning in search. This is move ordering.
 // More promising moves are given higher scores and then searched first.
-void MovePicker::assignMoveScores(const Board& board, BoardMove TTMove) {
-    size_t i = 0;
-    for (BoardMove move: this->moves) {
-        if (move == TTMove) {
+void MovePicker::assignMoveScores(const Board& board) {
+    for (size_t i = this->movesPicked; i < this->moveList.moves.size(); ++i) {
+        auto move = this->moveList.moves[i];
+        if (move == this->TTMove) {
             this->moveScores[i] = MoveScores::PV;
         }
-        else if (board.getPiece(move.sqr2()) != EmptyPiece) {
+        else if (board.moveIsCapture(move)) {
             int attackerValue = pieceValues[board.getPiece(move.sqr1())];
             int victimValue = pieceValues[board.getPiece(move.sqr2())];
             this->moveScores[i] = MoveScores::Capture + victimValue - attackerValue;
@@ -35,8 +35,18 @@ void MovePicker::assignMoveScores(const Board& board, BoardMove TTMove) {
     }
 }
 
-bool MovePicker::movesLeft() const {
-    return this->movesPicked < this->size;
+bool MovePicker::movesLeft(const Board& board) {
+    if (this->movesPicked >= this->moveList.moves.size()) {
+        if (this->stage & Stage::Captures) {
+            this->moveList.generateCaptures(board);
+        }
+        else if (this->stage & Stage::Quiets) {
+            this->moveList.generateQuiets(board);
+        }
+        this->assignMoveScores(board);
+        return true;
+    }
+    return false;
 }
 
 
@@ -52,8 +62,8 @@ BoardMove MovePicker::pickMove() {
     size_t maxIndex = std::distance(this->moveScores.begin(), std::max_element(begin, end));
     
     std::swap(this->moveScores[maxIndex], this->moveScores[movesPicked]);
-    std::swap(this->moves[maxIndex], this->moves[movesPicked]);
-    BoardMove move = this->moves[movesPicked];
+    std::swap(this->moveList.moves[maxIndex], this->moveList.moves[movesPicked]);
+    BoardMove move = this->moveList.moves[movesPicked];
     
     ++this->movesPicked;
     return move;
