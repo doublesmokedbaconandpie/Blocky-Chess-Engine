@@ -6,105 +6,185 @@
 #include <stdexcept>
 #include <iostream>
 
-namespace MoveGen {
+MoveList::MoveList(const Board& board) {
+    // information used in both captures and quiets move generation
+    this->allPieces = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
+    this->emptySquares = ~this->allPieces;
+    this->isWhiteTurn = board.isWhiteTurn;
 
-std::vector<BoardMove> moveGenerator(Board board) {
-    std::vector<BoardMove> listOfMoves;
-    
-    // get all required helper bitboards for fast move generation
-    MoveGenInfo info;
-    info.allPieces = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
-    info.emptySquares = ~info.allPieces;
-    info.notAllies  = board.isWhiteTurn ? ~board.pieceSets[WHITE_PIECES] : ~board.pieceSets[BLACK_PIECES]; 
-    info.isWhiteTurn = board.isWhiteTurn;
-
-    // helper bitboards for pawn generation 
-    info.pawnEnemies = board.isWhiteTurn ? board.pieceSets[BLACK_PIECES] : board.pieceSets[WHITE_PIECES]; 
-    info.pawnEnemies |= board.enPassSquare != NULLSQUARE ? c_u64(1) << board.enPassSquare : 0;
-    info.pawnStartRank = board.isWhiteTurn ? RANK_2 : RANK_7;
-    info.pawnJumpRank  = board.isWhiteTurn ? RANK_4 : RANK_5;
-
-    // helper bitboards for king castling
-    info.pieceSets = board.pieceSets;
-    info.castlingRights = board.castlingRights;
-    info.castlingRights &= board.isWhiteTurn ? W_Castle : B_Castle;
-    
     // gather piece bitboards
-    uint64_t kings   = board.isWhiteTurn ? board.pieceSets[WKing]   : board.pieceSets[BKing]; 
-    uint64_t pawns   = board.isWhiteTurn ? board.pieceSets[WPawn]   : board.pieceSets[BPawn];
-    uint64_t knights = board.isWhiteTurn ? board.pieceSets[WKnight] : board.pieceSets[BKnight];
-    uint64_t bishops = board.isWhiteTurn ? board.pieceSets[WBishop] : board.pieceSets[BBishop];
-    uint64_t rooks   = board.isWhiteTurn ? board.pieceSets[WRook]   : board.pieceSets[BRook];
-    uint64_t queens  = board.isWhiteTurn ? board.pieceSets[WQueen]  : board.pieceSets[BQueen];
+    this->kings   = board.isWhiteTurn ? board.pieceSets[WKing]   : board.pieceSets[BKing];
+    this->knights = board.isWhiteTurn ? board.pieceSets[WKnight] : board.pieceSets[BKnight];
+    this->bishops = board.isWhiteTurn ? board.pieceSets[WBishop] : board.pieceSets[BBishop];
+    this->rooks   = board.isWhiteTurn ? board.pieceSets[WRook]   : board.pieceSets[BRook];
+    this->queens  = board.isWhiteTurn ? board.pieceSets[WQueen]  : board.pieceSets[BQueen];
+    
+    this->pawns   = board.isWhiteTurn ? board.pieceSets[WPawn]   : board.pieceSets[BPawn];
+    this->promotingPawns = board.isWhiteTurn ? this->pawns & RANK_7 : this->pawns & RANK_2;
+    this->pawns ^= promotingPawns;
+}
 
-    // generate moves
-    validPawnMoves(pawns, info, board, listOfMoves);
-    validPieceMoves(knights, knightMoves, info, board, listOfMoves);
-    validPieceMoves(bishops, bishopMoves, info, board, listOfMoves);
-    validPieceMoves(rooks, rookMoves, info, board, listOfMoves);
-    validPieceMoves(queens, bishopMoves, info, board, listOfMoves);
-    validPieceMoves(queens, rookMoves, info, board, listOfMoves);
-    validPieceMoves(kings, kingMoves, info, board, listOfMoves);
+void MoveList::generateAllMoves(const Board& board) {
+    this->generateCaptures(board);
+    this->generateQuiets(board);
+}
 
-    return listOfMoves;
+void MoveList::generateCaptures(const Board& board) {
+    // helper information for captures
+    uint64_t validDests = this->isWhiteTurn ? board.pieceSets[BLACK_PIECES] : board.pieceSets[WHITE_PIECES];
+    this->enPassSquare = board.enPassSquare;
+
+    auto knightMovesFunc = [this](Square piece, uint64_t vd) {return this->knightMoves(piece, vd);};
+    auto bishopMovesFunc = [this](Square piece, uint64_t vd) {return this->bishopMoves(piece, vd);};
+    auto rookMovesFunc = [this](Square piece, uint64_t vd) {return this->rookMoves(piece, vd);};
+    auto kingMovesFunc = [this](Square piece, uint64_t vd) {return this->kingMoves(piece, vd);};
+    auto pawnCapturesFunc = [this](Square piece, uint64_t vd) {return this->pawnCaptures(piece, vd);};
+    auto pawnPushesFunc = [this](Square piece, uint64_t vd) {return this->pawnPushes(piece, vd);};
+
+    // regular captures
+    this->generatePieceMoves(this->knights, validDests, knightMovesFunc, board);
+    this->generatePieceMoves(this->bishops, validDests, bishopMovesFunc, board);
+    this->generatePieceMoves(this->rooks, validDests, rookMovesFunc, board);
+    this->generatePieceMoves(this->queens, validDests, bishopMovesFunc, board);
+    this->generatePieceMoves(this->queens, validDests, rookMovesFunc, board);
+    this->generatePieceMoves(this->kings, validDests, kingMovesFunc, board);
+
+    // non-promotion pawn captures including en passant
+    if (this->enPassSquare != NULLSQUARE) {
+        validDests |= c_u64(1) << this->enPassSquare;
+    }
+    this->generatePieceMoves(pawns, validDests, pawnCapturesFunc, board);
+
+    // pawn captures promotions
+    this->generatePawnPromotions(this->promotingPawns, validDests, pawnCapturesFunc, board, true);
+    this->generatePawnPromotions(this->promotingPawns, validDests, pawnCapturesFunc, board, false);
+
+    // pawn pushes promotions to queens
+    this->generatePawnPromotions(this->promotingPawns, this->emptySquares, pawnPushesFunc, board, true);
+}
+
+void MoveList::generateQuiets(const Board& board) {
+    // helper information for quiets
+    uint64_t validDests = this->emptySquares;
+    this->pawnStartRank   = board.isWhiteTurn ? RANK_2 : RANK_7;
+    this->pawnJumpRank    = board.isWhiteTurn ? RANK_4 : RANK_5;
+    this->castlingRights = board.castlingRights;
+    this->castlingRights &= board.isWhiteTurn ? W_Castle : B_Castle;
+    
+    auto knightMovesFunc = [this](Square piece, uint64_t vd) {return this->knightMoves(piece, vd);};
+    auto bishopMovesFunc = [this](Square piece, uint64_t vd) {return this->bishopMoves(piece, vd);};
+    auto rookMovesFunc = [this](Square piece, uint64_t vd) {return this->rookMoves(piece, vd);};
+    auto kingMovesFunc = [this](Square piece, uint64_t vd) {return this->kingMoves(piece, vd);};
+    auto pawnPushesFunc = [this](Square piece, uint64_t vd) {return this->pawnPushes(piece, vd);};
+
+    // regular quiets
+    this->generatePieceMoves(this->pawns, validDests, pawnPushesFunc, board);
+    this->generatePieceMoves(this->knights, validDests, knightMovesFunc, board);
+    this->generatePieceMoves(this->bishops, validDests, bishopMovesFunc, board);
+    this->generatePieceMoves(this->rooks, validDests, rookMovesFunc, board);
+    this->generatePieceMoves(this->queens, validDests, bishopMovesFunc, board);
+    this->generatePieceMoves(this->queens, validDests, rookMovesFunc, board);
+    this->generatePieceMoves(this->kings, validDests, kingMovesFunc, board);
+
+    // castling
+    this->generateKingCastles(board);
+
+    // non-queen promotions
+    this->generatePawnPromotions(this->promotingPawns, this->emptySquares, pawnPushesFunc, board, false);
 }
 
 template<typename Func>
-void validPieceMoves(uint64_t pieces, Func pieceMoves, MoveGenInfo& info, Board& board, std::vector<BoardMove>& validMoves) {
+void MoveList::generatePieceMoves(uint64_t pieces, uint64_t validDests, Func pieceMoves, const Board& board) {
     while (pieces) {
         Square piece = popLsb(pieces);
-        uint64_t moves = pieceMoves(piece, info);
-        while (moves) {
-            int target = popLsb(moves);
+        uint64_t dests = pieceMoves(piece, validDests);
+        while (dests) {
+            int target = popLsb(dests);
             BoardMove move(piece, target);
             if (board.isLegalMove(move)) {
-                validMoves.push_back(move);
+                this->moves.push_back(move);
             }
         }
     }
 }
 
-void validPawnMoves(uint64_t pawns, MoveGenInfo& info, Board& board, std::vector<BoardMove>& validMoves) {
-    int promoteRank = board.isWhiteTurn ? 0 : 7;
+template<typename Func>
+void MoveList::generatePawnPromotions(uint64_t pieces, uint64_t validDests, Func pieceMoves, const Board& board, const bool QUEENS) {
     pieceTypes allyKnight = board.isWhiteTurn ? WKnight : BKnight;
     pieceTypes allyBishop = board.isWhiteTurn ? WBishop : BBishop;
     pieceTypes allyRook = board.isWhiteTurn ? WRook : BRook;
     pieceTypes allyQueen = board.isWhiteTurn ? WQueen : BQueen;
 
-    while (pawns) {
-        Square pawn = popLsb(pawns);
-        uint64_t moves = pawnMoves(pawn, info, board.isWhiteTurn);
-        while (moves) {
-            Square target(popLsb(moves));
-            if (!board.isLegalMove(BoardMove(pawn, target))) {
+    while (pieces) {
+        Square piece = popLsb(pieces);
+        uint64_t dests = pieceMoves(piece, validDests);
+        while (dests) {
+            int target = popLsb(dests);
+            BoardMove move(piece, target);
+            if (!board.isLegalMove(move)) {
                 continue;
-            } 
-            if (getRank(target) == promoteRank) {
-                validMoves.push_back(BoardMove(pawn, target, allyKnight));
-                validMoves.push_back(BoardMove(pawn, target, allyBishop));
-                validMoves.push_back(BoardMove(pawn, target, allyRook));
-                validMoves.push_back(BoardMove(pawn, target, allyQueen));
             }
-            else {
-                validMoves.push_back(BoardMove(pawn, target));
+            if (QUEENS) {
+                this->moves.push_back(BoardMove(piece, target, allyQueen));
+            } else {
+                this->moves.push_back(BoardMove(piece, target, allyKnight));
+                this->moves.push_back(BoardMove(piece, target, allyRook));
+                this->moves.push_back(BoardMove(piece, target, allyBishop));
             }
         }
     }
 }
 
-uint64_t knightMoves(int square, MoveGenInfo& info) {
-    return Attacks::knightAttacks(square) & info.notAllies;
+void MoveList::generateKingCastles(const Board& board) {
+    // assumes one king
+    Square king = lsb(this->kings);
+    uint64_t dests = this->kingCastles(board.pieceSets);
+    while (dests) {
+        int target = popLsb(dests);
+        BoardMove move(king, target);
+        if (board.isLegalMove(move)) {
+            this->moves.push_back(move);
+        }
+    }
 }
 
-uint64_t bishopMoves(int square, MoveGenInfo& info) {
-    return Attacks::bishopAttacks(square, info.allPieces) & info.notAllies;
+uint64_t MoveList::knightMoves(int square, uint64_t validDests) const {
+    return Attacks::knightAttacks(square) & validDests;
 }
 
-uint64_t rookMoves(int square, MoveGenInfo& info) {
-    return Attacks::rookAttacks(square, info.allPieces) & info.notAllies;
+uint64_t MoveList::bishopMoves(int square, uint64_t validDests) const {
+    return Attacks::bishopAttacks(square, this->allPieces) & validDests;
 }
 
-uint64_t kingMoves(int square, MoveGenInfo& info) {
+uint64_t MoveList::rookMoves(int square, uint64_t validDests) const {
+    return Attacks::rookAttacks(square, this->allPieces) & validDests;
+}
+
+uint64_t MoveList::kingMoves(int square, uint64_t validDests) const {
+    return Attacks::kingAttacks(square) & validDests;
+}
+
+uint64_t MoveList::pawnCaptures(int square, uint64_t validDests) const {
+    return Attacks::pawnAttacks(square, this->isWhiteTurn) & validDests;
+}
+
+uint64_t MoveList::pawnPushes(int square, uint64_t validDests) const {
+    uint64_t dests, pawn = c_u64(1) << square;
+    uint64_t currFile = FILES_MASK[getFile(square)];
+    // one space forward
+    if (this->isWhiteTurn) {
+        dests = (pawn >> 8) & validDests;
+    } else {
+        dests = (pawn << 8) & validDests;
+    } 
+    // two spaces forward
+    if (pawn & this->pawnStartRank && dests) {
+        dests |= (currFile & this->pawnJumpRank) & validDests;
+    }
+    return dests;
+}
+
+uint64_t MoveList::kingCastles(std::array<uint64_t, NUM_BITBOARDS> pieceSets) {
     // indexes based on castle rights defined in "types.hpp"
     constexpr std::array<uint64_t, 4> rookPaths = {
         0x6000000000000000, 0x0E00000000000000, 0x0000000000000060, 0x000000000000000E};
@@ -113,52 +193,29 @@ uint64_t kingMoves(int square, MoveGenInfo& info) {
     constexpr std::array<uint64_t, 4> castleDestination = {
         0x4000000000000000, 0x0400000000000000, 0x0000000000000040, 0x0000000000000004};
 
-    // regular moves
-    uint64_t moves = Attacks::kingAttacks(square) & info.notAllies;
-    
-    // castling
+    uint64_t dests{};
     // test if the king is in check; castling is illegal in check
-    if (!currKingInAttack(info.pieceSets, info.isWhiteTurn)) {
-        int kingIndex = info.isWhiteTurn ? WKing : BKing;
+    if (!currKingInAttack(pieceSets, this->isWhiteTurn)) {
+        int kingIndex = this->isWhiteTurn ? WKing : BKing;
 
-        while (info.castlingRights) {
-            int currRight = popLsb(info.castlingRights);
+        while (this->castlingRights) {
+            int currRight = popLsb(this->castlingRights);
 
             // check for emptiness between rook and king
-            if (rookPaths[currRight] & info.allPieces) {
+            if (rookPaths[currRight] & this->allPieces) {
                 continue;
             }
 
             // check for king path being attacked
-            info.pieceSets[kingIndex] = kingPaths[currRight];
-            if (currKingInAttack(info.pieceSets, info.isWhiteTurn)) {
+            pieceSets[kingIndex] = kingPaths[currRight];
+            if (currKingInAttack(pieceSets, this->isWhiteTurn)) {
                 continue;
             }
 
             // perform castle
-            moves |= castleDestination[currRight];
+            dests |= castleDestination[currRight];
         }
     }
 
-    return moves;
+    return dests;
 }
-
-uint64_t pawnMoves(int square, MoveGenInfo& bitboards, bool isWhiteTurn) {
-    uint64_t moves, pawn = c_u64(1) << square;
-    uint64_t currFile = FILES_MASK[getFile(square)];
-    // one space forward
-    if (isWhiteTurn) {
-        moves = (pawn >> 8) & bitboards.emptySquares;
-    } else {
-        moves = (pawn << 8) & bitboards.emptySquares;
-    } 
-    // two spaces forward
-    if (pawn & bitboards.pawnStartRank && moves) {
-        moves |= (currFile & bitboards.pawnJumpRank) & bitboards.emptySquares;
-    }
-    // captures
-    moves |= Attacks::pawnAttacks(square, isWhiteTurn) & bitboards.pawnEnemies;
-    return moves;
-}
-
-} // namespace MoveGen

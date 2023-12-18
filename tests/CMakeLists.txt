@@ -26,7 +26,6 @@ add_executable(allTests
     ../src/moveOrder.cpp
     ../src/timeman.cpp
     ../src/ttable.cpp
-    ../src/search.cpp
     ../src/eval.cpp
 )
 target_include_directories(allTests PUBLIC "../src/")
