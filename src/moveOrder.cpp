@@ -1,3 +1,4 @@
+#include <cassert>
 #include <vector>
 #include <iostream>
 
@@ -31,22 +32,34 @@ void MovePicker::assignMoveScores(const Board& board) {
         else {
             this->moveScores[i] = MoveScores::Quiet;
         }
-        ++i;
     }
 }
 
 bool MovePicker::movesLeft(const Board& board) {
+    // check if an additional stage needs to be generated
     if (this->movesPicked >= this->moveList.moves.size()) {
+        int oldSize = this->moveList.moves.size();
         if (this->stage & Stage::Captures) {
             this->moveList.generateCaptures(board);
+            this->stage ^= Stage::Captures;
         }
         else if (this->stage & Stage::Quiets) {
             this->moveList.generateQuiets(board);
+            this->stage ^= Stage::Quiets;
         }
-        this->assignMoveScores(board);
-        return true;
+        int newSize = this->moveList.moves.size();
+
+        // if there are moves left after generating, reserve memory for moveScores and assign them
+        if (this->movesPicked < newSize) {
+            std::vector<int> newMoves(newSize - oldSize);
+            this->moveScores.insert(moveScores.end(), newMoves.begin(), newMoves.end());
+            assert(this->moveScores.size() == this->moveList.moves.size());
+            this->assignMoveScores(board);
+            return true;
+        }
+        return false;
     }
-    return false;
+    return this->movesPicked < this->moveList.moves.size();
 }
 
 
