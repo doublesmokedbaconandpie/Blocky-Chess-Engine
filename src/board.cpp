@@ -310,8 +310,10 @@ void Board::unmakeNullMove() {
     this->zobristKey = zobristKeyHistory.back();
 }
 
-bool Board::moveIsCapture(BoardMove move) {
-    if(this->getPiece(move.sqr1()) % 6 == WPawn && this->enPassSquare == move.sqr2())
+bool Board::moveIsCapture(BoardMove move) const {
+    if ( (this->getPiece(move.sqr1()) == WPawn || this->getPiece(move.sqr1()) == BPawn) && this->enPassSquare == move.sqr2())
+        return true;
+    if (move.getPromotePiece() == WQueen || move.getPromotePiece() == BQueen)
         return true;
     return this->getPiece(move.sqr2()) != EmptyPiece;
 }

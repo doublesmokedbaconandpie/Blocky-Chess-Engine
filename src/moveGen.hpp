@@ -6,26 +6,37 @@
 
 #include "board.hpp"
 
-namespace MoveGen {
+class MoveList {
+    public:
+        MoveList() = default;
+        MoveList(const Board& board);
+        void generateAllMoves(const Board& board);
+        void generateCaptures(const Board& board);
+        void generateQuiets(const Board& board);
 
-struct MoveGenInfo {
-    uint64_t allPieces, emptySquares, notAllies; 
-    uint64_t pawnEnemies, pawnStartRank, pawnJumpRank;
-    std::array<uint64_t, NUM_BITBOARDS> pieceSets;
-    uint64_t castlingRights;
-    bool isWhiteTurn;
+        std::vector<BoardMove> moves{};
+    private:
+        template<typename Func>
+        void generatePieceMoves(uint64_t pieces, uint64_t validDests, Func pieceMoves, const Board& board);
+        template<typename Func>
+        void generatePawnPromotions(uint64_t pieces, uint64_t validDests, Func pieceMoves, const Board& board, const bool QUEENS);
+        void generateKingCastles(const Board& board);
+
+        uint64_t knightMoves(int square, uint64_t validDests) const;
+        uint64_t bishopMoves(int square, uint64_t validDests) const;
+        uint64_t rookMoves(int square, uint64_t validDests) const;
+        uint64_t kingMoves(int square, uint64_t validDests) const;
+        uint64_t pawnCaptures(int square, uint64_t validDests) const;
+        uint64_t pawnPushes(int square, uint64_t validDests) const;
+        uint64_t kingCastles(std::array<uint64_t, NUM_BITBOARDS> pieceSets);
+
+        // used by both captures and quiets
+        uint64_t pawns{}, promotingPawns{}, bishops{}, knights{}, rooks{}, queens{}, kings{};
+        uint64_t allPieces{}, emptySquares{};
+        bool isWhiteTurn{};
+        // used by captures
+        Square enPassSquare{};
+        // used by quiets
+        uint64_t pawnStartRank{}, pawnJumpRank{};
+        uint64_t castlingRights{};
 };
-
-std::vector<BoardMove> moveGenerator(Board board); // outputs board instead of board moves for future evaluation functions
-
-template<typename Func>
-void validPieceMoves(uint64_t pieces, Func pieceMoves, MoveGenInfo& colors, Board& board, std::vector<BoardMove>& validMoves);
-void validPawnMoves(uint64_t pawns, MoveGenInfo& colors, Board& board, std::vector<BoardMove>& validMoves); // includes en passant
-
-uint64_t knightMoves(int square, MoveGenInfo& info);
-uint64_t bishopMoves(int square, MoveGenInfo& info);
-uint64_t rookMoves(int square, MoveGenInfo& info);
-uint64_t kingMoves(int square, MoveGenInfo& info);
-uint64_t pawnMoves(int square, MoveGenInfo& info, bool isWhiteTurn);
-
-} // namespace MoveGen
