@@ -28,6 +28,7 @@ class MovePicker {
 
         template<bool ASSIGN_TTMOVE, Stage STAGE>
         void assignMoveScores(const Board& board);
+        int getVictimScore(const Board& board, BoardMove move) const;
 
         MoveList moveList;
         std::array<int, MAX_MOVES> moveScores;

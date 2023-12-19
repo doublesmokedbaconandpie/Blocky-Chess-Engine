@@ -45,8 +45,8 @@ void MovePicker::assignMoveScores(const Board& board) {
             this->moveScores[i] = MoveScores::PV;
         }
         else if (ASSIGN_CAPTURES && board.moveIsCapture(move)) {
+            int victimValue = this->getVictimScore(board, move);
             int attackerValue = pieceValues[board.getPiece(move.sqr1())];
-            int victimValue = pieceValues[board.getPiece(move.sqr2())];
             this->moveScores[i] = MoveScores::Capture + victimValue - attackerValue;
         }
         else {
@@ -84,6 +84,14 @@ BoardMove MovePicker::pickMove() {
     
     ++this->movesPicked;
     return move;
+}
+
+int MovePicker::getVictimScore(const Board& board, BoardMove move) const {
+    if ( (board.getPiece(move.sqr1()) == WPawn || board.getPiece(move.sqr1()) == BPawn) && board.enPassSquare == move.sqr2())
+        return pieceValues[WPawn];
+    else if (move.getPromotePiece() != EmptyPiece)
+        return pieceValues[move.getPromotePiece()];
+    return pieceValues[board.getPiece(move.sqr2())];
 }
 
 } // namespace MoveOrder
