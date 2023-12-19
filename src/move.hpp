@@ -24,8 +24,7 @@ class BoardMove {
         int toInt(pieceTypes piece) const;
         std::string toStr(pieceTypes piece) const;
 
-        uint16_t data;
-
+        uint16_t data{};
     friend std::ostream& operator<<(std::ostream& os, const BoardMove& target);
     friend bool operator==(const BoardMove& lhs, const BoardMove& rhs);
     friend bool operator!=(const BoardMove& lhs, const BoardMove& rhs);

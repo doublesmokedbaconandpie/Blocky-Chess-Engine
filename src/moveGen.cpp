@@ -68,7 +68,7 @@ void MoveList::generateQuiets(const Board& board) {
     uint64_t validDests = this->emptySquares;
     this->pawnStartRank   = board.isWhiteTurn ? RANK_2 : RANK_7;
     this->pawnJumpRank    = board.isWhiteTurn ? RANK_4 : RANK_5;
-    this->castlingRights = board.castlingRights;
+    this->castlingRights  = board.castlingRights;
     this->castlingRights &= board.isWhiteTurn ? W_Castle : B_Castle;
     
     auto knightMovesFunc = [this](Square piece, uint64_t vd) {return this->knightMoves(piece, vd);};
@@ -169,7 +169,7 @@ uint64_t MoveList::pawnCaptures(int square, uint64_t validDests) const {
 }
 
 uint64_t MoveList::pawnPushes(int square, uint64_t validDests) const {
-    uint64_t dests, pawn = c_u64(1) << square;
+    uint64_t dests = 0, pawn = c_u64(1) << square;
     uint64_t currFile = FILES_MASK[getFile(square)];
     // one space forward
     if (this->isWhiteTurn) {

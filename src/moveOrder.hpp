@@ -10,7 +10,7 @@
 namespace MoveOrder { 
 
 enum Stage {
-    Captures = 0b01, Quiets = 0b10, All = Captures | Quiets
+    None = 0, Captures = 0b01, Quiets = 0b10, All = Captures | Quiets
 };
 
 class MovePicker {
@@ -26,21 +26,18 @@ class MovePicker {
             Quiet = 0,
         };
 
+        template<bool ASSIGN_TTMOVE, Stage STAGE>
         void assignMoveScores(const Board& board);
 
         MoveList moveList;
-        std::vector<int> moveScores;
+        std::array<int, MAX_MOVES> moveScores;
         Stage stage;
         BoardMove TTMove;
         unsigned int movesPicked;
 };
 
-constexpr inline Stage operator^(Stage lhs, Stage rhs) {
-    return static_cast<Stage>(static_cast<int>(lhs) ^ static_cast<int>(rhs));
-}
-
-constexpr inline Stage& operator^=(Stage& lhs, Stage rhs) {
-    return lhs = lhs ^ rhs;
+constexpr inline Stage operator&(Stage lhs, Stage rhs) {
+    return static_cast<Stage>(static_cast<int>(lhs) & static_cast<int>(rhs));
 }
 
 } // namespace MoveOrder

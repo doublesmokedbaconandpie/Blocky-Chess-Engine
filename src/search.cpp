@@ -189,7 +189,7 @@ int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
     if(depth == 0)
         return stand_pat;
 
-    MoveOrder::MovePicker movePicker(board, MoveOrder::Captures, BoardMove());
+    MoveOrder::MovePicker movePicker(board, MoveOrder::Captures);
     int score = MIN_ALPHA;
     while (movePicker.movesLeft(board)) {
         BoardMove move = movePicker.pickMove();

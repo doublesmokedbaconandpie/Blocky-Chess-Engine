@@ -14,7 +14,7 @@ class MoveList {
         void generateCaptures(const Board& board);
         void generateQuiets(const Board& board);
 
-        std::vector<BoardMove> moves;
+        std::vector<BoardMove> moves{};
     private:
         template<typename Func>
         void generatePieceMoves(uint64_t pieces, uint64_t validDests, Func pieceMoves, const Board& board);
@@ -30,10 +30,13 @@ class MoveList {
         uint64_t pawnPushes(int square, uint64_t validDests) const;
         uint64_t kingCastles(std::array<uint64_t, NUM_BITBOARDS> pieceSets);
 
-        uint64_t pawns, promotingPawns, bishops, knights, rooks, queens, kings;
-        uint64_t allPieces, emptySquares, notAllies;
-        uint64_t pawnStartRank, pawnJumpRank, pawnPromoteRank;
-        uint64_t castlingRights;
-        Square enPassSquare;
-        bool isWhiteTurn;
+        // used by both captures and quiets
+        uint64_t pawns{}, promotingPawns{}, bishops{}, knights{}, rooks{}, queens{}, kings{};
+        uint64_t allPieces{}, emptySquares{};
+        bool isWhiteTurn{};
+        // used by captures
+        Square enPassSquare{};
+        // used by quiets
+        uint64_t pawnStartRank{}, pawnJumpRank{};
+        uint64_t castlingRights{};
 };
