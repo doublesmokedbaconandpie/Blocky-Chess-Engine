@@ -42,7 +42,7 @@ struct Board {
     friend bool operator==(const Board& lhs, const Board& rhs);
     friend std::ostream& operator<<(std::ostream& os, const Board& target);
 
-    std::array<uint64_t, NUM_BITBOARDS> pieceSets = {0ull};
+    PieceSets pieceSets = {0ull};
     std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
 
     uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
@@ -58,4 +58,4 @@ struct Board {
 };
 
 castleRights castleRightsBit(Square finalKingPos, bool isWhiteTurn);
-bool currKingInAttack(const std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn);
+bool currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn);

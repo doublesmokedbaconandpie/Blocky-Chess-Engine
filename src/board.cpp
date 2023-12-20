@@ -396,7 +396,7 @@ bool Board::isLegalMove(const BoardMove move) const {
     
 // positive return values means winning for the side to move, negative is opposite
 int Board::evaluate() const {
-    int rawEval = this->eval.getRawEval();
+    int rawEval = this->eval.getRawEval(this->pieceSets);
     return this->isWhiteTurn ? rawEval : rawEval * -1;
 }
 
