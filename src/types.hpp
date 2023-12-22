@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #define Square uint8_t
+#define PieceSets std::array<uint64_t, NUM_BITBOARDS>
 
 constexpr int BOARD_SIZE = 64;
 constexpr int NUM_BITBOARDS = 14;

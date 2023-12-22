@@ -9,9 +9,11 @@ constexpr int totalPhase = 24;
 
 struct Info {
     Info() = default;
-    int getRawEval() const;
+    int getRawEval(const PieceSets& pieceSets) const;
     void addPiece(Square square, pieceTypes piece);
     void removePiece(Square square, pieceTypes piece);
+
+    int mopUpScore(const PieceSets& pieceSets, int score) const;
 
     int opScore = 0;
     int egScore = 0;
