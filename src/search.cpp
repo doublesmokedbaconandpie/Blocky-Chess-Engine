@@ -122,7 +122,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     // start search through moves
     int bestscore = MIN_ALPHA;
     BoardMove bestMove, move;
-    bool LMRFailed, doFullSearch;
+    bool doFullNullSearch, doPVS;
     while (movePicker.movesLeft(board)) {
         move = movePicker.pickMove();
         board.makeMove(move);
@@ -137,20 +137,20 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
             
             int reductionDepth = depth - 2;
             score = -search<NOTPV>(-alpha - 1, -alpha, reductionDepth, distanceFromRoot + 1);
-            LMRFailed = score > alpha;
+            doFullNullSearch = score > alpha;
         } else {
-            LMRFailed = !ISPV || movePicker.getMovesPicked() == 0;
+            doFullNullSearch = !ISPV || movePicker.getMovesPicked() > 1;
+        }
+
+        if (doFullNullSearch) {
+            score = -search<NOTPV>(-alpha - 1, -alpha, depth - 1, distanceFromRoot + 1);
         }
         /*************
          * Principle Variation Search (PVS):
-         * Only search PV moves with full bounds, with other moves with null bounds
-         * Research null bound searches if they fail
+         * Search with full bounds with null bounds fail
         **************/
-        if (LMRFailed) {
-            score = -search<NOTPV>(-alpha - 1, -alpha, depth - 1, distanceFromRoot + 1);
-        }
-        doFullSearch = ISPV && ((score > alpha && score < beta) || movePicker.getMovesPicked() == 1);
-        if (doFullSearch) {
+        doPVS = ISPV && ((score > alpha && score < beta) || movePicker.getMovesPicked() == 1);
+        if (doPVS) {
             score = -search<PV>(-beta, -alpha, depth - 1, distanceFromRoot + 1);
         }
         board.undoMove(); 
