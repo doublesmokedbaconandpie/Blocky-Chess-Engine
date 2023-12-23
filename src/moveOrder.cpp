@@ -69,6 +69,10 @@ int MovePicker::getMovesPicked() const {
     return this->movesPicked;
 }
 
+bool MovePicker::stagesLeft() const {
+    return this->stage != Stage::None;
+}
+
 // Due to pruning, we don't need to sort the entire array of moves for move ordering.
 // When sorting only small portions of arrays, using partial insertion sort is faster.
 BoardMove MovePicker::pickMove() {
