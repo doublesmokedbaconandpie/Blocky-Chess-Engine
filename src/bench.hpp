@@ -7,7 +7,7 @@
 // benchmarking is used to test for any functional changes in the search
 namespace Bench {
 
-constexpr int BENCHDEPTH = 6;
+constexpr int BENCHDEPTH = 8;
 
 // some fens from CPW
 const std::vector<std::string> fens = {
