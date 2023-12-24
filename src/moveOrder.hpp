@@ -18,6 +18,7 @@ class MovePicker {
         MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove = BoardMove());
         bool movesLeft(const Board& board);
         int getMovesPicked() const;
+        bool stagesLeft() const;
         BoardMove pickMove();
     private:
         enum MoveScores {

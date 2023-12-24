@@ -121,19 +121,37 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
 
     // start search through moves
     int bestscore = MIN_ALPHA;
-    BoardMove bestMove;
+    BoardMove bestMove, move;
+    bool doFullNullSearch, doPVS;
     while (movePicker.movesLeft(board)) {
-        BoardMove move = movePicker.pickMove();
-        /*************
-         * Principle Variation Search:
-        **************/
+        move = movePicker.pickMove();
         board.makeMove(move);
-        if (ISPV && movePicker.getMovesPicked() == 1) {
-            score = -search<PV>(-beta, -alpha, depth - 1, distanceFromRoot + 1);
+        /*************
+         * Late Move Reductions (LMR):
+         * Search moves that are likely to be less good to lower depths with null bounds
+         * Researches will happen with LMR fails
+        **************/
+        if (!movePicker.stagesLeft() // don't reduce captures
+            && movePicker.getMovesPicked() >= 4 
+            && depth >= 3) {
+            
+            int reductionDepth = depth - 2;
+            score = -search<NOTPV>(-alpha - 1, -alpha, reductionDepth, distanceFromRoot + 1);
+            doFullNullSearch = score > alpha;
         } else {
+            doFullNullSearch = !ISPV || movePicker.getMovesPicked() > 1;
+        }
+
+        if (doFullNullSearch) {
             score = -search<NOTPV>(-alpha - 1, -alpha, depth - 1, distanceFromRoot + 1);
-            if (score > alpha && score < beta)
-                score = -search<PV>(-beta, -alpha, depth - 1, distanceFromRoot + 1);
+        }
+        /*************
+         * Principle Variation Search (PVS):
+         * Search with full bounds with null bounds fail
+        **************/
+        doPVS = ISPV && ((score > alpha && score < beta) || movePicker.getMovesPicked() == 1);
+        if (doPVS) {
+            score = -search<PV>(-beta, -alpha, depth - 1, distanceFromRoot + 1);
         }
         board.undoMove(); 
 
