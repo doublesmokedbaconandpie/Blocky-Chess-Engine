@@ -14,11 +14,11 @@
 namespace Search {
 
 std::array<std::array<int, MAX_MOVES>, MAX_DEPTH> LMRTable{};
-
 void initLMRTable() {
-    for (int depth = 0; depth < MAX_DEPTH; ++depth) {
-        for (int moves = 0; moves < MAX_MOVES; ++moves) {
-            LMRTable[depth][moves] = static_cast<int>(1.0 + std::log(depth) * std::log(moves) / 2.0);
+    for (int depth = 1; depth < MAX_DEPTH; ++depth) {
+        for (int moves = 1; moves < MAX_MOVES; ++moves) {
+            LMRTable[depth][moves] = static_cast<int>(2.0 + std::log(depth) * std::log(moves) / 1.50);
+            LMRTable[depth][moves] = std::clamp(LMRTable[depth][moves], 0, depth - 2);
         }
     }
 }
