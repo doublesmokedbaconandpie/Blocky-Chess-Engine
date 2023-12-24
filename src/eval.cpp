@@ -60,7 +60,7 @@ int getPiecePhase(pieceTypes piece) {
 // assumes that currPiece is not empty
 template<bool IS_OPENING>
 int getPlacementScore(Square square, pieceTypes currPiece) {
-    constexpr auto tables = IS_OPENING ? tablesOp : tablesEg;
+    constexpr auto& tables = IS_OPENING ? tablesOp : tablesEg;
     if (currPiece >= WKing && currPiece <= WPawn) {
         return tables[currPiece][square];
     }
