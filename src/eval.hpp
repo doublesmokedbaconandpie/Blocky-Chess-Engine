@@ -7,22 +7,24 @@ namespace Eval {
 
 constexpr int totalPhase = 24;
 
-struct Info {
-    Info() = default;
-    int getRawEval(const PieceSets& pieceSets) const;
-    void addPiece(Square square, pieceTypes piece);
-    void removePiece(Square square, pieceTypes piece);
+class Info {
+    public:
+        Info() = default;
+        int getRawEval(const PieceSets& pieceSets) const;
+        void addPiece(Square square, pieceTypes piece);
+        void removePiece(Square square, pieceTypes piece);
 
-    int mopUpScore(const PieceSets& pieceSets, int score) const;
+    private:
+        int mopUpScore(const PieceSets& pieceSets, int score) const;
 
-    int opScore = 0;
-    int egScore = 0;
-    int phase = 0;
+        int opScore = 0;
+        int egScore = 0;
+        int phase = 0;
 };
 
+template<bool IS_OPENING>
+int getPlacementScore(Square square, pieceTypes currPiece);
 int getPiecePhase(pieceTypes piece);
-int getPlacementScoreOp(Square square, pieceTypes currPiece);
-int getPlacementScoreEg(Square square, pieceTypes currPiece);
 
 constexpr std::array<int, NUM_PIECES> pieceValsOp = {0, 725, 271, 334, 342, 58};
 constexpr std::array<int, NUM_PIECES> pieceValsEg = {0, 860, 285, 307, 492, 125};

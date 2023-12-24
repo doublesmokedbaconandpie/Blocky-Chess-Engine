@@ -19,8 +19,7 @@ uint64_t start() {
     for (int i = 0; i < numPositions; ++i) {
         auto fen = fens[i];
         std::cout << "Searching position " << (i + 1) << '/' << numPositions << ": " << fen << '\n';
-        Timeman::TimeManager tm;
-        Search::Searcher engine(Board(fen), tm, BENCHDEPTH);
+        Search::Searcher engine(Board(fen), Timeman::TimeManager(), BENCHDEPTH);
         engine.setPrintInfo(false);
         nodeCount += engine.startThinking().nodes;
     }

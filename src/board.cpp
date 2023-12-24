@@ -38,14 +38,6 @@ Board::Board(std::string fenStr) {
         }
     }
 
-    for(uint8_t i = 0; i < BOARD_SIZE; i++) {
-        pieceTypes currPiece = board[i];
-        if (currPiece != EmptyPiece) {
-            this->eval.opScore += Eval::getPlacementScoreOp(i, currPiece);
-            this->eval.egScore += Eval::getPlacementScoreEg(i, currPiece);
-        }
-    }
-
     fenStream >> token;
     this->isWhiteTurn = token == "w" ? true : false;
 
