@@ -10,7 +10,7 @@ namespace Eval {
 
 int Info::getRawEval(const PieceSets& pieceSets) const {
     // positive values means white is winning, negative means black
-    int score = (this->opScore * phase + this->egScore * (totalPhase - phase)) / totalPhase;
+    const int score = (this->opScore * phase + this->egScore * (totalPhase - phase)) / totalPhase;
     return score + mopUpScore(pieceSets, score);
 }
 
@@ -32,8 +32,8 @@ int Info::mopUpScore(const PieceSets& pieceSets, int score) const {
         return 0;
     }
     // winning kings have scores boosted for kings approaching each other
-    int winningMopUp = score > 0 ? 1 : -1;
-    int kingDistance = std::abs(lsb(pieceSets[WKing]) - lsb(pieceSets[BKing]));
+    const int winningMopUp = score > 0 ? 1 : -1;
+    const int kingDistance = std::abs(lsb(pieceSets[WKing]) - lsb(pieceSets[BKing]));
     return winningMopUp * (64 - kingDistance) * 5;
 
 }

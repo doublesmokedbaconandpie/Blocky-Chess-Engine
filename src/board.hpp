@@ -9,22 +9,25 @@
 #include "types.hpp"
 
 struct BoardState {
+    BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, castleRights a_castlingRights, Square a_enPassSquare, int a_fiftyMoveRule) : 
+                move(a_move), 
+                originPiece(a_originPiece), 
+                targetPiece(a_targetPiece),
+                castlingRights(a_castlingRights), 
+                enPassSquare(a_enPassSquare), 
+                fiftyMoveRule(a_fiftyMoveRule) {};
     BoardMove move;
     pieceTypes originPiece;
     pieceTypes targetPiece;
     castleRights castlingRights;
     Square enPassSquare;
     int fiftyMoveRule;
-    BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, 
-                castleRights a_castlingRights, Square a_enPassSquare, int a_fiftyMoveRule) : 
-                move(a_move), originPiece(a_originPiece), targetPiece(a_targetPiece),
-                castlingRights(a_castlingRights), enPassSquare(a_enPassSquare), fiftyMoveRule(a_fiftyMoveRule) {};
 };
 
 struct Board {
     Board(std::string fenStr);
     Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {};
-    std::string toFen();
+    std::string toFen() const;
     void initZobristKey();
     
     void makeMove(BoardMove move);

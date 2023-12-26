@@ -17,9 +17,9 @@ class Info {
     private:
         int mopUpScore(const PieceSets& pieceSets, int score) const;
 
-        int opScore = 0;
-        int egScore = 0;
-        int phase = 0;
+        int opScore{};
+        int egScore{};
+        int phase{};
 };
 
 template<bool IS_OPENING>

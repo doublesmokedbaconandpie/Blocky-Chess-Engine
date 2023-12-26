@@ -40,13 +40,13 @@ void MovePicker::assignMoveScores(const Board& board) {
     constexpr bool ASSIGN_CAPTURES = STAGE & Stage::Captures;
 
     for (size_t i = this->movesPicked; i < this->moveList.moves.size(); ++i) {
-        auto move = this->moveList.moves[i];
+        const auto move = this->moveList.moves[i];
         if (ASSIGN_TTMOVE && move == this->TTMove) {
             this->moveScores[i] = MoveScores::PV;
         }
         else if (ASSIGN_CAPTURES && board.moveIsCapture(move)) {
-            int victimValue = this->getVictimScore(board, move);
-            int attackerValue = pieceValues[board.getPiece(move.sqr1())];
+            const int victimValue = this->getVictimScore(board, move);
+            const int attackerValue = pieceValues[board.getPiece(move.sqr1())];
             this->moveScores[i] = MoveScores::Capture + victimValue - attackerValue;
         }
         else {
@@ -78,13 +78,13 @@ bool MovePicker::stagesLeft() const {
 BoardMove MovePicker::pickMove() {
     assert(this->movesPicked < this->moveList.moves.size());
 
-    auto begin = this->moveScores.begin() + this->movesPicked;
-    auto end = this->moveScores.begin() + this->moveList.moves.size();
-    size_t maxIndex = std::distance(this->moveScores.begin(), std::max_element(begin, end));
+    const auto begin = this->moveScores.begin() + this->movesPicked;
+    const auto end = this->moveScores.begin() + this->moveList.moves.size();
+    const size_t maxIndex = std::distance(this->moveScores.begin(), std::max_element(begin, end));
     
-    std::swap(this->moveScores[maxIndex], this->moveScores[movesPicked]);
-    std::swap(this->moveList.moves[maxIndex], this->moveList.moves[movesPicked]);
-    BoardMove move = this->moveList.moves[movesPicked];
+    std::swap(this->moveScores[maxIndex], this->moveScores[this->movesPicked]);
+    std::swap(this->moveList.moves[maxIndex], this->moveList.moves[this->movesPicked]);
+    const auto move = this->moveList.moves[movesPicked];
     
     ++this->movesPicked;
     return move;

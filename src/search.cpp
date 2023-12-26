@@ -16,8 +16,8 @@ Info Searcher::startThinking() {
     Info result;
 
     // perform iterative deepening
-    for(int i = 1; i <= this->depth_limit; i++) {
-        int score = this->search<ROOT>(MIN_ALPHA, MAX_BETA, i, 0);
+    for (int i = 1; i <= this->depth_limit; i++) {
+        const int score = this->search<ROOT>(MIN_ALPHA, MAX_BETA, i, 0);
         result.move = this->finalMove;
         result.nodes = this->nodes;
         result.timeElapsed = this->tm.getTimeElapsed();
@@ -76,7 +76,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         return score;
     }
     // three-fold repetition
-    int occurrences = std::count(this->board.zobristKeyHistory.begin(), this->board.zobristKeyHistory.end(), this->board.zobristKey);
+    const int occurrences = std::count(this->board.zobristKeyHistory.begin(), this->board.zobristKeyHistory.end(), this->board.zobristKey);
     if (occurrences >= 3) {
         return score;
     }
@@ -199,7 +199,7 @@ int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
     ++this->nodes;
     this->max_seldepth = std::max(distanceFromRoot, this->max_seldepth);
 
-    int stand_pat = this->board.evaluate();
+    const int stand_pat = this->board.evaluate();
     if(stand_pat >= beta)
         return beta;
     if(alpha < stand_pat)
@@ -224,7 +224,7 @@ int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
 
 }
 
-void Searcher::storeInTT(TTable::Entry entry, int eval, BoardMove move, int depth) {
+void Searcher::storeInTT(TTable::Entry entry, int eval, BoardMove move, int depth) const {
     /* entries in the transposition table are overwritten under two conditions:
     1. The current search depth is greater than the entry's depth, meaning that a better
     search has been performed 
@@ -243,7 +243,7 @@ void Searcher::storeInTT(TTable::Entry entry, int eval, BoardMove move, int dept
     }
 }
 
-void Searcher::outputUciInfo(Info searchResult) {
+void Searcher::outputUciInfo(Info searchResult) const {
     std::cout << "info depth " << searchResult.depth << ' ';
     std::cout << "seldepth " << searchResult.seldepth << ' ';
     std::cout << "nodes " << searchResult.nodes << ' ';

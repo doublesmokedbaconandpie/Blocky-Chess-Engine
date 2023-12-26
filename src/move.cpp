@@ -10,13 +10,13 @@ BoardMove::BoardMove(Square square1, Square square2, pieceTypes promotePiece) {
 }
 
 BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
-    pieceTypes allyQueen = isWhiteTurn ? WQueen : BQueen;
-    pieceTypes allyBishop = isWhiteTurn ? WBishop : BBishop;
-    pieceTypes allyKnight = isWhiteTurn ? WKnight : BKnight;
-    pieceTypes allyRook = isWhiteTurn ? WRook : BRook;
+    const pieceTypes allyQueen = isWhiteTurn ? WQueen : BQueen;
+    const pieceTypes allyBishop = isWhiteTurn ? WBishop : BBishop;
+    const pieceTypes allyKnight = isWhiteTurn ? WKnight : BKnight;
+    const pieceTypes allyRook = isWhiteTurn ? WRook : BRook;
     
-    Square square1 = toSquare(input.substr(0, 2));
-    Square square2 = toSquare(input.substr(2, 2));
+    const Square square1 = toSquare(input.substr(0, 2));
+    const Square square2 = toSquare(input.substr(2, 2));
     pieceTypes promotePiece;
     if (input.length() == 5) {
         switch (input.at(4)) {
@@ -40,9 +40,9 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
 }
 
 std::string BoardMove::toStr() const {
-    auto square1 = squareToStr(sqr1());
-    auto square2 = squareToStr(sqr2());
-    auto promotePiece = toStr(getPromotePiece());
+    const auto square1 = squareToStr(sqr1());
+    const auto square2 = squareToStr(sqr2());
+    const auto promotePiece = toStr(getPromotePiece());
     return square1 + square2 + promotePiece;
 }
 
@@ -58,7 +58,7 @@ uint8_t BoardMove::sqr2() const{
 
 pieceTypes BoardMove::getPromotePiece() const {
     constexpr uint16_t mask = 0x000F;
-    int piece = (data >> 12) & mask;
+    const int piece = (data >> 12) & mask;
     return toPromotePiece(piece);
 }
 
@@ -150,8 +150,8 @@ Square toSquare(std::string input) {
     if (input == "-") { // fen-style invalid square
         return NULLSQUARE;
     }
-    int file = input.at(0) - 'a';
-    int rank = 8 - int(input.at(1) - '1') - 1;
+    const int file = input.at(0) - 'a';
+    const int rank = 8 - int(input.at(1) - '1') - 1;
     return toSquare(rank, file);
 }
 
@@ -167,7 +167,7 @@ std::string squareToStr(Square square) {
     constexpr std::array<char, 8> fileRep = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
     constexpr std::array<char, 8> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
 
-    int file = getFile(square);
-    int rank = getRank(square);
+    const int file = getFile(square);
+    const int rank = getRank(square);
     return std::string(1, fileRep[file]) + std::string(1, rankRep[rank]);
 }

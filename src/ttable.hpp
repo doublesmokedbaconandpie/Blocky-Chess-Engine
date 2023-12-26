@@ -11,12 +11,12 @@ namespace TTable {
 constexpr int DEFAULT_SIZEMB = 128;
 
 struct Entry {
-    uint64_t key = 0;
-    uint8_t age = 0;
-    int depth = 0;
-    int eval = 0;
+    uint64_t key{};
+    uint8_t age{};
+    int depth{};
+    int eval{};
     EvalType flag = NONE;
-    BoardMove move;
+    BoardMove move{};
 };
 
 class TTable {

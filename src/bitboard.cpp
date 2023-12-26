@@ -19,13 +19,13 @@ int msb(uint64_t bitboard) {
 }
 
 int popLsb(uint64_t& bitboard) {
-    int pos = lsb(bitboard);
+    const int pos = lsb(bitboard);
     bitboard ^= c_u64(1) << pos;
     return pos;
 }
 
 int popMsb(uint64_t& bitboard) {
-    int pos = msb(bitboard);
+    const int pos = msb(bitboard);
     bitboard ^= c_u64(1) << pos;
     return pos;
 }
@@ -35,8 +35,8 @@ int popcount(uint64_t bitboard) {
 }
 
 uint64_t flipVertical(uint64_t bitboard) {
-    uint64_t k1 = 0x00FF00FF00FF00FF;
-    uint64_t k2 = 0x0000FFFF0000FFFF;
+    constexpr uint64_t k1 = 0x00FF00FF00FF00FF;
+    constexpr uint64_t k2 = 0x0000FFFF0000FFFF;
     bitboard = ((bitboard >>  8) & k1) | ((bitboard & k1) <<  8);
     bitboard = ((bitboard >> 16) & k2) | ((bitboard & k2) << 16);
     bitboard = ( bitboard >> 32)       | ( bitboard       << 32);

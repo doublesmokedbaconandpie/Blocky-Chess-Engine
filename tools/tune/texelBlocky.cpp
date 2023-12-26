@@ -37,7 +37,7 @@ parameters_t BlockyEval::get_initial_parameters() {
 EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
     const Board board(fen);
     EvalResult result;
-    auto isWhitePiece = [](pieceTypes piece) {
+    const auto isWhitePiece = [](pieceTypes piece) {
         return piece >= WKing && piece <= WPawn;
     };
     int arrSize;
@@ -52,15 +52,15 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
      * Assign non-zero linear weights to coefficients for the given position
     *************/
     for (int i = 0; i < BOARD_SIZE; ++i) {
-        pieceTypes piece = board.getPiece(i);
+        const pieceTypes piece = board.getPiece(i);
         // empty squares don't affect evaluation
         if (piece == EmptyPiece) {
             continue;
         }
 
         // white and black pieces use different eval indices in piece square tables
-        int colorlessPiece = piece % 6;
-        int pieceOffset = colorlessPiece * BOARD_SIZE;
+        const int colorlessPiece = piece % 6;
+        const int pieceOffset = colorlessPiece * BOARD_SIZE;
         if (isWhitePiece(piece)) {
             result.coefficients[pieceOffset + i]++;
             result.coefficients[PSQTOffset + colorlessPiece]++;
