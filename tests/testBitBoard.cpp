@@ -16,71 +16,71 @@ class BitboardTest : public testing::Test {
 };
 
 TEST_F(BitboardTest, msbOne) {
-    uint64_t bitboard = 1ull;
+    uint64_t bitboard = c_u64(1);
     ASSERT_EQ(msb(bitboard), 0);
 }
 
 TEST_F(BitboardTest, msbTrailingOne) {
-    uint64_t bitboard = 0x8000000000000000ull;
+    uint64_t bitboard = 0x8000000000000000;
     ASSERT_EQ(msb(bitboard), 63);
 }
 
 TEST_F(BitboardTest, msbMiddleOne) {
-    uint64_t bitboard = 0x0000000000001000ull;
+    uint64_t bitboard = 0x0000000000001000;
     ASSERT_EQ(msb(bitboard), 12);
 }
 
 TEST_F(BitboardTest, msbMultOnes) {
-    uint64_t bitboard = 0x0000080010000000ull;
+    uint64_t bitboard = 0x0000080010000000;
     ASSERT_EQ(msb(bitboard), 43);
 }
 
 TEST_F(BitboardTest, lsbOne) {
-    uint64_t bitboard = 0x8000000000000000ull;
+    uint64_t bitboard = 0x8000000000000000;
     ASSERT_EQ(lsb(bitboard), 63);
 }
 
 TEST_F(BitboardTest, lsbForwardOne) {
-    uint64_t bitboard = 0x0000000000000001ull;
+    uint64_t bitboard = 0x0000000000000001;
     ASSERT_EQ(lsb(bitboard), 0);
 }
 
 TEST_F(BitboardTest, lsbMiddleOne) {
-    uint64_t bitboard = 0x0008000000000000ull;
+    uint64_t bitboard = 0x0008000000000000;
     ASSERT_EQ(lsb(bitboard), 51);
 }
 
 TEST_F(BitboardTest, lsbMultOnes) {
-    uint64_t bitboard = 0x0000001000100000ull;
+    uint64_t bitboard = 0x0000001000100000;
     ASSERT_EQ(lsb(bitboard), 20);
 }
 
 TEST_F(BitboardTest, popLsb1) {
-    uint64_t bitboard = 0x0000001000100000ull;
+    uint64_t bitboard = 0x0000001000100000;
     ASSERT_EQ(popLsb(bitboard), 20);
-    ASSERT_EQ(bitboard, 0x0000001000000000ull);
+    ASSERT_EQ(bitboard, 0x0000001000000000);
 }
 
 TEST_F(BitboardTest, popMsb1) {
-    uint64_t bitboard = 0x0000080010000000ull;
+    uint64_t bitboard = 0x0000080010000000;
     ASSERT_EQ(popMsb(bitboard), 43);
-    ASSERT_EQ(bitboard, 0x0000000010000000ull);
+    ASSERT_EQ(bitboard, 0x0000000010000000);
 }
 
 TEST_F(BitboardTest, FlipVerticalEmpty) {
-    uint64_t bitboard = 0x0000000000000000ull;
-    ASSERT_EQ(flipVertical(bitboard), 0ull);
+    uint64_t bitboard = 0x0000000000000000;
+    ASSERT_EQ(flipVertical(bitboard), 0);
 }
 
 TEST_F(BitboardTest, FlipVerticalOne) {
-    uint64_t bitboard = 0x0000000000000001ull;
-    uint64_t expected = 0x0100000000000000ull;
+    uint64_t bitboard = 0x0000000000000001;
+    uint64_t expected = 0x0100000000000000;
     ASSERT_EQ(flipVertical(bitboard), expected);
 }
 
 TEST_F(BitboardTest, FlipVerticalMul) {
-    uint64_t bitboard = 0x0000000000008421ull;
-    uint64_t expected = 0x2184000000000000ull;
+    uint64_t bitboard = 0x0000000000008421;
+    uint64_t expected = 0x2184000000000000;
     ASSERT_EQ(flipVertical(bitboard), expected);
 }
 
@@ -129,92 +129,92 @@ TEST_F(BitboardTest, getDiagMaskTest) {
 
 TEST_F(BitboardTest, knightAttacks1) {
     uint64_t knightBitboard = Attacks::knightAttacks(toSquare("a8"));
-    EXPECT_EQ(knightBitboard, 0x0000000000020400ull);
+    EXPECT_EQ(knightBitboard, 0x0000000000020400);
 }
 
 TEST_F(BitboardTest, knightAttacks2) {
     uint64_t knightBitboard = Attacks::knightAttacks(toSquare("b5"));
-    EXPECT_EQ(knightBitboard, 0x0000050800080500ull);
+    EXPECT_EQ(knightBitboard, 0x0000050800080500);
 }
 
 TEST_F(BitboardTest, knightAttacks3) {
     uint64_t knightBitboard = Attacks::knightAttacks(toSquare("b3"));
-    EXPECT_EQ(knightBitboard, 0x0508000805000000ull);
+    EXPECT_EQ(knightBitboard, 0x0508000805000000);
 }
 
 TEST_F(BitboardTest, knightAttacks4) {
     uint64_t knightBitboard = Attacks::knightAttacks(toSquare("c2"));
-    EXPECT_EQ(knightBitboard, 0x1100110A00000000ull);
+    EXPECT_EQ(knightBitboard, 0x1100110A00000000);
 }
 
 TEST_F(BitboardTest, knightAttacks5) {
     uint64_t knightBitboard1 = Attacks::knightAttacks(toSquare("d2"));
     uint64_t knightBitboard2 = Attacks::knightAttacks(toSquare("e1"));
-    EXPECT_EQ(knightBitboard1 | knightBitboard2, 0x22442A1400000000ull);
+    EXPECT_EQ(knightBitboard1 | knightBitboard2, 0x22442A1400000000);
 }
 
 TEST_F(BitboardTest, pawnAttackersTrue1) {
-    uint64_t square = 1ull << toSquare("d4");
+    uint64_t square = c_u64(1) << toSquare("d4");
     uint64_t pawnBitboard = Attacks::pawnAttacks(toSquare("c3"), true);
     ASSERT_TRUE(square & pawnBitboard);
 }
 
 TEST_F(BitboardTest, pawnAttackersTrue2) {
-    uint64_t square = 1ull << toSquare("d4");
+    uint64_t square = c_u64(1) << toSquare("d4");
     uint64_t pawnBitboard = Attacks::pawnAttacks(toSquare("e3"), true);
     ASSERT_TRUE(square & pawnBitboard);
 }
 
 TEST_F(BitboardTest, pawnAttackersTrue3) {
-    uint64_t square = 1ull << toSquare("d4");
+    uint64_t square = c_u64(1) << toSquare("d4");
     uint64_t pawnBitboard = Attacks::pawnAttacks(toSquare("c5"), false);
     ASSERT_TRUE(square & pawnBitboard);
 }
 
 TEST_F(BitboardTest, pawnAttackersTrue4) {
-    uint64_t square = 1ull << toSquare("d4");
+    uint64_t square = c_u64(1) << toSquare("d4");
     uint64_t pawnBitboard = Attacks::pawnAttacks(toSquare("e5"), false);
     ASSERT_TRUE(square & pawnBitboard);
 }
 
 TEST_F(BitboardTest, pawnAttackersFalse1) {
-    uint64_t square = 1ull << toSquare("d4");
+    uint64_t square = c_u64(1) << toSquare("d4");
     uint64_t pawnBitboard = Attacks::pawnAttacks(toSquare("c5"), true);
     ASSERT_FALSE(square & pawnBitboard);
 }
 
 TEST_F(BitboardTest, pawnAttackersFalse2) {
-    uint64_t square = 1ull << toSquare("d4");
+    uint64_t square = c_u64(1) << toSquare("d4");
     uint64_t pawnBitboard = Attacks::pawnAttacks(toSquare("e5"), true);
     ASSERT_FALSE(square & pawnBitboard);
 }
 
 TEST_F(BitboardTest, pawnAttackersFalse3) {
-    uint64_t square = 1ull << toSquare("d4");
+    uint64_t square = c_u64(1) << toSquare("d4");
     uint64_t pawnBitboard = Attacks::pawnAttacks(toSquare("c3"), false);
     ASSERT_FALSE(square & pawnBitboard);
 }
 
 TEST_F(BitboardTest, pawnAttackersFalse4) {
-    uint64_t square = 1ull << toSquare("d4");
+    uint64_t square = c_u64(1) << toSquare("d4");
     uint64_t pawnBitboard = Attacks::pawnAttacks(toSquare("e3"), false);
     ASSERT_FALSE(square & pawnBitboard);
 }
 
 TEST_F(BitboardTest, kingAttackersTrue1) {
-    uint64_t square = 1ull << toSquare("d4");
+    uint64_t square = c_u64(1) << toSquare("d4");
     uint64_t kingBitboard = Attacks::kingAttacks(toSquare("c5"));
     ASSERT_TRUE(square & kingBitboard);
 }
 
 TEST_F(BitboardTest, kingAttackersTrue2) {
-    uint64_t square = 1ull << toSquare("d4");
+    uint64_t square = c_u64(1) << toSquare("d4");
     uint64_t kingBitboard = Attacks::kingAttacks(toSquare("c3"));
     ASSERT_TRUE(square & kingBitboard);
 }
 
 TEST_F(BitboardTest, kingAttackersFalse) {
-    uint64_t square = 1ull << toSquare("d4");
+    uint64_t square = c_u64(1) << toSquare("d4");
     uint64_t kingBitboard = Attacks::kingAttacks(toSquare("c6"));
     ASSERT_FALSE(square & kingBitboard);
 }

@@ -30,7 +30,7 @@ uint64_t bishopAttacks(int square, uint64_t allPieces) {
 }
 
 uint64_t pawnAttacks(int square, bool isWhiteTurn) {
-    int color = isWhiteTurn ? 0 : 1;
+    const int color = isWhiteTurn ? 0 : 1;
     return PAWN_ATTACKS[color][square];
 }
 
@@ -67,18 +67,18 @@ void initMagicTable(std::array<Magic, BOARD_SIZE>& table,
     int attacksFilled = 0;
     attackTable.fill(ALL_SQUARES); // no true attack will be all squares
     for (int i = 0; i < BOARD_SIZE; i++) {
-        // magic table
-        uint64_t blockerMask = getRelevantBlockerMask(i, isBishop);
+        // fill magic table index
+        const uint64_t blockerMask = getRelevantBlockerMask(i, isBishop);
         table[i].slideMask = blockerMask;
         table[i].magic = magicTable[i];
         table[i].shift = 64 - popcount(blockerMask);
         table[i].offset = attacksFilled;
 
-        // attack table     
+        // fill attack table entries for the magic index
         std::vector<uint64_t> blockers = getPossibleBlockers(blockerMask);
-        for (uint64_t blocker: blockers) {
-            uint64_t attacks = getAttackMask(i, blocker);
-            int index = getMagicIndex(table[i], blocker);
+        for (const uint64_t blocker: blockers) {
+            const uint64_t attacks = getAttackMask(i, blocker);
+            const int index = getMagicIndex(table[i], blocker);
             if (attackTable[index] != attacks) {
                 assert(attackTable[index] == ALL_SQUARES); // checks for illegal collisions
             }
@@ -89,7 +89,7 @@ void initMagicTable(std::array<Magic, BOARD_SIZE>& table,
 }
 
 int getMagicIndex(Magic& entry, uint64_t allPieces) {
-    uint64_t blockers = allPieces & entry.slideMask;
+    const uint64_t blockers = allPieces & entry.slideMask;
     return ((blockers * entry.magic) >> entry.shift) + entry.offset;
 }
 
@@ -103,12 +103,12 @@ std::vector<uint64_t> getPossibleBlockers(uint64_t slideMask) {
     }
 
     // binary iteration will be used to iterate through the possible blockers
-    uint64_t numBlockerBoards = c_u64(1) << blockerSquares.size();
+    const uint64_t numBlockerBoards = c_u64(1) << blockerSquares.size();
     for (uint64_t i = 0; i < numBlockerBoards; i++) {
         uint64_t currBlocker = 0;
         // convert binary iter to blocker bitboard
         for (uint64_t j = 0; j < blockerSquares.size(); j++) {
-            uint64_t currBit = i & (c_u64(1) << j) ? 1 : 0; 
+            const uint64_t currBit = i & (c_u64(1) << j) ? 1 : 0; 
             currBlocker |= currBit << blockerSquares[j];
         }
         blockerBoards.push_back(currBlocker);
@@ -119,7 +119,8 @@ std::vector<uint64_t> getPossibleBlockers(uint64_t slideMask) {
 
 // Works for bishops and rooks
 uint64_t getRelevantBlockerMask(int square, bool isBishop) {
-    uint64_t slideMask = isBishop ? getDiagMask(square) | getAntiDiagMask(square) : getFileMask(square) | getRankMask(square); 
+    uint64_t slideMask = isBishop ? getDiagMask(square) | getAntiDiagMask(square) : 
+                                    getFileMask(square) | getRankMask(square); 
     // pieces on the edges are blocked by same edge pieces
     slideMask &= square / 8 != 0 ? ~RANK_8 : ALL_SQUARES;
     slideMask &= square / 8 != 7 ? ~RANK_1 : ALL_SQUARES;
@@ -165,16 +166,16 @@ uint64_t fillInDir(int square, uint64_t blockers, int x, int y) {
 }
 
 uint64_t computeKnightAttacks(int square) {
-    uint64_t currPiece = c_u64(1) << square;
-    uint64_t left1 = (currPiece >> 1) & NOT_FILE_H;
-    uint64_t left2 = (currPiece >> 2) & NOT_FILE_HG;
-    uint64_t right1 = (currPiece << 1) & NOT_FILE_A;
-    uint64_t right2 = (currPiece << 2) & NOT_FILE_AB;
+    const uint64_t currPiece = c_u64(1) << square;
+    const uint64_t left1 = (currPiece >> 1) & NOT_FILE_H;
+    const uint64_t left2 = (currPiece >> 2) & NOT_FILE_HG;
+    const uint64_t right1 = (currPiece << 1) & NOT_FILE_A;
+    const uint64_t right2 = (currPiece << 2) & NOT_FILE_AB;
 
-    uint64_t height1 = left1 | right1;
-    uint64_t height2 = left2 | right2;
+    const uint64_t height1 = left1 | right1;
+    const uint64_t height2 = left2 | right2;
     
-    uint64_t knightSquares = (height1 << 16) | (height1 >> 16) | (height2 << 8) | (height2 >> 8);
+    const uint64_t knightSquares = (height1 << 16) | (height1 >> 16) | (height2 << 8) | (height2 >> 8);
     return knightSquares;
 }
 
@@ -182,8 +183,8 @@ uint64_t computeKingAttacks(int square) {
     uint64_t currPiece = c_u64(1) << square;
 
     // prevent currPiece from teleporting to other side of the board with bit shifts
-    uint64_t left = currPiece & NOT_FILE_A;
-    uint64_t right = currPiece & NOT_FILE_H;
+    const uint64_t left = currPiece & NOT_FILE_A;
+    const uint64_t right = currPiece & NOT_FILE_H;
     
     currPiece |= (left >> 1);
     currPiece |= (right << 1);
@@ -194,14 +195,14 @@ uint64_t computeKingAttacks(int square) {
 }
 
 uint64_t computePawnAttacks(int square, bool isWhiteTurn) {
-    uint64_t currPiece = c_u64(1) << square;
+    const uint64_t currPiece = c_u64(1) << square;
 
     // prevent currPiece from teleporting to other side of the board with bit shifts
-    uint64_t left  = currPiece & NOT_FILE_A;
-    uint64_t right = currPiece & NOT_FILE_H;
+    const uint64_t left  = currPiece & NOT_FILE_A;
+    const uint64_t right = currPiece & NOT_FILE_H;
     
-    uint64_t upPawns   = (left >> 9) | (right >> 7); 
-    uint64_t downPawns = (left << 7) | (right << 9); 
+    const uint64_t upPawns   = (left >> 9) | (right >> 7); 
+    const uint64_t downPawns = (left << 7) | (right << 9); 
     return isWhiteTurn ? upPawns : downPawns;
 }
 

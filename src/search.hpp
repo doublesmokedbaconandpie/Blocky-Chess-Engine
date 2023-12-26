@@ -11,17 +11,17 @@ namespace Search {
 
 constexpr int MIN_ALPHA = -1000000;
 constexpr int MAX_BETA = 1000000;
-constexpr int NO_MATE = -1000000;
+constexpr int NO_MATE = -100000000;
 
 // used for outside UCI representation    
 struct Info {
-    uint64_t nodes = 0;
-    int depth = 0;
-    int seldepth = 0;
-    int eval = 0;
+    uint64_t nodes{};
+    int depth{};
+    int seldepth{};
+    int eval{};
     int mateIn = NO_MATE;
-    BoardMove move;
-    uint64_t timeElapsed = 0;
+    BoardMove move{};
+    uint64_t timeElapsed{};
 };
 
 class Searcher {
@@ -38,10 +38,11 @@ class Searcher {
         template <NodeTypes NODE>
         int search(int alpha, int beta, int depth, int distanceFromRoot);
         int quiesce(int alpha, int beta, int depth, int distanceFromRoot);
-        void storeInTT(TTable::Entry entry, int eval, BoardMove move, int depth);
+        void storeInTT(TTable::Entry entry, int eval, BoardMove move, int depth) const;
 
-        void outputUciInfo(Info searchResult);
+        void outputUciInfo(Info searchResult) const;
         void setPrintInfo(bool flag) {this->printInfo = flag;}; 
+
     private:
         Board board;
         uint64_t nodes;

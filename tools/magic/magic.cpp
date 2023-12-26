@@ -20,8 +20,8 @@ int main() {
     int attacksSize = 0; 
     std::cout << "Rook attacks: " << std::endl;
     for (int i = 0; i < BOARD_SIZE; i++) {
-        uint64_t blockerMask = getRelevantBlockerMask(i, false);
-        uint64_t magic = findMagic(computeRookAttacks, i, blockerMask, blockerRookCombos[i]);
+        const uint64_t blockerMask = getRelevantBlockerMask(i, false);
+        const uint64_t magic = findMagic(computeRookAttacks, i, blockerMask, blockerRookCombos[i]);
         attacksSize += c_u64(1) << blockerRookCombos[i];
         printHex(magic);
     }
@@ -31,8 +31,8 @@ int main() {
     attacksSize = 0;
     std::cout << "Bishop attacks: " << std::endl;
     for (int i = 0; i < BOARD_SIZE; i++) {
-        uint64_t blockerMask = getRelevantBlockerMask(i, true);
-        uint64_t magic = findMagic(computeBishopAttacks, i, blockerMask, blockerBishopCombos[i]);
+        const uint64_t blockerMask = getRelevantBlockerMask(i, true);
+        const uint64_t magic = findMagic(computeBishopAttacks, i, blockerMask, blockerBishopCombos[i]);
         attacksSize += c_u64(1) << blockerBishopCombos[i];
         printHex(magic);
     }
@@ -50,19 +50,19 @@ uint64_t findMagic(Function slidingAttacks, int square, uint64_t blockerMask, in
     while (!magicFound) {
         moves.fill(ALL_SQUARES);
         magicFound = true;
-        int maxIndex = c_u64(1) << shift;
+        const int maxIndex = c_u64(1) << shift;
         // magic numbers with low number of 1s are better
         magic = Zobrist::rand64(seed) & Zobrist::rand64(seed) & Zobrist::rand64(seed);
         
         // checks for collisions
         for (uint64_t blocker: possibleBlockers) {
-            size_t index = blocker * magic >> (64 - shift); // hash function
+            const size_t index = blocker * magic >> (64 - shift); // hash function
             if (index > maxIndex) {
                 magicFound = false;
                 break;
             } 
             
-            uint64_t validAttacks = slidingAttacks(square, blocker);
+            const uint64_t validAttacks = slidingAttacks(square, blocker);
             if (moves[index] != validAttacks) {
                 if (moves[index] == ALL_SQUARES) {
                     moves[index] = validAttacks;

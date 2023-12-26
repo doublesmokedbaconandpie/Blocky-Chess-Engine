@@ -27,8 +27,8 @@ int main() {
     // main file reading loop
     int games = 0;
     for (int i = 0; i < dests.size(); ++i) {
-        auto pgn = pgns[i];
-        auto destName = dests[i];
+        const auto pgn = pgns[i];
+        const auto destName = dests[i];
         std::cout << "Processing file: " << pgn << ", Dest: " << destName << std::endl;
         extractFromFile(pgn, destName, games);
     }
@@ -43,9 +43,9 @@ void extractFromFile(std::string pgn, std::string destName, int& games) {
     assert(dest);
 
     while (!file.eof()) {
-        auto result = getGameResult(file);
-        auto startFen = getStartFen(file);
-        auto fens = getPositions(file, startFen, result);
+        const auto result = getGameResult(file);
+        const auto startFen = getStartFen(file);
+        const auto fens = getPositions(file, startFen, result);
         storeFenResults(dest, fens, result);
         ++games;
         if (games % 500 == 0) {

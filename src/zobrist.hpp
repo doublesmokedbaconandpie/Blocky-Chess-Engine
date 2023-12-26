@@ -55,8 +55,7 @@ constexpr auto enPassKeys = [] {
 
 constexpr auto isBlackKey = []{
     std::array<uint64_t, 4> seed = {0x078279f6872cb95e, 0xd675a7617f43a9b5, 0x55c511df8850988f, 0x22789bd6bcf41f28};
-    uint64_t key = rand64(seed);
-    return key;
+    return rand64(seed);
 }();
 
 } // namespace Zobrist

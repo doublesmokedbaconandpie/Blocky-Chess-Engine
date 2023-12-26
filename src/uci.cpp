@@ -138,8 +138,8 @@ void go(std::istringstream& input, Board& board) {
         else if (param == "winc") {winc = std::stoi(value);}
         else if (param == "binc") {binc = std::stoi(value);}
     }
-    int allytime = board.isWhiteTurn ? wtime : btime;
-    int allyInc = board.isWhiteTurn ? winc : binc;
+    const int allytime = board.isWhiteTurn ? wtime : btime;
+    const int allyInc = board.isWhiteTurn ? winc : binc;
     Timeman::TimeManager tm(allytime, allyInc);
 
     // begin search
@@ -154,7 +154,7 @@ void isready() {
 
 void bench() {
     uciNewGame(); // required to make benches consistent
-    uint64_t result = Bench::start();
+    const uint64_t result = Bench::start();
     std::cout << "Bench results: " << result << '\n';
 }
 
@@ -175,14 +175,13 @@ void perft(std::istringstream& input, Board& board) {
     }
     
     // perform perft
-    auto start = std::chrono::high_resolution_clock::now();
-    uint64_t nodes = perft<true>(board, depth);
-    auto end = std::chrono::high_resolution_clock::now();
-    int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    const auto start = std::chrono::high_resolution_clock::now();
+    const uint64_t nodes = perft<true>(board, depth);
+    const auto end = std::chrono::high_resolution_clock::now();
+    const int64_t duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     std::cout << "perft result nodes " << nodes;
     std::cout << " nps " << nodes * 1000000 / duration;
     std::cout << " time " << duration / 1000 << "\n";
-
 }
 
 } // namespace Uci

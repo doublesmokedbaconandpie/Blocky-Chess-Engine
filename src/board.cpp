@@ -23,26 +23,18 @@ Board::Board(std::string fenStr) {
     std::fill(this->board.begin(), this->board.end(), EmptyPiece);
     fenStream >> token;
     int rank = 0, file = 0;
-    for (char& iter: token) {
+    for (const char& iter: token) {
         if (iter == '/') {
             rank++;
             file = 0;
         }
         else if (isdigit(iter))  { 
-            file += int(iter - '0');
+            file += static_cast<int>(iter - '0');
         }
         else { // must be a piece character
             pieceTypes currPiece = charToPiece.at(iter); 
             this->setPiece(toSquare(rank, file), currPiece);
             file += 1;
-        }
-    }
-
-    for(uint8_t i = 0; i < BOARD_SIZE; i++) {
-        pieceTypes currPiece = board[i];
-        if (currPiece != EmptyPiece) {
-            this->eval.opScore += Eval::getPlacementScoreOp(i, currPiece);
-            this->eval.egScore += Eval::getPlacementScoreEg(i, currPiece);
         }
     }
 
@@ -67,7 +59,7 @@ Board::Board(std::string fenStr) {
 }
 
 // For debugging
-std::string Board::toFen() {
+std::string Board::toFen() const {
     std::string fenStr; 
 
     int emptyPiecesInRow = 0, piecesPlaced = 0;
@@ -141,14 +133,14 @@ void Board::makeMove(BoardMove move) {
     const pieceTypes promotionPiece = move.getPromotePiece();
 
     // allies haven't made a move yet
-    pieceTypes allyKing = this->isWhiteTurn ? WKing : BKing;
-    pieceTypes allyRook = this->isWhiteTurn ? WRook : BRook;
-    pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
-    pieceTypes enemyRook = this->isWhiteTurn ? BRook : WRook;
-    int behindDirection = this->isWhiteTurn ? 8 : -8;
+    const pieceTypes allyKing = this->isWhiteTurn ? WKing : BKing;
+    const pieceTypes allyRook = this->isWhiteTurn ? WRook : BRook;
+    const pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
+    const pieceTypes enemyRook = this->isWhiteTurn ? BRook : WRook;
+    const int behindDirection = this->isWhiteTurn ? 8 : -8;
 
-    pieceTypes originPiece = this->getPiece(pos1);
-    pieceTypes targetPiece = this->getPiece(pos2);
+    const pieceTypes originPiece = this->getPiece(pos1);
+    const pieceTypes targetPiece = this->getPiece(pos2);
 
     this->moveHistory.push_back(BoardState(
         BoardMove(pos1, pos2, promotionPiece),
@@ -159,8 +151,8 @@ void Board::makeMove(BoardMove move) {
         this->fiftyMoveRule
     ));
 
-    Square oldEnPassSquare = this->enPassSquare;
-    castleRights oldCastlingRights = this->castlingRights;
+    const Square oldEnPassSquare = this->enPassSquare;
+    const castleRights oldCastlingRights = this->castlingRights;
 
     this->setPiece(pos1, EmptyPiece); // origin square should be cleared in all situations
     this->setPiece(pos2, originPiece); // pretty much all possible moves translates the original piece to pos2
@@ -168,8 +160,8 @@ void Board::makeMove(BoardMove move) {
     // castling
     // doesn't check for emptiness between rook and king
     if (originPiece == allyKing && (this->castlingRights & castleRightsBit(pos2, this->isWhiteTurn))) {
-        int kingFileDirection = pos2 > pos1 ? 1 : -1;
-        int rookFile = kingFileDirection == 1 ? 7 : 0;
+        const int kingFileDirection = pos2 > pos1 ? 1 : -1;
+        const int rookFile = kingFileDirection == 1 ? 7 : 0;
         this->setPiece(pos1 + kingFileDirection, allyRook);
         this->setPiece(pos1 - getFile(pos1) + rookFile, EmptyPiece);
         this->castlingRights &= this->isWhiteTurn ? B_Castle : W_Castle;
@@ -216,8 +208,9 @@ void Board::makeMove(BoardMove move) {
     }
 
     // update zobrist key for changed castling rights; castling rights can only decrease in chess
+    int mask;
     for (int i = 0; i < 4; i++) {
-        int mask = c_u64(1) << i;
+        mask = c_u64(1) << i;
         if ((oldCastlingRights & mask) && !(this->castlingRights & mask)) {
             this->zobristKey ^= Zobrist::castlingKeys[i];
         }
@@ -244,26 +237,26 @@ void Board::undoMove() {
     if (this->moveHistory.size() == 0) {
         return;
     }
-    BoardState prev = moveHistory.back();
+    const BoardState prev = moveHistory.back();
 
-    pieceTypes prevKing = this->isWhiteTurn ? BKing : WKing;
-    pieceTypes prevRook = this->isWhiteTurn ? BRook : WRook;
-    pieceTypes prevPawn = this->isWhiteTurn ? BPawn : WPawn;
+    const pieceTypes prevKing = this->isWhiteTurn ? BKing : WKing;
+    const pieceTypes prevRook = this->isWhiteTurn ? BRook : WRook;
+    const pieceTypes prevPawn = this->isWhiteTurn ? BPawn : WPawn;
 
     this->setPiece(prev.move.sqr1(), prev.originPiece);
     this->setPiece(prev.move.sqr2(), prev.targetPiece);
 
     // castling
     if (prev.originPiece == prevKing && (prev.castlingRights & castleRightsBit(prev.move.sqr2(), !this->isWhiteTurn)) ) {
-        int kingFileDirection = prev.move.sqr2() > prev.move.sqr1() ? 1 : -1;
-        int rookFile = kingFileDirection == 1 ? 7 : 0;
+        const int kingFileDirection = prev.move.sqr2() > prev.move.sqr1() ? 1 : -1;
+        const int rookFile = kingFileDirection == 1 ? 7 : 0;
         this->setPiece(prev.move.sqr1() + kingFileDirection, EmptyPiece);
         this->setPiece(prev.move.sqr1() - getFile(prev.move.sqr1()) + rookFile, prevRook);
     }
     // en passant
     else if (prev.originPiece == prevPawn && prev.move.sqr2() == prev.enPassSquare) {
-        int behindDirection = this->isWhiteTurn ? -8 : 8;
-        pieceTypes prevJumpedPawn = this->isWhiteTurn ? WPawn : BPawn;
+        const int behindDirection = this->isWhiteTurn ? -8 : 8;
+        const pieceTypes prevJumpedPawn = this->isWhiteTurn ? WPawn : BPawn;
         this->setPiece(prev.move.sqr2() + behindDirection, prevJumpedPawn);
     }
 
@@ -325,21 +318,23 @@ pieceTypes Board::getPiece(Square square) const{
 
 // handles board, pieceSets, and zobristKey (not including en passant and castling)
 void Board::setPiece(Square square, pieceTypes currPiece) {
-    uint64_t setSquare = (c_u64(1) << square);
-    uint64_t clearSquare = ALL_SQUARES ^ setSquare;
+    const uint64_t setSquare = (c_u64(1) << square);
+    const uint64_t clearSquare = ALL_SQUARES ^ setSquare;
 
-    pieceTypes originPiece = this->getPiece(square);
+    const pieceTypes originPiece = this->getPiece(square);
     this->board[square] = currPiece;
     
     if (originPiece != EmptyPiece) {
-        pieceTypes originColor = originPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
+        const pieceTypes originColor = originPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
+
         this->pieceSets[originColor] &= clearSquare;
         this->pieceSets[originPiece] &= clearSquare;
         this->zobristKey ^= Zobrist::pieceKeys[originPiece][square];
         this->eval.removePiece(square, originPiece);
     }
     if (currPiece != EmptyPiece) {
-        pieceTypes currColor = currPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
+        const pieceTypes currColor = currPiece < BKing ? WHITE_PIECES : BLACK_PIECES;
+
         this->pieceSets[currColor] ^= setSquare;
         this->pieceSets[currPiece] ^= setSquare;
         this->zobristKey ^= Zobrist::pieceKeys[currPiece][square];
@@ -358,16 +353,16 @@ bool Board::isLegalMove(const BoardMove move) const {
 
     std::array<uint64_t, NUM_BITBOARDS> tmpPieceSets = this->pieceSets;
 
-    pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
-    uint64_t originSquare = (c_u64(1) << move.sqr1());
-    pieceTypes originPiece = this->getPiece(move.sqr1());
-    pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
-    pieceTypes enemyPawn = this->isWhiteTurn ? BPawn : WPawn;
+    const uint64_t originSquare = (c_u64(1) << move.sqr1());
+    const pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
+    const pieceTypes originPiece = this->getPiece(move.sqr1());
+    const pieceTypes allyPawn = this->isWhiteTurn ? WPawn : BPawn;
+    const pieceTypes enemyPawn = this->isWhiteTurn ? BPawn : WPawn;
 
     // account for captures
-    uint64_t targetSquare = c_u64(1) << move.sqr2();
+    const uint64_t targetSquare = c_u64(1) << move.sqr2();
+    const pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
     pieceTypes targetPiece;
-    pieceTypes targetColor = this->isWhiteTurn ? BLACK_PIECES : WHITE_PIECES;
     
     // en passant
     if (originPiece == allyPawn && move.sqr2() == this->enPassSquare) {
@@ -396,7 +391,7 @@ bool Board::isLegalMove(const BoardMove move) const {
     
 // positive return values means winning for the side to move, negative is opposite
 int Board::evaluate() const {
-    int rawEval = this->eval.getRawEval(this->pieceSets);
+    const int rawEval = this->eval.getRawEval(this->pieceSets);
     return this->isWhiteTurn ? rawEval : rawEval * -1;
 }
 
@@ -445,18 +440,18 @@ castleRights castleRightsBit(Square finalKingPos, bool isWhiteTurn) {
 }
 
 bool currKingInAttack(const std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn) {
-    pieceTypes allyKing = isWhiteTurn ? WKing : BKing;
+    const pieceTypes allyKing = isWhiteTurn ? WKing : BKing;
     assert(pieceSets[allyKing]);
-    int kingSquare = lsb(pieceSets[allyKing]);
+    const int kingSquare = lsb(pieceSets[allyKing]);
 
-    uint64_t allPieces = pieceSets[WHITE_PIECES] | pieceSets[BLACK_PIECES];
+    const uint64_t allPieces = pieceSets[WHITE_PIECES] | pieceSets[BLACK_PIECES];
 
-    uint64_t enemyKings   = isWhiteTurn ? pieceSets[BKing]   : pieceSets[WKing];
-    uint64_t enemyQueens  = isWhiteTurn ? pieceSets[BQueen]  : pieceSets[WQueen];
-    uint64_t enemyBishops = isWhiteTurn ? pieceSets[BBishop] : pieceSets[WBishop];
-    uint64_t enemyRooks   = isWhiteTurn ? pieceSets[BRook]   : pieceSets[WRook];
-    uint64_t enemyKnights = isWhiteTurn ? pieceSets[BKnight] : pieceSets[WKnight];
-    uint64_t enemyPawns   = isWhiteTurn ? pieceSets[BPawn]   : pieceSets[WPawn];
+    const uint64_t enemyKings   = isWhiteTurn ? pieceSets[BKing]   : pieceSets[WKing];
+    const uint64_t enemyQueens  = isWhiteTurn ? pieceSets[BQueen]  : pieceSets[WQueen];
+    const uint64_t enemyBishops = isWhiteTurn ? pieceSets[BBishop] : pieceSets[WBishop];
+    const uint64_t enemyRooks   = isWhiteTurn ? pieceSets[BRook]   : pieceSets[WRook];
+    const uint64_t enemyKnights = isWhiteTurn ? pieceSets[BKnight] : pieceSets[WKnight];
+    const uint64_t enemyPawns   = isWhiteTurn ? pieceSets[BPawn]   : pieceSets[WPawn];
 
     return Attacks::bishopAttacks(kingSquare, allPieces) & (enemyBishops | enemyQueens)
         || Attacks::rookAttacks(kingSquare, allPieces) & (enemyRooks | enemyQueens)

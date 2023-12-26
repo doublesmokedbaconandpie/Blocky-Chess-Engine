@@ -1,6 +1,5 @@
 #include "uci.hpp"
 #include "attacks.hpp"
-#include "zobrist.hpp"
 
 int main() {
     Attacks::init();

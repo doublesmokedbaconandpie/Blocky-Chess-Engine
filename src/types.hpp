@@ -4,14 +4,14 @@
 #include <cstdint>
 #include <unordered_map>
 
-#define Square uint8_t
-#define PieceSets std::array<uint64_t, NUM_BITBOARDS>
-
 constexpr int BOARD_SIZE = 64;
 constexpr int NUM_BITBOARDS = 14;
 constexpr int NUM_COLORED_PIECES = 12;
 constexpr int NUM_PIECES = 6;
 constexpr int MAX_MOVES = 256;
+
+using Square = uint8_t;
+using PieceSets = std::array<uint64_t, NUM_BITBOARDS>;
 
 enum pieceTypes {EmptyPiece = -1,
                 WKing, WQueen, WBishop, WKnight, WRook, WPawn, 
