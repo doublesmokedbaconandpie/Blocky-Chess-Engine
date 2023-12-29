@@ -87,7 +87,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     }
     // max depth reached
     if (depth <= 0) {
-        return quiesce(alpha, beta, 6, ss);
+        return quiesce(alpha, beta, ss);
     }
 
     /************
@@ -203,7 +203,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     return bestscore;
 }
 
-int Searcher::quiesce(int alpha, int beta, int depth, StackEntry* ss) {
+int Searcher::quiesce(int alpha, int beta, StackEntry* ss) {
     if(this->tm.hardTimeUp()) {
         return 0;
     }
@@ -216,15 +216,13 @@ int Searcher::quiesce(int alpha, int beta, int depth, StackEntry* ss) {
         return beta;
     if(alpha < stand_pat)
         alpha = stand_pat;
-    if(depth == 0)
-        return stand_pat;
 
     MoveOrder::MovePicker movePicker(board, MoveOrder::Captures);
     int score = MIN_ALPHA;
     while (movePicker.movesLeft(board)) {
         BoardMove move = movePicker.pickMove();
         board.makeMove(move);
-        score = -quiesce(-beta, -alpha, depth - 1, ss + 1);
+        score = -quiesce(-beta, -alpha, ss + 1);
         board.undoMove(); 
 
         if(score >= beta)

@@ -43,7 +43,7 @@ class Searcher {
 
         template <NodeTypes NODE>
         int search(int alpha, int beta, int depth, StackEntry* ss);
-        int quiesce(int alpha, int beta, int depth, StackEntry* ss);
+        int quiesce(int alpha, int beta, StackEntry* ss);
         void storeInTT(TTable::Entry entry, int eval, BoardMove move, int depth) const;
 
         void outputUciInfo(Info searchResult) const;
