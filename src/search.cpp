@@ -63,9 +63,8 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     const int oldAlpha = alpha;
 
     // time up
-    int score = 0;
-    if(this->tm.hardTimeUp()) {
-        return score;
+    if (this->tm.hardTimeUp()) {
+        return NO_SCORE;
     }
 
     ++this->nodes;
@@ -73,12 +72,12 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
 
     // fifty move rule
     if (this->board.fiftyMoveRule >= 100) {
-        return score;
+        return DRAW_SCORE;
     }
     // three-fold repetition
     const int occurrences = std::count(this->board.zobristKeyHistory.begin(), this->board.zobristKeyHistory.end(), this->board.zobristKey);
     if (occurrences >= 3) {
-        return score;
+        return DRAW_SCORE;
     }
     // max depth reached
     if (depth <= 0) {
@@ -104,10 +103,11 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         TTMove = entry.move;
     }
 
+    const bool inCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
     /************
      * Null Move Pruning
     *************/
-    if (!ISNMP && depth >= 2 && !currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
+    if (!ISNMP && !inCheck && depth >= 2) {
         board.makeNullMove();
         int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - 3, distanceFromRoot + 1);
         board.unmakeNullMove();
@@ -120,7 +120,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     MoveOrder::MovePicker movePicker(board, MoveOrder::All, TTMove);
 
     // start search through moves
-    int bestscore = MIN_ALPHA;
+    int score, bestscore = MIN_ALPHA;
     BoardMove bestMove, move;
     bool doFullNullSearch, doPVS;
     while (movePicker.movesLeft(board)) {
@@ -131,10 +131,11 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
          * Search moves that are likely to be less good to lower depths with null bounds
          * Researches will happen with LMR fails
         **************/
+        const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
         if (!movePicker.stagesLeft() // don't reduce captures
             && movePicker.getMovesPicked() >= 4 
             && depth >= 3
-            && !currKingInAttack(this->board.pieceSets, board.isWhiteTurn)) {
+            && !moveGivesCheck) {
             
             int reductionDepth = depth - 2;
             score = -search<NOTPV>(-alpha - 1, -alpha, reductionDepth, distanceFromRoot + 1);
@@ -180,10 +181,10 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     }
     // checkmate or stalemate
     if (movePicker.getMovesPicked() == 0) {
-        if (currKingInAttack(board.pieceSets, board.isWhiteTurn)) {
-            score = MIN_ALPHA + distanceFromRoot;
+        if (inCheck) {
+            return MIN_ALPHA + distanceFromRoot;
         }
-        return score;
+        return DRAW_SCORE;
     }
 
     // A search for this depth is complete with a best move, so it can be stored in the transposition table
@@ -257,7 +258,7 @@ void Searcher::outputUciInfo(Info searchResult) const {
 
     std::cout << "pv " << searchResult.move << ' ';
     
-    if (searchResult.mateIn == Search::NO_MATE) {
+    if (searchResult.mateIn == NO_SCORE) {
         std::cout << "score cp " << searchResult.eval << ' ';
     } else {
         std::cout << "score mate " << searchResult.mateIn << ' ';
