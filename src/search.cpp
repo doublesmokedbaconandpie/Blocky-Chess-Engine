@@ -133,7 +133,8 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         **************/
         if (!movePicker.stagesLeft() // don't reduce captures
             && movePicker.getMovesPicked() >= 4 
-            && depth >= 3) {
+            && depth >= 3
+            && !currKingInAttack(this->board.pieceSets, board.isWhiteTurn)) {
             
             int reductionDepth = depth - 2;
             score = -search<NOTPV>(-alpha - 1, -alpha, reductionDepth, distanceFromRoot + 1);
