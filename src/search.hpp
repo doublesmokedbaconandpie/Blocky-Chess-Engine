@@ -9,9 +9,10 @@
 
 namespace Search {
 
+constexpr int DRAW_SCORE = 0;
 constexpr int MIN_ALPHA = -1000000;
 constexpr int MAX_BETA = 1000000;
-constexpr int NO_MATE = -100000000;
+constexpr int NO_SCORE = -100000000;
 
 // used for outside UCI representation    
 struct Info {
@@ -19,7 +20,7 @@ struct Info {
     int depth{};
     int seldepth{};
     int eval{};
-    int mateIn = NO_MATE;
+    int mateIn = NO_SCORE;
     BoardMove move{};
     uint64_t timeElapsed{};
 };
