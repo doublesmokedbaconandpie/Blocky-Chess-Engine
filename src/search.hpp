@@ -25,6 +25,10 @@ struct Info {
     uint64_t timeElapsed{};
 };
 
+struct StackEntry {
+    int distanceFromRoot;
+};
+
 class Searcher {
     public:  
         Searcher(Board a_board, Timeman::TimeManager a_tm, int depthLimit) {
@@ -37,8 +41,8 @@ class Searcher {
         Info startThinking();
 
         template <NodeTypes NODE>
-        int search(int alpha, int beta, int depth, int distanceFromRoot);
-        int quiesce(int alpha, int beta, int depth, int distanceFromRoot);
+        int search(int alpha, int beta, int depth, StackEntry* ss);
+        int quiesce(int alpha, int beta, int depth, StackEntry* ss);
         void storeInTT(TTable::Entry entry, int eval, BoardMove move, int depth) const;
 
         void outputUciInfo(Info searchResult) const;
@@ -50,6 +54,7 @@ class Searcher {
         int max_seldepth;
         BoardMove finalMove;
 
+        std::array<StackEntry, MAX_PLY> stack;
         Timeman::TimeManager tm;
         int depth_limit;
         bool printInfo = true;
