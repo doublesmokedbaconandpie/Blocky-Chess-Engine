@@ -9,6 +9,7 @@ constexpr int NUM_BITBOARDS = 14;
 constexpr int NUM_COLORED_PIECES = 12;
 constexpr int NUM_PIECES = 6;
 constexpr int MAX_MOVES = 256;
+constexpr int MAX_PLY = 250;
 
 using Square = uint8_t;
 using PieceSets = std::array<uint64_t, NUM_BITBOARDS>;

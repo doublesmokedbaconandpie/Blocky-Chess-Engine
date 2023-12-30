@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <vector>
 
@@ -15,9 +16,14 @@ namespace Search {
 Info Searcher::startThinking() {
     Info result;
 
+    // stack needs to label distances from root
+    for (int i = 0; i < this->stack.size(); ++i) {
+        this->stack[i].distanceFromRoot = i;
+    }
+
     // perform iterative deepening
     for (int i = 1; i <= this->depth_limit; i++) {
-        const int score = this->search<ROOT>(MIN_ALPHA, MAX_BETA, i, 0);
+        const int score = this->search<ROOT>(MIN_ALPHA, MAX_BETA, i, &this->stack[0]);
         result.move = this->finalMove;
         result.nodes = this->nodes;
         result.timeElapsed = this->tm.getTimeElapsed();
@@ -56,7 +62,7 @@ Info Searcher::startThinking() {
 }
 
 template <NodeTypes NODE>
-int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
+int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     constexpr bool ISROOT = NODE == ROOT;
     constexpr bool ISPV = NODE == ROOT || NODE == PV;
     constexpr bool ISNMP = NODE == NMP;
@@ -68,7 +74,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     }
 
     ++this->nodes;
-    this->max_seldepth = std::max(distanceFromRoot, this->max_seldepth);
+    this->max_seldepth = std::max(ss->distanceFromRoot, this->max_seldepth);
 
     // fifty move rule
     if (this->board.fiftyMoveRule >= 100) {
@@ -81,7 +87,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     }
     // max depth reached
     if (depth <= 0) {
-        return quiesce(alpha, beta, 6, distanceFromRoot);
+        return quiesce(alpha, beta, 6, ss);
     }
 
     /************
@@ -109,7 +115,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     *************/
     if (!ISNMP && !inCheck && depth >= 2) {
         board.makeNullMove();
-        int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - 3, distanceFromRoot + 1);
+        int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - 3, ss + 1);
         board.unmakeNullMove();
         if (nullMoveScore >= beta) {
             return nullMoveScore;
@@ -117,7 +123,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     }
 
     // init movePicker
-    MoveOrder::MovePicker movePicker(board, MoveOrder::All, TTMove);
+    MoveOrder::MovePicker movePicker(board, MoveOrder::All, TTMove, ss->killerMove);
 
     // start search through moves
     int score, bestscore = MIN_ALPHA;
@@ -126,26 +132,27 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     while (movePicker.movesLeft(board)) {
         move = movePicker.pickMove();
         board.makeMove(move);
+        const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
+        const bool quietMove = !movePicker.stagesLeft();
         /*************
          * Late Move Reductions (LMR):
          * Search moves that are likely to be less good to lower depths with null bounds
          * Researches will happen with LMR fails
         **************/
-        const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
-        if (!movePicker.stagesLeft() // don't reduce captures
+        if (quietMove
             && movePicker.getMovesPicked() >= 4 
             && depth >= 3
             && !moveGivesCheck) {
             
             int reductionDepth = depth - 2;
-            score = -search<NOTPV>(-alpha - 1, -alpha, reductionDepth, distanceFromRoot + 1);
+            score = -search<NOTPV>(-alpha - 1, -alpha, reductionDepth, ss + 1);
             doFullNullSearch = score > alpha;
         } else {
             doFullNullSearch = !ISPV || movePicker.getMovesPicked() > 1;
         }
 
         if (doFullNullSearch) {
-            score = -search<NOTPV>(-alpha - 1, -alpha, depth - 1, distanceFromRoot + 1);
+            score = -search<NOTPV>(-alpha - 1, -alpha, depth - 1, ss + 1);
         }
         /*************
          * Principle Variation Search (PVS):
@@ -153,7 +160,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         **************/
         doPVS = ISPV && ((score > alpha && score < beta) || movePicker.getMovesPicked() == 1);
         if (doPVS) {
-            score = -search<PV>(-beta, -alpha, depth - 1, distanceFromRoot + 1);
+            score = -search<PV>(-beta, -alpha, depth - 1, ss + 1);
         }
         board.undoMove(); 
 
@@ -165,6 +172,9 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
         // prune if a move is too good; opponent side will avoid playing into this node
         if (score >= beta) {
             bestscore = score;
+            if (quietMove) {
+                ss->killerMove = move;
+            }
             break;
         }
         // fail-soft stabilizes the search and allows for returned values outside the alpha-beta bounds
@@ -182,7 +192,7 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     // checkmate or stalemate
     if (movePicker.getMovesPicked() == 0) {
         if (inCheck) {
-            return MIN_ALPHA + distanceFromRoot;
+            return MIN_ALPHA + ss->distanceFromRoot;
         }
         return DRAW_SCORE;
     }
@@ -193,13 +203,13 @@ int Searcher::search(int alpha, int beta, int depth, int distanceFromRoot) {
     return bestscore;
 }
 
-int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
+int Searcher::quiesce(int alpha, int beta, int depth, StackEntry* ss) {
     if(this->tm.hardTimeUp()) {
         return 0;
     }
 
     ++this->nodes;
-    this->max_seldepth = std::max(distanceFromRoot, this->max_seldepth);
+    this->max_seldepth = std::max(ss->distanceFromRoot, this->max_seldepth);
 
     const int stand_pat = this->board.evaluate();
     if(stand_pat >= beta)
@@ -214,7 +224,7 @@ int Searcher::quiesce(int alpha, int beta, int depth, int distanceFromRoot) {
     while (movePicker.movesLeft(board)) {
         BoardMove move = movePicker.pickMove();
         board.makeMove(move);
-        score = -quiesce(-beta, -alpha, depth - 1, distanceFromRoot + 1);
+        score = -quiesce(-beta, -alpha, depth - 1, ss + 1);
         board.undoMove(); 
 
         if(score >= beta)
