@@ -9,10 +9,11 @@
 
 namespace MoveOrder {
 
-MovePicker::MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove) {
+MovePicker::MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove, BoardMove a_killerMove) {
     this->moveList = MoveList(board);
     this->moveScores = std::array<int, MAX_MOVES>{};
     this->TTMove = a_TTMove;
+    this->killerMove = a_killerMove;
     this->movesPicked = 0;
 
     if (board.moveIsCapture(this->TTMove)) {
@@ -48,6 +49,9 @@ void MovePicker::assignMoveScores(const Board& board) {
             const int victimValue = this->getVictimScore(board, move);
             const int attackerValue = pieceValues[board.getPiece(move.sqr1())];
             this->moveScores[i] = MoveScores::Capture + victimValue - attackerValue;
+        }
+        else if (move == this->killerMove) {
+            this->moveScores[i] = MoveScores::Killer;
         }
         else {
             this->moveScores[i] = MoveScores::Quiet;

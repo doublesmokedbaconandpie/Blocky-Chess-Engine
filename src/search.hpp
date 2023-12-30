@@ -26,7 +26,8 @@ struct Info {
 };
 
 struct StackEntry {
-    int distanceFromRoot;
+    BoardMove killerMove{};
+    int distanceFromRoot{};
 };
 
 class Searcher {

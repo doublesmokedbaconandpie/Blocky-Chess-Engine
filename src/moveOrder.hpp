@@ -15,15 +15,16 @@ enum Stage {
 
 class MovePicker {
     public:
-        MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove = BoardMove());
+        MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove = BoardMove(), BoardMove a_killerMove = BoardMove());
         bool movesLeft(const Board& board);
         int getMovesPicked() const;
         bool stagesLeft() const;
         BoardMove pickMove();
     private:
         enum MoveScores {
-            PV = 1 << 20,
-            Capture = 1 << 10,
+            PV = 1 << 30,
+            Capture = 1 << 25,
+            Killer = 1 << 20,
             Quiet = 0,
         };
 
@@ -34,7 +35,7 @@ class MovePicker {
         MoveList moveList;
         std::array<int, MAX_MOVES> moveScores;
         Stage stage;
-        BoardMove TTMove;
+        BoardMove TTMove, killerMove;
         unsigned int movesPicked;
 };
 

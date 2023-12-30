@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <vector>
 
@@ -14,6 +15,7 @@ namespace Search {
 
 Info Searcher::startThinking() {
     Info result;
+
     // stack needs to label distances from root
     for (int i = 0; i < this->stack.size(); ++i) {
         this->stack[i].distanceFromRoot = i;
@@ -21,7 +23,7 @@ Info Searcher::startThinking() {
 
     // perform iterative deepening
     for (int i = 1; i <= this->depth_limit; i++) {
-        const int score = this->search<ROOT>(MIN_ALPHA, MAX_BETA, i, &this->stack[i]);
+        const int score = this->search<ROOT>(MIN_ALPHA, MAX_BETA, i, &this->stack[0]);
         result.move = this->finalMove;
         result.nodes = this->nodes;
         result.timeElapsed = this->tm.getTimeElapsed();
@@ -121,7 +123,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     }
 
     // init movePicker
-    MoveOrder::MovePicker movePicker(board, MoveOrder::All, TTMove);
+    MoveOrder::MovePicker movePicker(board, MoveOrder::All, TTMove, ss->killerMove);
 
     // start search through moves
     int score, bestscore = MIN_ALPHA;
@@ -130,13 +132,14 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     while (movePicker.movesLeft(board)) {
         move = movePicker.pickMove();
         board.makeMove(move);
+        const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
+        const bool quietMove = !movePicker.stagesLeft();
         /*************
          * Late Move Reductions (LMR):
          * Search moves that are likely to be less good to lower depths with null bounds
          * Researches will happen with LMR fails
         **************/
-        const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
-        if (!movePicker.stagesLeft() // don't reduce captures
+        if (quietMove
             && movePicker.getMovesPicked() >= 4 
             && depth >= 3
             && !moveGivesCheck) {
@@ -169,6 +172,9 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         // prune if a move is too good; opponent side will avoid playing into this node
         if (score >= beta) {
             bestscore = score;
+            if (quietMove) {
+                ss->killerMove = move;
+            }
             break;
         }
         // fail-soft stabilizes the search and allows for returned values outside the alpha-beta bounds
