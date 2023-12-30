@@ -13,6 +13,16 @@
 
 namespace Search {
 
+std::array<std::array<int, MAX_MOVES>, MAX_DEPTH> LMRTable{};
+
+void initLMRTable() {
+    for (int depth = 0; depth < MAX_DEPTH; ++depth) {
+        for (int moves = 0; moves < MAX_MOVES; ++moves) {
+            LMRTable[depth][moves] = static_cast<int>(1.0 + std::log(depth) * std::log(moves) / 2.0);
+        }
+    }
+}
+
 Info Searcher::startThinking() {
     Info result;
 
@@ -201,7 +211,8 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
             && depth >= 3
             && !moveGivesCheck) {
             
-            score = -search<NOTPV>(-alpha - 1, -alpha, newDepth - 2, ss + 1);
+            int reductionDepth = LMRTable[depth][movePicker.getMovesPicked()];
+            score = -search<NOTPV>(-alpha - 1, -alpha, reductionDepth, ss + 1);
             doFullNullSearch = score > alpha;
         } else {
             doFullNullSearch = !ISPV || movePicker.getMovesPicked() > 1;
