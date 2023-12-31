@@ -81,17 +81,17 @@ int Searcher::aspiration(int depth, int prevEval) {
     while (true) {
         result = this->search<ROOT>(alpha, beta, depth, &this->stack[0]);
 
-        if (this->tm.hardTimeUp()) {
+        if (this->stopSearching()) {
             break;
         }
 
         // adjust bounds if the result was outside of them
         if (result <= alpha && alpha != MIN_ALPHA) {
             alpha = std::max(alpha - delta, MIN_ALPHA);
-            delta += delta / 2;
+            delta *= 2;
         } else if (result >= beta && beta != MAX_BETA) {
             beta = std::min(beta + delta, MAX_BETA);
-            delta += delta / 2;
+            delta *= 2;
         } else {
             break;
         }
