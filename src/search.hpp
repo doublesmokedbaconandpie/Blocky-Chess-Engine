@@ -40,16 +40,15 @@ class Searcher {
             this->depth_limit = depthLimit;
         };
         Info startThinking();
-
+        void setPrintInfo(bool flag) {this->printInfo = flag;};
+    private:
         template <NodeTypes NODE>
         int search(int alpha, int beta, int depth, StackEntry* ss);
         int quiesce(int alpha, int beta, StackEntry* ss);
         void storeInTT(TTable::Entry entry, int eval, BoardMove move, int depth) const;
-
+        bool stopSearching();
         void outputUciInfo(Info searchResult) const;
-        void setPrintInfo(bool flag) {this->printInfo = flag;}; 
 
-    private:
         Board board;
         uint64_t nodes;
         int max_seldepth;
@@ -59,6 +58,7 @@ class Searcher {
         Timeman::TimeManager tm;
         int depth_limit;
         bool printInfo = true;
+        bool stopSearchFlag = false;
 };
 
 } // namespace Search

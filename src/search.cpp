@@ -69,7 +69,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     const int oldAlpha = alpha;
 
     // time up
-    if (this->tm.hardTimeUp()) {
+    if (this->stopSearching()) {
         return NO_SCORE;
     }
 
@@ -165,7 +165,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         board.undoMove(); 
 
         // don't update best move if time is up
-        if (this->tm.hardTimeUp()) {
+        if (this->stopSearching()) {
             return bestscore;
         }
         
@@ -204,8 +204,8 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 }
 
 int Searcher::quiesce(int alpha, int beta, StackEntry* ss) {
-    if(this->tm.hardTimeUp()) {
-        return 0;
+    if (this->stopSearching()) {
+        return NO_SCORE;
     }
 
     ++this->nodes;
@@ -251,6 +251,14 @@ void Searcher::storeInTT(TTable::Entry entry, int eval, BoardMove move, int dept
             entry.move = move;
             TTable::table.storeEntry(entry.key, entry);
     }
+}
+
+bool Searcher::stopSearching() {
+    // only check system time every 1024 nodes for performance
+    if (this->nodes % 1024 == 0 && !this->stopSearchFlag) {
+        this->stopSearchFlag = this->tm.hardTimeUp();
+    }
+    return this->stopSearchFlag;
 }
 
 void Searcher::outputUciInfo(Info searchResult) const {
