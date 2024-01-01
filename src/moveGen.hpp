@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "board.hpp"
+#include "types.hpp"
 
 class MoveList {
     public:
@@ -28,7 +29,7 @@ class MoveList {
         uint64_t kingMoves(int square, uint64_t validDests) const;
         uint64_t pawnCaptures(int square, uint64_t validDests) const;
         uint64_t pawnPushes(int square, uint64_t validDests) const;
-        uint64_t kingCastles(std::array<uint64_t, NUM_BITBOARDS> pieceSets);
+        uint64_t kingCastles(PieceSets pieceSets);
 
         // used by both captures and quiets
         uint64_t pawns{}, promotingPawns{}, bishops{}, knights{}, rooks{}, queens{}, kings{};

@@ -189,7 +189,7 @@ uint64_t MoveList::pawnPushes(int square, uint64_t validDests) const {
     return dests;
 }
 
-uint64_t MoveList::kingCastles(std::array<uint64_t, NUM_BITBOARDS> pieceSets) {
+uint64_t MoveList::kingCastles(PieceSets pieceSets) {
     // indexes based on castle rights defined in "types.hpp"
     constexpr std::array<uint64_t, 4> rookPaths = {
         0x6000000000000000, 0x0E00000000000000, 0x0000000000000060, 0x000000000000000E};
