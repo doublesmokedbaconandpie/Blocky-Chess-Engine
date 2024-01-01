@@ -10,7 +10,7 @@
 // positions can be input and number of total leaf nodes determined
 // the number determined can be compared to established values from others
 template<bool printMoves>
-uint64_t perft(Board board, int depthLeft) {
+uint64_t perft(Board& board, int depthLeft) {
     if (depthLeft == 0) {
         return 1;
     }
