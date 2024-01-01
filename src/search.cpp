@@ -22,8 +22,10 @@ Info Searcher::startThinking() {
     }
 
     // perform iterative deepening
+    int prevEval = NO_SCORE;
     for (int i = 1; i <= this->depth_limit; i++) {
-        const int score = this->search<ROOT>(MIN_ALPHA, MAX_BETA, i, &this->stack[0]);
+        const int score = this->aspiration(i, prevEval);
+        prevEval = score;
         result.move = this->finalMove;
         result.nodes = this->nodes;
         result.timeElapsed = this->tm.getTimeElapsed();
@@ -37,7 +39,7 @@ Info Searcher::startThinking() {
         }
 
         // only update eval for completed searches
-        if (!tm.hardTimeUp()) {
+        if (!this->stopSearching()) {
             result.eval = score;
         }
 
@@ -52,12 +54,41 @@ Info Searcher::startThinking() {
             this->outputUciInfo(result);
         }
         
-        // only break out of search early for optimistic time used
+        // break out of search early for optimistic time used; this also applies to hard time up
         if (this->tm.softTimeUp()) {
             break;
         }
     }
 
+    return result;
+}
+
+int Searcher::aspiration(int depth, int prevEval) {
+    int delta = 50;
+    int alpha, beta;
+
+    // don't use aspiration bounds for low search depths as scores at low depths are less stable
+    if (depth <= 6) {
+        alpha = MIN_ALPHA;
+        beta = MAX_BETA;
+    } else {
+        alpha = prevEval - delta;
+        beta = prevEval + delta;
+    }
+
+    // search until an exact score has been found with the aspiration bounds or search has been stopped
+    int result;
+    while (true) {
+        result = this->search<ROOT>(alpha, beta, depth, &this->stack[0]);
+
+        if (this->stopSearching() || (alpha < result && result < beta)) {
+            break;
+        }
+
+        alpha = std::max(alpha - delta, MIN_ALPHA);
+        beta = std::min(beta + delta, MAX_BETA);
+        delta *= 2;
+    }
     return result;
 }
 

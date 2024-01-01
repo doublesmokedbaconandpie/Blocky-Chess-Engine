@@ -42,6 +42,7 @@ class Searcher {
         Info startThinking();
         void setPrintInfo(bool flag) {this->printInfo = flag;};
     private:
+        int aspiration(int depth, int prevEval);
         template <NodeTypes NODE>
         int search(int alpha, int beta, int depth, StackEntry* ss);
         int quiesce(int alpha, int beta, StackEntry* ss);
