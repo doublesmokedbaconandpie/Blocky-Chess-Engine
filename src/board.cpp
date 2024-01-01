@@ -351,7 +351,7 @@ bool Board::isLegalMove(const BoardMove move) const {
         return false;
     }
 
-    std::array<uint64_t, NUM_BITBOARDS> tmpPieceSets = this->pieceSets;
+    PieceSets tmpPieceSets = this->pieceSets;
 
     const uint64_t originSquare = (c_u64(1) << move.sqr1());
     const pieceTypes originColor = this->isWhiteTurn ? WHITE_PIECES : BLACK_PIECES;
@@ -439,7 +439,7 @@ castleRights castleRightsBit(Square finalKingPos, bool isWhiteTurn) {
     }
 }
 
-bool currKingInAttack(const std::array<uint64_t, NUM_BITBOARDS>& pieceSets, bool isWhiteTurn) {
+bool currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn) {
     const pieceTypes allyKing = isWhiteTurn ? WKing : BKing;
     assert(pieceSets[allyKing]);
     const int kingSquare = lsb(pieceSets[allyKing]);
