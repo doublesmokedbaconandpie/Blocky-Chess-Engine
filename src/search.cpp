@@ -39,7 +39,7 @@ Info Searcher::startThinking() {
         }
 
         // only update eval for completed searches
-        if (!tm.hardTimeUp()) {
+        if (!this->stopSearching()) {
             result.eval = score;
         }
 
@@ -67,7 +67,7 @@ int Searcher::aspiration(int depth, int prevEval) {
     int delta = 50;
     int alpha, beta;
 
-    // don't use aspiration bounds for low search depths to make eval more stable
+    // don't use aspiration bounds for low search depths as scores at low depths are less stable
     if (depth <= 6) {
         alpha = MIN_ALPHA;
         beta = MAX_BETA;
@@ -76,27 +76,19 @@ int Searcher::aspiration(int depth, int prevEval) {
         beta = prevEval + delta;
     }
 
-    int result = 0;
-    // search until an exact score has been found with the aspiration bounds
+    // search until an exact score has been found with the aspiration bounds or search has been stopped
+    int result;
     while (true) {
         result = this->search<ROOT>(alpha, beta, depth, &this->stack[0]);
 
-        if (this->stopSearching()) {
+        if (this->stopSearching() || (alpha < result && result < beta)) {
             break;
         }
 
-        // adjust bounds if the result was outside of them
-        if (result <= alpha && alpha != MIN_ALPHA) {
-            alpha = std::max(alpha - delta, MIN_ALPHA);
-            delta *= 2;
-        } else if (result >= beta && beta != MAX_BETA) {
-            beta = std::min(beta + delta, MAX_BETA);
-            delta *= 2;
-        } else {
-            break;
-        }
+        alpha = std::max(alpha - delta, MIN_ALPHA);
+        beta = std::min(beta + delta, MAX_BETA);
+        delta *= 2;
     }
-
     return result;
 }
 
