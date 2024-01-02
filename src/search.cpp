@@ -165,6 +165,14 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         board.makeMove(move);
         const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
         const bool quietMove = !movePicker.stagesLeft();
+
+        /*************
+         * Extensions:
+        **************/
+        int extensions = 0;
+        extensions += static_cast<int>(moveGivesCheck);
+        int newDepth = depth + extensions;
+
         /*************
          * Late Move Reductions (LMR):
          * Search moves that are likely to be less good to lower depths with null bounds
@@ -175,15 +183,14 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
             && depth >= 3
             && !moveGivesCheck) {
             
-            int reductionDepth = depth - 2;
-            score = -search<NOTPV>(-alpha - 1, -alpha, reductionDepth, ss + 1);
+            score = -search<NOTPV>(-alpha - 1, -alpha, newDepth - 2, ss + 1);
             doFullNullSearch = score > alpha;
         } else {
             doFullNullSearch = !ISPV || movePicker.getMovesPicked() > 1;
         }
 
         if (doFullNullSearch) {
-            score = -search<NOTPV>(-alpha - 1, -alpha, depth - 1, ss + 1);
+            score = -search<NOTPV>(-alpha - 1, -alpha, newDepth - 1, ss + 1);
         }
         /*************
          * Principle Variation Search (PVS):
@@ -191,7 +198,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         **************/
         doPVS = ISPV && ((score > alpha && score < beta) || movePicker.getMovesPicked() == 1);
         if (doPVS) {
-            score = -search<PV>(-beta, -alpha, depth - 1, ss + 1);
+            score = -search<PV>(-beta, -alpha, newDepth - 1, ss + 1);
         }
         board.undoMove(); 
 
