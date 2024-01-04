@@ -10,7 +10,6 @@ constexpr int NUM_RANKS = 8;
 constexpr int NUM_BITBOARDS = 14;
 constexpr int NUM_COLORED_PIECES = 12;
 constexpr int NUM_PIECES = 6;
-constexpr int MAX_DEPTH = 200;
 constexpr int MAX_MOVES = 256;
 constexpr int MAX_PLY = 250;
 

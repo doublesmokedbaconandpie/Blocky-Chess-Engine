@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <iostream>
 #include <vector>
 
@@ -13,12 +14,11 @@
 
 namespace Search {
 
-std::array<std::array<int, MAX_MOVES>, MAX_DEPTH> LMRTable{};
+std::array<std::array<int, MAX_MOVES>, MAX_PLY> LMRTable{};
 void initLMRTable() {
-    for (int depth = 1; depth < MAX_DEPTH; ++depth) {
+    for (int depth = 1; depth < MAX_PLY; ++depth) {
         for (int moves = 1; moves < MAX_MOVES; ++moves) {
-            LMRTable[depth][moves] = static_cast<int>(2.0 + std::log(depth) * std::log(moves) / 1.50);
-            LMRTable[depth][moves] = std::clamp(LMRTable[depth][moves], 0, depth - 2);
+            LMRTable[depth][moves] = static_cast<int>(1.0 + std::log(depth) * std::log(moves) / 6.00);
         }
     }
 }
@@ -199,7 +199,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         **************/
         int extensions = 0;
         extensions += static_cast<int>(moveGivesCheck);
-        int newDepth = depth + extensions;
+        int newDepth = depth + extensions - 1;
 
         /*************
          * Late Move Reductions (LMR):
@@ -211,15 +211,17 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
             && depth >= 3
             && !moveGivesCheck) {
             
-            int reductionDepth = LMRTable[depth][movePicker.getMovesPicked()];
-            score = -search<NOTPV>(-alpha - 1, -alpha, reductionDepth, ss + 1);
-            doFullNullSearch = score > alpha;
+            int reduction = LMRTable[depth][movePicker.getMovesPicked()];
+            int LMRDepth = newDepth - reduction;
+
+            score = -search<NOTPV>(-alpha - 1, -alpha, LMRDepth, ss + 1);
+            doFullNullSearch = score > alpha && LMRDepth < newDepth;
         } else {
             doFullNullSearch = !ISPV || movePicker.getMovesPicked() > 1;
         }
 
         if (doFullNullSearch) {
-            score = -search<NOTPV>(-alpha - 1, -alpha, newDepth - 1, ss + 1);
+            score = -search<NOTPV>(-alpha - 1, -alpha, newDepth, ss + 1);
         }
         /*************
          * Principle Variation Search (PVS):
@@ -227,7 +229,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         **************/
         doPVS = ISPV && ((score > alpha && score < beta) || movePicker.getMovesPicked() == 1);
         if (doPVS) {
-            score = -search<PV>(-beta, -alpha, newDepth - 1, ss + 1);
+            score = -search<PV>(-beta, -alpha, newDepth, ss + 1);
         }
         board.undoMove(); 
 
