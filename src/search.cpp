@@ -143,6 +143,8 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     const bool inCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
     /************
      * Null Move Pruning
+     * Give the opponent a free move and see if our position is still too good after that; if so, prune
+     * This assumes that the opponent cannot improve their position by much given our reduced depth
     *************/
     if (!ISNMP && !inCheck && depth >= 2) {
         board.makeNullMove();
@@ -207,14 +209,6 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
             return bestscore;
         }
         
-        // prune if a move is too good; opponent side will avoid playing into this node
-        if (score >= beta) {
-            bestscore = score;
-            if (quietMove) {
-                ss->killerMove = move;
-            }
-            break;
-        }
         // fail-soft stabilizes the search and allows for returned values outside the alpha-beta bounds
         if (score > bestscore) {
             bestscore = score;
@@ -222,8 +216,18 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
             if (ISROOT) {
                 this->finalMove = bestMove;
             }
+
+            // update alpha if we have proven that we can guarantee that lower bound
             if (score > alpha) {
                 alpha = score;
+
+                // prune if a move is too good, opponent will avoid playing into this node
+                if (score >= beta) {
+                    if (quietMove) {
+                        ss->killerMove = move;
+                    }
+                    break;
+                }
             }
         }
     }
@@ -250,9 +254,9 @@ int Searcher::quiesce(int alpha, int beta, StackEntry* ss) {
     this->max_seldepth = std::max(ss->distanceFromRoot, this->max_seldepth);
 
     const int stand_pat = this->board.evaluate();
-    if(stand_pat >= beta)
+    if (stand_pat >= beta)
         return beta;
-    if(alpha < stand_pat)
+    if (alpha < stand_pat)
         alpha = stand_pat;
 
     MoveOrder::MovePicker movePicker(board, MoveOrder::Captures);
@@ -263,9 +267,9 @@ int Searcher::quiesce(int alpha, int beta, StackEntry* ss) {
         score = -quiesce(-beta, -alpha, ss + 1);
         board.undoMove(); 
 
-        if(score >= beta)
+        if (score >= beta)
             return beta;
-        if(score > alpha)
+        if (score > alpha)
             alpha = score;
     }
     return alpha;
