@@ -223,7 +223,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
                 // prune if a move is too good, opponent will avoid playing into this node
                 if (score >= beta) {
-                    MoveOrder::History[move.sqr1()][move.sqr2()] += depth * depth;
+                    MoveOrder::History[move.sqr1()][move.sqr2()] += depth * (depth - 1);
                     if (quietMove) {
                         ss->killerMove = move;
                     }
