@@ -24,8 +24,8 @@ void printEngineInfo() {
         std::getline(std::cin, input);
     }
 
-    std::cout << "id name BLOCKY\n";
-    std::cout << "id author Blocky Developers\n";
+    std::cout << "id name Blocky V1.0\n";
+    std::cout << "id author knguy22/intermittence, aqiu04\n";
 
     std::cout << "option name maxDepth type spin default 100 min 1 max 200\n";
     std::cout << "option name Hash type spin default 128 min 128 max 1024\n";
