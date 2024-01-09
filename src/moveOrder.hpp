@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <vector>
 
 #include "moveGen.hpp"
@@ -8,6 +9,9 @@
 #include "types.hpp"
 
 namespace MoveOrder { 
+
+// a butterfly history heuristic table
+extern HistoryTable History;
 
 enum Stage {
     None = 0, Captures = 0b01, Quiets = 0b10, All = Captures | Quiets
@@ -42,5 +46,7 @@ class MovePicker {
 constexpr inline Stage operator&(Stage lhs, Stage rhs) {
     return static_cast<Stage>(static_cast<int>(lhs) & static_cast<int>(rhs));
 }
+
+void clearHistory();
 
 } // namespace MoveOrder

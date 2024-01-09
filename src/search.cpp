@@ -126,8 +126,8 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     *************/
     BoardMove TTMove;
     TTable::Entry entry;
-    if (TTable::table.entryExists(this->board.zobristKey)) {
-        entry = TTable::table.getEntry(this->board.zobristKey);
+    if (TTable::Table.entryExists(this->board.zobristKey)) {
+        entry = TTable::Table.getEntry(this->board.zobristKey);
 
         if (!ISPV && entry.depth >= depth) {
             if (entry.flag == EvalType::EXACT
@@ -160,10 +160,10 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
     // start search through moves
     int score, bestscore = MIN_ALPHA;
-    BoardMove bestMove, move;
+    BoardMove bestMove;
     bool doFullNullSearch, doPVS;
     while (movePicker.movesLeft(board)) {
-        move = movePicker.pickMove();
+        const BoardMove move = movePicker.pickMove();
         board.makeMove(move);
         const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
         const bool quietMove = !movePicker.stagesLeft();
@@ -223,6 +223,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
                 // prune if a move is too good, opponent will avoid playing into this node
                 if (score >= beta) {
+                    MoveOrder::History[move.sqr1()][move.sqr2()] += depth * (depth - 1);
                     if (quietMove) {
                         ss->killerMove = move;
                     }
@@ -239,9 +240,11 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         return DRAW_SCORE;
     }
 
-    // A search for this depth is complete with a best move, so it can be stored in the transposition table
-    entry.flag = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
-    this->storeInTT(entry, bestscore, bestMove, depth);
+    // store results with best moves in transposition table
+    if (bestMove) {
+        entry.flag = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
+        this->storeInTT(entry, bestscore, bestMove, depth);
+    }
     return bestscore;
 }
 
@@ -284,14 +287,13 @@ void Searcher::storeInTT(TTable::Entry entry, int eval, BoardMove move, int dept
     in hash are preserved in the table since there can be repeated boards, but replacing entries
     with moves from more modern roots is better
     */
-    if ( (depth >= entry.depth || this->board.age >= entry.age)
-        && move) {
+    if (depth >= entry.depth || this->board.age >= entry.age) {
             entry.key = this->board.zobristKey;
             entry.age = this->board.age;
             entry.depth = depth;
             entry.eval = eval;
             entry.move = move;
-            TTable::table.storeEntry(entry.key, entry);
+            TTable::Table.storeEntry(entry.key, entry);
     }
 }
 
@@ -321,7 +323,7 @@ void Searcher::outputUciInfo(Info searchResult) const {
     } else {
         std::cout << "score mate " << searchResult.mateIn << ' ';
     }
-    std::cout << "hashfull " << TTable::table.hashFull() << ' ';
+    std::cout << "hashfull " << TTable::Table.hashFull() << ' ';
     std::cout << std::endl;
 
 }

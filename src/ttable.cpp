@@ -9,7 +9,7 @@
 namespace TTable {
 
 // global definition
-TTable table = TTable();
+TTable Table = TTable();
 
 void TTable::resize(int sizeMb) {
     // sizeof uses bytes and not megabytes

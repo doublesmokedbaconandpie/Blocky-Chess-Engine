@@ -11,6 +11,7 @@
 #include "timeman.hpp"
 #include "ttable.hpp"
 #include "search.hpp"
+#include "moveOrder.hpp"
 #include "moveGen.hpp"
 #include "board.hpp"
 
@@ -80,12 +81,13 @@ void setOption(std::istringstream& input){
         OPTIONS.depth = std::stoi(value);
     }
     else if (id == "hash") {
-        TTable::table.resize(std::stoi(value));
+        TTable::Table.resize(std::stoi(value));
     }
 }
 
 void uciNewGame() {
-    TTable::table.clear();
+    TTable::Table.clear();
+    MoveOrder::clearHistory();
 }
 
 Board position(std::istringstream& input) {

@@ -36,6 +36,6 @@ class TTable {
 };
 
 // global declaration
-extern TTable table;
+extern TTable Table;
 
 } // namespace TTable
