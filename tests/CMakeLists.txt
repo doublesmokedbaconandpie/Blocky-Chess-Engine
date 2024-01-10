@@ -15,9 +15,11 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 add_executable(allTests
-    testBitBoard.cpp
+    testBitboard.cpp
     testBoard.cpp
     testMoveGen.cpp
+    testMoveOrder.cpp
+
     ../src/bitboard.cpp
     ../src/attacks.cpp
     ../src/move.cpp
