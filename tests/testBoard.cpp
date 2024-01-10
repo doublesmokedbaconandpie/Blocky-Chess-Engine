@@ -430,7 +430,7 @@ TEST_F(BoardTest, undoMove) {
     EXPECT_EQ(defaultBoard.fiftyMoveRule, moveBoard.fiftyMoveRule);
 }
 
-TEST(MoveIsCaptureTest, defaultBoard) {
+TEST_F(BoardTest, moveIsCaptureTest) {
     Board b1;
     BoardMove m1 = BoardMove("e2e4", b1.isWhiteTurn);
     bool b_1 = b1.moveIsCapture(m1); //F

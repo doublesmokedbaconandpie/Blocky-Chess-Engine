@@ -384,7 +384,7 @@ bool Board::isLegalMove(const BoardMove move) const {
         tmpPieceSets[targetColor] ^= targetSquare;
         tmpPieceSets[targetPiece] ^= targetSquare;
     }
-    
+
     return !currKingInAttack(tmpPieceSets, this->isWhiteTurn);
 }
     
