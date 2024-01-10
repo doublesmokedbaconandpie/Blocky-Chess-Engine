@@ -17,7 +17,7 @@ Info Searcher::startThinking() {
     Info result;
 
     // stack needs to label distances from root
-    for (int i = 0; i < this->stack.size(); ++i) {
+    for (size_t i = 0; i < this->stack.size(); ++i) {
         this->stack[i].distanceFromRoot = i;
     }
 

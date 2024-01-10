@@ -49,9 +49,9 @@ void MovePicker::assignMoveScores(const Board& board) {
         if (ASSIGN_TTMOVE && move == this->TTMove) {
             this->moveScores[i] = MoveScores::PV;
         }
-	// Captures
+        // Captures
         else if (ASSIGN_CAPTURES && board.moveIsCapture(move)) {
-	    // Score using MVV-LVA
+            // Score using MVV-LVA
             const int victimValue = this->getVictimScore(board, move) << 8;
             const int attackerValue = pieceValues[board.getPiece(move.sqr1())];
             this->moveScores[i] = MoveScores::Capture + victimValue - attackerValue;

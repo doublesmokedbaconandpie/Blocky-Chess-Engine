@@ -234,9 +234,8 @@ void Board::makeMove(BoardMove move) {
 }
 
 void Board::undoMove() {
-    if (this->moveHistory.size() == 0) {
-        return;
-    }
+    assert(this->moveHistory.size() != 0);
+
     const BoardState prev = moveHistory.back();
 
     const pieceTypes prevKing = this->isWhiteTurn ? BKing : WKing;
