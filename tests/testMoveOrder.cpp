@@ -10,7 +10,6 @@ class MoveOrderTest : public testing::Test {
         }
 };
 
-
 TEST_F(MoveOrderTest, perftStartpos) {
     Board board;
     ASSERT_EQ(perftMovePicker<true>(board, 0), 1);

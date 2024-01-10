@@ -52,7 +52,7 @@ uint64_t perftMovePicker(Board& board, int depthLeft) {
         const uint64_t moveCount = perftMovePicker<false>(board, depthLeft - 1);
         leafNodeCount += moveCount;
         if (printMoves) {
-            std::cout << move << ": " << moveCount << std::endl; 
+            std::cout << move << ": " << moveCount << std::endl;
         }
         board.undoMove();
     }
