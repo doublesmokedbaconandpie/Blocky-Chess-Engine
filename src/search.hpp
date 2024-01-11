@@ -25,9 +25,15 @@ struct Info {
     uint64_t timeElapsed{};
 };
 
+// triangular pv-table row
+struct PVRow {
+    std::array<BoardMove, MAX_PLY> moves{};
+    int length{};
+};
+
 struct StackEntry {
     BoardMove killerMove{};
-    int distanceFromRoot{};
+    int ply{};
 };
 
 class Searcher {
@@ -56,6 +62,8 @@ class Searcher {
         BoardMove finalMove;
 
         std::array<StackEntry, MAX_PLY> stack;
+        std::array<PVRow, MAX_PLY> PVTable;
+
         Timeman::TimeManager tm;
         int depth_limit;
         bool printInfo = true;

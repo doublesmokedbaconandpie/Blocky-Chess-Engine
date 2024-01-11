@@ -18,7 +18,7 @@ Info Searcher::startThinking() {
 
     // stack needs to label distances from root
     for (size_t i = 0; i < this->stack.size(); ++i) {
-        this->stack[i].distanceFromRoot = i;
+        this->stack[i].ply = i;
     }
 
     // perform iterative deepening
@@ -26,7 +26,7 @@ Info Searcher::startThinking() {
     for (int i = 1; i <= this->depth_limit; i++) {
         const int score = this->aspiration(i, prevEval);
         prevEval = score;
-        result.move = this->finalMove;
+        result.move = this->PVTable[0].moves[0];
         result.nodes = this->nodes;
         result.timeElapsed = this->tm.getTimeElapsed();
 
@@ -94,10 +94,10 @@ int Searcher::aspiration(int depth, int prevEval) {
 
 template <NodeTypes NODE>
 int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
-    constexpr bool ISROOT = NODE == ROOT;
     constexpr bool ISPV = NODE == ROOT || NODE == PV;
     constexpr bool ISNMP = NODE == NMP;
     const int oldAlpha = alpha;
+    this->PVTable[ss->ply].length = ss->ply;
 
     // time up
     if (this->stopSearching()) {
@@ -105,7 +105,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     }
 
     ++this->nodes;
-    this->max_seldepth = std::max(ss->distanceFromRoot, this->max_seldepth);
+    this->max_seldepth = std::max(ss->ply, this->max_seldepth);
 
     // fifty move rule
     if (this->board.fiftyMoveRule >= 100) {
@@ -213,9 +213,13 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         if (score > bestscore) {
             bestscore = score;
             bestMove = move;
-            if (ISROOT) {
-                this->finalMove = bestMove;
+
+            // update the PV-Table
+            this->PVTable[ss->ply].moves[ss->ply] = move;
+            for (int i = ss->ply + 1; i < this->PVTable[ss->ply + 1].length; ++i) {
+                this->PVTable[ss->ply].moves[i] = this->PVTable[ss->ply + 1].moves[i];
             }
+            this->PVTable[ss->ply].length = this->PVTable[ss->ply + 1].length;
 
             // update alpha if we have proven that we can guarantee that lower bound
             if (score > alpha) {
@@ -235,7 +239,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     // checkmate or stalemate
     if (movePicker.getMovesPicked() == 0) {
         if (inCheck) {
-            return MIN_ALPHA + ss->distanceFromRoot;
+            return MIN_ALPHA + ss->ply;
         }
         return DRAW_SCORE;
     }
@@ -254,7 +258,7 @@ int Searcher::quiesce(int alpha, int beta, StackEntry* ss) {
     }
 
     ++this->nodes;
-    this->max_seldepth = std::max(ss->distanceFromRoot, this->max_seldepth);
+    this->max_seldepth = std::max(ss->ply, this->max_seldepth);
 
     const int stand_pat = this->board.evaluate();
     if (stand_pat >= beta)
@@ -315,8 +319,6 @@ void Searcher::outputUciInfo(Info searchResult) const {
     if (searchResult.timeElapsed > 0) { // prevents divide by 0
         std::cout << "nps " << searchResult.nodes * 1000 / searchResult.timeElapsed  << ' ';
     }
-
-    std::cout << "pv " << searchResult.move << ' ';
     
     if (searchResult.mateIn == NO_SCORE) {
         std::cout << "score cp " << searchResult.eval << ' ';
@@ -324,8 +326,27 @@ void Searcher::outputUciInfo(Info searchResult) const {
         std::cout << "score mate " << searchResult.mateIn << ' ';
     }
     std::cout << "hashfull " << TTable::Table.hashFull() << ' ';
+
+    // principle variations are checked for a valid sequence of moves; if not valid, a warning is given;
+    std::cout << "pv ";
+    Board tmpBoard = this->board;
+    BoardMove move;
+    bool illegalMove = false;
+    for (int i = 0; i < this->PVTable[0].length; ++i) {
+        move = this->PVTable[0].moves[i];
+        std::cout << move.toStr() << ' ';
+        if (!tmpBoard.isLegalMove(move)) {
+            illegalMove = true;
+            break;
+        }
+
+        tmpBoard.makeMove(move);
+    }
     std::cout << std::endl;
 
+    if (illegalMove) {
+        std::cout << "Warning! illegal move in PV: " << move.toStr() << std::endl;
+    }
 }
 
 } // namespace Search
