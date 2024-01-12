@@ -47,6 +47,6 @@ In both cases, the binary will be located within the ```build``` folder.
 
 This engine would have not been possible alone. Some resources used included but were not limited to:
 * The Chess Programming Wiki for providing a foundation on how to get started
-* The chess engine development community's collective knowledge
-* Reference engines such as Stockfish, Ethereal, Stormphrax, and Alexandria
+* The chess engine community's collective knowledge
+* Reference engines such as Stockfish, Ethereal, Smallbrain, Stormphrax, and Alexandria
 * Gedas for his Texel-Tuner used in Blocky's evaluation
