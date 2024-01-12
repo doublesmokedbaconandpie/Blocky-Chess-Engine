@@ -215,11 +215,13 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
             bestMove = move;
 
             // update the PV-Table
-            this->PVTable[ss->ply].moves[ss->ply] = move;
-            for (int i = ss->ply + 1; i < this->PVTable[ss->ply + 1].length; ++i) {
-                this->PVTable[ss->ply].moves[i] = this->PVTable[ss->ply + 1].moves[i];
+            if (ISPV) {
+                this->PVTable[ss->ply].moves[ss->ply] = move;
+                for (int i = ss->ply + 1; i < this->PVTable[ss->ply + 1].length; ++i) {
+                    this->PVTable[ss->ply].moves[i] = this->PVTable[ss->ply + 1].moves[i];
+                }
+                this->PVTable[ss->ply].length = this->PVTable[ss->ply + 1].length;
             }
-            this->PVTable[ss->ply].length = this->PVTable[ss->ply + 1].length;
 
             // update alpha if we have proven that we can guarantee that lower bound
             if (score > alpha) {
