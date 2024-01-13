@@ -6,12 +6,13 @@
 #include "eval.hpp"
 #include "ttable.hpp"
 #include "timeman.hpp"
+#include "types.hpp"
 
 namespace Search {
 
 constexpr int DRAW_SCORE = 0;
-constexpr int MIN_ALPHA = -1000000;
-constexpr int MAX_BETA = 1000000;
+constexpr int INF_SCORE = 1000000;
+constexpr int MATE_IN_SCORE = INF_SCORE - MAX_PLY;
 constexpr int NO_SCORE = -100000000;
 
 // used for outside UCI representation    
