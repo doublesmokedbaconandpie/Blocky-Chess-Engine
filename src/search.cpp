@@ -151,6 +151,10 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - 3, ss + 1);
         board.unmakeNullMove();
         if (nullMoveScore >= beta) {
+            // don't return mated stores
+            if (nullMoveScore >= MATE_IN_SCORE) {
+                nullMoveScore = beta;
+            }
             return nullMoveScore;
         }
     }
