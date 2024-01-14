@@ -125,6 +125,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
      * Probe Tranposition Table
     *************/
     BoardMove TTMove;
+    int staticEval;
     TTable::Entry entry;
     if (TTable::Table.entryExists(this->board.zobristKey)) {
         entry = TTable::Table.getEntry(this->board.zobristKey);
@@ -138,6 +139,17 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         }
 
         TTMove = entry.move;
+        staticEval = entry.eval;
+    } else {
+        staticEval = this->board.evaluate();
+    }
+
+    /************
+     * Reverse Futility Pruning
+     * If the evaluation is too far above beta, assume that there is no chance for the opponent to catch up
+    *************/
+    if (!ISPV && depth < 5 && staticEval - (100 * depth) >= beta) {
+        return beta;
     }
 
     const bool inCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
