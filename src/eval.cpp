@@ -12,9 +12,9 @@ namespace Eval {
 
 int Info::getRawEval(const PieceSets& pieceSets) const {
     // positive values means white is winning, negative means black
-    int op = this->opScore + evalPawns<true>(pieceSets);
-    int eg = this->egScore + evalPawns<false>(pieceSets);
-    int score = (op * phase + eg * (totalPhase - phase)) / totalPhase;
+    const int op = this->opScore + evalPawns<true>(pieceSets);
+    const int eg = this->egScore + evalPawns<false>(pieceSets);
+    const int score = (op * phase + eg * (totalPhase - phase)) / totalPhase;
     return score + mopUpScore(pieceSets, score);
 }
 
@@ -66,7 +66,8 @@ int Info::evalPassedPawns(const PieceSets& pieceSets) const {
     while (allyPawnSet) {
         pawn = popLsb(allyPawnSet);
         if (isPassedPawn(pawn, enemyPawnSet, ISWHITE)) {
-            score += PASSED_PAWNS[getFile(pawn)];
+            int index = ISWHITE ? getRank(pawn) : getRank(pawn) ^ 7;
+            score += PASSED_PAWNS[index];
         }
     }
 

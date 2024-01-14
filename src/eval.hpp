@@ -30,8 +30,8 @@ template<bool IS_OPENING>
 int getPlacementScore(Square square, pieceTypes currPiece);
 int getPiecePhase(pieceTypes piece);
 
-constexpr std::array<int, NUM_FILES> passedPawnOp = {1};
-constexpr std::array<int, NUM_FILES> passedPawnEg = {6};
+constexpr std::array<int, NUM_RANKS> passedPawnOp = {1};
+constexpr std::array<int, NUM_RANKS> passedPawnEg = {6};
 
 constexpr std::array<int, NUM_PIECES> pieceValsOp = {0, 856, 309, 361, 391, 67, };
 constexpr std::array<int, NUM_PIECES> pieceValsEg = {0, 793, 276, 282, 473, 120, };

@@ -73,22 +73,24 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
         const int pieceOffset = colorlessPiece * BOARD_SIZE;
 
         // adjust coefficients
+        passedPawnFlag = 0;
         if (colorlessPiece == WPawn) {
             if (piece == WPawn) {
                 passedPawnFlag = static_cast<int>(isPassedPawn(i, board.pieceSets[BPawn], true));
             } else {
                 passedPawnFlag = -static_cast<int>(isPassedPawn(i, board.pieceSets[WPawn], false));
             }
-            result.coefficients[PASSED_PAWNS_OFFSET + getFile(i)] += passedPawnFlag;
         }
 
         // white and black pieces use different eval indices in piece square tables
         if (isWhitePiece(piece)) {
             result.coefficients[pieceOffset + i]++;
             result.coefficients[PIECE_VALS_OFFSET + colorlessPiece]++;
+            result.coefficients[PASSED_PAWNS_OFFSET + getRank(i)] += passedPawnFlag;
         } else {
             result.coefficients[pieceOffset + (i ^ 56)]--;
             result.coefficients[PIECE_VALS_OFFSET + colorlessPiece]--;
+            result.coefficients[PASSED_PAWNS_OFFSET + (getRank(i) ^ 7)] += passedPawnFlag;
         }
     }
 
