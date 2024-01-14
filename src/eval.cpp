@@ -18,6 +18,30 @@ int Info::getRawEval(const PieceSets& pieceSets) const {
     return score + mopUpScore(pieceSets, score);
 }
 
+void Info::addPiece(Square square, pieceTypes piece) {
+    this->opScore += Eval::getPlacementScore<true>(square, piece);
+    this->egScore += Eval::getPlacementScore<false>(square, piece);
+    this->phase += getPiecePhase(piece);
+}
+
+void Info::removePiece(Square square, pieceTypes piece) {
+    this->opScore -= Eval::getPlacementScore<true>(square, piece);
+    this->egScore -= Eval::getPlacementScore<false>(square, piece);
+    this->phase -= getPiecePhase(piece);
+}
+
+int Info::mopUpScore(const PieceSets& pieceSets, int score) const {
+    // only use mop up for checkmate positions without pawns
+    if (std::abs(score) < 450 || (pieceSets[WPawn] | pieceSets[BPawn]) ) {
+        return 0;
+    }
+    // winning kings have scores boosted for kings approaching each other
+    const int winningMopUp = score > 0 ? 1 : -1;
+    const int kingDistance = std::abs(lsb(pieceSets[WKing]) - lsb(pieceSets[BKing]));
+    return winningMopUp * (64 - kingDistance) * 5;
+
+}
+
 template<bool ISOPENING>
 int Info::evalPawns(const PieceSets& pieceSets) const {
     int score = 0;
@@ -47,30 +71,6 @@ int Info::evalPassedPawns(const PieceSets& pieceSets) const {
     }
 
     return score;
-}
-
-void Info::addPiece(Square square, pieceTypes piece) {
-    this->opScore += Eval::getPlacementScore<true>(square, piece);
-    this->egScore += Eval::getPlacementScore<false>(square, piece);
-    this->phase += getPiecePhase(piece);
-}
-
-void Info::removePiece(Square square, pieceTypes piece) {
-    this->opScore -= Eval::getPlacementScore<true>(square, piece);
-    this->egScore -= Eval::getPlacementScore<false>(square, piece);
-    this->phase -= getPiecePhase(piece);
-}
-
-int Info::mopUpScore(const PieceSets& pieceSets, int score) const {
-    // only use mop up for checkmate positions without pawns
-    if (std::abs(score) < 450 || (pieceSets[WPawn] | pieceSets[BPawn]) ) {
-        return 0;
-    }
-    // winning kings have scores boosted for kings approaching each other
-    const int winningMopUp = score > 0 ? 1 : -1;
-    const int kingDistance = std::abs(lsb(pieceSets[WKing]) - lsb(pieceSets[BKing]));
-    return winningMopUp * (64 - kingDistance) * 5;
-
 }
 
 int getPiecePhase(pieceTypes piece) {
