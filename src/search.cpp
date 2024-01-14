@@ -148,7 +148,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
      * Reverse Futility Pruning
      * If the evaluation is too far above beta, assume that there is no chance for the opponent to catch up
     *************/
-    if (!ISPV && depth < 5 && staticEval - (70 * depth) >= beta) {
+    if (!ISPV && depth < 5 && staticEval - (100 * depth) >= beta) {
         return beta;
     }
 
