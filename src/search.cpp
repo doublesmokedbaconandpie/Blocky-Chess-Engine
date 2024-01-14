@@ -44,9 +44,9 @@ Info Searcher::startThinking() {
         }
 
         // compute mate-in
-        if (abs(result.eval) > MAX_BETA - 100) {
+        if (abs(result.eval) >= MATE_IN_SCORE) {
             int playerMating = result.eval < 0 ? -1 : 1;
-            result.mateIn = playerMating * (MAX_BETA - abs(result.eval)); // convert eval to ply
+            result.mateIn = playerMating * (INF_SCORE - abs(result.eval)); // convert eval to ply
             result.mateIn = (result.mateIn + playerMating) / 2; // convert ply to moves
         }
 
@@ -69,8 +69,8 @@ int Searcher::aspiration(int depth, int prevEval) {
 
     // don't use aspiration bounds for low search depths as scores at low depths are less stable
     if (depth <= 6) {
-        alpha = MIN_ALPHA;
-        beta = MAX_BETA;
+        alpha = -INF_SCORE;
+        beta = INF_SCORE;
     } else {
         alpha = prevEval - delta;
         beta = prevEval + delta;
@@ -85,8 +85,8 @@ int Searcher::aspiration(int depth, int prevEval) {
             break;
         }
 
-        alpha = std::max(alpha - delta, MIN_ALPHA);
-        beta = std::min(beta + delta, MAX_BETA);
+        alpha = std::max(alpha - delta, -INF_SCORE);
+        beta = std::min(beta + delta, INF_SCORE);
         delta *= 2;
     }
     return result;
@@ -151,6 +151,10 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - 3, ss + 1);
         board.unmakeNullMove();
         if (nullMoveScore >= beta) {
+            // don't return mated stores
+            if (nullMoveScore >= MATE_IN_SCORE) {
+                nullMoveScore = beta;
+            }
             return nullMoveScore;
         }
     }
@@ -159,7 +163,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     MoveOrder::MovePicker movePicker(board, MoveOrder::All, TTMove, ss->killerMove);
 
     // start search through moves
-    int score, bestscore = MIN_ALPHA;
+    int score, bestscore = -INF_SCORE;
     BoardMove bestMove;
     bool doFullNullSearch, doPVS;
     while (movePicker.movesLeft(board)) {
@@ -241,7 +245,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     // checkmate or stalemate
     if (movePicker.getMovesPicked() == 0) {
         if (inCheck) {
-            return MIN_ALPHA + ss->ply;
+            return -INF_SCORE + ss->ply;
         }
         return DRAW_SCORE;
     }
@@ -269,7 +273,7 @@ int Searcher::quiesce(int alpha, int beta, StackEntry* ss) {
         alpha = stand_pat;
 
     MoveOrder::MovePicker movePicker(board, MoveOrder::Captures);
-    int score = MIN_ALPHA;
+    int score = -INF_SCORE;
     while (movePicker.movesLeft(board)) {
         BoardMove move = movePicker.pickMove();
         board.makeMove(move);
