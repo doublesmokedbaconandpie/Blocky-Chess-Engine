@@ -40,7 +40,7 @@ struct Board {
     bool moveIsCapture(BoardMove move) const;
     
     bool isLegalMove(const BoardMove move) const;
-    int evaluate() const;
+    int evaluate();
 
     friend bool operator==(const Board& lhs, const Board& rhs);
     friend std::ostream& operator<<(std::ostream& os, const Board& target);

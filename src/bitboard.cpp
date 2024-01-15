@@ -59,6 +59,19 @@ uint64_t getAntiDiagMask(int square) {
     return flipVertical(DIAGS_MASK[7 - getRank(square) + getFile(square)]);
 }
 
+bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn) {
+    const int file = getFile(pawn);
+    const int rank = getRank(pawn);
+    uint64_t adjacentEnemies = ADJ_FILES_AND_FILES_MASK[file] & enemyPawns;
+    if (!adjacentEnemies) {
+        return true;
+    }
+
+    const int backEnemy = isWhitePawn ? popLsb(adjacentEnemies) : popMsb(adjacentEnemies);
+    const int enemyRank = getRank(backEnemy);
+    return isWhitePawn ? rank <= enemyRank : rank >= enemyRank;
+}
+
 // below functions are for debugging and testing
 
 void printHex(uint64_t bitboard) {

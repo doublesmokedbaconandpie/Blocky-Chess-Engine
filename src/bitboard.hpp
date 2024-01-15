@@ -56,10 +56,24 @@ constexpr std::uint64_t c_u64(T&& x) {
     return static_cast<std::uint64_t>(std::forward<T>(x));
 }
 
-constexpr std::array<uint64_t, 8> FILES_MASK = {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
-constexpr std::array<uint64_t, 8> RANKS_MASK = {RANK_8, RANK_7, RANK_6, RANK_5, RANK_4, RANK_3, RANK_2, RANK_1};
+constexpr std::array<uint64_t, NUM_FILES> FILES_MASK = {FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H};
+constexpr std::array<uint64_t, NUM_RANKS> RANKS_MASK = {RANK_8, RANK_7, RANK_6, RANK_5, RANK_4, RANK_3, RANK_2, RANK_1};
 constexpr std::array<uint64_t, 15> DIAGS_MASK = {DIAG_0, DIAG_1, DIAG_2, DIAG_3, DIAG_4, DIAG_5, DIAG_6, DIAG_7,
                                                  DIAG_8, DIAG_9, DIAG_10, DIAG_11, DIAG_12, DIAG_13, DIAG_14};
+
+constexpr auto ADJ_FILES_AND_FILES_MASK = []{
+    std::array<uint64_t, NUM_FILES> masks = FILES_MASK;
+    // A and H files only have 1 adjacent files
+    masks[0] |= FILE_B;
+    masks[7] |= FILE_G;
+
+    // other files have left and right neighbors
+    for (int i = 1; i < 7; ++i) {
+        masks[i] |= FILES_MASK[i - 1] | FILES_MASK[i + 1];
+    }
+
+    return masks;
+}();
 
 int lsb(uint64_t bitboard);
 int msb(uint64_t bitboard);
@@ -73,6 +87,8 @@ uint64_t getFileMask(int square);
 uint64_t getRankMask(int square);
 uint64_t getDiagMask(int square);
 uint64_t getAntiDiagMask(int square);
+
+bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn);
 
 // for debugging and testing
 void printHex(uint64_t bitboard);

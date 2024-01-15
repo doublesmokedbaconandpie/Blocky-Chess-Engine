@@ -5,6 +5,8 @@
 #include <unordered_map>
 
 constexpr int BOARD_SIZE = 64;
+constexpr int NUM_FILES = 8;
+constexpr int NUM_RANKS = 8;
 constexpr int NUM_BITBOARDS = 14;
 constexpr int NUM_COLORED_PIECES = 12;
 constexpr int NUM_PIECES = 6;
