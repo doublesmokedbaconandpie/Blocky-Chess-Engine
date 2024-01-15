@@ -54,7 +54,7 @@ int Info::evalPawns(const PieceSets& pieceSets) const {
 
 template<bool ISOPENING, bool ISWHITE>
 int Info::evalPassedPawns(const PieceSets& pieceSets) const {
-    constexpr auto PASSED_PAWNS = ISOPENING ? passedPawnOp : passedPawnEg;
+    constexpr auto& PASSED_PAWNS = ISOPENING ? passedPawnOp : passedPawnEg;
     constexpr auto allyPawn  = ISWHITE ? WPawn : BPawn;
     constexpr auto enemyPawn = ISWHITE ? BPawn : WPawn;
 
