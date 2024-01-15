@@ -1,29 +1,39 @@
 #pragma once
 
 #include "move.hpp"
+#include "bitboard.hpp"
 #include "types.hpp"
 
 namespace Eval {
 
 constexpr int totalPhase = 24;
+// pawn hash has a prime number size to prevent collisions
+constexpr int PAWN_HASH_SIZE = 1024;
+
+struct PawnHashEntry {
+    int opScore{};
+    int egScore{};
+    uint64_t key{};
+};
 
 class Info {
     public:
         Info() = default;
-        int getRawEval(const PieceSets& pieceSets) const;
+        int getRawEval(const PieceSets& pieceSets);
         void addPiece(Square square, pieceTypes piece);
         void removePiece(Square square, pieceTypes piece);
 
     private:
+        const PawnHashEntry& getPawnInfo(const PieceSets& pieceSets);
         template<bool ISOPENING>
-        int evalPawns(const PieceSets& pieceSets) const;
-        template<bool ISOPENING, bool ISWHITE>
-        int evalPassedPawns(const PieceSets& pieceSets) const;
+        int evalPassedPawns(const PieceSets& pieceSets, bool isWhiteTurn) const;
         int mopUpScore(const PieceSets& pieceSets, int score) const;
 
         int opScore{};
         int egScore{};
         int phase{};
+        std::array<PawnHashEntry, PAWN_HASH_SIZE> pawnHashTable{};
+        uint64_t pawnKey{};
 };
 
 template<bool IS_OPENING>

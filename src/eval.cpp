@@ -6,14 +6,16 @@
 #include "bitboard.hpp"
 #include "move.hpp"
 #include "bitboard.hpp"
+#include "zobrist.hpp"
 #include "types.hpp"
 
 namespace Eval {
 
-int Info::getRawEval(const PieceSets& pieceSets) const {
+int Info::getRawEval(const PieceSets& pieceSets) {
     // positive values means white is winning, negative means black
-    const int op = this->opScore + evalPawns<true>(pieceSets);
-    const int eg = this->egScore + evalPawns<false>(pieceSets);
+    const auto& pawnInfo = this->getPawnInfo(pieceSets);
+    const int op = this->opScore + pawnInfo.opScore;
+    const int eg = this->egScore + pawnInfo.egScore;
     const int score = (op * phase + eg * (totalPhase - phase)) / totalPhase;
     return score + mopUpScore(pieceSets, score);
 }
@@ -22,12 +24,18 @@ void Info::addPiece(Square square, pieceTypes piece) {
     this->opScore += Eval::getPlacementScore<true>(square, piece);
     this->egScore += Eval::getPlacementScore<false>(square, piece);
     this->phase += getPiecePhase(piece);
+    if (piece == WPawn || piece == BPawn) {
+        this->pawnKey ^= Zobrist::pieceKeys[piece][square];
+    }
 }
 
 void Info::removePiece(Square square, pieceTypes piece) {
     this->opScore -= Eval::getPlacementScore<true>(square, piece);
     this->egScore -= Eval::getPlacementScore<false>(square, piece);
     this->phase -= getPiecePhase(piece);
+    if (piece == WPawn || piece == BPawn) {
+        this->pawnKey ^= Zobrist::pieceKeys[piece][square];
+    }
 }
 
 int Info::mopUpScore(const PieceSets& pieceSets, int score) const {
@@ -42,21 +50,26 @@ int Info::mopUpScore(const PieceSets& pieceSets, int score) const {
 
 }
 
-template<bool ISOPENING>
-int Info::evalPawns(const PieceSets& pieceSets) const {
-    int score = 0;
-
-    score += evalPassedPawns<ISOPENING, true>(pieceSets);
-    score -= evalPassedPawns<ISOPENING, false>(pieceSets);
-
-    return score;
+const PawnHashEntry& Info::getPawnInfo(const PieceSets& pieceSets) {
+    // probe pawn hash table for precomputed values
+    // if not found, then compute the pawn values and replace the entry
+    PawnHashEntry& entry = this->pawnHashTable[this->pawnKey % PAWN_HASH_SIZE];
+    if (this->pawnKey != entry.key) {
+        entry.opScore = entry.egScore = 0;
+        entry.opScore += evalPassedPawns<true>(pieceSets, true);
+        entry.opScore -= evalPassedPawns<true>(pieceSets, false);
+        entry.egScore += evalPassedPawns<false>(pieceSets, true);
+        entry.egScore -= evalPassedPawns<false>(pieceSets, false);
+        entry.key = this->pawnKey;
+    }
+    return entry;
 }
 
-template<bool ISOPENING, bool ISWHITE>
-int Info::evalPassedPawns(const PieceSets& pieceSets) const {
+template<bool ISOPENING>
+int Info::evalPassedPawns(const PieceSets& pieceSets, bool isWhiteTurn) const {
     constexpr auto& PASSED_PAWNS = ISOPENING ? passedPawnOp : passedPawnEg;
-    constexpr auto allyPawn  = ISWHITE ? WPawn : BPawn;
-    constexpr auto enemyPawn = ISWHITE ? BPawn : WPawn;
+    const auto allyPawn  = isWhiteTurn ? WPawn : BPawn;
+    const auto enemyPawn = isWhiteTurn ? BPawn : WPawn;
 
     auto allyPawnSet = pieceSets[allyPawn];
     const auto enemyPawnSet = pieceSets[enemyPawn];
@@ -65,8 +78,8 @@ int Info::evalPassedPawns(const PieceSets& pieceSets) const {
 
     while (allyPawnSet) {
         pawn = popLsb(allyPawnSet);
-        if (isPassedPawn(pawn, enemyPawnSet, ISWHITE)) {
-            int index = ISWHITE ? getRank(pawn) : getRank(pawn) ^ 7;
+        if (isPassedPawn(pawn, enemyPawnSet, isWhiteTurn)) {
+            const int index = isWhiteTurn ? getRank(pawn) : getRank(pawn) ^ 7;
             score += PASSED_PAWNS[index];
         }
     }
