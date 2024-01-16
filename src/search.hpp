@@ -15,6 +15,8 @@ constexpr int INF_SCORE = 1000000;
 constexpr int MATE_IN_SCORE = INF_SCORE - MAX_PLY;
 constexpr int NO_SCORE = -100000000;
 
+void initLMRTable();
+
 // used for outside UCI representation    
 struct Info {
     uint64_t nodes{};
