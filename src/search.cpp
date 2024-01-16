@@ -37,7 +37,7 @@ std::array<std::array<int, MAX_MOVES>, MAX_PLY> LMRTable{};
 void initLMRTable() {
     for (int depth = 1; depth < MAX_PLY; ++depth) {
         for (int moves = 1; moves < MAX_MOVES; ++moves) {
-            LMRTable[depth][moves] = static_cast<int>(1.0 + std::log(depth) * std::log(moves) / 6.00);
+            LMRTable[depth][moves] = static_cast<int>(1.2 + std::log(depth) * std::log(moves) / 4.00);
         }
     }
 }
