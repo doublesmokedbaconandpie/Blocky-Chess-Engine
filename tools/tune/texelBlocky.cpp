@@ -44,7 +44,7 @@ parameters_t BlockyEval::get_initial_parameters() {
 }
 
 EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
-    const Board board(fen);
+    Board board(fen);
     EvalResult result;
     const auto isWhitePiece = [](pieceTypes piece) {
         return piece >= WKing && piece <= WPawn;

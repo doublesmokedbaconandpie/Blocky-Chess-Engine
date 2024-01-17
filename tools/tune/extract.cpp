@@ -1,5 +1,6 @@
 #include <cassert>
 #include <fstream>
+#include <filesystem>
 #include <iostream>
 #include <string>
 #include <stdexcept>
@@ -12,17 +13,29 @@
 #include "move.hpp"
 #include "attacks.hpp"
 #include "bitboard.hpp"
+#include "zobrist.hpp" // for rand64()
 #include "types.hpp"
 
 // This program is meant to convert the pgns from a Cutechess match into a data format
 // that is easy to parse; make sure not to have any incompleted games within those pgns
+
+std::array<uint64_t, 4> seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
+
+constexpr int MOD_FENS = 2;
 
 int main() {
     // initialize prerequisites
     Attacks::init();
     std::vector<std::string> pgns, dests;
     readFileNames(pgns, dests);
+
+    // print filenames
+    std::cout << "Files to process:\n";
     assert(pgns.size() == dests.size());
+    for (int i = 0; i < pgns.size(); ++i) {
+        std::cout << "Pgn: " << pgns[i] << " Dest: " << dests[i] << '\n';
+    }
+    std::cout << '\n';
 
     // main file reading loop
     int games = 0;
@@ -43,11 +56,15 @@ void extractFromFile(std::string pgn, std::string destName, int& games) {
     assert(dest);
 
     while (!file.eof()) {
+        bool blackStarts;
         const auto result = getGameResult(file);
-        const auto startFen = getStartFen(file);
-        const auto fens = getPositions(file, startFen, result);
+        const auto startFen = getStartFen(file, blackStarts);
+        const auto fens = getPositions(file, startFen, result, blackStarts);
         storeFenResults(dest, fens, result);
-        ++games;
+
+        if (result != NA) {
+            ++games;
+        }
         if (games % 500 == 0) {
             std::cout << "Games processed: " << games << std::endl;
         }
@@ -64,9 +81,14 @@ void readFileNames(std::vector<std::string>& pgns, std::vector<std::string>& des
         // read a line in the csv
         std::getline(file, pgn, ',');
         std::getline(file, dest);
+        // remove newlines
+        pgn.erase(std::remove(pgn.begin(), pgn.end(), '\n'), pgn.end());
+        dest.erase(std::remove(dest.begin(), dest.end(), '\n'), dest.end());
         // save corresponding input and outputs
-        pgns.push_back(pgn);
-        dests.push_back(dest);
+        if (std::filesystem::is_regular_file(pgn) && dest != "") {
+            pgns.push_back(pgn);
+            dests.push_back(dest);
+        }
     }
 }
 
@@ -97,20 +119,31 @@ WinningColor getGameResult(std::ifstream& file) {
 
 // for each game, there is a starting position, which can then be incremented with moves
 // some opening books use moves from startpos, others start from a fen
-std::string getStartFen(std::ifstream& file) {
+std::string getStartFen(std::ifstream& file, bool& blackStarts) {
     std::string token, fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-    while (token != "1." && !file.eof()) {
+    while (token != "1." && token != "1..." && !file.eof()) {
         file >> token;
+        // once fen is updated, keep churning tokens until the first move is found
         if (token == "[FEN") {
             std::getline(file, fen, ']');
             fen.erase(0, 2);
             fen.erase(fen.size() - 1, 1);
         }
+
+        // once first move is found, check who starts first
+        if (token == "1.") {
+            blackStarts = false;
+            break;
+        }
+        if (token == "1...") {
+            blackStarts = true;
+            break;
+        }
     }
     return fen;
 }
 
-std::vector<std::string> getPositions(std::ifstream& file, std::string startFen, const WinningColor result) {
+std::vector<std::string> getPositions(std::ifstream& file, std::string startFen, const WinningColor result, bool blackStarts) {
     // Games are generally stored in the following format:
     // 1. Nf3 {book} Nc6 {book} 2. b3 {book} d6 {book}
     // ...
@@ -123,10 +156,32 @@ std::vector<std::string> getPositions(std::ifstream& file, std::string startFen,
     if (file.eof()) {
         return fens;
     }
-    
-    // read moves
+
     Board board(startFen);
     BoardMove move;
+
+    // if black is to move, do black's turn first before getting into the main loop for formatting reasons
+    if (blackStarts) {
+        std::string fen = board.toFen();
+        // move
+        file >> token;
+        if (token == toStr(result)) {
+            return fens;
+        }
+        move = getMove(token, board);
+
+        // move annotation
+        while (token.back() != '}') {
+            file >> token;
+        }
+        if (token != "{book}") {
+            fens.push_back(fen);
+        }
+
+        file >> token; // load the next move number
+    }
+
+    // read moves
     while (token != toStr(result)) {
         // two sides make moves
         for (int i = 0; i < 2; i++) {
@@ -248,7 +303,7 @@ BoardMove getMove(std::string input, Board& board) {
     moves.erase(std::remove_if(moves.begin(), moves.end(), notDest), moves.end());
 
     if (moves.size() != 1) {
-        std::cout << moves.size() << std::endl;
+        std::cout << "Moves size: "<< moves.size() << std::endl;
         throw std::runtime_error("Move not selected for: " + origInput + " with fen " + board.toFen());
     }
     board.makeMove(moves[0]);
@@ -261,6 +316,12 @@ void storeFenResults(std::ofstream& file, std::vector<std::string> fens, Winning
     std::string resultStr = toStr(result);
     int storedPositions = 0;
     for (std::string fen: fens) {
+        // only accept half of all fens
+        // accepting every other fen doesn't work because that would only accept a single color for any given game
+        if (Zobrist::rand64(seed) % MOD_FENS == 0) {
+            continue;
+        }
+
         Board board(fen);
 
         // filter unwanted positions
