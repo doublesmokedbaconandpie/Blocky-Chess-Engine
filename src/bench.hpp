@@ -9,7 +9,6 @@ namespace Bench {
 
 constexpr int BENCHDEPTH = 8;
 
-// some fens from CPW
 const std::vector<std::string> fens = {
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
@@ -29,6 +28,14 @@ const std::vector<std::string> fens = {
     "2r2rk1/pp1bbpp1/1n2pn1p/q7/3P3B/1BN2N2/PPQ2PPP/3R1RK1 w - - 5 15",
     "rnr3k1/p3qpp1/1p2b2p/1Bpp4/3P4/Q3PN2/PP3PPP/2R1K2R b K - 3 14",
     "8/p2bk2p/1p3pp1/2pp4/5PP1/2PPKN1P/P1P5/8 b - - 5 35",
+    "8/8/P5k1/3R2p1/7p/4K2P/8/r7 w - - 1 74",
+    "8/2k1b3/2P5/3KP2B/8/8/8/8 w - - 0 1",
+    "6k1/2b2p1p/6p1/p1p5/PpN1P3/1P3P2/6PP/6K1 w - - 0 1",
+
+    // mate positions
+    "8/8/6K1/4q3/1p1k4/1P5r/8/8 b - - 3 71",
+    "r7/p5R1/b1ppr3/2Nq4/1k5P/8/4pBP1/R1Q3K1 w - - 7 43",
+    "5Q2/7p/6pk/p3p3/4P3/6PP/6BK/5R2 b - - 2 45",
 };
 
 uint64_t start();
