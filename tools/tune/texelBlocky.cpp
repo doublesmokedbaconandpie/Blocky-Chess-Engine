@@ -99,46 +99,43 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
 }
 
 void BlockyEval::print_parameters(const parameters_t& parameters) {
-    std::cout << "PieceValsOp: \n{";
-    printArr(parameters, PIECE_VALS_OFFSET, 0, NUM_PIECES);
+    std::cout << "PieceVals: \n{";
+    printArr(parameters, PIECE_VALS_OFFSET, NUM_PIECES);
 
-    std::cout << "PieceValsEg: \n{";
-    printArr(parameters, PIECE_VALS_OFFSET, 1, NUM_PIECES);
+    std::cout << "PassedPawns: \n{";
+    printArr(parameters, PASSED_PAWNS_OFFSET, NUM_FILES);
 
-    std::cout << "PassedPawnsOp: \n{";
-    printArr(parameters, PASSED_PAWNS_OFFSET, 0, NUM_FILES);
-
-    std::cout << "PassedPawnsEg: \n{";
-    printArr(parameters, PASSED_PAWNS_OFFSET, 1, NUM_FILES);
-
-    std::cout << "Opening PSQT: \n";
-    printPSQT(parameters, 0);
-
-    std::cout << "Endgame PSQT: \n";
-    printPSQT(parameters, 1);
+    std::cout << "PSQT: \n";
+    printPSQT(parameters);
 }
 
-void printPSQT(const parameters_t& parameters, int index) {
+void printPSQT(const parameters_t& parameters) {
     for (int i = 0; i < NUM_PIECES; ++i) {
         std::cout << "Table " << pieceToChar.at(pieceTypes(i)) << ": {\n";
         for (int j = 0; j < BOARD_SIZE; ++j) {
-            std::cout << std::round(parameters[i * BOARD_SIZE + j][index]) << ", ";
+            std::cout << "S(" << 
+                std::round(parameters[i * BOARD_SIZE + j][0]) << ", " << 
+                std::round(parameters[i * BOARD_SIZE + j][1]) << "), ";
             if (j % 8 == 7) {std::cout << "\n";}
         }
         std::cout << "};\n\n";
     }
 }
 
-void printArr(const parameters_t& parameters, int offset, int index, int size) {
+void printArr(const parameters_t& parameters, int offset, int size) {
     for (int i = 0; i < size; ++i) {
-        std::cout << std::round(parameters[offset + i][index]) << ", ";
+        std::cout << "S(" <<
+            std::round(parameters[offset + i][0]) << ", " << 
+            std::round(parameters[offset + i][1]) << "), ";
     }
     std::cout << "};\n\n";
 }
 
-void printCoeff(const parameters_t& parameters, int index) {
+void printCoeff(const parameters_t& parameters) {
     for (const auto i: parameters) {
-        std::cout << i[index] << ", ";
+        std::cout << "S(" <<
+            std::round(i[0]) << ", " << 
+            std::round(i[1]) << "), ";
     }
     std::cout << "};\n\n";
 }
