@@ -16,6 +16,13 @@ struct PawnHashEntry {
     uint64_t key{};
 };
 
+// eval scores
+struct S {
+    S(int op, int eg) : opScore(op), egScore(eg) {};
+    int opScore{};
+    int egScore{};
+};
+
 class Info {
     public:
         Info() = default;
