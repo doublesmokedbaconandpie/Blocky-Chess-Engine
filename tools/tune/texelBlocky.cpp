@@ -19,34 +19,33 @@ constexpr int TOTAL_SIZE = PSQT_SIZE + PIECE_VALS_SIZE + PASSED_PAWNS_SIZE;
 constexpr int PSQT_OFFSET = 0;
 constexpr int PIECE_VALS_OFFSET = PSQT_OFFSET + PSQT_SIZE;
 constexpr int PASSED_PAWNS_OFFSET = PIECE_VALS_OFFSET + PIECE_VALS_SIZE;
+constexpr int MOBILITY_OFFSET = PASSED_PAWNS_OFFSET + PASSED_PAWNS_SIZE;
 
 parameters_t BlockyEval::get_initial_parameters() {
     parameters_t params;
 
-    const auto addEntry = [](parameters_t& parameters, Eval::S entry) {
-        tune_t op = entry.opScore;
-        tune_t eg = entry.egScore;
-        parameters.push_back(pair_t{op, eg});
-    };
-
-    // piece square tables
+    // push piece square tables
     for (int i = 0; i < NUM_PIECES; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
-            addEntry(params, Eval::PSQT[i][j] - Eval::pieceVals[i]);
+            pushEntry(params, Eval::PSQT[i][j] - Eval::pieceVals[i]);
         }
     }
-
-    // intrinsic piece values
-    for (int i = 0; i < NUM_PIECES; ++i) {
-        addEntry(params, Eval::pieceVals[i]);
-    }
-
-    // passed pawns
-    for (int i = 0; i < NUM_FILES; ++i) {
-        addEntry(params, Eval::passedPawn[i]);
-    }
-
+    pushTable(params, Eval::pieceVals);
+    pushTable(params, Eval::passedPawn);
     return params;
+}
+
+template<typename T>
+void BlockyEval::pushTable(parameters_t& parameters, T& table) {
+    for (const auto& entry: table) {
+        pushEntry(parameters, entry);
+    }
+}
+
+void BlockyEval::pushEntry(parameters_t& parameters, Eval::S entry) {
+    tune_t op = entry.opScore;
+    tune_t eg = entry.egScore;
+    parameters.push_back(pair_t{op, eg});
 }
 
 EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {

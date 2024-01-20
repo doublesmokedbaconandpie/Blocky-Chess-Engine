@@ -16,6 +16,10 @@ class BlockyEval
         static EvalResult get_fen_eval_result(const std::string& fen);
         static EvalResult get_external_eval_result(const chess::Board& board); // unused
         static void print_parameters(const parameters_t& parameters);
+
+        template<typename T>
+        static void pushTable(parameters_t& parameters, T& table);
+        static void pushEntry(parameters_t& parameters, Eval::S entry);
     };
 
 void printPSQT(const parameters_t& parameters);
