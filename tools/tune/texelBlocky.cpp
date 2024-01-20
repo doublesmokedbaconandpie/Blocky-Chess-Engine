@@ -15,28 +15,32 @@ constexpr int PASSED_PAWNS_OFFSET = PIECE_VALS_OFFSET + NUM_PIECES;
 
 parameters_t BlockyEval::get_initial_parameters() {
     parameters_t params;
+    tune_t op, eg;
+    Eval::S entry;
 
     // piece square tables
-    tune_t op, eg;
     for (int i = 0; i < NUM_PIECES; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
-            op = Eval::tablesOp[i][j] - Eval::pieceValsOp[i];
-            eg = Eval::tablesEg[i][j] - Eval::pieceValsEg[i];
+            entry = Eval::PSQT[i][j] - Eval::pieceValsTable[i];
+            op = entry.opScore;
+            eg = entry.egScore;
             params.push_back(pair_t{op, eg});
         }
     }
 
     // intrinsic piece values
     for (int i = 0; i < NUM_PIECES; ++i) {
-        op = Eval::pieceValsOp[i];
-        eg = Eval::pieceValsEg[i];
+        entry = Eval::pieceValsTable[i];
+        op = entry.opScore;
+        eg = entry.egScore;
         params.push_back(pair_t{op, eg});
     }
 
     // passed pawns
     for (int i = 0; i < NUM_FILES; ++i) {
-        op = Eval::passedPawnOp[i];
-        eg = Eval::passedPawnEg[i];
+        entry = Eval::passedPawnTable[i];
+        op = entry.opScore;
+        eg = entry.egScore;
         params.push_back(pair_t{op, eg});
     }
 
