@@ -21,9 +21,9 @@
 #include <iostream>
 
 #include "eval.hpp"
-#include "bitboard.hpp"
 #include "move.hpp"
 #include "bitboard.hpp"
+#include "attacks.hpp"
 #include "zobrist.hpp"
 #include "types.hpp"
 
@@ -31,12 +31,14 @@ namespace Eval {
 
 int Info::getRawEval(const PieceSets& pieceSets) {
     // positive values means white is winning, negative means black
-    const auto& pawnInfo = this->getPawnInfo(pieceSets);
-    const S totalScore = this->score + pawnInfo.score;
+    const S pawnScore = this->getPawnInfo(pieceSets).score;
+    const S mobilityScore = evalMobilityScores(pieceSets, true) - evalMobilityScores(pieceSets, false);
+    const S totalScore = this->score + pawnScore + mobilityScore;
+
     const int op = totalScore.opScore;
     const int eg = totalScore.egScore;
     const int eval = (op * this->phase + eg * (TOTAL_PHASE - this->phase)) / TOTAL_PHASE;
-    return eval + mopUpScore(pieceSets, eval);
+    return eval + evalMopUpScore(pieceSets, eval);
 }
 
 void Info::addPiece(Square square, pieceTypes piece) {
@@ -99,7 +101,38 @@ S evalPawns(const PieceSets& pieceSets, bool isWhite) {
     return pawnScore;
 }
 
-int mopUpScore(const PieceSets& pieceSets, int eval) {
+S evalMobilityScores(const PieceSets& pieceSets, bool isWhite) {
+    const uint64_t mobilitySquares = getMobilitySquares(pieceSets, isWhite);
+    const uint64_t allPieces   = isWhite ? pieceSets[WHITE_PIECES] : pieceSets[BLACK_PIECES];
+    uint64_t allyKnights = isWhite ? pieceSets[WKnight] : pieceSets[BKnight];
+    uint64_t allyBishops = isWhite ? pieceSets[WBishop] : pieceSets[BBishop];
+    uint64_t allyRooks   = isWhite ? pieceSets[WRook]   : pieceSets[BRook];
+    uint64_t allyQueens  = isWhite ? pieceSets[WQueen]  : pieceSets[BQueen];
+
+    S mobilityScores{};
+    Square sq;
+
+    while (allyKnights) {
+        sq = popLsb(allyKnights);
+        mobilityScores += knightMobility[getPieceMobility(KNIGHT, sq, mobilitySquares, allPieces)];
+    }
+    while (allyBishops) {
+        sq = popLsb(allyBishops);
+        mobilityScores += bishopMobility[getPieceMobility(BISHOP, sq, mobilitySquares, allPieces)];
+    }
+    while (allyRooks) {
+        sq = popLsb(allyRooks);
+        mobilityScores += rookMobility[getPieceMobility(ROOK, sq, mobilitySquares, allPieces)];
+    }
+    while (allyQueens) {
+        sq = popLsb(allyQueens);
+        mobilityScores += queenMobility[getPieceMobility(QUEEN, sq, mobilitySquares, allPieces)];
+    }
+
+    return mobilityScores;
+}
+
+int evalMopUpScore(const PieceSets& pieceSets, int eval) {
     // only use mop up for checkmate positions without pawns
     if (std::abs(eval) < 450 || (pieceSets[WPawn] | pieceSets[BPawn]) ) {
         return 0;
@@ -173,6 +206,40 @@ uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhite) {
 uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet, bool isWhite) {
     const uint64_t leftSquare = (allyPawnSet & NOT_FILE_A) >> 1;
     return leftSquare & allyPawnSet;
+}
+
+// returns all squares that can be moved to (including captures) that aren't defended by enemy pawns
+uint64_t getMobilitySquares(const PieceSets& pieceSets, bool isWhite) {
+    const uint64_t nonAllies = isWhite ? ~pieceSets[WHITE_PIECES] : ~pieceSets[BLACK_PIECES];
+    const uint64_t enemyPawns = isWhite ? pieceSets[BPawn] : pieceSets[WPawn];
+    const uint64_t left  = enemyPawns & NOT_FILE_A;
+    const uint64_t right = enemyPawns & NOT_FILE_H;
+    const uint64_t attackedSquares = isWhite ?
+        (left >> 9) | (right >> 7):
+        (left << 7) | (right << 9);
+    return nonAllies & ~attackedSquares;
+}
+
+int getPieceMobility(pieceTypes piece, Square sq, uint64_t mobilitySquares, uint64_t allPieces) {
+    uint64_t movementSquares;
+    switch (piece)
+    {
+    case KNIGHT:
+        movementSquares = Attacks::knightAttacks(sq);
+        break;
+    case BISHOP:
+        movementSquares = Attacks::bishopAttacks(sq, allPieces);
+        break;
+    case ROOK:
+        movementSquares = Attacks::rookAttacks(sq, allPieces);
+        break;
+    case QUEEN:
+        movementSquares = Attacks::bishopAttacks(sq, allPieces) | Attacks::rookAttacks(sq, allPieces);
+        break;
+    default:
+        assert(false);
+    }
+    return popcount(movementSquares & mobilitySquares);
 }
 
 } // namespace Eval

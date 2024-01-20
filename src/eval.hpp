@@ -90,7 +90,9 @@ class Info {
 
 // other evaluation helper functions
 S evalPawns(const PieceSets& pieceSets, bool isWhite);
-int mopUpScore(const PieceSets& pieceSets, int eval);
+S evalMobilityScores(const PieceSets& pieceSets, bool isWhite);
+int evalMopUpScore(const PieceSets& pieceSets, int eval);
+
 int getPiecePhase(pieceTypes piece);
 S getPSQTVal(Square square, pieceTypes currPiece);
 
@@ -99,12 +101,20 @@ bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhite);
 uint64_t getDoubledPawnsMask(uint64_t allyPawnSet, bool isWhite);
 uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhite);
 uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet, bool isWhite);
+uint64_t getMobilitySquares(const PieceSets& pieceSets, bool isWhite);
+int getPieceMobility(pieceTypes piece, Square sq, uint64_t mobilitySquares, uint64_t allPieces);
 
 /*************
  * Evaluation Terms
 **************/
 
-// tables
+// mobility tables
+constexpr std::array<S, 9>  knightMobility = {};
+constexpr std::array<S, 14> bishopMobility = {};
+constexpr std::array<S, 15> rookMobility   = {};
+constexpr std::array<S, 28> queenMobility  = {};
+
+// other tables
 constexpr std::array<S, NUM_RANKS> passedPawn = {
     S(  0,  0), S( 78,187), S( 65,121), S( 26, 70), S(  4, 44), S(-10, 20), S(  9,  8), S(  0,  0),};
 
@@ -120,7 +130,7 @@ constexpr auto phalanxPawns = S(  9,  9);
 constexpr auto PSQT = [] {
     std::array<std::array<S, BOARD_SIZE>, 6> tables{};
 
-    tables[WKing] = {
+    tables[KING] = {
     S( -35,-183), S( 203,-213), S( -27,  39), S(  87, -85), S( -10,  74), S( 819,-548), S(  52, -23), S(  45, -76),
     S( 795,-519), S(  55,  -8), S( -26,  12), S( -50,  78), S(  29, -17), S(  -3,  35), S( 295,-169), S( 313,-106),
     S(  78, -30), S(  42,  -0), S(  -4,  18), S(  35,   1), S(  40,  12), S( 101,  27), S( -65,  84), S(-114,  86),
@@ -131,7 +141,7 @@ constexpr auto PSQT = [] {
     S( -19, -80), S(  -4, -23), S( -24,  -4), S(-134,  11), S(  10, -91), S(-107,  -3), S(  59, -48), S(  53, -85),
     };
 
-    tables[WQueen] = {
+    tables[QUEEN] = {
     S(334,547), S(395,559), S(416,558), S(390,603), S(425,600), S(426,595), S(506,513), S(493,507),
     S(351,543), S(348,564), S(396,559), S(367,609), S(347,660), S(511,551), S(413,635), S(508,498),
     S(380,470), S(376,516), S(384,568), S(418,552), S(445,616), S(510,602), S(490,604), S(409,596),
@@ -142,7 +152,7 @@ constexpr auto PSQT = [] {
     S(379,431), S(372,422), S(378,411), S(392,405), S(396,358), S(343,381), S(273,372), S(383,361),
     };
 
-    tables[WBishop] = {
+    tables[BISHOP] = {
     S(116,116), S( 12,153), S(-31,183), S( 57,162), S(  3,166), S(-62,193), S(100,128), S( 93,141),
     S( 93,122), S(113,139), S(120,144), S( 90,155), S(105,158), S(129,141), S( 72,172), S( 67,134),
     S(106,119), S(110,163), S(141,155), S(145,144), S(181,136), S(287,134), S(142,159), S(161,131),
@@ -153,7 +163,7 @@ constexpr auto PSQT = [] {
     S( 52, 76), S( 66, 92), S( 73, 79), S( 56,127), S( 49,109), S( 69, 99), S( -6,147), S( 93, 71),
     };
 
-    tables[WKnight] = {
+    tables[KNIGHT] = {
     S(-210,  89), S( -58,  93), S( -72, 137), S(  21,  78), S( 174,  63), S( -50, 119), S(  65,  27), S(-216,  53),
     S( -14,  75), S(   3,  91), S(  58, 104), S( 120,  96), S( 108,  71), S( 203,  23), S( -16,  79), S(  15,  61),
     S(   2,  74), S(  59, 102), S(  87, 116), S( 127, 116), S( 203,  72), S( 279,  47), S( 122,  74), S(  37,  65),
@@ -164,7 +174,7 @@ constexpr auto PSQT = [] {
     S( -69, -14), S( -10, -37), S( -47,  42), S( -33,  41), S( -24,  51), S( -10,  36), S( -13,   2), S( -33, -65),
     };
 
-    tables[WRook] = {
+    tables[ROOK] = {
     S(172,269), S(188,274), S(212,270), S(228,264), S(265,255), S(188,277), S(223,255), S(253,235),
     S(160,284), S(167,284), S(207,274), S(234,266), S(227,261), S(349,200), S(365,205), S(318,224),
     S(136,272), S(181,256), S(203,255), S(210,244), S(289,215), S(283,221), S(313,210), S(270,212),
@@ -175,7 +185,7 @@ constexpr auto PSQT = [] {
     S(113,219), S(121,220), S(130,239), S(131,241), S(136,228), S(123,221), S( 86,231), S(111,152),
     };
 
-    tables[WPawn] = {
+    tables[PAWN] = {
     S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0), S(   0,   0),
     S( 121, 190), S(  76, 206), S( 128, 157), S( 112,  87), S(  72, 126), S(   7, 131), S( -69, 166), S(-198, 208),
     S(  12, 130), S(  26, 124), S(  32, 103), S(  54,  47), S(  92,  29), S( 138,  38), S(  96,  69), S(  34,  77),
