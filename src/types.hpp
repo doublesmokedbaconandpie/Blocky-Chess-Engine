@@ -40,7 +40,7 @@ enum pieceTypes {EmptyPiece = -1,
                 WKing, WQueen, WBishop, WKnight, WRook, WPawn, 
                 BKing, BQueen, BBishop, BKnight, BRook, BPawn,
                 WHITE_PIECES, BLACK_PIECES,
-                
+
                 KING = WKing, KNIGHT = WKnight, BISHOP = WBishop, ROOK = WRook, QUEEN = WQueen, PAWN = WPawn
                 };
 
