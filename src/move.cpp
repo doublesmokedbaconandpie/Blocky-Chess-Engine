@@ -17,7 +17,7 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
     
     const Square square1 = toSquare(input.substr(0, 2));
     const Square square2 = toSquare(input.substr(2, 2));
-    pieceTypes promotePiece;
+    pieceTypes promotePiece{};
     if (input.length() == 5) {
         switch (input.at(4)) {
             case 'q':
