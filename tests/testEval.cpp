@@ -1,8 +1,18 @@
 #include "eval.hpp"
+#include "board.hpp"
+#include "move.hpp"
+#include "attacks.hpp"
 
 #include <gtest/gtest.h>
 
 using namespace Eval;
+
+class EvalTest : public testing::Test {
+    public:
+        static void SetUpTestSuite() {
+            Attacks::init();
+        }
+};
 
 TEST(ScoreTest, Construction) {
     S score(1, 2);
@@ -88,4 +98,31 @@ TEST(checkIsPassedPawn, blackFalse3) {
     int square = toSquare("a7");
     uint64_t enemyPawns = 1ull << toSquare("a2") | 1ull << toSquare("b2") | 1ull << toSquare("c2");
     ASSERT_FALSE(isPassedPawn(square, enemyPawns, false));
+}
+
+TEST_F(EvalTest, knightMobilityWhite) {
+    const Board pos("rnbqkb1r/pppppppp/5n2/8/3N4/8/PPPPPPPP/RNBQKB1R b KQkq - 3 2");
+    const Square sq = toSquare("d4");
+    const auto mobilitySquares = getMobilitySquares(pos.pieceSets, true);
+    const auto allPieces = getAllPieces(pos.pieceSets);
+    const auto mobility = getPieceMobility(KNIGHT, sq, mobilitySquares, allPieces);
+    ASSERT_EQ(mobility, 4);
+}
+
+TEST_F(EvalTest, knightMobilityBlack) {
+    const Board pos("rnbqkb1r/pppppppp/5n2/8/3N4/8/PPPPPPPP/RNBQKB1R b KQkq - 3 2");
+    const Square sq = toSquare("f6");
+    const auto mobilitySquares = getMobilitySquares(pos.pieceSets, false);
+    const auto allPieces = getAllPieces(pos.pieceSets);
+    const auto mobility = getPieceMobility(KNIGHT, sq, mobilitySquares, allPieces);
+    ASSERT_EQ(mobility, 5);
+}
+
+TEST_F(EvalTest, bishopMobilityBlack) {
+    const Board pos("rnbqk2r/pppp1ppp/5n2/4p3/1b1NP3/8/PPPP1PPP/RNBQKB1R w KQkq - 1 4");
+    const Square sq = toSquare("b4");
+    const auto mobilitySquares = getMobilitySquares(pos.pieceSets, false);
+    const auto allPieces = getAllPieces(pos.pieceSets);
+    const auto mobility = getPieceMobility(BISHOP, sq, mobilitySquares, allPieces);
+    ASSERT_EQ(mobility, 6);
 }

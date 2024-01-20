@@ -81,3 +81,4 @@ struct Board {
 
 castleRights castleRightsBit(Square finalKingPos, bool isWhiteTurn);
 bool currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn);
+uint64_t getAllPieces(const PieceSets& pieceSets);

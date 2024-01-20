@@ -215,8 +215,8 @@ uint64_t getMobilitySquares(const PieceSets& pieceSets, bool isWhite) {
     const uint64_t left  = enemyPawns & NOT_FILE_A;
     const uint64_t right = enemyPawns & NOT_FILE_H;
     const uint64_t attackedSquares = isWhite ?
-        (left >> 9) | (right >> 7):
-        (left << 7) | (right << 9);
+        (left << 7) | (right << 9):
+        (left >> 9) | (right >> 7);
     return nonAllies & ~attackedSquares;
 }
 

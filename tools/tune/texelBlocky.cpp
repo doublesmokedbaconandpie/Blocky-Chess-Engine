@@ -5,6 +5,7 @@
 
 #include "texelBlocky.hpp"
 #include "texel-tuner/src/base.h"
+#include "../../src/attacks.hpp"
 #include "../../src/board.hpp"
 #include "../../src/eval.hpp"
 #include "../../src/bitboard.hpp"
@@ -18,6 +19,8 @@ std::vector<std::string> BlockyEval::tablesInOrder;
 int BlockyEval::totalSize;
 
 parameters_t BlockyEval::get_initial_parameters() {
+    // required for mobilities to be computed
+    Attacks::init();
     parameters_t params;
 
     // piece square tables
@@ -160,7 +163,7 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
         result.coefficients[offsets["doubledPawns"]] += doubledPawnFlag * occurences;
         result.coefficients[offsets["chainedPawns"]] += chainedPawnFlag * occurences;
         result.coefficients[offsets["phalanxPawns"]] += phalanxPawnFlag * occurences;
-        result.coefficients[mobilityOffset + rankOffset] += mobilityFlag * occurences;
+        result.coefficients[mobilityOffset + mobility] += mobilityFlag * occurences;
     }
 
     result.score = board.evaluate();
