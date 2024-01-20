@@ -88,8 +88,6 @@ uint64_t getRankMask(int square);
 uint64_t getDiagMask(int square);
 uint64_t getAntiDiagMask(int square);
 
-bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn);
-
 // for debugging and testing
 void printHex(uint64_t bitboard);
 void printBitboard(uint64_t bitboard);

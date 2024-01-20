@@ -1,5 +1,6 @@
 #include "texel-tuner/src/base.h"
 #include "texel-tuner/src/external/chess.hpp"
+#include "../../src/eval.hpp"
 
 namespace Blocky {
 
@@ -17,8 +18,10 @@ class BlockyEval
         static void print_parameters(const parameters_t& parameters);
     };
 
-void printPSQT(const parameters_t& parameters, int index);
-void printArr(const parameters_t& parameters, int offset, int index, int size);
-void printCoeff(const parameters_t& parameters, int index); // for debugging
+void printPSQT(const parameters_t& parameters);
+void printArr(const parameters_t& parameters, int offset, int size);
+void printCoeff(const parameters_t& parameters); // for debugging
+
+std::string toStr(pair_t val, int width);
 
 }; // namespace Blocky
