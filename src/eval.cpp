@@ -110,4 +110,17 @@ S getPSQTVal(Square square, pieceTypes currPiece) {
     return -PSQT[currPiece - BKing][square ^ 56];
 }
 
+bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn) {
+    const int file = getFile(pawn);
+    const int rank = getRank(pawn);
+    uint64_t adjacentEnemies = ADJ_FILES_AND_FILES_MASK[file] & enemyPawns;
+    if (!adjacentEnemies) {
+        return true;
+    }
+
+    const int backEnemy = isWhitePawn ? popLsb(adjacentEnemies) : popMsb(adjacentEnemies);
+    const int enemyRank = getRank(backEnemy);
+    return isWhitePawn ? rank <= enemyRank : rank >= enemyRank;
+}
+
 } // namespace Eval

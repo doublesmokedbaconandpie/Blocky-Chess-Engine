@@ -76,9 +76,9 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
         passedPawnFlag = 0;
         if (colorlessPiece == WPawn) {
             if (piece == WPawn) {
-                passedPawnFlag = static_cast<int>(isPassedPawn(i, board.pieceSets[BPawn], true));
+                passedPawnFlag = static_cast<int>(Eval::isPassedPawn(i, board.pieceSets[BPawn], true));
             } else {
-                passedPawnFlag = -static_cast<int>(isPassedPawn(i, board.pieceSets[WPawn], false));
+                passedPawnFlag = -static_cast<int>(Eval::isPassedPawn(i, board.pieceSets[WPawn], false));
             }
         }
 

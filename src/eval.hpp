@@ -70,6 +70,9 @@ int mopUpScore(const PieceSets& pieceSets, int eval);
 int getPiecePhase(pieceTypes piece);
 S getPSQTVal(Square square, pieceTypes currPiece);
 
+// bitmasking tricks
+bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn);
+
 /*************
  * Evaluation Terms
 **************/
