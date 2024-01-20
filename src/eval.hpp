@@ -6,7 +6,7 @@
 
 namespace Eval {
 
-constexpr int totalPhase = 24;
+constexpr int TOTAL_PHASE = 24;
 constexpr int PAWN_HASH_SIZE = 1024;
 
 // evaluation scores

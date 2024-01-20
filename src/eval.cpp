@@ -17,7 +17,7 @@ int Info::getRawEval(const PieceSets& pieceSets) {
     const S totalScore = this->score + pawnInfo.score;
     const int op = totalScore.opScore;
     const int eg = totalScore.egScore;
-    const int eval = (op * this->phase + eg * (totalPhase - this->phase)) / totalPhase;
+    const int eval = (op * this->phase + eg * (TOTAL_PHASE - this->phase)) / TOTAL_PHASE;
     return eval + mopUpScore(pieceSets, eval);
 }
 
