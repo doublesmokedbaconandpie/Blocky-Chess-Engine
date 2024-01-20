@@ -76,7 +76,7 @@ S Info::evalPassedPawns(const PieceSets& pieceSets, bool isWhiteTurn) const {
         pawn = popLsb(allyPawnSet);
         if (isPassedPawn(pawn, enemyPawnSet, isWhiteTurn)) {
             const int index = isWhiteTurn ? getRank(pawn) : getRank(pawn) ^ 7;
-            pawnScore += passedPawnTable[index];
+            pawnScore += passedPawn[index];
         }
     }
 

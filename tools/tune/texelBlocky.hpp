@@ -21,4 +21,6 @@ void printPSQT(const parameters_t& parameters);
 void printArr(const parameters_t& parameters, int offset, int size);
 void printCoeff(const parameters_t& parameters); // for debugging
 
+std::string toStr(pair_t val, int width);
+
 }; // namespace Blocky

@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <iomanip>
 
 #include "texelBlocky.hpp"
 #include "texel-tuner/src/base.h"
@@ -21,7 +22,7 @@ parameters_t BlockyEval::get_initial_parameters() {
     // piece square tables
     for (int i = 0; i < NUM_PIECES; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
-            entry = Eval::PSQT[i][j] - Eval::pieceValsTable[i];
+            entry = Eval::PSQT[i][j] - Eval::pieceVals[i];
             op = entry.opScore;
             eg = entry.egScore;
             params.push_back(pair_t{op, eg});
@@ -30,7 +31,7 @@ parameters_t BlockyEval::get_initial_parameters() {
 
     // intrinsic piece values
     for (int i = 0; i < NUM_PIECES; ++i) {
-        entry = Eval::pieceValsTable[i];
+        entry = Eval::pieceVals[i];
         op = entry.opScore;
         eg = entry.egScore;
         params.push_back(pair_t{op, eg});
@@ -38,7 +39,7 @@ parameters_t BlockyEval::get_initial_parameters() {
 
     // passed pawns
     for (int i = 0; i < NUM_FILES; ++i) {
-        entry = Eval::passedPawnTable[i];
+        entry = Eval::passedPawn[i];
         op = entry.opScore;
         eg = entry.egScore;
         params.push_back(pair_t{op, eg});
@@ -117,9 +118,7 @@ void printPSQT(const parameters_t& parameters) {
     for (int i = 0; i < NUM_PIECES; ++i) {
         std::cout << "Table " << pieceToChar.at(pieceTypes(i)) << ": {\n";
         for (int j = 0; j < BOARD_SIZE; ++j) {
-            std::cout << "S(" << 
-                std::round(parameters[i * BOARD_SIZE + j][0]) << ", " << 
-                std::round(parameters[i * BOARD_SIZE + j][1]) << "), ";
+            std::cout << toStr(parameters[i * BOARD_SIZE + j], 4) << ", ";
             if (j % 8 == 7) {std::cout << "\n";}
         }
         std::cout << "};\n\n";
@@ -128,20 +127,23 @@ void printPSQT(const parameters_t& parameters) {
 
 void printArr(const parameters_t& parameters, int offset, int size) {
     for (int i = 0; i < size; ++i) {
-        std::cout << "S(" <<
-            std::round(parameters[offset + i][0]) << ", " << 
-            std::round(parameters[offset + i][1]) << "), ";
+        std::cout << toStr(parameters[offset + i], 3) << ", ";
     }
     std::cout << "};\n\n";
 }
 
 void printCoeff(const parameters_t& parameters) {
     for (const auto i: parameters) {
-        std::cout << "S(" <<
-            std::round(i[0]) << ", " << 
-            std::round(i[1]) << "), ";
+        std::cout << toStr(i, 4) << ", ";
     }
     std::cout << "};\n\n";
+}
+
+std::string toStr(pair_t val, int width) {
+    std::ostringstream op, eg;
+    op << std::setw(width) << std::round(val[0]);
+    eg << std::setw(width) << std::round(val[1]);
+    return "S(" + op.str() + "," + eg.str() + ")";
 }
 
 } // namespace Blocky
