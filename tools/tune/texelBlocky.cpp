@@ -11,8 +11,14 @@
 
 namespace Blocky {
 
-constexpr int PIECE_VALS_OFFSET = NUM_PIECES * BOARD_SIZE;
-constexpr int PASSED_PAWNS_OFFSET = PIECE_VALS_OFFSET + NUM_PIECES;
+constexpr int PSQT_SIZE = NUM_PIECES * BOARD_SIZE;
+constexpr int PIECE_VALS_SIZE = NUM_PIECES;
+constexpr int PASSED_PAWNS_SIZE = NUM_RANKS;
+constexpr int TOTAL_SIZE = PSQT_SIZE + PIECE_VALS_SIZE + PASSED_PAWNS_SIZE;
+
+constexpr int PSQT_OFFSET = 0;
+constexpr int PIECE_VALS_OFFSET = PSQT_OFFSET + PSQT_SIZE;
+constexpr int PASSED_PAWNS_OFFSET = PIECE_VALS_OFFSET + PIECE_VALS_SIZE;
 
 parameters_t BlockyEval::get_initial_parameters() {
     parameters_t params;
@@ -56,8 +62,7 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
     /************
      * Initialize coefficients to zero-weights, which should fit most of them
     *************/
-    int arrSize = PASSED_PAWNS_OFFSET + NUM_FILES;
-    result.coefficients.resize(arrSize);
+    result.coefficients.resize(TOTAL_SIZE);
 
     /************
      * Assign non-zero linear weights to coefficients for the given position
@@ -84,7 +89,7 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
 
         // white and black pieces use different eval indices in piece square tables
         if (isWhitePiece(piece)) {
-            result.coefficients[pieceOffset + i]++;
+            result.coefficients[PSQT_OFFSET + pieceOffset + i]++;
             result.coefficients[PIECE_VALS_OFFSET + colorlessPiece]++;
             result.coefficients[PASSED_PAWNS_OFFSET + getRank(i)] += passedPawnFlag;
         } else {
@@ -100,10 +105,10 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
 
 void BlockyEval::print_parameters(const parameters_t& parameters) {
     std::cout << "PassedPawns: \n{";
-    printArr(parameters, PASSED_PAWNS_OFFSET, NUM_FILES);
+    printArr(parameters, PASSED_PAWNS_OFFSET, PASSED_PAWNS_SIZE);
 
     std::cout << "PieceVals: \n{";
-    printArr(parameters, PIECE_VALS_OFFSET, NUM_PIECES);
+    printArr(parameters, PIECE_VALS_OFFSET, PIECE_VALS_SIZE);
 
     std::cout << "PSQT: \n";
     printPSQT(parameters);
@@ -114,7 +119,10 @@ void printPSQT(const parameters_t& parameters) {
         std::cout << "Table " << pieceToChar.at(pieceTypes(i)) << ": {\n";
         for (int j = 0; j < BOARD_SIZE; ++j) {
             std::cout << toStr(parameters[i * BOARD_SIZE + j], 4) << ", ";
-            if (j % 8 == 7) {std::cout << "\n";}
+
+            if (j % 8 == 7) {
+                std::cout << "\n";
+            }
         }
         std::cout << "};\n\n";
     }
