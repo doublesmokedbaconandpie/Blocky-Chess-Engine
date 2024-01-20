@@ -185,7 +185,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     MoveOrder::MovePicker movePicker(board, MoveOrder::All, TTMove, ss->killerMove);
 
     // start search through moves
-    int score, bestscore = -INF_SCORE;
+    int score = NO_SCORE, bestscore = -INF_SCORE;
     BoardMove bestMove;
     bool doFullNullSearch, doPVS;
     while (movePicker.movesLeft(board)) {

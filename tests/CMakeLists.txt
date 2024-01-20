@@ -32,7 +32,7 @@ add_executable(allTests
     ../src/eval.cpp
 )
 target_include_directories(allTests PUBLIC "../src/")
-target_compile_options(allTests PRIVATE -Wall -Wextra -Wfloat-equal -Wundef -Wcast-align -Wwrite-strings -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wshadow -Woverloaded-virtual)
+target_compile_options(allTests PRIVATE -Wall -Wextra -Wfloat-equal -Wundef -Wcast-align -Wwrite-strings -Wlogical-op -Wmissing-declarations -Wredundant-decls -Wshadow -Woverloaded-virtual -Og)
 target_link_libraries(allTests GTest::gtest_main)
 include(GoogleTest)
 gtest_discover_tests(allTests)
