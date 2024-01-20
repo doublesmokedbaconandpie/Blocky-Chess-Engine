@@ -16,33 +16,28 @@ constexpr int PASSED_PAWNS_OFFSET = PIECE_VALS_OFFSET + NUM_PIECES;
 
 parameters_t BlockyEval::get_initial_parameters() {
     parameters_t params;
-    tune_t op, eg;
-    Eval::S entry;
+
+    const auto addEntry = [](parameters_t& parameters, Eval::S entry) {
+        tune_t op = entry.opScore;
+        tune_t eg = entry.egScore;
+        parameters.push_back(pair_t{op, eg});
+    };
 
     // piece square tables
     for (int i = 0; i < NUM_PIECES; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
-            entry = Eval::PSQT[i][j] - Eval::pieceVals[i];
-            op = entry.opScore;
-            eg = entry.egScore;
-            params.push_back(pair_t{op, eg});
+            addEntry(params, Eval::PSQT[i][j] - Eval::pieceVals[i]);
         }
     }
 
     // intrinsic piece values
     for (int i = 0; i < NUM_PIECES; ++i) {
-        entry = Eval::pieceVals[i];
-        op = entry.opScore;
-        eg = entry.egScore;
-        params.push_back(pair_t{op, eg});
+        addEntry(params, Eval::pieceVals[i]);
     }
 
     // passed pawns
     for (int i = 0; i < NUM_FILES; ++i) {
-        entry = Eval::passedPawn[i];
-        op = entry.opScore;
-        eg = entry.egScore;
-        params.push_back(pair_t{op, eg});
+        addEntry(params, Eval::passedPawn[i]);
     }
 
     return params;
@@ -104,11 +99,11 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
 }
 
 void BlockyEval::print_parameters(const parameters_t& parameters) {
-    std::cout << "PieceVals: \n{";
-    printArr(parameters, PIECE_VALS_OFFSET, NUM_PIECES);
-
     std::cout << "PassedPawns: \n{";
     printArr(parameters, PASSED_PAWNS_OFFSET, NUM_FILES);
+
+    std::cout << "PieceVals: \n{";
+    printArr(parameters, PIECE_VALS_OFFSET, NUM_PIECES);
 
     std::cout << "PSQT: \n";
     printPSQT(parameters);

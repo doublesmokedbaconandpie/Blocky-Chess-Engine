@@ -17,12 +17,12 @@ int Info::getRawEval(const PieceSets& pieceSets) {
     const S totalScore = this->score + pawnInfo.score;
     const int op = totalScore.opScore;
     const int eg = totalScore.egScore;
-    const int eval = (op * phase + eg * (totalPhase - phase)) / totalPhase;
+    const int eval = (op * this->phase + eg * (totalPhase - this->phase)) / totalPhase;
     return eval + mopUpScore(pieceSets, eval);
 }
 
 void Info::addPiece(Square square, pieceTypes piece) {
-    this->score += Eval::getPlacementScore(square, piece);
+    this->score += getPSQTVal(square, piece);
     this->phase += getPiecePhase(piece);
     if (piece == WPawn || piece == BPawn) {
         this->pawnKey ^= Zobrist::pieceKeys[piece][square];
@@ -30,23 +30,11 @@ void Info::addPiece(Square square, pieceTypes piece) {
 }
 
 void Info::removePiece(Square square, pieceTypes piece) {
-    this->score -= Eval::getPlacementScore(square, piece);
+    this->score -= getPSQTVal(square, piece);
     this->phase -= getPiecePhase(piece);
     if (piece == WPawn || piece == BPawn) {
         this->pawnKey ^= Zobrist::pieceKeys[piece][square];
     }
-}
-
-int Info::mopUpScore(const PieceSets& pieceSets, int eval) const {
-    // only use mop up for checkmate positions without pawns
-    if (std::abs(eval) < 450 || (pieceSets[WPawn] | pieceSets[BPawn]) ) {
-        return 0;
-    }
-    // winning kings have scores boosted for kings approaching each other
-    const int winningMopUp = eval > 0 ? 1 : -1;
-    const int kingDistance = std::abs(lsb(pieceSets[WKing]) - lsb(pieceSets[BKing]));
-    return winningMopUp * (64 - kingDistance) * 5;
-
 }
 
 const PawnHashEntry& Info::getPawnInfo(const PieceSets& pieceSets) {
@@ -62,7 +50,7 @@ const PawnHashEntry& Info::getPawnInfo(const PieceSets& pieceSets) {
     return entry;
 }
 
-S Info::evalPassedPawns(const PieceSets& pieceSets, bool isWhiteTurn) const {
+S evalPassedPawns(const PieceSets& pieceSets, bool isWhiteTurn) {
     const auto allyPawn  = isWhiteTurn ? WPawn : BPawn;
     const auto enemyPawn = isWhiteTurn ? BPawn : WPawn;
 
@@ -81,6 +69,18 @@ S Info::evalPassedPawns(const PieceSets& pieceSets, bool isWhiteTurn) const {
     }
 
     return pawnScore;
+}
+
+int mopUpScore(const PieceSets& pieceSets, int eval) {
+    // only use mop up for checkmate positions without pawns
+    if (std::abs(eval) < 450 || (pieceSets[WPawn] | pieceSets[BPawn]) ) {
+        return 0;
+    }
+    // winning kings have scores boosted for kings approaching each other
+    const int winningMopUp = eval > 0 ? 1 : -1;
+    const int kingDistance = std::abs(lsb(pieceSets[WKing]) - lsb(pieceSets[BKing]));
+    return winningMopUp * (64 - kingDistance) * 5;
+
 }
 
 int getPiecePhase(pieceTypes piece) {
@@ -103,7 +103,7 @@ int getPiecePhase(pieceTypes piece) {
 }
 
 // assumes that currPiece is not empty
-S getPlacementScore(Square square, pieceTypes currPiece) {
+S getPSQTVal(Square square, pieceTypes currPiece) {
     if (currPiece >= WKing && currPiece <= WPawn) {
         return PSQT[currPiece][square];
     }

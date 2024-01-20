@@ -9,7 +9,7 @@ namespace Eval {
 constexpr int totalPhase = 24;
 constexpr int PAWN_HASH_SIZE = 1024;
 
-// eval scores
+// evaluation scores
 // contain both midgame and endgame scores
 struct S {
     constexpr S() = default;
@@ -55,11 +55,8 @@ class Info {
         int getRawEval(const PieceSets& pieceSets);
         void addPiece(Square square, pieceTypes piece);
         void removePiece(Square square, pieceTypes piece);
-
     private:
         const PawnHashEntry& getPawnInfo(const PieceSets& pieceSets);
-        S evalPassedPawns(const PieceSets& pieceSets, bool isWhiteTurn) const;
-        int mopUpScore(const PieceSets& pieceSets, int eval) const;
 
         S score{};
         int phase{};
@@ -67,8 +64,15 @@ class Info {
         uint64_t pawnKey{};
 };
 
-S getPlacementScore(Square square, pieceTypes currPiece);
+// other evaluation helper functions
+S evalPassedPawns(const PieceSets& pieceSets, bool isWhiteTurn);
+int mopUpScore(const PieceSets& pieceSets, int eval);
 int getPiecePhase(pieceTypes piece);
+S getPSQTVal(Square square, pieceTypes currPiece);
+
+/*************
+ * Evaluation Terms
+**************/
 
 constexpr std::array<S, NUM_RANKS> passedPawn = {S(  0,  0), S( 69,186), S( 55,107), S( 20, 63), S( -1, 34), S(-21, 11), S(  3, -4), S(  0,  0), };
 constexpr std::array<S, NUM_PIECES> pieceVals = {S(  0,  0), S(896,785), S(333,271), S(384,274), S(417,470), S( 69, 90), };

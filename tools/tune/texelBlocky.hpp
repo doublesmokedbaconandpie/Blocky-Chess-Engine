@@ -1,5 +1,6 @@
 #include "texel-tuner/src/base.h"
 #include "texel-tuner/src/external/chess.hpp"
+#include "../../src/eval.hpp"
 
 namespace Blocky {
 
