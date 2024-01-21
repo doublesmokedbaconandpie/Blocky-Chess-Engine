@@ -46,9 +46,9 @@ class TTable {
 
         bool entryExists(uint64_t key) const;
         Entry getEntry(uint64_t key) const;
-        void storeEntry(uint64_t key, Entry entry);
-        int getIndex(uint64_t key) const;
+        void store(Entry entry, int eval, BoardMove move, int depth, int age, uint64_t key);
     private:
+        int getIndex(uint64_t key) const;
         std::vector<Entry> table;
         int size;
 };

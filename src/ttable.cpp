@@ -59,8 +59,22 @@ Entry TTable::getEntry(uint64_t key) const {
     return this->table[this->getIndex(key)];
 }
 
-void TTable::storeEntry(uint64_t key, Entry entry) {
-    this->table[this->getIndex(key)] = entry;
+void TTable::store(Entry entry, int eval, BoardMove move, int depth, int age, uint64_t key) {
+    /* entries in the transposition table are overwritten under two conditions:
+    1. The current search depth is greater than the entry's depth, meaning that a better
+    search has been performed 
+    2. The age of the current position is greater than the previous age. Previous move searches
+    in hash are preserved in the table since there can be repeated boards, but replacing entries
+    with moves from more modern roots is better
+    */
+    if (depth >= entry.depth || age >= entry.age) {
+            entry.key = key;
+            entry.age = age;
+            entry.depth = depth;
+            entry.eval = eval;
+            entry.move = move;
+            this->table[this->getIndex(entry.key)] = entry;
+    }
 }
 
 int TTable::getIndex(uint64_t key) const {
