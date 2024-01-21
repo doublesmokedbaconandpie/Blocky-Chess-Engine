@@ -17,6 +17,7 @@ enable_testing()
 add_executable(allTests
     testBitboard.cpp
     testBoard.cpp
+    testEval.cpp
     testMoveGen.cpp
     testMoveOrder.cpp
 
