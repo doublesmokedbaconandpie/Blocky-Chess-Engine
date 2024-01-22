@@ -94,7 +94,7 @@ Info Searcher::startThinking() {
 }
 
 int Searcher::aspiration(int depth, int prevEval) {
-    int delta = 40;
+    int delta = 50;
     int alpha, beta;
 
     // don't use aspiration bounds for low search depths as scores at low depths are less stable
