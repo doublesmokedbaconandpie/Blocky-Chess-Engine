@@ -186,11 +186,11 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
      * Give the opponent a free move and see if our position is still too good after that; if so, prune
      * This assumes that the opponent cannot improve their position by much given our reduced depth
     *************/
-    if (!ISNMP 
-        && !inCheck 
+    if (!ISNMP
+        && !inCheck
         && depth >= 3) {
 
-        int reduction = 3 + depth / 3;
+        int reduction = 2 + depth / 4;
         board.makeNullMove();
         int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - reduction, ss + 1);
         board.unmakeNullMove();
