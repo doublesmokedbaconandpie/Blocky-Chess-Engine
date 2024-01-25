@@ -1,3 +1,4 @@
+#include <bit>
 #include <cstdint>
 #include <cassert>
 #include <iostream>
@@ -9,13 +10,13 @@
 // gets index of the least significant bits
 int lsb(uint64_t bitboard) {
     assert(bitboard);
-    return __builtin_ctzll(bitboard);
+    return std::countr_zero(bitboard);
 }
 
 // gets index of the most significant bit
 int msb(uint64_t bitboard) {
     assert(bitboard);
-    return 63 - __builtin_clzll(bitboard);
+    return 63 - std::countl_zero(bitboard);
 }
 
 int popLsb(uint64_t& bitboard) {
@@ -31,7 +32,7 @@ int popMsb(uint64_t& bitboard) {
 }
 
 int popcount(uint64_t bitboard) {
-    return __builtin_popcountll(bitboard);
+    return std::popcount(bitboard);
 }
 
 uint64_t flipVertical(uint64_t bitboard) {
