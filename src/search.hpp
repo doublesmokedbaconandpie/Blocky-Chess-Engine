@@ -43,8 +43,6 @@ class Searcher {
     public:  
         Searcher(Board a_board, Timeman::TimeManager a_tm, int depthLimit) {
             this->board = a_board;
-            this->nodes = 0;
-            this->max_seldepth = 0;
             this->tm = a_tm;
             this->depth_limit = depthLimit;
         };
@@ -60,16 +58,15 @@ class Searcher {
         void outputUciInfo(Info searchResult) const;
 
         Board board;
-        uint64_t nodes;
-        int max_seldepth;
-        BoardMove finalMove;
+        uint64_t nodes{};
+        int max_seldepth{};
 
-        std::array<StackEntry, MAX_PLY> stack;
+        std::array<StackEntry, MAX_PLY> stack{};
         std::array<PVRow, MAX_PLY> PVTable;
-        HistoryTable history;
+        HistoryTable history{};
 
-        Timeman::TimeManager tm;
-        int depth_limit;
+        Timeman::TimeManager tm{};
+        int depth_limit{};
         bool printInfo = true;
         bool stopSearchFlag = false;
 };
