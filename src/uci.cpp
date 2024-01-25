@@ -87,7 +87,6 @@ void setOption(std::istringstream& input){
 
 void uciNewGame() {
     TTable::Table.clear();
-    MoveOrder::clearHistory();
 }
 
 Board position(std::istringstream& input) {

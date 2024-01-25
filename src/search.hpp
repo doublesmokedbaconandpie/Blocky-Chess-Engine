@@ -66,6 +66,7 @@ class Searcher {
 
         std::array<StackEntry, MAX_PLY> stack;
         std::array<PVRow, MAX_PLY> PVTable;
+        HistoryTable history;
 
         Timeman::TimeManager tm;
         int depth_limit;

@@ -182,13 +182,13 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     }
 
     // init movePicker
-    MoveOrder::MovePicker movePicker(board, MoveOrder::All, TTMove, ss->killerMove);
+    MoveOrder::MovePicker movePicker(this->board, this->history, MoveOrder::All, TTMove, ss->killerMove);
 
     // start search through moves
     int score = NO_SCORE, bestscore = -INF_SCORE;
     BoardMove bestMove;
     bool doFullNullSearch, doPVS;
-    while (movePicker.movesLeft(board)) {
+    while (movePicker.movesLeft(this->board, this->history)) {
         const BoardMove move = movePicker.pickMove();
         board.makeMove(move);
         const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
@@ -258,7 +258,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
                 // prune if a move is too good, opponent will avoid playing into this node
                 if (score >= beta) {
-                    MoveOrder::History[move.sqr1()][move.sqr2()] += depth * (depth - 1);
+                    this->history[move.sqr1()][move.sqr2()] += depth * (depth - 1);
                     if (quietMove) {
                         ss->killerMove = move;
                     }
@@ -297,9 +297,9 @@ int Searcher::quiesce(int alpha, int beta, StackEntry* ss) {
     if (alpha < stand_pat)
         alpha = stand_pat;
 
-    MoveOrder::MovePicker movePicker(board, MoveOrder::Captures);
+    MoveOrder::MovePicker movePicker(this->board, this->history, MoveOrder::Captures);
     int score = -INF_SCORE;
-    while (movePicker.movesLeft(board)) {
+    while (movePicker.movesLeft(this->board, this->history)) {
         BoardMove move = movePicker.pickMove();
         board.makeMove(move);
         score = -quiesce(-beta, -alpha, ss + 1);
