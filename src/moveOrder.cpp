@@ -9,10 +9,7 @@
 
 namespace MoveOrder {
 
-// a butterfly history heuristic table (global)
-HistoryTable History;
-
-MovePicker::MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove, BoardMove a_killerMove) {
+MovePicker::MovePicker(const Board& board, const HistoryTable& history, Stage a_stage, BoardMove a_TTMove, BoardMove a_killerMove) {
     this->moveList = MoveList(board);
     this->moveScores = std::array<int, MAX_MOVES>{};
     this->TTMove = a_TTMove;
@@ -21,18 +18,18 @@ MovePicker::MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove, Bo
 
     if (board.moveIsCapture(this->TTMove)) {
         this->moveList.generateCaptures(board);
-        this->assignMoveScores<true, Stage::Captures>(board);
+        this->assignMoveScores<true, Stage::Captures>(board, history);
         this->stage = a_stage & Stage::Quiets;
     } 
     else if (a_stage == Stage::Captures){
         this->moveList.generateCaptures(board);
-        this->assignMoveScores<false, Stage::Captures>(board);
+        this->assignMoveScores<false, Stage::Captures>(board, history);
         this->stage = Stage::None;
     }
     else {
         this->moveList.generateCaptures(board);
         this->moveList.generateQuiets(board);
-        this->assignMoveScores<true, Stage::All>(board);
+        this->assignMoveScores<true, Stage::All>(board, history);
         this->stage = Stage::None;
     }
 }
@@ -40,7 +37,7 @@ MovePicker::MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove, Bo
 // Searching moves that are likely to be better helps with pruning in search. This is move ordering.
 // More promising moves are given higher scores and then searched first.
 template<bool ASSIGN_TTMOVE, Stage STAGE>
-void MovePicker::assignMoveScores(const Board& board) {
+void MovePicker::assignMoveScores(const Board& board, const HistoryTable& history) {
     constexpr bool ASSIGN_CAPTURES = STAGE & Stage::Captures;
 
     for (size_t i = this->movesPicked; i < this->moveList.moves.size(); ++i) {
@@ -62,16 +59,16 @@ void MovePicker::assignMoveScores(const Board& board) {
         }
         // Quiet Moves, ordered by history
         else {
-            this->moveScores[i] = MoveScores::Quiet + History[move.sqr1()][move.sqr2()];
+            this->moveScores[i] = MoveScores::Quiet + history[move.sqr1()][move.sqr2()];
         }
     }
 }
 
-bool MovePicker::movesLeft(const Board& board) {
+bool MovePicker::movesLeft(const Board& board, const HistoryTable& history) {
     // check if an additional quiet stage needs to be generated
     if (this->movesPicked >= this->moveList.moves.size() && this->stage == Stage::Quiets) {
         this->moveList.generateQuiets(board);
-        this->assignMoveScores<false, Stage::Quiets>(board);
+        this->assignMoveScores<false, Stage::Quiets>(board, history);
         this->stage = Stage::None;
     }
     return this->movesPicked < this->moveList.moves.size();
@@ -108,12 +105,6 @@ int MovePicker::getVictimScore(const Board& board, BoardMove move) const {
     else if (move.getPromotePiece() != EmptyPiece)
         return pieceValues[move.getPromotePiece()];
     return pieceValues[board.getPiece(move.sqr2())];
-}
-
-void clearHistory() {
-    for (auto& table: History) {
-        std::fill(table.begin(), table.end(), 0);
-    }
 }
 
 } // namespace MoveOrder

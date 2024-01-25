@@ -10,17 +10,14 @@
 
 namespace MoveOrder { 
 
-// a butterfly history heuristic table
-extern HistoryTable History;
-
 enum Stage {
     None = 0, Captures = 0b01, Quiets = 0b10, All = Captures | Quiets
 };
 
 class MovePicker {
     public:
-        MovePicker(const Board& board, Stage a_stage, BoardMove a_TTMove = BoardMove(), BoardMove a_killerMove = BoardMove());
-        bool movesLeft(const Board& board);
+        MovePicker(const Board& board, const HistoryTable& history, Stage a_stage, BoardMove a_TTMove = BoardMove(), BoardMove a_killerMove = BoardMove());
+        bool movesLeft(const Board& board, const HistoryTable& history);
         int getMovesPicked() const;
         bool stagesLeft() const;
         BoardMove pickMove();
@@ -33,7 +30,7 @@ class MovePicker {
         };
 
         template<bool ASSIGN_TTMOVE, Stage STAGE>
-        void assignMoveScores(const Board& board);
+        void assignMoveScores(const Board& board, const HistoryTable& history);
         int getVictimScore(const Board& board, BoardMove move) const;
 
         MoveList moveList;
@@ -46,7 +43,5 @@ class MovePicker {
 constexpr inline Stage operator&(Stage lhs, Stage rhs) {
     return static_cast<Stage>(static_cast<int>(lhs) & static_cast<int>(rhs));
 }
-
-void clearHistory();
 
 } // namespace MoveOrder

@@ -43,10 +43,11 @@ uint64_t perftMovePicker(Board& board, int depthLeft) {
         return 1;
     }
 
-    MoveOrder::MovePicker movePicker(board, MoveOrder::All);
+    HistoryTable unusedHistory;
+    MoveOrder::MovePicker movePicker(board, unusedHistory, MoveOrder::All);
     uint64_t leafNodeCount = 0;
 
-    while (movePicker.movesLeft(board)) {
+    while (movePicker.movesLeft(board, unusedHistory)) {
         const BoardMove move = movePicker.pickMove();
         board.makeMove(move);
         const uint64_t moveCount = perftMovePicker<false>(board, depthLeft - 1);
