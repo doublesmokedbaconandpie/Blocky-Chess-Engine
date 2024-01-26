@@ -296,14 +296,14 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
                     break;
                 }
             } 
-            else {
-                // keep track of quiet moves that don't beat alpha
-                if (quietMove) {
-                    failedQuiets.push_back(move);
-                }
-            }
+        }
+
+        // keep track of all quiets that didn't generate cutoffs
+        if (quietMove) {
+            failedQuiets.push_back(move);
         }
     }
+
     // checkmate or stalemate
     if (movePicker.getMovesPicked() == 0) {
         if (inCheck) {
