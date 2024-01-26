@@ -208,8 +208,10 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
     // start search through moves
     int score = NO_SCORE, bestscore = -INF_SCORE;
-    BoardMove bestMove;
+    BoardMove bestMove{};
+    std::vector<BoardMove> failedQuiets{};
     bool doFullNullSearch, doPVS;
+
     while (movePicker.movesLeft(this->board, this->history)) {
         const BoardMove move = movePicker.pickMove();
         board.makeMove(move);
@@ -280,11 +282,24 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
                 // prune if a move is too good, opponent will avoid playing into this node
                 if (score >= beta) {
+                    // updating history and killer moves orders then ahead of other moves
                     this->history[move.sqr1()][move.sqr2()] += depth * (depth - 1);
                     if (quietMove) {
                         ss->killerMove = move;
+
+                        // apply malus for quiets that didn't cause beta cutoffs
+                        // these quiets were ordered ahead of the cutting move, so they should be penalized
+                        for (const auto& move: failedQuiets) {
+                            this->history[move.sqr1()][move.sqr2()] -= depth * (depth - 1);
+                        }
                     }
                     break;
+                }
+            } 
+            else {
+                // keep track of quiet moves that don't beat alpha
+                if (quietMove) {
+                    failedQuiets.push_back(move);
                 }
             }
         }
