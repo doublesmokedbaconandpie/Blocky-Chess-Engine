@@ -155,14 +155,13 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     *************/
     BoardMove TTMove;
     int staticEval;
-    TTable::Entry entry;
     if (TTable::Table.entryExists(this->board.zobristKey)) {
-        entry = TTable::Table.getEntry(this->board.zobristKey);
+        const TTable::Entry entry = TTable::Table.getEntry(this->board.zobristKey);
 
         if (!ISPV && entry.depth >= depth) {
-            if (entry.flag == EvalType::EXACT
-                || (entry.flag == EvalType::UPPER && entry.eval <= alpha)
-                || (entry.flag == EvalType::LOWER && entry.eval >= beta)) {
+            if (entry.bound == EvalType::EXACT
+                || (entry.bound == EvalType::UPPER && entry.eval <= alpha)
+                || (entry.bound == EvalType::LOWER && entry.eval >= beta)) {
                 return entry.eval;
             }
         }
@@ -296,8 +295,8 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
     // store results with best moves in transposition table
     if (bestMove) {
-        entry.flag = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
-        TTable::Table.store(entry, bestscore, bestMove, depth, this->board.age, this->board.zobristKey);
+        const EvalType bound = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
+        TTable::Table.store(bestscore, bestMove, bound, depth, this->board.age, this->board.zobristKey);
     }
     return bestscore;
 }
