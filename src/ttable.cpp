@@ -68,7 +68,7 @@ void TTable::store(int eval, BoardMove move, EvalType bound, int depth, int age,
     with moves from more modern roots is better
     */
     Entry* entry = &this->table[this->getIndex(key)];
-    if (depth >= entry->depth || age >= entry->age) {
+    if (true) {
         entry->eval = eval;
         entry->move = move;
         entry->bound = bound;
