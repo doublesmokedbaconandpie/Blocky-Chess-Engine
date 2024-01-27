@@ -6,50 +6,51 @@
 
 #include "types.hpp"
 
-namespace Attacks {
-    
-struct Magic {
-    uint64_t slideMask;
-    uint64_t magic;
-    int shift;
-    int offset;
+class Attacks {
+    public:
+        struct Magic {
+            uint64_t slideMask;
+            uint64_t magic;
+            int shift;
+            int offset;
+        };
+        static void init();
+
+        // used to return attack table values
+        static uint64_t rookAttacks(int square, uint64_t allPieces);
+        static uint64_t bishopAttacks(int square, uint64_t allPieces);
+        static uint64_t pawnAttacks(int square, bool isWhiteTurn);
+        static uint64_t knightAttacks(int square);
+        static uint64_t kingAttacks(int square);
+    private:
+        static int getMagicIndex(Magic& entry, uint64_t blockers);
+
+        // used to initialize magic tables
+        template <typename Function, size_t SIZE>
+        static void initMagicTable(std::array<Magic, BOARD_SIZE>& table,
+                            const std::array<uint64_t, BOARD_SIZE>& magicTable,
+                            std::array<uint64_t, SIZE>& attackTable,
+                            Function getAttackMask, bool isBishop);
+        static uint64_t getRelevantBlockerMask(int square, bool isBishop);
+        static std::vector<uint64_t> getPossibleBlockers(uint64_t slideMask);
+
+        // bitboard functions
+        static uint64_t computeRookAttacks(int square, uint64_t blockers);
+        static uint64_t computeBishopAttacks(int square, uint64_t blockers);
+        static uint64_t fillInDir(int square, uint64_t blockers, int x, int y);
+        static uint64_t computeKnightAttacks(int square);
+        static uint64_t computeKingAttacks(int square);
+        static uint64_t computePawnAttacks(int square, bool isWhiteTurn);
+
+        // global tables declarations
+        static std::array<Magic, BOARD_SIZE> ROOK_TABLE;
+        static std::array<Magic, BOARD_SIZE> BISHOP_TABLE;
+        static std::array<uint64_t, 102400> ROOK_ATTACKS;
+        static std::array<uint64_t, 5248> BISHOP_ATTACKS;
+        static std::array<std::array<uint64_t, BOARD_SIZE>, 2> PAWN_ATTACKS;
+        static std::array<uint64_t, BOARD_SIZE> KNIGHT_ATTACKS;
+        static std::array<uint64_t, BOARD_SIZE> KING_ATTACKS;
 };
-
-// used to return attack table values
-uint64_t rookAttacks(int square, uint64_t allPieces);
-uint64_t bishopAttacks(int square, uint64_t allPieces);
-uint64_t pawnAttacks(int square, bool isWhiteTurn);
-uint64_t knightAttacks(int square);
-uint64_t kingAttacks(int square);
-
-// initilizes all tables 
-void init();
-template <typename Function, size_t SIZE>
-void initMagicTable(std::array<Magic, BOARD_SIZE>& table,
-                    const std::array<uint64_t, BOARD_SIZE>& magicTable, 
-                    std::array<uint64_t, SIZE>& attackTable,
-                    Function getAttackMask, bool isBishop);
-int getMagicIndex(Magic& entry, uint64_t blockers);
-
-uint64_t getRelevantBlockerMask(int square, bool isBishop);
-std::vector<uint64_t> getPossibleBlockers(uint64_t slideMask);
-
-// bitboard functions
-uint64_t computeRookAttacks(int square, uint64_t blockers);
-uint64_t computeBishopAttacks(int square, uint64_t blockers);
-uint64_t fillInDir(int square, uint64_t blockers, int x, int y);
-uint64_t computeKnightAttacks(int square);
-uint64_t computeKingAttacks(int square);
-uint64_t computePawnAttacks(int square, bool isWhiteTurn);
-
-// table declarations
-extern std::array<Magic, BOARD_SIZE> ROOK_TABLE;
-extern std::array<Magic, BOARD_SIZE> BISHOP_TABLE;
-extern std::array<uint64_t, 102400> ROOK_ATTACKS;
-extern std::array<uint64_t, 5248> BISHOP_ATTACKS;
-extern std::array<std::array<uint64_t, BOARD_SIZE>, 2> PAWN_ATTACKS;
-extern std::array<uint64_t, BOARD_SIZE> KNIGHT_ATTACKS;
-extern std::array<uint64_t, BOARD_SIZE> KING_ATTACKS;
 
 // see ../tools/magic.cpp for how these magic numbers were generated
 constexpr std::array<uint64_t, BOARD_SIZE> ROOK_MAGICS{
@@ -89,5 +90,3 @@ constexpr std::array<uint64_t, BOARD_SIZE> BISHOP_MAGICS{
 0x0000c10818010402, 0x000002020a020a22, 0x8008122900882440, 0x8020010005148801,
 0x6000000410020200, 0x11000020ac010202, 0x000108200410a204, 0x0010041104002201,
 };
-
-} // namespace Attacks
