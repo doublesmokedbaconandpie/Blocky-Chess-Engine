@@ -231,7 +231,7 @@ void Attacks::generateMagics() {
 }
 
 template<typename Function>
-uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blockerMask, int shift, std::array<uint64_t, 4> seed) {
+uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blockerMask, int shift, std::array<uint64_t, 4>& seed) {
     std::vector<uint64_t> possibleBlockers = getPossibleBlockers(blockerMask);
     std::array<uint64_t, 4096> moves{};
     uint64_t magic = 0;
