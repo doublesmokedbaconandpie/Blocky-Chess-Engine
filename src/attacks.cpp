@@ -193,7 +193,7 @@ uint64_t Attacks::computePawnAttacks(int square, bool isWhiteTurn) {
     return isWhiteTurn ? upPawns : downPawns;
 }
 
-// global tables declarations
+// global attack tables
 std::array<Attacks::Magic, BOARD_SIZE> Attacks::ROOK_TABLE;
 std::array<Attacks::Magic, BOARD_SIZE> Attacks::BISHOP_TABLE;
 std::array<uint64_t, 102400> Attacks::ROOK_ATTACKS;
@@ -206,7 +206,7 @@ std::array<uint64_t, BOARD_SIZE> Attacks::KING_ATTACKS;
 void Attacks::generateMagics() {
     std::array<uint64_t, 4> seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
 
-    int attacksSize = 0; 
+    int attacksSize = 0;
     std::cout << "Rook attacks: " << std::endl;
     for (int i = 0; i < BOARD_SIZE; i++) {
         const uint64_t blockerMask = getRelevantBlockerMask(i, false);
@@ -235,7 +235,7 @@ uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blocke
     std::vector<uint64_t> possibleBlockers = getPossibleBlockers(blockerMask);
     std::array<uint64_t, 4096> moves{};
     uint64_t magic = 0;
-    bool magicFound = false; 
+    bool magicFound = false;
 
     while (!magicFound) {
         moves.fill(ALL_SQUARES);
@@ -250,7 +250,7 @@ uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blocke
             if (index > maxIndex) {
                 magicFound = false;
                 break;
-            } 
+            }
 
             const uint64_t validAttacks = slidingAttacks(square, blocker);
             if (moves[index] != validAttacks) {
