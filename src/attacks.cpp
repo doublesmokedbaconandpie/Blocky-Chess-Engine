@@ -1,49 +1,13 @@
-
 #include <array>
 #include <cassert>
 #include <cstdint>
 #include <vector>
-#include <iostream>
 
 #include "attacks.hpp"
 #include "bitboard.hpp"
 #include "types.hpp"
 
-namespace Attacks {
-
-// global variables
-std::array<Magic, BOARD_SIZE> ROOK_TABLE;
-std::array<Magic, BOARD_SIZE> BISHOP_TABLE;
-std::array<uint64_t, 102400> ROOK_ATTACKS;
-std::array<uint64_t, 5248> BISHOP_ATTACKS;
-std::array<std::array<uint64_t, BOARD_SIZE>, 2> PAWN_ATTACKS;
-std::array<uint64_t, BOARD_SIZE> KNIGHT_ATTACKS;
-std::array<uint64_t, BOARD_SIZE> KING_ATTACKS;
-
-// return attack table values
-uint64_t rookAttacks(int square, uint64_t allPieces) {
-    return ROOK_ATTACKS[getMagicIndex(ROOK_TABLE[square], allPieces)];
-}
-
-uint64_t bishopAttacks(int square, uint64_t allPieces) {
-    return BISHOP_ATTACKS[getMagicIndex(BISHOP_TABLE[square], allPieces)];
-}
-
-uint64_t pawnAttacks(int square, bool isWhiteTurn) {
-    const int color = isWhiteTurn ? 0 : 1;
-    return PAWN_ATTACKS[color][square];
-}
-
-uint64_t knightAttacks(int square) {
-    return KNIGHT_ATTACKS[square];
-}
-
-uint64_t kingAttacks(int square) {
-    return KING_ATTACKS[square];
-}
-
-// precompute attack table values
-void init() {
+void Attacks::init() {
     // init rook and bishop tables
     initMagicTable(ROOK_TABLE, ROOK_MAGICS, ROOK_ATTACKS, computeRookAttacks, false);
     initMagicTable(BISHOP_TABLE, BISHOP_MAGICS, BISHOP_ATTACKS, computeBishopAttacks, true);
@@ -58,8 +22,34 @@ void init() {
 
 }
 
+uint64_t Attacks::rookAttacks(int square, uint64_t allPieces) {
+    return ROOK_ATTACKS[getMagicIndex(ROOK_TABLE[square], allPieces)];
+}
+
+uint64_t Attacks::bishopAttacks(int square, uint64_t allPieces) {
+    return BISHOP_ATTACKS[getMagicIndex(BISHOP_TABLE[square], allPieces)];
+}
+
+uint64_t Attacks::pawnAttacks(int square, bool isWhiteTurn) {
+    const int color = isWhiteTurn ? 0 : 1;
+    return PAWN_ATTACKS[color][square];
+}
+
+uint64_t Attacks::knightAttacks(int square) {
+    return KNIGHT_ATTACKS[square];
+}
+
+uint64_t Attacks::kingAttacks(int square) {
+    return KING_ATTACKS[square];
+}
+
+int Attacks::getMagicIndex(Magic& entry, uint64_t allPieces) {
+    const uint64_t blockers = allPieces & entry.slideMask;
+    return ((blockers * entry.magic) >> entry.shift) + entry.offset;
+}
+
 template <typename Function, size_t SIZE>
-void initMagicTable(std::array<Magic, BOARD_SIZE>& table, 
+void Attacks::initMagicTable(std::array<Magic, BOARD_SIZE>& table,
                     const std::array<uint64_t, BOARD_SIZE>& magicTable,
                     std::array<uint64_t, SIZE>& attackTable,
                     Function getAttackMask, bool isBishop) {
@@ -88,12 +78,21 @@ void initMagicTable(std::array<Magic, BOARD_SIZE>& table,
     } 
 }
 
-int getMagicIndex(Magic& entry, uint64_t allPieces) {
-    const uint64_t blockers = allPieces & entry.slideMask;
-    return ((blockers * entry.magic) >> entry.shift) + entry.offset;
+// Works for bishops and rooks
+uint64_t Attacks::getRelevantBlockerMask(int square, bool isBishop) {
+    uint64_t slideMask = isBishop ? getDiagMask(square) | getAntiDiagMask(square) :
+                                    getFileMask(square) | getRankMask(square);
+    // pieces on the edges are blocked by same edge pieces
+    slideMask &= square / 8 != 0 ? ~RANK_8 : ALL_SQUARES;
+    slideMask &= square / 8 != 7 ? ~RANK_1 : ALL_SQUARES;
+    slideMask &= square % 8 != 0 ? ~FILE_A : ALL_SQUARES;
+    slideMask &= square % 8 != 7 ? ~FILE_H : ALL_SQUARES;
+    // the current square isn't a valid blocker
+    slideMask ^= c_u64(1) << square;
+    return slideMask;
 }
 
-std::vector<uint64_t> getPossibleBlockers(uint64_t slideMask) {
+std::vector<uint64_t> Attacks::getPossibleBlockers(uint64_t slideMask) {
     std::vector<uint64_t> blockerBoards;
     std::vector<int> blockerSquares;
     for (int i = 0; i < BOARD_SIZE; i++) {
@@ -117,21 +116,7 @@ std::vector<uint64_t> getPossibleBlockers(uint64_t slideMask) {
     return blockerBoards;
 }
 
-// Works for bishops and rooks
-uint64_t getRelevantBlockerMask(int square, bool isBishop) {
-    uint64_t slideMask = isBishop ? getDiagMask(square) | getAntiDiagMask(square) : 
-                                    getFileMask(square) | getRankMask(square); 
-    // pieces on the edges are blocked by same edge pieces
-    slideMask &= square / 8 != 0 ? ~RANK_8 : ALL_SQUARES;
-    slideMask &= square / 8 != 7 ? ~RANK_1 : ALL_SQUARES;
-    slideMask &= square % 8 != 0 ? ~FILE_A : ALL_SQUARES;
-    slideMask &= square % 8 != 7 ? ~FILE_H : ALL_SQUARES;
-    // the current square isn't a valid blocker
-    slideMask ^= c_u64(1) << square;
-    return slideMask;
-}
-
-uint64_t computeRookAttacks(int square, uint64_t blockers) {
+uint64_t Attacks::computeRookAttacks(int square, uint64_t blockers) {
     uint64_t attacks = 0;
     attacks |= fillInDir(square, blockers, 0, 1);
     attacks |= fillInDir(square, blockers, 0, -1);
@@ -140,7 +125,7 @@ uint64_t computeRookAttacks(int square, uint64_t blockers) {
     return attacks;
 }
 
-uint64_t computeBishopAttacks(int square, uint64_t blockers) {
+uint64_t Attacks::computeBishopAttacks(int square, uint64_t blockers) {
     uint64_t attacks = 0;
     attacks |= fillInDir(square, blockers, 1, 1);
     attacks |= fillInDir(square, blockers, 1, -1);
@@ -149,7 +134,7 @@ uint64_t computeBishopAttacks(int square, uint64_t blockers) {
     return attacks;
 }
 
-uint64_t fillInDir(int square, uint64_t blockers, int x, int y) {
+uint64_t Attacks::fillInDir(int square, uint64_t blockers, int x, int y) {
     int currX = square % 8 + x;
     int currY = square / 8 + y;
     uint64_t filled = 0;
@@ -165,7 +150,7 @@ uint64_t fillInDir(int square, uint64_t blockers, int x, int y) {
     return filled;
 }
 
-uint64_t computeKnightAttacks(int square) {
+uint64_t Attacks::computeKnightAttacks(int square) {
     const uint64_t currPiece = c_u64(1) << square;
     const uint64_t left1 = (currPiece >> 1) & NOT_FILE_H;
     const uint64_t left2 = (currPiece >> 2) & NOT_FILE_HG;
@@ -179,7 +164,7 @@ uint64_t computeKnightAttacks(int square) {
     return knightSquares;
 }
 
-uint64_t computeKingAttacks(int square) {
+uint64_t Attacks::computeKingAttacks(int square) {
     uint64_t currPiece = c_u64(1) << square;
 
     // prevent currPiece from teleporting to other side of the board with bit shifts
@@ -194,7 +179,7 @@ uint64_t computeKingAttacks(int square) {
     return currPiece;
 }
 
-uint64_t computePawnAttacks(int square, bool isWhiteTurn) {
+uint64_t Attacks::computePawnAttacks(int square, bool isWhiteTurn) {
     const uint64_t currPiece = c_u64(1) << square;
 
     // prevent currPiece from teleporting to other side of the board with bit shifts
@@ -206,4 +191,11 @@ uint64_t computePawnAttacks(int square, bool isWhiteTurn) {
     return isWhiteTurn ? upPawns : downPawns;
 }
 
-} // namespace Attacks
+// global tables declarations
+std::array<Attacks::Magic, BOARD_SIZE> Attacks::ROOK_TABLE;
+std::array<Attacks::Magic, BOARD_SIZE> Attacks::BISHOP_TABLE;
+std::array<uint64_t, 102400> Attacks::ROOK_ATTACKS;
+std::array<uint64_t, 5248> Attacks::BISHOP_ATTACKS;
+std::array<std::array<uint64_t, BOARD_SIZE>, 2> Attacks::PAWN_ATTACKS;
+std::array<uint64_t, BOARD_SIZE> Attacks::KNIGHT_ATTACKS;
+std::array<uint64_t, BOARD_SIZE> Attacks::KING_ATTACKS;
