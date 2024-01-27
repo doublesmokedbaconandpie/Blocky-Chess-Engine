@@ -90,3 +90,28 @@ constexpr inline castleRights& operator&=(castleRights& lhs, castleRights rhs) {
 constexpr inline castleRights& operator^=(castleRights& lhs, castleRights rhs) {
     return lhs = lhs ^ rhs;
 }
+
+// internally uses a fixed size array to avoid memory reallocations, like what can happen in std::vector
+template<typename T, std::size_t N>
+class FixedVector {
+    public:
+        constexpr T& operator[](int index) {
+            return this->container[index];
+        }
+        constexpr void push_back(const T& entry) {
+            this->container[this->vecSize] = entry;
+            this->vecSize++;
+        }
+        constexpr auto begin() const {
+            return this->container.begin();
+        }
+        constexpr auto end() const {
+            return this->container.begin() + this->vecSize;
+        }
+        constexpr auto size() const {
+            return this->vecSize;
+        }
+    private:
+        std::array<T, N> container{};
+        std::size_t vecSize{};
+};
