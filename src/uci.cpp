@@ -14,6 +14,7 @@
 #include "moveOrder.hpp"
 #include "moveGen.hpp"
 #include "board.hpp"
+#include "attacks.hpp"
 
 namespace Uci {
 
@@ -60,6 +61,7 @@ void uciLoop() {
         else if (commandToken == "isready") {isready();}
         else if (commandToken == "bench") {bench();}
         else if (commandToken == "perft") {perft(commandStream, currBoard);}
+        else if (commandToken == "magics") {magics();}
         else if (commandToken == "quit") {return;}
     }
 }
@@ -183,6 +185,10 @@ void perft(std::istringstream& input, Board& board) {
     std::cout << "perft result nodes " << nodes;
     std::cout << " nps " << nodes * 1000000 / duration;
     std::cout << " time " << duration / 1000 << "\n";
+}
+
+void magics() {
+    Attacks::generateMagics();
 }
 
 } // namespace Uci

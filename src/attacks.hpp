@@ -15,6 +15,7 @@ class Attacks {
             int offset;
         };
         static void init();
+        static void generateMagics(); // not used to generate attacks
 
         // used to return attack table values
         static uint64_t rookAttacks(int square, uint64_t allPieces);
@@ -24,6 +25,9 @@ class Attacks {
         static uint64_t kingAttacks(int square);
     private:
         static int getMagicIndex(Magic& entry, uint64_t blockers);
+        // not used to generate attacks
+        template<typename Function>
+        static uint64_t findMagic(Function slidingAttacks, int square, uint64_t blockerMask, int shift, std::array<uint64_t, 4>& seed);
 
         // used to initialize magic tables
         template <typename Function, size_t SIZE>
@@ -42,7 +46,7 @@ class Attacks {
         static uint64_t computeKingAttacks(int square);
         static uint64_t computePawnAttacks(int square, bool isWhiteTurn);
 
-        // global tables declarations
+        // global attack tables
         static std::array<Magic, BOARD_SIZE> ROOK_TABLE;
         static std::array<Magic, BOARD_SIZE> BISHOP_TABLE;
         static std::array<uint64_t, 102400> ROOK_ATTACKS;
@@ -52,7 +56,6 @@ class Attacks {
         static std::array<uint64_t, BOARD_SIZE> KING_ATTACKS;
 };
 
-// see ../tools/magic.cpp for how these magic numbers were generated
 constexpr std::array<uint64_t, BOARD_SIZE> ROOK_MAGICS{
 0x648000e01484c001, 0x0040084030002000, 0x00800c1000200080, 0x2080100004800800,
 0xc200201012000c08, 0x4200089430020015, 0x0200110084082200, 0x2100044320810002,

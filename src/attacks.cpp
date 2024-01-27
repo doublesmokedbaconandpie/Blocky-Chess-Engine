@@ -1,10 +1,12 @@
 #include <array>
 #include <cassert>
 #include <cstdint>
+#include <iostream>
 #include <vector>
 
 #include "attacks.hpp"
 #include "bitboard.hpp"
+#include "zobrist.hpp" // for rand64()
 #include "types.hpp"
 
 void Attacks::init() {
@@ -191,7 +193,7 @@ uint64_t Attacks::computePawnAttacks(int square, bool isWhiteTurn) {
     return isWhiteTurn ? upPawns : downPawns;
 }
 
-// global tables declarations
+// global attack tables
 std::array<Attacks::Magic, BOARD_SIZE> Attacks::ROOK_TABLE;
 std::array<Attacks::Magic, BOARD_SIZE> Attacks::BISHOP_TABLE;
 std::array<uint64_t, 102400> Attacks::ROOK_ATTACKS;
@@ -199,3 +201,68 @@ std::array<uint64_t, 5248> Attacks::BISHOP_ATTACKS;
 std::array<std::array<uint64_t, BOARD_SIZE>, 2> Attacks::PAWN_ATTACKS;
 std::array<uint64_t, BOARD_SIZE> Attacks::KNIGHT_ATTACKS;
 std::array<uint64_t, BOARD_SIZE> Attacks::KING_ATTACKS;
+
+// magics generation
+void Attacks::generateMagics() {
+    std::array<uint64_t, 4> seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
+
+    int attacksSize = 0;
+    std::cout << "Rook attacks: " << std::endl;
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        const uint64_t blockerMask = getRelevantBlockerMask(i, false);
+        const int blockersSize = popcount(blockerMask);
+        const uint64_t magic = findMagic(computeRookAttacks, i, blockerMask, blockersSize, seed);
+        attacksSize += c_u64(1) << blockersSize;
+        printHex(magic);
+    }
+    std::cout << "Rook attacks size: " << attacksSize << std::endl;
+    std::cout << std::endl;
+
+    attacksSize = 0;
+    std::cout << "Bishop attacks: " << std::endl;
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        const uint64_t blockerMask = getRelevantBlockerMask(i, true);
+        const int blockersSize = popcount(blockerMask);
+        const uint64_t magic = findMagic(computeBishopAttacks, i, blockerMask, blockersSize, seed);
+        attacksSize += c_u64(1) << blockersSize;
+        printHex(magic);
+    }
+    std::cout << "Bishop attacks size: " << attacksSize << std::endl;
+}
+
+template<typename Function>
+uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blockerMask, int shift, std::array<uint64_t, 4>& seed) {
+    std::vector<uint64_t> possibleBlockers = getPossibleBlockers(blockerMask);
+    std::array<uint64_t, 4096> moves{};
+    uint64_t magic = 0;
+    bool magicFound = false;
+
+    while (!magicFound) {
+        moves.fill(ALL_SQUARES);
+        magicFound = true;
+        const int maxIndex = c_u64(1) << shift;
+        // magic numbers with low number of 1s are better
+        magic = Zobrist::rand64(seed) & Zobrist::rand64(seed) & Zobrist::rand64(seed);
+
+        // checks for collisions with all possible blockers for a magic number
+        for (uint64_t blocker: possibleBlockers) {
+            const size_t index = blocker * magic >> (64 - shift); // hash function
+            if (index > maxIndex) {
+                magicFound = false;
+                break;
+            }
+
+            const uint64_t validAttacks = slidingAttacks(square, blocker);
+            if (moves[index] != validAttacks) {
+                if (moves[index] == ALL_SQUARES) {
+                    moves[index] = validAttacks;
+                }
+                else {
+                    magicFound = false;
+                    break;
+                }
+            }
+        }
+    }
+    return magic;
+}
