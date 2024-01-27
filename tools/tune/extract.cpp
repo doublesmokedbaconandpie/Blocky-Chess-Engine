@@ -209,7 +209,10 @@ std::vector<std::string> getPositions(std::ifstream& file, std::string startFen,
 BoardMove getMove(std::string input, Board& board) {
     MoveList gen(board);
     gen.generateAllMoves(board);
-    auto& moves = gen.moves;
+    std::vector<BoardMove> moves{};
+    for (const auto move: gen.moves) {
+        moves.push_back(move);
+    }
     std::string origInput = input;
 
     // checkmate or check (Ex: Ng3+), trim the last character
