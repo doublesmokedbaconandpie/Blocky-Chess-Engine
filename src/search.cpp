@@ -155,14 +155,13 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     *************/
     BoardMove TTMove;
     int staticEval;
-    TTable::Entry entry;
     if (TTable::Table.entryExists(this->board.zobristKey)) {
-        entry = TTable::Table.getEntry(this->board.zobristKey);
+        const TTable::Entry entry = TTable::Table.getEntry(this->board.zobristKey);
 
         if (!ISPV && entry.depth >= depth) {
-            if (entry.flag == EvalType::EXACT
-                || (entry.flag == EvalType::UPPER && entry.eval <= alpha)
-                || (entry.flag == EvalType::LOWER && entry.eval >= beta)) {
+            if (entry.bound == EvalType::EXACT
+                || (entry.bound == EvalType::UPPER && entry.eval <= alpha)
+                || (entry.bound == EvalType::LOWER && entry.eval >= beta)) {
                 return entry.eval;
             }
         }
@@ -296,8 +295,8 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
     // store results with best moves in transposition table
     if (bestMove) {
-        entry.flag = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
-        this->storeInTT(entry, bestscore, bestMove, depth);
+        const EvalType bound = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
+        TTable::Table.store(bestscore, bestMove, bound, depth, this->board.age, this->board.zobristKey);
     }
     return bestscore;
 }
@@ -333,23 +332,6 @@ int Searcher::quiesce(int alpha, int beta, StackEntry* ss) {
 
 }
 
-void Searcher::storeInTT(TTable::Entry entry, int eval, BoardMove move, int depth) const {
-    /* entries in the transposition table are overwritten under two conditions:
-    1. The current search depth is greater than the entry's depth, meaning that a better
-    search has been performed 
-    2. The age of the current position is greater than the previous age. Previous move searches
-    in hash are preserved in the table since there can be repeated boards, but replacing entries
-    with moves from more modern roots is better
-    */
-    if (depth >= entry.depth || this->board.age >= entry.age) {
-            entry.key = this->board.zobristKey;
-            entry.age = this->board.age;
-            entry.depth = depth;
-            entry.eval = eval;
-            entry.move = move;
-            TTable::Table.storeEntry(entry.key, entry);
-    }
-}
 
 bool Searcher::stopSearching() {
     // only check system time every 1024 nodes for performance
