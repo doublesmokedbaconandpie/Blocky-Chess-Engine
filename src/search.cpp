@@ -188,9 +188,9 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     *************/
     if (!ISNMP
         && !inCheck
-        && depth >= 3) {
+        && depth >= 2) {
 
-        int reduction = 2 + (depth - 2) / 3;
+        int reduction = 3 + depth / 4;
         board.makeNullMove();
         int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - reduction, ss + 1);
         board.unmakeNullMove();
