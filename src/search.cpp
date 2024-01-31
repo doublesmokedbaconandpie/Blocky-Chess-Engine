@@ -21,7 +21,6 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
-#include <vector>
 
 #include "search.hpp"
 #include "ttable.hpp"
@@ -30,6 +29,7 @@
 #include "moveGen.hpp"
 #include "board.hpp"
 #include "timeman.hpp"
+#include "utils/fixedVector.hpp"
 
 namespace Search {
 
@@ -209,7 +209,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     // start search through moves
     int score = NO_SCORE, bestscore = -INF_SCORE;
     BoardMove bestMove{};
-    std::vector<BoardMove> failedQuiets{};
+    FixedVector<BoardMove, MAX_MOVES> failedQuiets{};
     bool doFullNullSearch, doPVS;
 
     while (movePicker.movesLeft(this->board, this->history)) {
@@ -289,13 +289,13 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
                         // apply malus for quiets that didn't cause beta cutoffs
                         // these quiets were ordered ahead of the cutting move, so they should be penalized
-                        for (const auto& move: failedQuiets) {
-                            this->history[move.sqr1()][move.sqr2()] -= depth * (depth - 1);
+                        for (const auto& quiet: failedQuiets) {
+                            this->history[quiet.sqr1()][quiet.sqr2()] -= depth * (depth - 1);
                         }
                     }
                     break;
                 }
-            } 
+            }
         }
 
         // keep track of all quiets that didn't generate cutoffs
