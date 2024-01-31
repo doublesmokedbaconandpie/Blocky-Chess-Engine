@@ -1,3 +1,4 @@
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <iomanip>
@@ -11,38 +12,51 @@
 
 namespace Blocky {
 
-constexpr int PSQT_SIZE = NUM_PIECES * BOARD_SIZE;
-constexpr int PIECE_VALS_SIZE = NUM_PIECES;
-constexpr int PASSED_PAWNS_SIZE = NUM_RANKS;
-constexpr int TOTAL_SIZE = PSQT_SIZE + PIECE_VALS_SIZE + PASSED_PAWNS_SIZE;
 
-constexpr int PSQT_OFFSET = 0;
-constexpr int PIECE_VALS_OFFSET = PSQT_OFFSET + PSQT_SIZE;
-constexpr int PASSED_PAWNS_OFFSET = PIECE_VALS_OFFSET + PIECE_VALS_SIZE;
-constexpr int MOBILITY_OFFSET = PASSED_PAWNS_OFFSET + PASSED_PAWNS_SIZE;
+std::map<std::string, int> BlockyEval::offsets;
+std::map<std::string, int> BlockyEval::sizes;
+std::vector<std::string> BlockyEval::tablesInOrder;
+int BlockyEval::totalSize;
 
 parameters_t BlockyEval::get_initial_parameters() {
     parameters_t params;
 
-    // push piece square tables
-    for (int i = 0; i < NUM_PIECES; ++i) {
-        for (int j = 0; j < BOARD_SIZE; ++j) {
-            pushEntry(params, Eval::PSQT[i][j] - Eval::pieceVals[i]);
-        }
-    }
-    pushTable(params, Eval::pieceVals);
-    pushTable(params, Eval::passedPawn);
+    // piece square tables
+    offsets["PSQT"] = 0;
+    pushTable(params, "King PSQT", Eval::PSQT[WKing], Eval::pieceVals[WKing]);
+    pushTable(params, "Queen PSQT", Eval::PSQT[WQueen], Eval::pieceVals[WQueen]);
+    pushTable(params, "Bishop PSQT", Eval::PSQT[WBishop], Eval::pieceVals[WBishop]);
+    pushTable(params, "Knight PSQT", Eval::PSQT[WKnight], Eval::pieceVals[WKnight]);
+    pushTable(params, "Rook PSQT", Eval::PSQT[WRook], Eval::pieceVals[WRook]);
+    pushTable(params, "Pawn PSQT", Eval::PSQT[WPawn], Eval::pieceVals[WPawn]);
+
+    // misc piece arrays
+    pushTable(params, "pieceVals", Eval::pieceVals);
+    pushTable(params, "passedPawns", Eval::passedPawn);
+
+    totalSize = params.size();
     return params;
 }
 
-template<typename T>
-void BlockyEval::pushTable(parameters_t& parameters, T& table) {
+template<size_t N>
+void BlockyEval::pushTable(parameters_t& parameters, std::string tableName, 
+                            const std::array<Eval::S, N>& table, const Eval::S adjustVal) {
+
+    // keep track of the table
+    assert(offsets.find(tableName) == offsets.end());
+    assert(sizes.find(tableName) == sizes.end());
+    tablesInOrder.push_back(tableName);
+    offsets[tableName] = parameters.size();
+    sizes[tableName] = table.size();
+
+    // push the table
     for (const auto& entry: table) {
-        pushEntry(parameters, entry);
+        pushEntry(parameters, entry, adjustVal);
     }
 }
 
-void BlockyEval::pushEntry(parameters_t& parameters, Eval::S entry) {
+void BlockyEval::pushEntry(parameters_t& parameters, Eval::S entry, const Eval::S adjustVal) {
+    entry -= adjustVal;
     tune_t op = entry.opScore;
     tune_t eg = entry.egScore;
     parameters.push_back(pair_t{op, eg});
@@ -61,7 +75,7 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
     /************
      * Initialize coefficients to zero-weights, which should fit most of them
     *************/
-    result.coefficients.resize(TOTAL_SIZE);
+    result.coefficients.resize(totalSize);
 
     /************
      * Assign non-zero linear weights to coefficients for the given position
@@ -88,13 +102,13 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
 
         // white and black pieces use different eval indices in piece square tables
         if (isWhitePiece(piece)) {
-            result.coefficients[PSQT_OFFSET + pieceOffset + i]++;
-            result.coefficients[PIECE_VALS_OFFSET + colorlessPiece]++;
-            result.coefficients[PASSED_PAWNS_OFFSET + getRank(i)] += passedPawnFlag;
+            result.coefficients[offsets["PSQT"] + pieceOffset + i]++;
+            result.coefficients[offsets["pieceVals"] + colorlessPiece]++;
+            result.coefficients[offsets["passedPawns"] + getRank(i)] += passedPawnFlag;
         } else {
-            result.coefficients[pieceOffset + (i ^ 56)]--;
-            result.coefficients[PIECE_VALS_OFFSET + colorlessPiece]--;
-            result.coefficients[PASSED_PAWNS_OFFSET + (getRank(i) ^ 7)] += passedPawnFlag;
+            result.coefficients[offsets["PSQT"] + pieceOffset + (i ^ 56)]--;
+            result.coefficients[offsets["pieceVals"] + colorlessPiece]--;
+            result.coefficients[offsets["passedPawns"] + (getRank(i) ^ 7)] += passedPawnFlag;
         }
     }
 
@@ -103,40 +117,29 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
 }
 
 void BlockyEval::print_parameters(const parameters_t& parameters) {
-    std::cout << "PassedPawns: \n{";
-    printArr(parameters, PASSED_PAWNS_OFFSET, PASSED_PAWNS_SIZE);
-
-    std::cout << "PieceVals: \n{";
-    printArr(parameters, PIECE_VALS_OFFSET, PIECE_VALS_SIZE);
-
-    std::cout << "PSQT: \n";
-    printPSQT(parameters);
-}
-
-void printPSQT(const parameters_t& parameters) {
-    for (int i = 0; i < NUM_PIECES; ++i) {
-        std::cout << "Table " << pieceToChar.at(pieceTypes(i)) << ": {\n";
-        for (int j = 0; j < BOARD_SIZE; ++j) {
-            std::cout << toStr(parameters[i * BOARD_SIZE + j], 4) << ", ";
-
-            if (j % 8 == 7) {
-                std::cout << "\n";
-            }
-        }
-        std::cout << "};\n\n";
+    for (const auto tableName: tablesInOrder) {
+        std::cout << tableName << ":\n";
+        printArr(parameters, offsets[tableName], sizes[tableName]);
     }
 }
 
 void printArr(const parameters_t& parameters, int offset, int size) {
+    // gets which width to print with; negatives require more space
+    // -100 requires 4 spaces, other numbers require 3
+    int width = 3;
     for (int i = 0; i < size; ++i) {
-        std::cout << toStr(parameters[offset + i], 3) << ", ";
+        if (parameters[offset + i][0] < -99 || parameters[offset + i][1] < -99) {
+            width = 4;
+            break;
+        }
     }
-    std::cout << "};\n\n";
-}
 
-void printCoeff(const parameters_t& parameters) {
-    for (const auto i: parameters) {
-        std::cout << toStr(i, 4) << ", ";
+    // actually print the parameters
+    for (int i = 0; i < size; ++i) {
+        std::cout << toStr(parameters[offset + i], width) << ", ";
+        if (i % 8 == 7) {
+            std::cout << '\n';
+        }
     }
     std::cout << "};\n\n";
 }
