@@ -1,3 +1,8 @@
+#include <array>
+#include <map>
+#include <string>
+#include <vector>
+
 #include "texel-tuner/src/base.h"
 #include "texel-tuner/src/external/chess.hpp"
 #include "../../src/eval.hpp"
@@ -16,12 +21,19 @@ class BlockyEval
         static EvalResult get_fen_eval_result(const std::string& fen);
         static EvalResult get_external_eval_result(const chess::Board& board); // unused
         static void print_parameters(const parameters_t& parameters);
+    private: 
+        template<size_t N>
+        static void pushTable(parameters_t& parameters, std::string tableName, 
+                                const std::array<Eval::S, N>& table, const Eval::S adjustVal = Eval::S{});
+        static void pushEntry(parameters_t& parameters, Eval::S entry, const Eval::S adjustVal);
+
+        static std::map<std::string, int> offsets;
+        static std::map<std::string, int> sizes;
+        static std::vector<std::string> tablesInOrder;
+        static int totalSize;
     };
 
-void printPSQT(const parameters_t& parameters);
 void printArr(const parameters_t& parameters, int offset, int size);
-void printCoeff(const parameters_t& parameters); // for debugging
-
 std::string toStr(pair_t val, int width);
 
 }; // namespace Blocky
