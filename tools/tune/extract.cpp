@@ -21,7 +21,7 @@
 
 std::array<uint64_t, 4> seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
 
-constexpr int MOD_FENS = 2;
+constexpr int MOD_FENS = 3;
 
 int main() {
     // initialize prerequisites
@@ -319,9 +319,8 @@ void storeFenResults(std::ofstream& file, std::vector<std::string> fens, Winning
     std::string resultStr = toStr(result);
     int storedPositions = 0;
     for (std::string fen: fens) {
-        // only accept half of all fens
-        // accepting every other fen doesn't work because that would only accept a single color for any given game
-        if (Zobrist::rand64(seed) % MOD_FENS == 0) {
+        // only accept 1 / MOD_FENS portion of total fens
+        if (!(Zobrist::rand64(seed) % MOD_FENS == 0)) {
             continue;
         }
 
