@@ -61,28 +61,33 @@ const PawnHashEntry& Info::getPawnInfo(const PieceSets& pieceSets) {
     PawnHashEntry& entry = this->pawnHashTable[this->pawnKey % PAWN_HASH_SIZE];
     if (this->pawnKey != entry.key) {
         entry.score = S();
-        entry.score += evalPassedPawns(pieceSets, true);
-        entry.score -= evalPassedPawns(pieceSets, false);
+        entry.score += evalPawns(pieceSets, true);
+        entry.score -= evalPawns(pieceSets, false);
         entry.key = this->pawnKey;
     }
     return entry;
 }
 
-S evalPassedPawns(const PieceSets& pieceSets, bool isWhiteTurn) {
+S evalPawns(const PieceSets& pieceSets, bool isWhiteTurn) {
     const auto allyPawn  = isWhiteTurn ? WPawn : BPawn;
     const auto enemyPawn = isWhiteTurn ? BPawn : WPawn;
 
-    auto allyPawnSet = pieceSets[allyPawn];
+    const auto allyPawnSet = pieceSets[allyPawn];
     const auto enemyPawnSet = pieceSets[enemyPawn];
 
     int pawn;
     S pawnScore{};
 
-    while (allyPawnSet) {
-        pawn = popLsb(allyPawnSet);
+    auto pawns = pieceSets[allyPawn];
+    while (pawns) {
+        pawn = popLsb(pawns);
         if (isPassedPawn(pawn, enemyPawnSet, isWhiteTurn)) {
             const int index = isWhiteTurn ? getRank(pawn) : getRank(pawn) ^ 7;
             pawnScore += passedPawn[index];
+        }
+
+        if (isDoubledPawn(pawn, allyPawnSet, isWhiteTurn)) {
+            pawnScore += doubledPawns;
         }
     }
 
@@ -139,6 +144,12 @@ bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn) {
     const int backEnemy = isWhitePawn ? popLsb(adjacentEnemies) : popMsb(adjacentEnemies);
     const int enemyRank = getRank(backEnemy);
     return isWhitePawn ? rank <= enemyRank : rank >= enemyRank;
+}
+
+bool isDoubledPawn(Square pawn, uint64_t allyPawns, bool isWhitePawn) {
+    uint64_t currPawnBB = c_u64(1) << pawn;
+    uint64_t forwardSquare = isWhitePawn ? currPawnBB >> 8 : currPawnBB << 8;
+    return static_cast<bool>(forwardSquare & allyPawns);
 }
 
 } // namespace Eval
