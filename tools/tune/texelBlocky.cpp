@@ -55,6 +55,19 @@ void BlockyEval::pushTable(parameters_t& parameters, std::string tableName,
     }
 }
 
+void BlockyEval::pushSingleTerm(parameters_t& parameters, std::string termName, const Eval::S& term) {
+    // keep track of the term
+    assert(offsets.find(termName) == offsets.end());
+    assert(sizes.find(termName) == sizes.end());
+    tablesInOrder.push_back(termName);
+    offsets[termName] = parameters.size();
+    sizes[termName] = 1;
+
+    // push the term
+    pushEntry(parameters, term);
+}
+
+// helper to push back a single entry, regardless of table or evaluation single term
 void BlockyEval::pushEntry(parameters_t& parameters, Eval::S entry, const Eval::S adjustVal) {
     entry -= adjustVal;
     tune_t op = entry.opScore;
