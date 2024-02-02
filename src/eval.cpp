@@ -85,11 +85,10 @@ S evalPawns(const PieceSets& pieceSets, bool isWhiteTurn) {
             const int index = isWhiteTurn ? getRank(pawn) : getRank(pawn) ^ 7;
             pawnScore += passedPawn[index];
         }
-
-        if (isDoubledPawn(pawn, allyPawnSet, isWhiteTurn)) {
-            pawnScore += doubledPawns;
-        }
     }
+
+    const auto doubledPawnMask = getDoubledPawnsMask(allyPawnSet, isWhiteTurn);
+    pawnScore += doubledPawns * popcount(doubledPawnMask);
 
     return pawnScore;
 }
@@ -144,12 +143,6 @@ bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn) {
     const int backEnemy = isWhitePawn ? popLsb(adjacentEnemies) : popMsb(adjacentEnemies);
     const int enemyRank = getRank(backEnemy);
     return isWhitePawn ? rank <= enemyRank : rank >= enemyRank;
-}
-
-bool isDoubledPawn(Square pawn, uint64_t allyPawns, bool isWhitePawn) {
-    uint64_t currPawnBB = c_u64(1) << pawn;
-    uint64_t forwardSquare = isWhitePawn ? currPawnBB >> 8 : currPawnBB << 8;
-    return static_cast<bool>(forwardSquare & allyPawns);
 }
 
 } // namespace Eval

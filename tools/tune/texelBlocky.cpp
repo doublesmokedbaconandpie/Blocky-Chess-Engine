@@ -106,9 +106,10 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
         if (colorlessPiece == WPawn) {
             const uint64_t allyPawnSet = isWhitePiece ? board.pieceSets[WPawn] : board.pieceSets[BPawn];
             const uint64_t enemyPawnSet = isWhitePiece ? board.pieceSets[BPawn] : board.pieceSets[WPawn];
+            const uint64_t doubledPawnSet = Eval::getDoubledPawnsMask(allyPawnSet, isWhitePiece);
 
             passedPawnFlag = static_cast<int>(Eval::isPassedPawn(i, enemyPawnSet, isWhitePiece));
-            doubledPawnFlag = static_cast<int>(Eval::isDoubledPawn(i, allyPawnSet, isWhitePiece));
+            doubledPawnFlag = static_cast<int>(static_cast<bool>(doubledPawnSet & c_u64(1) << i));
         }
 
         // white and black pieces use different eval indices in piece square tables
