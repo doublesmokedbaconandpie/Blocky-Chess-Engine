@@ -61,30 +61,34 @@ const PawnHashEntry& Info::getPawnInfo(const PieceSets& pieceSets) {
     PawnHashEntry& entry = this->pawnHashTable[this->pawnKey % PAWN_HASH_SIZE];
     if (this->pawnKey != entry.key) {
         entry.score = S();
-        entry.score += evalPassedPawns(pieceSets, true);
-        entry.score -= evalPassedPawns(pieceSets, false);
+        entry.score += evalPawns(pieceSets, true);
+        entry.score -= evalPawns(pieceSets, false);
         entry.key = this->pawnKey;
     }
     return entry;
 }
 
-S evalPassedPawns(const PieceSets& pieceSets, bool isWhiteTurn) {
+S evalPawns(const PieceSets& pieceSets, bool isWhiteTurn) {
     const auto allyPawn  = isWhiteTurn ? WPawn : BPawn;
     const auto enemyPawn = isWhiteTurn ? BPawn : WPawn;
 
-    auto allyPawnSet = pieceSets[allyPawn];
+    const auto allyPawnSet = pieceSets[allyPawn];
     const auto enemyPawnSet = pieceSets[enemyPawn];
 
     int pawn;
     S pawnScore{};
 
-    while (allyPawnSet) {
-        pawn = popLsb(allyPawnSet);
+    auto pawns = pieceSets[allyPawn];
+    while (pawns) {
+        pawn = popLsb(pawns);
         if (isPassedPawn(pawn, enemyPawnSet, isWhiteTurn)) {
             const int index = isWhiteTurn ? getRank(pawn) : getRank(pawn) ^ 7;
             pawnScore += passedPawn[index];
         }
     }
+
+    const auto doubledPawnMask = getDoubledPawnsMask(allyPawnSet, isWhiteTurn);
+    pawnScore += doubledPawns * popcount(doubledPawnMask);
 
     return pawnScore;
 }

@@ -25,7 +25,8 @@ class BlockyEval
         template<size_t N>
         static void pushTable(parameters_t& parameters, std::string tableName, 
                                 const std::array<Eval::S, N>& table, const Eval::S adjustVal = Eval::S{});
-        static void pushEntry(parameters_t& parameters, Eval::S entry, const Eval::S adjustVal);
+        static void pushSingleTerm(parameters_t& parameters, std::string termName, const Eval::S& term);
+        static void pushEntry(parameters_t& parameters, Eval::S entry, const Eval::S adjustVal = Eval::S{});
 
         static std::map<std::string, int> offsets;
         static std::map<std::string, int> sizes;
