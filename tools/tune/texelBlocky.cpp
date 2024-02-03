@@ -35,6 +35,7 @@ parameters_t BlockyEval::get_initial_parameters() {
 
     // misc evaluation terms
     pushSingleTerm(params, "doubledPawns", Eval::doubledPawns);
+    pushSingleTerm(params, "chainedPawns", Eval::chainedPawns);
 
     totalSize = params.size();
     return params;
@@ -102,14 +103,16 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
         const int pieceOffset = colorlessPiece * BOARD_SIZE;
 
         // pawn terms
-        int passedPawnFlag = 0, doubledPawnFlag = 0;
+        int passedPawnFlag = 0, doubledPawnFlag = 0, chainedPawnFlag = 0;
         if (colorlessPiece == WPawn) {
             const uint64_t allyPawnSet = isWhitePiece ? board.pieceSets[WPawn] : board.pieceSets[BPawn];
             const uint64_t enemyPawnSet = isWhitePiece ? board.pieceSets[BPawn] : board.pieceSets[WPawn];
             const uint64_t doubledPawnSet = Eval::getDoubledPawnsMask(allyPawnSet, isWhitePiece);
+            const uint64_t chainedPawnSet = Eval::getChainedPawnsMask(allyPawnSet, isWhitePiece);
 
             passedPawnFlag = static_cast<int>(Eval::isPassedPawn(i, enemyPawnSet, isWhitePiece));
             doubledPawnFlag = static_cast<int>(static_cast<bool>(doubledPawnSet & c_u64(1) << i));
+            chainedPawnFlag = static_cast<int>(static_cast<bool>(chainedPawnSet & c_u64(1) << i));
         }
 
         // white and black pieces use different eval indices in piece square tables
@@ -122,6 +125,7 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
         result.coefficients[offsets["pieceVals"] + colorlessPiece] += occurences;
         result.coefficients[offsets["passedPawns"] + rankOffset] += passedPawnFlag * occurences;
         result.coefficients[offsets["doubledPawns"]] += doubledPawnFlag * occurences;
+        result.coefficients[offsets["chainedPawns"]] += chainedPawnFlag * occurences;
     }
 
     result.score = board.evaluate();
@@ -133,6 +137,7 @@ void BlockyEval::print_parameters(const parameters_t& parameters) {
         std::cout << tableName << ":\n";
         printArr(parameters, offsets[tableName], sizes[tableName]);
     }
+    std::cout << std::endl;
 }
 
 void printArr(const parameters_t& parameters, int offset, int size) {
@@ -146,7 +151,13 @@ void printArr(const parameters_t& parameters, int offset, int size) {
         }
     }
 
-    // actually print the parameters
+    // single evaluation term case
+    if (size == 1) {
+        std::cout << toStr(parameters[offset], width) << ";\n";
+        return;
+    }
+
+    // evaluation table case
     for (int i = 0; i < size; ++i) {
         std::cout << toStr(parameters[offset + i], width) << ", ";
         if (i % 8 == 7) {

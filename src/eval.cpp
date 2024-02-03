@@ -68,9 +68,9 @@ const PawnHashEntry& Info::getPawnInfo(const PieceSets& pieceSets) {
     return entry;
 }
 
-S evalPawns(const PieceSets& pieceSets, bool isWhiteTurn) {
-    const auto allyPawn  = isWhiteTurn ? WPawn : BPawn;
-    const auto enemyPawn = isWhiteTurn ? BPawn : WPawn;
+S evalPawns(const PieceSets& pieceSets, bool isWhite) {
+    const auto allyPawn  = isWhite ? WPawn : BPawn;
+    const auto enemyPawn = isWhite ? BPawn : WPawn;
 
     const auto allyPawnSet = pieceSets[allyPawn];
     const auto enemyPawnSet = pieceSets[enemyPawn];
@@ -81,14 +81,17 @@ S evalPawns(const PieceSets& pieceSets, bool isWhiteTurn) {
     auto pawns = pieceSets[allyPawn];
     while (pawns) {
         pawn = popLsb(pawns);
-        if (isPassedPawn(pawn, enemyPawnSet, isWhiteTurn)) {
-            const int index = isWhiteTurn ? getRank(pawn) : getRank(pawn) ^ 7;
+        if (isPassedPawn(pawn, enemyPawnSet, isWhite)) {
+            const int index = isWhite ? getRank(pawn) : getRank(pawn) ^ 7;
             pawnScore += passedPawn[index];
         }
     }
 
-    const auto doubledPawnMask = getDoubledPawnsMask(allyPawnSet, isWhiteTurn);
-    pawnScore += doubledPawns * popcount(doubledPawnMask);
+    const auto doubledPawnsMask = getDoubledPawnsMask(allyPawnSet, isWhite);
+    pawnScore += doubledPawns * popcount(doubledPawnsMask);
+
+    const auto chainedPawnsMask = getChainedPawnsMask(allyPawnSet, isWhite);
+    pawnScore += chainedPawns * popcount(chainedPawnsMask);
 
     return pawnScore;
 }
@@ -143,6 +146,24 @@ bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn) {
     const int backEnemy = isWhitePawn ? popLsb(adjacentEnemies) : popMsb(adjacentEnemies);
     const int enemyRank = getRank(backEnemy);
     return isWhitePawn ? rank <= enemyRank : rank >= enemyRank;
+}
+
+// gets all pawns that are in front of other ally pawns
+uint64_t getDoubledPawnsMask(uint64_t allyPawnSet, bool isWhitePawn) {
+    const uint64_t forwardSquare = isWhitePawn ? allyPawnSet >> 8 : allyPawnSet << 8;
+    return allyPawnSet & forwardSquare;
+}
+
+// gets all pawns that are defending other ally pawns
+uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhitePawn) {
+    // prevent pawns from teleporting to other side of the board with bit shifts
+    const uint64_t left  = allyPawnSet & NOT_FILE_A;
+    const uint64_t right = allyPawnSet & NOT_FILE_H;
+
+    // find ally pawns in left and right diagonal direction
+    const uint64_t leftDiag = isWhitePawn ? left >> 9 : left << 7;
+    const uint64_t rightDiag = isWhitePawn ? right >> 7 : right << 9;
+    return allyPawnSet & (leftDiag | rightDiag);
 }
 
 } // namespace Eval
