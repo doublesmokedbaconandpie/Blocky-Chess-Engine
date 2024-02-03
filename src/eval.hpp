@@ -89,19 +89,15 @@ class Info {
 };
 
 // other evaluation helper functions
-S evalPawns(const PieceSets& pieceSets, bool isWhiteTurn);
+S evalPawns(const PieceSets& pieceSets, bool isWhite);
 int mopUpScore(const PieceSets& pieceSets, int eval);
 int getPiecePhase(pieceTypes piece);
 S getPSQTVal(Square square, pieceTypes currPiece);
 
 // bitmasking tricks
 bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn);
-
-inline uint64_t getDoubledPawnsMask(uint64_t allyPawnSet, bool isWhitePawn) {
-    const uint64_t forwardSquare = isWhitePawn ? allyPawnSet >> 8 : allyPawnSet << 8;
-    return allyPawnSet & forwardSquare;
-}
-
+uint64_t getDoubledPawnsMask(uint64_t allyPawnSet, bool isWhitePawn);
+uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhitePawn);
 
 /*************
  * Evaluation Terms
@@ -116,6 +112,7 @@ constexpr std::array<S, NUM_PIECES> pieceVals = {
 
 // misc terms
 constexpr S doubledPawns{S(-27,-49)};
+constexpr S chainedPawns{};
 
 // piece square tables
 constexpr auto PSQT = [] {
