@@ -12,7 +12,6 @@
 
 namespace Blocky {
 
-
 std::map<std::string, int> BlockyEval::offsets;
 std::map<std::string, int> BlockyEval::sizes;
 std::vector<std::string> BlockyEval::tablesInOrder;
@@ -33,6 +32,9 @@ parameters_t BlockyEval::get_initial_parameters() {
     // misc piece arrays
     pushTable(params, "pieceVals", Eval::pieceVals);
     pushTable(params, "passedPawns", Eval::passedPawn);
+
+    // misc evaluation terms
+    pushSingleTerm(params, "doubledPawns", Eval::doubledPawns);
 
     totalSize = params.size();
     return params;
@@ -55,6 +57,19 @@ void BlockyEval::pushTable(parameters_t& parameters, std::string tableName,
     }
 }
 
+void BlockyEval::pushSingleTerm(parameters_t& parameters, std::string termName, const Eval::S& term) {
+    // keep track of the term
+    assert(offsets.find(termName) == offsets.end());
+    assert(sizes.find(termName) == sizes.end());
+    tablesInOrder.push_back(termName);
+    offsets[termName] = parameters.size();
+    sizes[termName] = 1;
+
+    // push the term
+    pushEntry(parameters, term);
+}
+
+// helper to push back a single entry, regardless of table or evaluation single term
 void BlockyEval::pushEntry(parameters_t& parameters, Eval::S entry, const Eval::S adjustVal) {
     entry -= adjustVal;
     tune_t op = entry.opScore;
@@ -65,12 +80,6 @@ void BlockyEval::pushEntry(parameters_t& parameters, Eval::S entry, const Eval::
 EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
     Board board(fen);
     EvalResult result;
-    const auto isWhitePiece = [](pieceTypes piece) {
-        return piece >= WKing && piece <= WPawn;
-    };
-
-    int colorlessPiece, pieceOffset;
-    int passedPawnFlag;
 
     /************
      * Initialize coefficients to zero-weights, which should fit most of them
@@ -87,29 +96,32 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
             continue;
         }
 
+        // helper information
+        const bool isWhitePiece = piece >= WKing && piece <= WPawn;
         const int colorlessPiece = piece % 6;
         const int pieceOffset = colorlessPiece * BOARD_SIZE;
 
-        // adjust coefficients
-        passedPawnFlag = 0;
+        // pawn terms
+        int passedPawnFlag = 0, doubledPawnFlag = 0;
         if (colorlessPiece == WPawn) {
-            if (piece == WPawn) {
-                passedPawnFlag = static_cast<int>(Eval::isPassedPawn(i, board.pieceSets[BPawn], true));
-            } else {
-                passedPawnFlag = -static_cast<int>(Eval::isPassedPawn(i, board.pieceSets[WPawn], false));
-            }
+            const uint64_t allyPawnSet = isWhitePiece ? board.pieceSets[WPawn] : board.pieceSets[BPawn];
+            const uint64_t enemyPawnSet = isWhitePiece ? board.pieceSets[BPawn] : board.pieceSets[WPawn];
+            const uint64_t doubledPawnSet = Eval::getDoubledPawnsMask(allyPawnSet, isWhitePiece);
+
+            passedPawnFlag = static_cast<int>(Eval::isPassedPawn(i, enemyPawnSet, isWhitePiece));
+            doubledPawnFlag = static_cast<int>(static_cast<bool>(doubledPawnSet & c_u64(1) << i));
         }
 
         // white and black pieces use different eval indices in piece square tables
-        if (isWhitePiece(piece)) {
-            result.coefficients[offsets["PSQT"] + pieceOffset + i]++;
-            result.coefficients[offsets["pieceVals"] + colorlessPiece]++;
-            result.coefficients[offsets["passedPawns"] + getRank(i)] += passedPawnFlag;
-        } else {
-            result.coefficients[offsets["PSQT"] + pieceOffset + (i ^ 56)]--;
-            result.coefficients[offsets["pieceVals"] + colorlessPiece]--;
-            result.coefficients[offsets["passedPawns"] + (getRank(i) ^ 7)] += passedPawnFlag;
-        }
+        const int squareOffset = isWhitePiece ? i : i ^ 56;
+        const int rankOffset = isWhitePiece ? getRank(i) : getRank(i) ^ 7;
+        const int occurences = isWhitePiece ? 1 : -1;
+
+        // add the coefficients
+        result.coefficients[offsets["PSQT"] + pieceOffset + squareOffset] += occurences;
+        result.coefficients[offsets["pieceVals"] + colorlessPiece] += occurences;
+        result.coefficients[offsets["passedPawns"] + rankOffset] += passedPawnFlag * occurences;
+        result.coefficients[offsets["doubledPawns"]] += doubledPawnFlag * occurences;
     }
 
     result.score = board.evaluate();
