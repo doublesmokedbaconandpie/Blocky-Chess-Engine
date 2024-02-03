@@ -95,9 +95,10 @@ int getPiecePhase(pieceTypes piece);
 S getPSQTVal(Square square, pieceTypes currPiece);
 
 // bitmasking tricks
-bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn);
-uint64_t getDoubledPawnsMask(uint64_t allyPawnSet, bool isWhitePawn);
-uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhitePawn);
+bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhite);
+uint64_t getDoubledPawnsMask(uint64_t allyPawnSet, bool isWhite);
+uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhite);
+uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet, bool isWhite);
 
 /*************
  * Evaluation Terms
@@ -113,6 +114,7 @@ constexpr std::array<S, NUM_PIECES> pieceVals = {
 // misc terms
 constexpr auto doubledPawns = S(-18,-36);
 constexpr auto chainedPawns = S( 19, 19);
+constexpr auto phalanxPawns = S();
 
 // piece square tables
 constexpr auto PSQT = [] {
