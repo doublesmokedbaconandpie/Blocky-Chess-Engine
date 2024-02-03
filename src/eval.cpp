@@ -148,11 +148,13 @@ bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn) {
     return isWhitePawn ? rank <= enemyRank : rank >= enemyRank;
 }
 
+// gets all pawns that are in front of other ally pawns
 uint64_t getDoubledPawnsMask(uint64_t allyPawnSet, bool isWhitePawn) {
     const uint64_t forwardSquare = isWhitePawn ? allyPawnSet >> 8 : allyPawnSet << 8;
     return allyPawnSet & forwardSquare;
 }
 
+// gets all pawns that are defending other ally pawns
 uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhitePawn) {
     // prevent pawns from teleporting to other side of the board with bit shifts
     const uint64_t left  = allyPawnSet & NOT_FILE_A;
