@@ -137,6 +137,7 @@ void BlockyEval::print_parameters(const parameters_t& parameters) {
         std::cout << tableName << ":\n";
         printArr(parameters, offsets[tableName], sizes[tableName]);
     }
+    std::cout << std::endl;
 }
 
 void printArr(const parameters_t& parameters, int offset, int size) {
@@ -150,7 +151,13 @@ void printArr(const parameters_t& parameters, int offset, int size) {
         }
     }
 
-    // actually print the parameters
+    // single evaluation term case
+    if (size == 1) {
+        std::cout << toStr(parameters[offset], width) << ";\n";
+        return;
+    }
+
+    // evaluation table case
     for (int i = 0; i < size; ++i) {
         std::cout << toStr(parameters[offset + i], width) << ", ";
         if (i % 8 == 7) {
