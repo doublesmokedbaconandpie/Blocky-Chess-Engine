@@ -109,10 +109,7 @@ int getPieceMobility(pieceTypes piece, Square sq, uint64_t mobilitySquares, uint
 **************/
 
 // mobility tables
-constexpr std::array<S, 9>  knightMobility = {};
 constexpr std::array<S, 14> bishopMobility = {};
-constexpr std::array<S, 15> rookMobility   = {};
-constexpr std::array<S, 28> queenMobility  = {};
 
 // other tables
 constexpr std::array<S, NUM_RANKS> passedPawn = {

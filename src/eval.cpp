@@ -104,29 +104,14 @@ S evalPawns(const PieceSets& pieceSets, bool isWhite) {
 S evalMobilityScores(const PieceSets& pieceSets, bool isWhite) {
     const uint64_t mobilitySquares = getMobilitySquares(pieceSets, isWhite);
     const uint64_t allPieces   = isWhite ? pieceSets[WHITE_PIECES] : pieceSets[BLACK_PIECES];
-    uint64_t allyKnights = isWhite ? pieceSets[WKnight] : pieceSets[BKnight];
     uint64_t allyBishops = isWhite ? pieceSets[WBishop] : pieceSets[BBishop];
-    uint64_t allyRooks   = isWhite ? pieceSets[WRook]   : pieceSets[BRook];
-    uint64_t allyQueens  = isWhite ? pieceSets[WQueen]  : pieceSets[BQueen];
 
     S mobilityScores{};
     Square sq;
 
-    while (allyKnights) {
-        sq = popLsb(allyKnights);
-        mobilityScores += knightMobility[getPieceMobility(KNIGHT, sq, mobilitySquares, allPieces)];
-    }
     while (allyBishops) {
         sq = popLsb(allyBishops);
         mobilityScores += bishopMobility[getPieceMobility(BISHOP, sq, mobilitySquares, allPieces)];
-    }
-    while (allyRooks) {
-        sq = popLsb(allyRooks);
-        mobilityScores += rookMobility[getPieceMobility(ROOK, sq, mobilitySquares, allPieces)];
-    }
-    while (allyQueens) {
-        sq = popLsb(allyQueens);
-        mobilityScores += queenMobility[getPieceMobility(QUEEN, sq, mobilitySquares, allPieces)];
     }
 
     return mobilityScores;
@@ -224,17 +209,8 @@ int getPieceMobility(pieceTypes piece, Square sq, uint64_t mobilitySquares, uint
     uint64_t movementSquares;
     switch (piece)
     {
-    case KNIGHT:
-        movementSquares = Attacks::knightAttacks(sq);
-        break;
     case BISHOP:
         movementSquares = Attacks::bishopAttacks(sq, allPieces);
-        break;
-    case ROOK:
-        movementSquares = Attacks::rookAttacks(sq, allPieces);
-        break;
-    case QUEEN:
-        movementSquares = Attacks::bishopAttacks(sq, allPieces) | Attacks::rookAttacks(sq, allPieces);
         break;
     default:
         assert(false);
