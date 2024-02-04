@@ -86,7 +86,6 @@ void BlockyEval::pushEntry(parameters_t& parameters, Eval::S entry, const Eval::
 EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
     Board board(fen);
     EvalResult result;
-    const auto mobilitySquares = Eval::getMobilitySquares(board.pieceSets, board.isWhiteTurn);
     const auto allPieces = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
 
     /************
@@ -128,6 +127,7 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
         int mobilityFlag{}, mobility{}, mobilityOffset{};
         if (colorlessPiece == BISHOP) {
             mobilityFlag = 1;
+            const uint64_t mobilitySquares = Eval::getMobilitySquares(board.pieceSets, isWhitePiece);
             mobility = Eval::getPieceMobility(static_cast<pieceTypes>(colorlessPiece), i, mobilitySquares, allPieces);
             switch (colorlessPiece)
             {
