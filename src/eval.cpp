@@ -93,6 +93,9 @@ S evalPawns(const PieceSets& pieceSets, bool isWhite) {
     const auto chainedPawnsMask = getChainedPawnsMask(allyPawnSet, isWhite);
     pawnScore += chainedPawns * popcount(chainedPawnsMask);
 
+    const auto phalanxPawnsMask = getPhalanxPawnsMask(allyPawnSet, isWhite);
+    pawnScore += phalanxPawns * popcount(phalanxPawnsMask);
+
     return pawnScore;
 }
 
@@ -135,7 +138,7 @@ S getPSQTVal(Square square, pieceTypes currPiece) {
     return -PSQT[currPiece - BKing][square ^ 56];
 }
 
-bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn) {
+bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhite) {
     const int file = getFile(pawn);
     const int rank = getRank(pawn);
     uint64_t adjacentEnemies = ADJ_FILES_AND_FILES_MASK[file] & enemyPawns;
@@ -143,27 +146,33 @@ bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhitePawn) {
         return true;
     }
 
-    const int backEnemy = isWhitePawn ? popLsb(adjacentEnemies) : popMsb(adjacentEnemies);
+    const int backEnemy = isWhite ? popLsb(adjacentEnemies) : popMsb(adjacentEnemies);
     const int enemyRank = getRank(backEnemy);
-    return isWhitePawn ? rank <= enemyRank : rank >= enemyRank;
+    return isWhite ? rank <= enemyRank : rank >= enemyRank;
 }
 
 // gets all pawns that are in front of other ally pawns
-uint64_t getDoubledPawnsMask(uint64_t allyPawnSet, bool isWhitePawn) {
-    const uint64_t forwardSquare = isWhitePawn ? allyPawnSet >> 8 : allyPawnSet << 8;
+uint64_t getDoubledPawnsMask(uint64_t allyPawnSet, bool isWhite) {
+    const uint64_t forwardSquare = isWhite ? allyPawnSet >> 8 : allyPawnSet << 8;
     return allyPawnSet & forwardSquare;
 }
 
 // gets all pawns that are defending other ally pawns
-uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhitePawn) {
+uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhite) {
     // prevent pawns from teleporting to other side of the board with bit shifts
     const uint64_t left  = allyPawnSet & NOT_FILE_A;
     const uint64_t right = allyPawnSet & NOT_FILE_H;
 
     // find ally pawns in left and right diagonal direction
-    const uint64_t leftDiag = isWhitePawn ? left >> 9 : left << 7;
-    const uint64_t rightDiag = isWhitePawn ? right >> 7 : right << 9;
+    const uint64_t leftDiag = isWhite ? left >> 9 : left << 7;
+    const uint64_t rightDiag = isWhite ? right >> 7 : right << 9;
     return allyPawnSet & (leftDiag | rightDiag);
+}
+
+// get all pawns that have ally pawns to the immediate left
+uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet, bool isWhite) {
+    const uint64_t leftSquare = (allyPawnSet & NOT_FILE_A) >> 1;
+    return leftSquare & allyPawnSet;
 }
 
 } // namespace Eval
