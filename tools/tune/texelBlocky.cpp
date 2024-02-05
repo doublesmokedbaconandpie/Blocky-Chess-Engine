@@ -5,6 +5,7 @@
 
 #include "texelBlocky.hpp"
 #include "texel-tuner/src/base.h"
+#include "../../src/attacks.hpp"
 #include "../../src/board.hpp"
 #include "../../src/eval.hpp"
 #include "../../src/bitboard.hpp"
@@ -18,18 +19,21 @@ std::vector<std::string> BlockyEval::tablesInOrder;
 int BlockyEval::totalSize;
 
 parameters_t BlockyEval::get_initial_parameters() {
+    // required for mobilities to be computed
+    Attacks::init();
     parameters_t params;
 
     // piece square tables
     offsets["PSQT"] = 0;
-    pushTable(params, "King PSQT", Eval::PSQT[WKing], Eval::pieceVals[WKing]);
-    pushTable(params, "Queen PSQT", Eval::PSQT[WQueen], Eval::pieceVals[WQueen]);
-    pushTable(params, "Bishop PSQT", Eval::PSQT[WBishop], Eval::pieceVals[WBishop]);
-    pushTable(params, "Knight PSQT", Eval::PSQT[WKnight], Eval::pieceVals[WKnight]);
-    pushTable(params, "Rook PSQT", Eval::PSQT[WRook], Eval::pieceVals[WRook]);
-    pushTable(params, "Pawn PSQT", Eval::PSQT[WPawn], Eval::pieceVals[WPawn]);
+    pushTable(params, "King PSQT", Eval::PSQT[KING], Eval::pieceVals[KING]);
+    pushTable(params, "Queen PSQT", Eval::PSQT[QUEEN], Eval::pieceVals[QUEEN]);
+    pushTable(params, "Bishop PSQT", Eval::PSQT[BISHOP], Eval::pieceVals[BISHOP]);
+    pushTable(params, "Knight PSQT", Eval::PSQT[KNIGHT], Eval::pieceVals[KNIGHT]);
+    pushTable(params, "Rook PSQT", Eval::PSQT[ROOK], Eval::pieceVals[ROOK]);
+    pushTable(params, "Pawn PSQT", Eval::PSQT[PAWN], Eval::pieceVals[PAWN]);
 
     // misc piece arrays
+    pushTable(params, "bishopMobility", Eval::bishopMobility);
     pushTable(params, "pieceVals", Eval::pieceVals);
     pushTable(params, "passedPawns", Eval::passedPawn);
 
@@ -82,6 +86,7 @@ void BlockyEval::pushEntry(parameters_t& parameters, Eval::S entry, const Eval::
 EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
     Board board(fen);
     EvalResult result;
+    const auto allPieces = getAllPieces(board.pieceSets);
 
     /************
      * Initialize coefficients to zero-weights, which should fit most of them
@@ -118,6 +123,22 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
             phalanxPawnFlag = static_cast<int>(static_cast<bool>(phalanxPawnSet & c_u64(1) << i));
         }
 
+        // determine mobilities
+        int mobilityFlag{}, mobility{}, mobilityOffset{};
+        if (colorlessPiece == BISHOP) {
+            mobilityFlag = 1;
+            const uint64_t mobilitySquares = Eval::getMobilitySquares(board.pieceSets, isWhitePiece);
+            mobility = Eval::getPieceMobility(static_cast<pieceTypes>(colorlessPiece), i, mobilitySquares, allPieces);
+            switch (colorlessPiece)
+            {
+            case BISHOP:
+                mobilityOffset = offsets["bishopMobility"];
+                break;
+            default:
+                assert(false);
+            }
+        }
+
         // white and black pieces use different eval indices in piece square tables
         const int squareOffset = isWhitePiece ? i : i ^ 56;
         const int rankOffset = isWhitePiece ? getRank(i) : getRank(i) ^ 7;
@@ -130,6 +151,7 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
         result.coefficients[offsets["doubledPawns"]] += doubledPawnFlag * occurences;
         result.coefficients[offsets["chainedPawns"]] += chainedPawnFlag * occurences;
         result.coefficients[offsets["phalanxPawns"]] += phalanxPawnFlag * occurences;
+        result.coefficients[mobilityOffset + mobility] += mobilityFlag * occurences;
     }
 
     result.score = board.evaluate();

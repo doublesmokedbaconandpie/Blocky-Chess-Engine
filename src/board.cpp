@@ -476,3 +476,7 @@ bool currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn) {
         || Attacks::knightAttacks(kingSquare) & enemyKnights
         || Attacks::kingAttacks(kingSquare) & enemyKings;
 }
+
+uint64_t getAllPieces(const PieceSets& pieceSets) {
+    return pieceSets[WHITE_PIECES] | pieceSets[BLACK_PIECES];
+}

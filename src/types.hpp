@@ -39,7 +39,10 @@ using HistoryTable = std::array<std::array<uint64_t, BOARD_SIZE>, BOARD_SIZE>;
 enum pieceTypes {EmptyPiece = -1,
                 WKing, WQueen, WBishop, WKnight, WRook, WPawn, 
                 BKing, BQueen, BBishop, BKnight, BRook, BPawn,
-                WHITE_PIECES, BLACK_PIECES};
+                WHITE_PIECES, BLACK_PIECES,
+
+                KING = WKing, KNIGHT = WKnight, BISHOP = WBishop, ROOK = WRook, QUEEN = WQueen, PAWN = WPawn
+                };
 
 enum castleRights {
     noCastle = 0, 
