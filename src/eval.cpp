@@ -105,6 +105,7 @@ S evalMobilityScores(const PieceSets& pieceSets, bool isWhite) {
     const uint64_t mobilitySquares = getMobilitySquares(pieceSets, isWhite);
     const uint64_t allPieces   = isWhite ? pieceSets[WHITE_PIECES] : pieceSets[BLACK_PIECES];
     uint64_t allyBishops = isWhite ? pieceSets[WBishop] : pieceSets[BBishop];
+    uint64_t allyRooks = isWhite ? pieceSets[WRook] : pieceSets[BRook];
 
     S mobilityScores{};
     Square sq;
@@ -112,6 +113,10 @@ S evalMobilityScores(const PieceSets& pieceSets, bool isWhite) {
     while (allyBishops) {
         sq = popLsb(allyBishops);
         mobilityScores += bishopMobility[getPieceMobility(BISHOP, sq, mobilitySquares, allPieces)];
+    }
+    while (allyRooks) {
+        sq = popLsb(allyRooks);
+        mobilityScores += rookMobility[getPieceMobility(ROOK, sq, mobilitySquares, allPieces)];
     }
 
     return mobilityScores;
@@ -211,6 +216,9 @@ int getPieceMobility(pieceTypes piece, Square sq, uint64_t mobilitySquares, uint
     {
     case BISHOP:
         movementSquares = Attacks::bishopAttacks(sq, allPieces);
+        break;
+    case ROOK:
+        movementSquares = Attacks::rookAttacks(sq, allPieces);
         break;
     default:
         assert(false);

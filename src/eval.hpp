@@ -113,6 +113,9 @@ constexpr std::array<S, 14> bishopMobility = {
     S( 65, 33), S( 73, 86), S( 79,105), S( 85,126), S( 92,142), S( 97,157), S( 99,159), S(105,157),
     S(106,158), S(123,141), S(121,144), S(184, 81), S(171,112), S(372,-53), };
 
+constexpr std::array<S, 15> rookMobility = {
+};
+
 // other tables
 constexpr std::array<S, NUM_RANKS> passedPawn = {
     S(  0,  0), S( 79,187), S( 66,120), S( 27, 70), S(  4, 44), S( -9, 20), S(  9,  7), S(  0,  0),};
