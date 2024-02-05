@@ -33,6 +33,7 @@ parameters_t BlockyEval::get_initial_parameters() {
     pushTable(params, "Pawn PSQT", Eval::PSQT[PAWN], Eval::pieceVals[PAWN]);
 
     // misc piece arrays
+    pushTable(params, "knightMobility", Eval::knightMobility);
     pushTable(params, "bishopMobility", Eval::bishopMobility);
     pushTable(params, "rookMobility", Eval::rookMobility);
     pushTable(params, "pieceVals", Eval::pieceVals);
@@ -126,12 +127,15 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
 
         // determine mobilities
         int mobilityFlag{}, mobility{}, mobilityOffset{};
-        if (colorlessPiece == BISHOP || colorlessPiece == ROOK) {
+        if (colorlessPiece == KNIGHT || colorlessPiece == BISHOP || colorlessPiece == ROOK) {
             mobilityFlag = 1;
             const uint64_t mobilitySquares = Eval::getMobilitySquares(board.pieceSets, isWhitePiece);
             mobility = Eval::getPieceMobility(static_cast<pieceTypes>(colorlessPiece), i, mobilitySquares, allPieces);
             switch (colorlessPiece)
             {
+            case KNIGHT:
+                mobilityOffset = offsets["knightMobility"];
+                break;
             case BISHOP:
                 mobilityOffset = offsets["bishopMobility"];
                 break;
