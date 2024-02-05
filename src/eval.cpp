@@ -104,12 +104,17 @@ S evalPawns(const PieceSets& pieceSets, bool isWhite) {
 S evalMobilityScores(const PieceSets& pieceSets, bool isWhite) {
     const uint64_t mobilitySquares = getMobilitySquares(pieceSets, isWhite);
     const uint64_t allPieces   = isWhite ? pieceSets[WHITE_PIECES] : pieceSets[BLACK_PIECES];
+    uint64_t allyKnights = isWhite ? pieceSets[WKnight] : pieceSets[BKnight];
     uint64_t allyBishops = isWhite ? pieceSets[WBishop] : pieceSets[BBishop];
     uint64_t allyRooks = isWhite ? pieceSets[WRook] : pieceSets[BRook];
 
     S mobilityScores{};
     Square sq;
 
+    while (allyKnights) {
+        sq = popLsb(allyKnights);
+        mobilityScores += knightMobility[getPieceMobility(KNIGHT, sq, mobilitySquares, allPieces)];
+    }
     while (allyBishops) {
         sq = popLsb(allyBishops);
         mobilityScores += bishopMobility[getPieceMobility(BISHOP, sq, mobilitySquares, allPieces)];
@@ -214,6 +219,9 @@ int getPieceMobility(pieceTypes piece, Square sq, uint64_t mobilitySquares, uint
     uint64_t movementSquares;
     switch (piece)
     {
+    case KNIGHT:
+        movementSquares = Attacks::knightAttacks(sq);
+        break;
     case BISHOP:
         movementSquares = Attacks::bishopAttacks(sq, allPieces);
         break;
