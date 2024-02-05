@@ -34,6 +34,7 @@ parameters_t BlockyEval::get_initial_parameters() {
 
     // misc piece arrays
     pushTable(params, "bishopMobility", Eval::bishopMobility);
+    pushTable(params, "rookMobility", Eval::rookMobility);
     pushTable(params, "pieceVals", Eval::pieceVals);
     pushTable(params, "passedPawns", Eval::passedPawn);
 
@@ -125,7 +126,7 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
 
         // determine mobilities
         int mobilityFlag{}, mobility{}, mobilityOffset{};
-        if (colorlessPiece == BISHOP) {
+        if (colorlessPiece == BISHOP || colorlessPiece == ROOK) {
             mobilityFlag = 1;
             const uint64_t mobilitySquares = Eval::getMobilitySquares(board.pieceSets, isWhitePiece);
             mobility = Eval::getPieceMobility(static_cast<pieceTypes>(colorlessPiece), i, mobilitySquares, allPieces);
@@ -133,6 +134,9 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
             {
             case BISHOP:
                 mobilityOffset = offsets["bishopMobility"];
+                break;
+            case ROOK:
+                mobilityOffset = offsets["rookMobility"];
                 break;
             default:
                 assert(false);
