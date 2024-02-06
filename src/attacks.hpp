@@ -45,7 +45,7 @@ class Attacks {
         static int getMagicIndex(Magic& entry, uint64_t blockers);
         // not used to generate attacks
         template<typename Function>
-        static uint64_t findMagic(Function slidingAttacks, int square, uint64_t blockerMask, int shift, std::array<uint64_t, 4>& seed);
+        static uint64_t findMagic(Function slidingAttacks, int square, uint64_t blockerMask, int shift, RNGSeed& seed);
 
         // used to initialize magic tables
         template <typename Function, size_t SIZE>

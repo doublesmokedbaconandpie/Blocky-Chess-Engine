@@ -18,27 +18,21 @@
 
 #pragma once
 
-#include <array>
-#include <cstdint>
+#include "types.hpp"
 
-constexpr int BOARD_SIZE = 64;
-constexpr int NUM_FILES = 8;
-constexpr int NUM_RANKS = 8;
-constexpr int NUM_BITBOARDS = 14;
-constexpr int NUM_COLORED_PIECES = 12;
-constexpr int NUM_PIECES = 6;
-constexpr int MAX_MOVES = 256;
-constexpr int MAX_PLY = 250;
-
-using Square = uint8_t;
-using PieceSets = std::array<uint64_t, NUM_BITBOARDS>;
-using HistoryTable = std::array<std::array<uint64_t, BOARD_SIZE>, BOARD_SIZE>;
-using RNGSeed = std::array<uint64_t, 4>;
-
-inline int getFile(Square square) {
-    return square % 8;
+constexpr uint64_t rotl(const uint64_t x, int k) {
+    return (x << k) | (x >> (64 - k));
 }
-
-inline int getRank(Square square) {
-    return square / 8;
+// xoshiro256++
+// https://prng.di.unimi.it/xoshiro256plusplus.c
+constexpr uint64_t rand64(RNGSeed& seed) {
+    const uint64_t result = rotl(seed[0] + seed[3], 23) + seed[0];
+    const uint64_t t = seed[1] << 17;
+    seed[2] ^= seed[0];
+    seed[3] ^= seed[1];
+    seed[1] ^= seed[2];
+    seed[0] ^= seed[3];
+    seed[2] ^= t;
+    seed[3] = rotl(seed[3], 45);
+    return result;
 }

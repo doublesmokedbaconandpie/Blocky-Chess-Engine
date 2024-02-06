@@ -24,7 +24,8 @@
 
 #include "attacks.hpp"
 #include "bitboard.hpp"
-#include "zobrist.hpp" // for rand64()
+#include "zobrist.hpp"
+#include "utils/rand64.hpp"
 #include "utils/types.hpp"
 
 void Attacks::init() {
@@ -222,7 +223,7 @@ std::array<uint64_t, BOARD_SIZE> Attacks::KING_ATTACKS;
 
 // magics generation
 void Attacks::generateMagics() {
-    std::array<uint64_t, 4> seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
+    RNGSeed seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
 
     int attacksSize = 0;
     std::cout << "Rook attacks: " << std::endl;
@@ -249,7 +250,7 @@ void Attacks::generateMagics() {
 }
 
 template<typename Function>
-uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blockerMask, int shift, std::array<uint64_t, 4>& seed) {
+uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blockerMask, int shift, RNGSeed& seed) {
     std::vector<uint64_t> possibleBlockers = getPossibleBlockers(blockerMask);
     std::array<uint64_t, 4096> moves{};
     uint64_t magic = 0;
@@ -260,7 +261,7 @@ uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blocke
         magicFound = true;
         const int maxIndex = c_u64(1) << shift;
         // magic numbers with low number of 1s are better
-        magic = Zobrist::rand64(seed) & Zobrist::rand64(seed) & Zobrist::rand64(seed);
+        magic = rand64(seed) & rand64(seed) & rand64(seed);
 
         // checks for collisions with all possible blockers for a magic number
         for (uint64_t blocker: possibleBlockers) {
