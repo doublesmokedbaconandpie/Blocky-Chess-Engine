@@ -29,7 +29,6 @@
 #include "bitboard.hpp"
 #include "zobrist.hpp"
 #include "eval.hpp" 
-
 #include "utils/types.hpp"
 
 Board::Board(std::string fenStr) {

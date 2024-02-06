@@ -2,17 +2,17 @@
 * Blocky, a UCI chess engine
 * Copyright (C) 2023-2024, Kevin Nguyen
 *
-* Blocky is free software; you can redistribute it and/or modify it 
-* under the terms of the GNU General Public License as published by 
-* the Free Software Foundation; either version 3 of the License, or 
+* Blocky is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
 * (at your option) any later version.
 *
-* Blocky is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+* Blocky is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
-* 
-* You should have received a copy of the GNU General Public License along with this program; 
+*
+* You should have received a copy of the GNU General Public License along with this program;
 * if not, see <https://www.gnu.org/licenses>.
 */
 
@@ -22,7 +22,7 @@
 
 enum pieceTypes: int {
     EmptyPiece = -1,
-    WKing, WQueen, WBishop, WKnight, WRook, WPawn, 
+    WKing, WQueen, WBishop, WKnight, WRook, WPawn,
     BKing, BQueen, BBishop, BKnight, BRook, BPawn,
     WHITE_PIECES, BLACK_PIECES,
 
@@ -36,13 +36,13 @@ constexpr std::array<int, 13> pieceValues {
 
 const std::unordered_map<pieceTypes, char> pieceToChar {
     {EmptyPiece, ' '},
-    {WPawn, 'P'}, {WKnight, 'N'}, {WBishop, 'B'}, {WRook, 'R'}, {WQueen, 'Q'}, {WKing, 'K'}, 
-    {BPawn, 'p'}, {BKnight, 'n'}, {BBishop, 'b'}, {BRook, 'r'}, {BQueen, 'q'}, {BKing, 'k'}, 
+    {WPawn, 'P'}, {WKnight, 'N'}, {WBishop, 'B'}, {WRook, 'R'}, {WQueen, 'Q'}, {WKing, 'K'},
+    {BPawn, 'p'}, {BKnight, 'n'}, {BBishop, 'b'}, {BRook, 'r'}, {BQueen, 'q'}, {BKing, 'k'},
 };
 
 const std::unordered_map<char, pieceTypes> charToPiece {
-    {'P', WPawn}, {'N', WKnight}, {'B', WBishop}, {'R', WRook}, {'Q', WQueen}, {'K', WKing}, 
-    {'p', BPawn}, {'n', BKnight}, {'b', BBishop}, {'r', BRook}, {'q', BQueen}, {'k', BKing}, 
+    {'P', WPawn}, {'N', WKnight}, {'B', WBishop}, {'R', WRook}, {'Q', WQueen}, {'K', WKing},
+    {'p', BPawn}, {'n', BKnight}, {'b', BBishop}, {'r', BRook}, {'q', BQueen}, {'k', BKing},
 };
 
 enum EvalType {
@@ -54,8 +54,8 @@ enum NodeTypes {
 };
 
 enum castleRights {
-    noCastle = 0, 
-    W_OO = 1, 
+    noCastle = 0,
+    W_OO = 1,
     W_OOO = W_OO << 1,
     B_OO = W_OO << 2,
     B_OOO = W_OO << 3,
