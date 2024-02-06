@@ -24,7 +24,6 @@
 #include "moveGen.hpp"
 #include "board.hpp"
 #include "move.hpp"
-#include "types.hpp"
 
 namespace MoveOrder { 
 

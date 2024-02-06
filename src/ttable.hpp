@@ -22,7 +22,7 @@
 #include <vector>
 
 #include "move.hpp"
-#include "types.hpp"
+#include "utils/enums.hpp"
 
 namespace TTable {
 

@@ -25,7 +25,7 @@
 #include "attacks.hpp"
 #include "bitboard.hpp"
 #include "zobrist.hpp" // for rand64()
-#include "types.hpp"
+#include "utils/types.hpp"
 
 void Attacks::init() {
     // init rook and bishop tables

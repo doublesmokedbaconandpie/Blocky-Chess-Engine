@@ -25,7 +25,7 @@
 #include "bitboard.hpp"
 #include "attacks.hpp"
 #include "zobrist.hpp"
-#include "types.hpp"
+#include "utils/types.hpp"
 
 namespace Eval {
 

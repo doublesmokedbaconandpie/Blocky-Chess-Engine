@@ -23,7 +23,6 @@
 #include <iomanip>
 
 #include "bitboard.hpp"
-#include "types.hpp"
 
 // gets index of the least significant bits
 int lsb(uint64_t bitboard) {

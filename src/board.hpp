@@ -25,7 +25,8 @@
 #include "eval.hpp"
 #include "move.hpp"
 #include "bitboard.hpp"
-#include "types.hpp"
+#include "utils/enums.hpp"
+#include "utils/types.hpp"
 
 struct BoardState {
     BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, castleRights a_castlingRights, Square a_enPassSquare, int a_fiftyMoveRule) : 

@@ -20,7 +20,8 @@
 
 #include <string>
 
-#include "types.hpp"
+#include "utils/enums.hpp"
+#include "utils/types.hpp"
 
 constexpr Square NULLSQUARE = 0xFF;
 constexpr uint16_t NULLMOVE = 0xFFFF;

@@ -21,8 +21,6 @@
 #include <array>
 #include <cstdint>
 
-#include "types.hpp"
-
 namespace Zobrist {
 
 constexpr uint64_t rotl(const uint64_t x, int k) {

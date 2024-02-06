@@ -23,7 +23,7 @@
 #include <vector>
 
 #include "board.hpp"
-#include "types.hpp"
+#include "utils/fixedVector.hpp"
 
 class MoveList {
     public:

@@ -34,6 +34,8 @@
 #include "board.hpp"
 #include "attacks.hpp"
 
+#include "utils/enums.hpp"
+
 namespace Uci {
 
 UciOptions OPTIONS;

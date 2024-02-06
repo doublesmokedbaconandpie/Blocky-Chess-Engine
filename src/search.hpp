@@ -24,7 +24,7 @@
 #include "eval.hpp"
 #include "ttable.hpp"
 #include "timeman.hpp"
-#include "types.hpp"
+#include "utils/types.hpp"
 
 namespace Search {
 

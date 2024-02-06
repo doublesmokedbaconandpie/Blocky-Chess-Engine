@@ -20,7 +20,7 @@
 
 #include "move.hpp"
 #include "bitboard.hpp"
-#include "types.hpp"
+#include "utils/types.hpp"
 
 namespace Eval {
 

@@ -1,7 +1,6 @@
 #include "attacks.hpp"
 #include "bitboard.hpp"
 #include "move.hpp"
-#include "types.hpp"
 
 #include <gtest/gtest.h>
 #include <array>
