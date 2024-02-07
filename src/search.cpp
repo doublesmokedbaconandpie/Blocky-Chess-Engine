@@ -21,7 +21,6 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
-#include <vector>
 
 #include "search.hpp"
 #include "ttable.hpp"
@@ -30,6 +29,7 @@
 #include "moveGen.hpp"
 #include "board.hpp"
 #include "timeman.hpp"
+#include "utils/fixedVector.hpp"
 
 namespace Search {
 
@@ -208,8 +208,10 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
     // start search through moves
     int score = NO_SCORE, bestscore = -INF_SCORE;
-    BoardMove bestMove;
+    BoardMove bestMove{};
+    FixedVector<BoardMove, MAX_MOVES> failedQuiets{};
     bool doFullNullSearch, doPVS;
+
     while (movePicker.movesLeft(this->board, this->history)) {
         const BoardMove move = movePicker.pickMove();
         board.makeMove(move);
@@ -280,15 +282,28 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
                 // prune if a move is too good, opponent will avoid playing into this node
                 if (score >= beta) {
+                    // updating history and killer moves orders then ahead of other moves
                     this->history[move.sqr1()][move.sqr2()] += depth * (depth - 1);
                     if (quietMove) {
                         ss->killerMove = move;
+
+                        // apply malus for quiets that didn't cause beta cutoffs
+                        // these quiets were ordered ahead of the cutting move, so they should be penalized
+                        for (const auto& quiet: failedQuiets) {
+                            this->history[quiet.sqr1()][quiet.sqr2()] -= depth * (depth - 1);
+                        }
                     }
                     break;
                 }
             }
         }
+
+        // keep track of all quiets that didn't generate cutoffs
+        if (quietMove) {
+            failedQuiets.push_back(move);
+        }
     }
+
     // checkmate or stalemate
     if (movePicker.getMovesPicked() == 0) {
         if (inCheck) {
