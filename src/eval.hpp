@@ -90,7 +90,7 @@ class Info {
 
 // other evaluation helper functions
 S evalPawns(const PieceSets& pieceSets, bool isWhite);
-S evalMobilityScores(const PieceSets& pieceSets, bool isWhite);
+S evalPieces(const PieceSets& pieceSets, bool isWhite);
 int evalMopUpScore(const PieceSets& pieceSets, int eval);
 
 int getPiecePhase(pieceTypes piece);
@@ -103,6 +103,10 @@ uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhite);
 uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet);
 uint64_t getMobilitySquares(const PieceSets& pieceSets, bool isWhite);
 int getPieceMobility(pieceTypes piece, Square sq, uint64_t mobilitySquares, uint64_t allPieces);
+
+inline bool isBishopPair(uint64_t allyBishops) {
+    return popcount(allyBishops) > 1;
+}
 
 /*************
  * Evaluation Terms
@@ -133,6 +137,7 @@ inline constexpr std::array<S, NUM_PIECES> pieceVals = {
 inline constexpr auto doubledPawns = S(-19,-31);
 inline constexpr auto chainedPawns = S( 23, 21);
 inline constexpr auto phalanxPawns = S( 12, 11);
+inline constexpr auto bishopPair = S();
 inline constexpr int tempo = 11;
 
 // piece square tables
