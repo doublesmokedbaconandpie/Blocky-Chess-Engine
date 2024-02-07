@@ -33,7 +33,7 @@ constexpr int MAX_PLY = 250;
 
 using Square = uint8_t;
 using PieceSets = std::array<uint64_t, NUM_BITBOARDS>;
-using HistoryTable = std::array<std::array<uint64_t, BOARD_SIZE>, BOARD_SIZE>;
+using HistoryTable = std::array<std::array<int, BOARD_SIZE>, BOARD_SIZE>;
 using RNGSeed = std::array<uint64_t, 4>;
 
 inline int getFile(Square square) {
