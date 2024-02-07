@@ -188,7 +188,8 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     *************/
     if (!ISNMP
         && !inCheck
-        && depth >= 2) {
+        && depth >= 2
+        && staticEval >= beta) {
 
         int reduction = 3 + depth / 4;
         board.makeNullMove();
