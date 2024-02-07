@@ -22,7 +22,6 @@
 #include <array>
 
 #include "move.hpp"
-#include "utils/enums.hpp"
 #include "utils/types.hpp"
 
 BoardMove::BoardMove(Square square1, Square square2, pieceTypes promotePiece) {

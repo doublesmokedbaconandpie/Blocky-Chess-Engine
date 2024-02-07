@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <cstdint>
 
-#include "utils/enums.hpp"
 #include "utils/types.hpp"
 
 enum SQUARE_BBS: uint64_t {

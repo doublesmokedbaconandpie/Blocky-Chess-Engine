@@ -9,7 +9,7 @@
 #include "../../src/board.hpp"
 #include "../../src/eval.hpp"
 #include "../../src/bitboard.hpp"
-#include "../../src/utils/enums.hpp"
+#include "../../src/utils/types.hpp"
 
 namespace Blocky {
 

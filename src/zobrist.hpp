@@ -20,6 +20,7 @@
 
 #include <array>
 #include <cstdint>
+
 #include "utils/rand64.hpp"
 
 namespace Zobrist {

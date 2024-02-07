@@ -33,8 +33,7 @@
 #include "moveGen.hpp"
 #include "board.hpp"
 #include "attacks.hpp"
-
-#include "utils/enums.hpp"
+#include "utils/types.hpp"
 
 namespace Uci {
 

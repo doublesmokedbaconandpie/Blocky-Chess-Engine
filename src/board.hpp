@@ -25,7 +25,6 @@
 #include "eval.hpp"
 #include "move.hpp"
 #include "bitboard.hpp"
-#include "utils/enums.hpp"
 #include "utils/types.hpp"
 
 struct BoardState {

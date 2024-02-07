@@ -20,7 +20,6 @@
 
 #include <string>
 
-#include "utils/enums.hpp"
 #include "utils/types.hpp"
 
 constexpr Square NULLSQUARE = 0xFF;
