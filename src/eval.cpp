@@ -95,7 +95,7 @@ S evalPawns(const PieceSets& pieceSets, bool isWhite) {
     const auto chainedPawnsMask = getChainedPawnsMask(allyPawnSet, isWhite);
     pawnScore += chainedPawns * popcount(chainedPawnsMask);
 
-    const auto phalanxPawnsMask = getPhalanxPawnsMask(allyPawnSet, isWhite);
+    const auto phalanxPawnsMask = getPhalanxPawnsMask(allyPawnSet);
     pawnScore += phalanxPawns * popcount(phalanxPawnsMask);
 
     return pawnScore;
@@ -198,7 +198,7 @@ uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhite) {
 }
 
 // get all pawns that have ally pawns to the immediate left
-uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet, bool isWhite) {
+uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet) {
     const uint64_t leftSquare = (allyPawnSet & NOT_FILE_A) >> 1;
     return leftSquare & allyPawnSet;
 }

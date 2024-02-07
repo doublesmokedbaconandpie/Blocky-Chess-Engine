@@ -100,7 +100,7 @@ S getPSQTVal(Square square, pieceTypes currPiece);
 bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhite);
 uint64_t getDoubledPawnsMask(uint64_t allyPawnSet, bool isWhite);
 uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhite);
-uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet, bool isWhite);
+uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet);
 uint64_t getMobilitySquares(const PieceSets& pieceSets, bool isWhite);
 int getPieceMobility(pieceTypes piece, Square sq, uint64_t mobilitySquares, uint64_t allPieces);
 

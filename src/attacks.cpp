@@ -258,7 +258,7 @@ uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blocke
     while (!magicFound) {
         moves.fill(ALL_SQUARES);
         magicFound = true;
-        const int maxIndex = c_u64(1) << shift;
+        const size_t maxIndex = c_u64(1) << shift;
         // magic numbers with low number of 1s are better
         magic = rand64(seed) & rand64(seed) & rand64(seed);
 
