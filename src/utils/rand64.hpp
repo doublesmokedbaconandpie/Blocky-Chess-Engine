@@ -16,33 +16,24 @@
 * if not, see <https://www.gnu.org/licenses>.
 */
 
+
 #pragma once
 
-#include <string>
-#include <sstream>
+#include "types.hpp"
 
-#include "board.hpp"
-#include "search.hpp"
-
-namespace Uci {
-
-struct UciOptions {
-    int depth = 100;
-};
-
-void printEngineInfo();
-void setOptionLoop();
-void uciLoop();
-
-void setOption(std::istringstream& input);
-void uciNewGame();
-Board position(std::istringstream& input);
-void go(std::istringstream& input, Board& board);
-void isready();
-
-// for debugging
-void bench();
-void perft(std::istringstream& input, Board& board);
-void magics();
-
-} // namespace Uci
+constexpr uint64_t rotl(const uint64_t x, int k) {
+    return (x << k) | (x >> (64 - k));
+}
+// xoshiro256++
+// https://prng.di.unimi.it/xoshiro256plusplus.c
+constexpr uint64_t rand64(RNGSeed& seed) {
+    const uint64_t result = rotl(seed[0] + seed[3], 23) + seed[0];
+    const uint64_t t = seed[1] << 17;
+    seed[2] ^= seed[0];
+    seed[3] ^= seed[1];
+    seed[1] ^= seed[2];
+    seed[0] ^= seed[3];
+    seed[2] ^= t;
+    seed[3] = rotl(seed[3], 45);
+    return result;
+}

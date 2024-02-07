@@ -2,17 +2,17 @@
 * Blocky, a UCI chess engine
 * Copyright (C) 2023-2024, Kevin Nguyen
 *
-* Blocky is free software; you can redistribute it and/or modify it 
-* under the terms of the GNU General Public License as published by 
-* the Free Software Foundation; either version 3 of the License, or 
+* Blocky is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
 * (at your option) any later version.
 *
-* Blocky is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+* Blocky is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
-* 
-* You should have received a copy of the GNU General Public License along with this program; 
+*
+* You should have received a copy of the GNU General Public License along with this program;
 * if not, see <https://www.gnu.org/licenses>.
 */
 
@@ -20,7 +20,7 @@
 
 #include "move.hpp"
 #include "bitboard.hpp"
-#include "types.hpp"
+#include "utils/types.hpp"
 
 namespace Eval {
 
@@ -100,7 +100,7 @@ S getPSQTVal(Square square, pieceTypes currPiece);
 bool isPassedPawn(Square pawn, uint64_t enemyPawns, bool isWhite);
 uint64_t getDoubledPawnsMask(uint64_t allyPawnSet, bool isWhite);
 uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhite);
-uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet, bool isWhite);
+uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet);
 uint64_t getMobilitySquares(const PieceSets& pieceSets, bool isWhite);
 int getPieceMobility(pieceTypes piece, Square sq, uint64_t mobilitySquares, uint64_t allPieces);
 

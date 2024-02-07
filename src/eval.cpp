@@ -2,17 +2,17 @@
 * Blocky, a UCI chess engine
 * Copyright (C) 2023-2024, Kevin Nguyen
 *
-* Blocky is free software; you can redistribute it and/or modify it 
-* under the terms of the GNU General Public License as published by 
-* the Free Software Foundation; either version 3 of the License, or 
+* Blocky is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
 * (at your option) any later version.
 *
-* Blocky is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+* Blocky is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
-* 
-* You should have received a copy of the GNU General Public License along with this program; 
+*
+* You should have received a copy of the GNU General Public License along with this program;
 * if not, see <https://www.gnu.org/licenses>.
 */
 
@@ -25,7 +25,7 @@
 #include "bitboard.hpp"
 #include "attacks.hpp"
 #include "zobrist.hpp"
-#include "types.hpp"
+#include "utils/types.hpp"
 
 namespace Eval {
 
@@ -95,7 +95,7 @@ S evalPawns(const PieceSets& pieceSets, bool isWhite) {
     const auto chainedPawnsMask = getChainedPawnsMask(allyPawnSet, isWhite);
     pawnScore += chainedPawns * popcount(chainedPawnsMask);
 
-    const auto phalanxPawnsMask = getPhalanxPawnsMask(allyPawnSet, isWhite);
+    const auto phalanxPawnsMask = getPhalanxPawnsMask(allyPawnSet);
     pawnScore += phalanxPawns * popcount(phalanxPawnsMask);
 
     return pawnScore;
@@ -198,7 +198,7 @@ uint64_t getChainedPawnsMask(uint64_t allyPawnSet, bool isWhite) {
 }
 
 // get all pawns that have ally pawns to the immediate left
-uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet, bool isWhite) {
+uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet) {
     const uint64_t leftSquare = (allyPawnSet & NOT_FILE_A) >> 1;
     return leftSquare & allyPawnSet;
 }

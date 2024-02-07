@@ -13,13 +13,12 @@
 #include "move.hpp"
 #include "attacks.hpp"
 #include "bitboard.hpp"
-#include "zobrist.hpp" // for rand64()
-#include "types.hpp"
+#include "utils/rand64.hpp"
 
 // This program is meant to convert the pgns from a Cutechess match into a data format
 // that is easy to parse; make sure not to have any incompleted games within those pgns
 
-std::array<uint64_t, 4> seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
+RNGSeed seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
 
 constexpr int MOD_FENS = 3;
 
@@ -320,7 +319,7 @@ void storeFenResults(std::ofstream& file, std::vector<std::string> fens, Winning
     int storedPositions = 0;
     for (std::string fen: fens) {
         // only accept 1 / MOD_FENS portion of total fens
-        if (!(Zobrist::rand64(seed) % MOD_FENS == 0)) {
+        if (!(rand64(seed) % MOD_FENS == 0)) {
             continue;
         }
 

@@ -2,17 +2,17 @@
 * Blocky, a UCI chess engine
 * Copyright (C) 2023-2024, Kevin Nguyen
 *
-* Blocky is free software; you can redistribute it and/or modify it 
-* under the terms of the GNU General Public License as published by 
-* the Free Software Foundation; either version 3 of the License, or 
+* Blocky is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 3 of the License, or
 * (at your option) any later version.
 *
-* Blocky is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+* Blocky is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 * GNU General Public License for more details.
-* 
-* You should have received a copy of the GNU General Public License along with this program; 
+*
+* You should have received a copy of the GNU General Public License along with this program;
 * if not, see <https://www.gnu.org/licenses>.
 */
 
@@ -24,8 +24,8 @@
 
 #include "attacks.hpp"
 #include "bitboard.hpp"
-#include "zobrist.hpp" // for rand64()
-#include "types.hpp"
+#include "utils/rand64.hpp"
+#include "utils/types.hpp"
 
 void Attacks::init() {
     // init rook and bishop tables
@@ -222,7 +222,7 @@ std::array<uint64_t, BOARD_SIZE> Attacks::KING_ATTACKS;
 
 // magics generation
 void Attacks::generateMagics() {
-    std::array<uint64_t, 4> seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
+    RNGSeed seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
 
     int attacksSize = 0;
     std::cout << "Rook attacks: " << std::endl;
@@ -249,7 +249,7 @@ void Attacks::generateMagics() {
 }
 
 template<typename Function>
-uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blockerMask, int shift, std::array<uint64_t, 4>& seed) {
+uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blockerMask, int shift, RNGSeed& seed) {
     std::vector<uint64_t> possibleBlockers = getPossibleBlockers(blockerMask);
     std::array<uint64_t, 4096> moves{};
     uint64_t magic = 0;
@@ -258,9 +258,9 @@ uint64_t Attacks::findMagic(Function slidingAttacks, int square, uint64_t blocke
     while (!magicFound) {
         moves.fill(ALL_SQUARES);
         magicFound = true;
-        const int maxIndex = c_u64(1) << shift;
+        const size_t maxIndex = c_u64(1) << shift;
         // magic numbers with low number of 1s are better
-        magic = Zobrist::rand64(seed) & Zobrist::rand64(seed) & Zobrist::rand64(seed);
+        magic = rand64(seed) & rand64(seed) & rand64(seed);
 
         // checks for collisions with all possible blockers for a magic number
         for (uint64_t blocker: possibleBlockers) {
