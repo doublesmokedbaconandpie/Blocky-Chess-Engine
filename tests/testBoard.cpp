@@ -62,7 +62,7 @@ TEST_F(BoardTest, fenConstructorDefault) {
     EXPECT_EQ(fenBoard.getZobristKey(), defaultBoard.getZobristKey());
     EXPECT_NE(fenBoard.getZobristKey(), 0);
     EXPECT_EQ(fenBoard.isWhiteTurn, defaultBoard.isWhiteTurn);
-    EXPECT_EQ(fenBoard.castlingRights, defaultBoard.castlingRights);
+    EXPECT_EQ(fenBoard.getCastlingRights(), defaultBoard.getCastlingRights());
     EXPECT_EQ(fenBoard.getEnPassSquare(), defaultBoard.getEnPassSquare());
     EXPECT_EQ(fenBoard.getFiftyMoveRule(), defaultBoard.getFiftyMoveRule());
 }
@@ -77,7 +77,7 @@ TEST_F(BoardTest, fenConstructorEnPassantSquare) {
     EXPECT_EQ(fenBoard.getZobristKey(), moveBoard.getZobristKey());
     EXPECT_NE(fenBoard.getZobristKey(), 0);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
-    EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);
+    EXPECT_EQ(fenBoard.getCastlingRights(), moveBoard.getCastlingRights());
     EXPECT_EQ(fenBoard.getEnPassSquare(), moveBoard.getEnPassSquare());
     EXPECT_EQ(fenBoard.getFiftyMoveRule(), moveBoard.getFiftyMoveRule());
 }
@@ -99,7 +99,7 @@ TEST_F(BoardTest, fenConstructorEnPassantCastle) {
     EXPECT_EQ(fenBoard.getZobristKey(), moveBoard.getZobristKey());
     EXPECT_NE(fenBoard.getZobristKey(), 0);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
-    EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);
+    EXPECT_EQ(fenBoard.getCastlingRights(), moveBoard.getCastlingRights());
     EXPECT_EQ(fenBoard.getEnPassSquare(), moveBoard.getEnPassSquare());
     EXPECT_EQ(fenBoard.getFiftyMoveRule(), moveBoard.getFiftyMoveRule());
 }
@@ -124,11 +124,11 @@ TEST_F(BoardTest, toFenCastling) {
 
 TEST(CastleRightsBitTest, defaultBoard) {
     Board board;
-    EXPECT_EQ(castleRightsBit(toSquare("g8"), board.isWhiteTurn) && board.castlingRights, false); // is not black's turn
-    EXPECT_EQ(castleRightsBit(toSquare("c8"), board.isWhiteTurn) && board.castlingRights, false); // is not black's turn
-    EXPECT_EQ(castleRightsBit(toSquare("g1"), board.isWhiteTurn) && board.castlingRights, true);
-    EXPECT_EQ(castleRightsBit(toSquare("c1"), board.isWhiteTurn) && board.castlingRights, true);
-    EXPECT_EQ(castleRightsBit(toSquare("e3"), board.isWhiteTurn) && board.castlingRights, false);
+    EXPECT_EQ(castleRightsBit(toSquare("g8"), board.isWhiteTurn) && board.getCastlingRights(), false); // is not black's turn
+    EXPECT_EQ(castleRightsBit(toSquare("c8"), board.isWhiteTurn) && board.getCastlingRights(), false); // is not black's turn
+    EXPECT_EQ(castleRightsBit(toSquare("g1"), board.isWhiteTurn) && board.getCastlingRights(), true);
+    EXPECT_EQ(castleRightsBit(toSquare("c1"), board.isWhiteTurn) && board.getCastlingRights(), true);
+    EXPECT_EQ(castleRightsBit(toSquare("e3"), board.isWhiteTurn) && board.getCastlingRights(), false);
 }
 
 TEST_F(BoardTest, checkDiagAttackersTrue) {
@@ -244,7 +244,7 @@ TEST_F(BoardTest, MakeMoveKingCastle) {
     EXPECT_EQ(board.getPiece(rookEnd), WRook);
     EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.getFiftyMoveRule(), 1);
-    EXPECT_EQ(board.castlingRights, B_Castle);
+    EXPECT_EQ(board.getCastlingRights(), B_Castle);
 }
 
 TEST_F(BoardTest, MakeMoveQueenCastle) {
@@ -261,7 +261,7 @@ TEST_F(BoardTest, MakeMoveQueenCastle) {
     EXPECT_EQ(board.getPiece(rookEnd), WRook);
     EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.getFiftyMoveRule(), 1);
-    EXPECT_EQ(board.castlingRights, B_Castle);
+    EXPECT_EQ(board.getCastlingRights(), B_Castle);
 }
 
 TEST_F(BoardTest, MakeMoveMovedKing) {
@@ -274,7 +274,7 @@ TEST_F(BoardTest, MakeMoveMovedKing) {
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.getFiftyMoveRule(), 1);
-    EXPECT_EQ(board.castlingRights, B_Castle);
+    EXPECT_EQ(board.getCastlingRights(), B_Castle);
 }
 
 TEST_F(BoardTest, MakeMoveKingToCastleSquare) {
@@ -288,7 +288,7 @@ TEST_F(BoardTest, MakeMoveKingToCastleSquare) {
     EXPECT_EQ(board.getPiece(pos2), WKing);
     EXPECT_EQ(board.getPiece(toSquare("h1")), WRook);
     EXPECT_EQ(board.getFiftyMoveRule(), 1);
-    EXPECT_EQ(board.castlingRights, B_Castle);
+    EXPECT_EQ(board.getCastlingRights(), B_Castle);
 }
 
 TEST_F(BoardTest, MakeMoveEnPassant) {
@@ -391,19 +391,19 @@ TEST_F(BoardTest, LegalMoveEnPassantPin) {
 TEST_F(BoardTest, MakeMoveCastleRightsRook) {
     Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1");
     board.makeMove(BoardMove("h1g1", board.isWhiteTurn));
-    EXPECT_EQ(board.castlingRights, B_Castle | W_OOO);
+    EXPECT_EQ(board.getCastlingRights(), B_Castle | W_OOO);
 }
 
 TEST_F(BoardTest, MakeMoveCastleRightsRook2) {
     Board board("rnbqk2r/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
     board.makeMove(BoardMove("h8g8", board.isWhiteTurn));
-    EXPECT_EQ(board.castlingRights, W_Castle | B_OOO);
+    EXPECT_EQ(board.getCastlingRights(), W_Castle | B_OOO);
 }
 
 TEST_F(BoardTest, MakeMoveCastleRightsRook3) {
     Board board("7r/1k4P1/1n6/B7/P4P1p/7P/4NK2/1R5R b - - 0 44");
     board.makeMove(BoardMove("h8g8", board.isWhiteTurn));
-    EXPECT_EQ(board.castlingRights, noCastle);
+    EXPECT_EQ(board.getCastlingRights(), noCastle);
 }
 
 TEST_F(BoardTest, undoMove) {
@@ -425,7 +425,7 @@ TEST_F(BoardTest, undoMove) {
     EXPECT_EQ(defaultBoard.getZobristKey(), moveBoard.getZobristKey());
     EXPECT_NE(defaultBoard.getZobristKey(), 0);
     EXPECT_EQ(defaultBoard.isWhiteTurn, moveBoard.isWhiteTurn);
-    EXPECT_EQ(defaultBoard.castlingRights, moveBoard.castlingRights);
+    EXPECT_EQ(defaultBoard.getCastlingRights(), moveBoard.getCastlingRights());
     EXPECT_EQ(defaultBoard.getEnPassSquare(), moveBoard.getEnPassSquare());
     EXPECT_EQ(defaultBoard.getFiftyMoveRule(), moveBoard.getFiftyMoveRule());
 }

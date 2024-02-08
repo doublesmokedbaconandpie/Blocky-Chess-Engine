@@ -86,7 +86,7 @@ void MoveList::generateQuiets(const Board& board) {
     const uint64_t validDests = this->emptySquares;
     this->pawnStartRank   = board.isWhiteTurn ? RANK_2 : RANK_7;
     this->pawnJumpRank    = board.isWhiteTurn ? RANK_4 : RANK_5;
-    this->castlingRights  = board.castlingRights;
+    this->castlingRights  = board.getCastlingRights();
     this->castlingRights &= board.isWhiteTurn ? W_Castle : B_Castle;
     
     const auto knightMovesFunc = [this](Square piece, uint64_t vd) {return this->knightMoves(piece, vd);};
