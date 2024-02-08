@@ -104,14 +104,14 @@ std::string Board::toFen() const {
     fenStr.pop_back(); // get rid of final '/'
     fenStr.push_back(' ');
 
-    this->m_isWhiteTurn ? fenStr.append("w") : fenStr.append("b"); 
+    this->m_isWhiteTurn ? fenStr.append("w") : fenStr.append("b");
     fenStr.push_back(' ');
 
-    this->m_castlingRights & W_OO  ? fenStr.append("K") : ""; 
-    this->m_castlingRights & W_OOO ? fenStr.append("Q") : ""; 
-    this->m_castlingRights & B_OO  ? fenStr.append("k") : ""; 
-    this->m_castlingRights & B_OOO ? fenStr.append("q") : ""; 
-    this->m_castlingRights == noCastle ? fenStr.append("-") : ""; 
+    this->m_castlingRights & W_OO  ? fenStr.append("K") : "";
+    this->m_castlingRights & W_OOO ? fenStr.append("Q") : "";
+    this->m_castlingRights & B_OO  ? fenStr.append("k") : "";
+    this->m_castlingRights & B_OOO ? fenStr.append("q") : "";
+    this->m_castlingRights == noCastle ? fenStr.append("-") : "";
     fenStr.push_back(' ');
 
     fenStr.append(squareToStr(this->m_enPassSquare));
@@ -243,7 +243,7 @@ void Board::makeMove(BoardMove move) {
     }	
     
     // after finalizing move logic, now switch turns
-    this->m_isWhiteTurn = !this->m_isWhiteTurn; 
+    this->m_isWhiteTurn = !this->m_isWhiteTurn;
     this->m_zobristKey ^= Zobrist::isBlackKey;
     this->m_age++;
 
@@ -318,14 +318,6 @@ void Board::unmakeNullMove() {
     this->m_moveHistory.pop_back();
     this->m_zobristKeyHistory.pop_back();
     this->m_zobristKey = m_zobristKeyHistory.back();
-}
-
-bool Board::moveIsCapture(BoardMove move) const {
-    if ( (this->getPiece(move.sqr1()) == WPawn || this->getPiece(move.sqr1()) == BPawn) && this->m_enPassSquare == move.sqr2())
-        return true;
-    if (move.getPromotePiece() == WQueen || move.getPromotePiece() == BQueen)
-        return true;
-    return this->getPiece(move.sqr2()) != EmptyPiece;
 }
 
 // getPiece is not responsible for bounds checking
@@ -406,6 +398,14 @@ bool Board::isLegalMove(const BoardMove move) const {
     return !currKingInAttack(tmpPieceSets, this->m_isWhiteTurn);
 }
 
+bool Board::moveIsCapture(BoardMove move) const {
+    if ( (this->getPiece(move.sqr1()) == WPawn || this->getPiece(move.sqr1()) == BPawn) && this->m_enPassSquare == move.sqr2())
+        return true;
+    if (move.getPromotePiece() == WQueen || move.getPromotePiece() == BQueen)
+        return true;
+    return this->getPiece(move.sqr2()) != EmptyPiece;
+}
+
 bool Board::isDraw() const {
     // fifty move rule
     if (this->m_fiftyMoveRule >= 100) {
@@ -423,7 +423,7 @@ int Board::evaluate() {
 }
 
 auto Board::lastMoveCaptureOrCastle() const -> bool {
-    return this->m_moveHistory.back().targetPiece != EmptyPiece 
+    return this->m_moveHistory.back().targetPiece != EmptyPiece
         || this->m_castlingRights != this->m_moveHistory.back().castlingRights;
 }
 

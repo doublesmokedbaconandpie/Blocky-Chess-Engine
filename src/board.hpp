@@ -48,23 +48,23 @@ class Board {
         Board(std::string fenStr);
         Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {};
         std::string toFen() const;
-        
+
         void makeMove(BoardMove move);
         void undoMove();
         void makeNullMove();
         void unmakeNullMove();
-        
+
         pieceTypes getPiece(Square square) const;
         void setPiece(Square square, pieceTypes currPiece);
-        
+
         bool isLegalMove(const BoardMove move) const;
         bool moveIsCapture(BoardMove move) const;
         bool isDraw() const;
         int evaluate();
-
         auto lastMoveCaptureOrCastle() const -> bool;
         void clearHistory();
 
+        // getters
         auto board() const -> std::array<pieceTypes, BOARD_SIZE>;
         auto isWhiteTurn() const -> bool;
         auto castlingRights() const -> castleRights;
@@ -77,10 +77,9 @@ class Board {
         friend std::ostream& operator<<(std::ostream& os, const Board& target);
 
         PieceSets pieceSets{};
-
     private:
         void initZobristKey();
-        
+
         std::array<pieceTypes, BOARD_SIZE> m_board;
         Eval::Info eval;
 
