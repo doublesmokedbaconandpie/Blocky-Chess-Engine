@@ -67,6 +67,7 @@ class Board {
 
         auto getEnPassSquare() const -> Square;
         auto getFiftyMoveRule() const -> int;
+        auto getAge() const -> int;
         auto getZobristKey() const -> uint64_t;
 
         friend bool operator==(const Board& lhs, const Board& rhs);
@@ -77,7 +78,6 @@ class Board {
 
         bool isWhiteTurn;
         castleRights castlingRights; // bitwise castling rights tracker
-        int age = 0;
 
     private:
         void initZobristKey();
@@ -85,6 +85,7 @@ class Board {
         Eval::Info eval;
         Square enPassSquare; // en passant square
         int fiftyMoveRule;
+        int age = 0;
         uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
         std::vector<uint64_t> zobristKeyHistory;
         std::vector<BoardState> moveHistory;
@@ -96,6 +97,10 @@ inline auto Board::getEnPassSquare() const -> Square {
 
 inline auto Board::getFiftyMoveRule() const -> int {
     return this->fiftyMoveRule;
+}
+
+inline auto Board::getAge() const -> int {
+    return this->age;
 }
 
 inline auto Board::getZobristKey() const -> uint64_t {

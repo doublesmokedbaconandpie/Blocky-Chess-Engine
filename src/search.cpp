@@ -311,7 +311,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     // store results with best moves in transposition table
     if (bestMove) {
         const EvalType bound = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
-        TTable::Table.store(bestscore, bestMove, bound, depth, this->board.age, zobristKey);
+        TTable::Table.store(bestscore, bestMove, bound, depth, this->board.getAge(), zobristKey);
     }
     return bestscore;
 }
