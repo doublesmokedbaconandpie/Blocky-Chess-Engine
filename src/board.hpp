@@ -57,13 +57,14 @@ class Board {
         
         pieceTypes getPiece(Square square) const;
         void setPiece(Square square, pieceTypes currPiece);
-        uint64_t getZobristKey() const;
         
         bool isLegalMove(const BoardMove move) const;
-        bool is3fold() const;
+        bool isDraw() const;
         int evaluate();
-
         void clearHistory();
+
+        auto getZobristKey() const -> uint64_t;
+        auto getFiftyMoveRule() const -> int;
 
         friend bool operator==(const Board& lhs, const Board& rhs);
         friend std::ostream& operator<<(std::ostream& os, const Board& target);
@@ -73,7 +74,6 @@ class Board {
 
         bool isWhiteTurn;
         castleRights castlingRights; // bitwise castling rights tracker
-        int fiftyMoveRule;
         int age = 0;
         Square enPassSquare; // en passant square
         Eval::Info eval;
@@ -83,12 +83,17 @@ class Board {
     private:
         void initZobristKey();
 
+        int fiftyMoveRule;
         uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
         std::vector<uint64_t> zobristKeyHistory;
 };
 
-inline uint64_t Board::getZobristKey() const {
+inline auto Board::getZobristKey() const -> uint64_t {
     return this->zobristKey;
+}
+
+inline auto Board::getFiftyMoveRule() const -> int {
+    return this->fiftyMoveRule;
 }
 
 castleRights castleRightsBit(Square finalKingPos, bool isWhiteTurn);

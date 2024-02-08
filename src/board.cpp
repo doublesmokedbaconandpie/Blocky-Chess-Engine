@@ -406,7 +406,12 @@ bool Board::isLegalMove(const BoardMove move) const {
     return !currKingInAttack(tmpPieceSets, this->isWhiteTurn);
 }
 
-bool Board::is3fold() const {
+bool Board::isDraw() const {
+    // fifty move rule
+    if (this->fiftyMoveRule >= 100) {
+        return true;
+    }
+    // 3fold repetition
     const int occurrences = std::count(this->zobristKeyHistory.begin(), this->zobristKeyHistory.end(), this->zobristKey);
     return occurrences >= 3 ? true : false;
 }

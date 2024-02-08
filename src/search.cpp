@@ -136,12 +136,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     ++this->nodes;
     this->max_seldepth = std::max(ss->ply, this->max_seldepth);
 
-    // fifty move rule
-    if (this->board.fiftyMoveRule >= 100) {
-        return DRAW_SCORE;
-    }
-    // three-fold repetition
-    if (this->board.is3fold()) {
+    if (this->board.isDraw()) {
         return DRAW_SCORE;
     }
     // max depth reached
