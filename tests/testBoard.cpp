@@ -63,7 +63,7 @@ TEST_F(BoardTest, fenConstructorDefault) {
     EXPECT_NE(fenBoard.getZobristKey(), 0);
     EXPECT_EQ(fenBoard.isWhiteTurn, defaultBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, defaultBoard.castlingRights);
-    EXPECT_EQ(fenBoard.enPassSquare, defaultBoard.enPassSquare);
+    EXPECT_EQ(fenBoard.getEnPassSquare(), defaultBoard.getEnPassSquare());
     EXPECT_EQ(fenBoard.getFiftyMoveRule(), defaultBoard.getFiftyMoveRule());
 }
 
@@ -78,7 +78,7 @@ TEST_F(BoardTest, fenConstructorEnPassantSquare) {
     EXPECT_NE(fenBoard.getZobristKey(), 0);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);
-    EXPECT_EQ(fenBoard.enPassSquare, moveBoard.enPassSquare);
+    EXPECT_EQ(fenBoard.getEnPassSquare(), moveBoard.getEnPassSquare());
     EXPECT_EQ(fenBoard.getFiftyMoveRule(), moveBoard.getFiftyMoveRule());
 }
 
@@ -100,7 +100,7 @@ TEST_F(BoardTest, fenConstructorEnPassantCastle) {
     EXPECT_NE(fenBoard.getZobristKey(), 0);
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.castlingRights, moveBoard.castlingRights);
-    EXPECT_EQ(fenBoard.enPassSquare, moveBoard.enPassSquare);
+    EXPECT_EQ(fenBoard.getEnPassSquare(), moveBoard.getEnPassSquare());
     EXPECT_EQ(fenBoard.getFiftyMoveRule(), moveBoard.getFiftyMoveRule());
 }
 
@@ -226,7 +226,7 @@ TEST_F(BoardTest, MakeMovePawnJump) {
 
     EXPECT_EQ(board.isWhiteTurn, false);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
-    EXPECT_EQ(board.enPassSquare, enPassantSquare);
+    EXPECT_EQ(board.getEnPassSquare(), enPassantSquare);
     EXPECT_EQ(board.getFiftyMoveRule(), 0);
 }
 
@@ -305,7 +305,7 @@ TEST_F(BoardTest, MakeMoveEnPassant) {
     EXPECT_EQ(fenBoard.getPiece(pos1), EmptyPiece);
     EXPECT_EQ(fenBoard.getPiece(pos2), WPawn);
     EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
-    EXPECT_EQ(fenBoard.enPassSquare, NULLSQUARE);
+    EXPECT_EQ(fenBoard.getEnPassSquare(), NULLSQUARE);
     EXPECT_EQ(fenBoard.getZobristKey(), moveBoard.getZobristKey());
     EXPECT_EQ(fenBoard.getFiftyMoveRule(), 0);   
 }
@@ -322,7 +322,7 @@ TEST_F(BoardTest, MakeMoveNotEnPassant) {
     EXPECT_EQ(fenBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(fenBoard.board, moveBoard.board);
     EXPECT_EQ(fenBoard.pieceSets, moveBoard.pieceSets);
-    EXPECT_EQ(fenBoard.enPassSquare, NULLSQUARE);
+    EXPECT_EQ(fenBoard.getEnPassSquare(), NULLSQUARE);
     EXPECT_EQ(fenBoard.getZobristKey(), moveBoard.getZobristKey());
     EXPECT_EQ(fenBoard.getFiftyMoveRule(), 1);   
 }
@@ -426,7 +426,7 @@ TEST_F(BoardTest, undoMove) {
     EXPECT_NE(defaultBoard.getZobristKey(), 0);
     EXPECT_EQ(defaultBoard.isWhiteTurn, moveBoard.isWhiteTurn);
     EXPECT_EQ(defaultBoard.castlingRights, moveBoard.castlingRights);
-    EXPECT_EQ(defaultBoard.enPassSquare, moveBoard.enPassSquare);
+    EXPECT_EQ(defaultBoard.getEnPassSquare(), moveBoard.getEnPassSquare());
     EXPECT_EQ(defaultBoard.getFiftyMoveRule(), moveBoard.getFiftyMoveRule());
 }
 

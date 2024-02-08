@@ -65,8 +65,9 @@ class Board {
         auto lastMoveCaptureOrCastle() const -> bool;
         void clearHistory();
 
-        auto getZobristKey() const -> uint64_t;
+        auto getEnPassSquare() const -> Square;
         auto getFiftyMoveRule() const -> int;
+        auto getZobristKey() const -> uint64_t;
 
         friend bool operator==(const Board& lhs, const Board& rhs);
         friend std::ostream& operator<<(std::ostream& os, const Board& target);
@@ -77,24 +78,28 @@ class Board {
         bool isWhiteTurn;
         castleRights castlingRights; // bitwise castling rights tracker
         int age = 0;
-        Square enPassSquare; // en passant square
 
     private:
         void initZobristKey();
 
         Eval::Info eval;
+        Square enPassSquare; // en passant square
         int fiftyMoveRule;
         uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
         std::vector<uint64_t> zobristKeyHistory;
         std::vector<BoardState> moveHistory;
 };
 
-inline auto Board::getZobristKey() const -> uint64_t {
-    return this->zobristKey;
+inline auto Board::getEnPassSquare() const -> Square {
+    return this->enPassSquare;
 }
 
 inline auto Board::getFiftyMoveRule() const -> int {
     return this->fiftyMoveRule;
+}
+
+inline auto Board::getZobristKey() const -> uint64_t {
+    return this->zobristKey;
 }
 
 castleRights castleRightsBit(Square finalKingPos, bool isWhiteTurn);

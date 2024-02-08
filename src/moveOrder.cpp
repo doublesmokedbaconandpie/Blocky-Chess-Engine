@@ -117,7 +117,7 @@ BoardMove MovePicker::pickMove() {
 }
 
 int MovePicker::getVictimScore(const Board& board, BoardMove move) const {
-    if ( (board.getPiece(move.sqr1()) == WPawn || board.getPiece(move.sqr1()) == BPawn) && board.enPassSquare == move.sqr2())
+    if ( (board.getPiece(move.sqr1()) == WPawn || board.getPiece(move.sqr1()) == BPawn) && board.getEnPassSquare() == move.sqr2())
         return pieceValues[WPawn];
     else if (move.getPromotePiece() != EmptyPiece)
         return pieceValues[move.getPromotePiece()];

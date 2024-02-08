@@ -50,7 +50,7 @@ void MoveList::generateAllMoves(const Board& board) {
 void MoveList::generateCaptures(const Board& board) {
     // helper information for captures
     uint64_t validDests = this->isWhiteTurn ? board.pieceSets[BLACK_PIECES] : board.pieceSets[WHITE_PIECES];
-    this->enPassSquare = board.enPassSquare;
+    this->enPassSquare = board.getEnPassSquare();
 
     const auto knightMovesFunc = [this](Square piece, uint64_t vd) {return this->knightMoves(piece, vd);};
     const auto bishopMovesFunc = [this](Square piece, uint64_t vd) {return this->bishopMoves(piece, vd);};
