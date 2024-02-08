@@ -65,6 +65,7 @@ class Board {
         auto lastMoveCaptureOrCastle() const -> bool;
         void clearHistory();
 
+        auto getBoard() const -> std::array<pieceTypes, BOARD_SIZE>;
         auto getIsWhiteTurn() const -> bool;
         auto getCastlingRights() const -> castleRights;
         auto getEnPassSquare() const -> Square;
@@ -76,12 +77,13 @@ class Board {
         friend std::ostream& operator<<(std::ostream& os, const Board& target);
 
         PieceSets pieceSets = {0ull};
-        std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
 
     private:
         void initZobristKey();
-
+        
+        std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
         Eval::Info eval;
+
         bool isWhiteTurn;
         castleRights castlingRights; // bitwise castling rights tracker
         Square enPassSquare; // en passant square
@@ -91,6 +93,10 @@ class Board {
         std::vector<uint64_t> zobristKeyHistory;
         std::vector<BoardState> moveHistory;
 };
+
+inline auto Board::getBoard() const -> std::array<pieceTypes, BOARD_SIZE> {
+    return this->board;
+}
 
 inline auto Board::getIsWhiteTurn() const -> bool {
     return this->isWhiteTurn;
