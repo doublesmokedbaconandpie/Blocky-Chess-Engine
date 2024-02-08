@@ -43,40 +43,43 @@ struct BoardState {
     int fiftyMoveRule;
 };
 
-struct Board {
-    Board(std::string fenStr);
-    Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {};
-    std::string toFen() const;
-    void initZobristKey();
-    
-    void makeMove(BoardMove move);
-    void undoMove();
-    void makeNullMove();
-    void unmakeNullMove();
-    
-    pieceTypes getPiece(Square square) const;
-    void setPiece(Square square, pieceTypes currPiece);
-    bool moveIsCapture(BoardMove move) const;
-    
-    bool isLegalMove(const BoardMove move) const;
-    int evaluate();
+class Board {
+    public:
+        Board(std::string fenStr);
+        Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {};
+        std::string toFen() const;
+        
+        void makeMove(BoardMove move);
+        void undoMove();
+        void makeNullMove();
+        void unmakeNullMove();
+        
+        pieceTypes getPiece(Square square) const;
+        void setPiece(Square square, pieceTypes currPiece);
+        bool moveIsCapture(BoardMove move) const;
+        
+        bool isLegalMove(const BoardMove move) const;
+        int evaluate();
 
-    friend bool operator==(const Board& lhs, const Board& rhs);
-    friend std::ostream& operator<<(std::ostream& os, const Board& target);
+        friend bool operator==(const Board& lhs, const Board& rhs);
+        friend std::ostream& operator<<(std::ostream& os, const Board& target);
 
-    PieceSets pieceSets = {0ull};
-    std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
+        PieceSets pieceSets = {0ull};
+        std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
 
-    uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
-    bool isWhiteTurn;
-    castleRights castlingRights; // bitwise castling rights tracker
-    int fiftyMoveRule;
-    int age = 0;
-    Square enPassSquare; // en passant square
-    Eval::Info eval;
+        uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
+        bool isWhiteTurn;
+        castleRights castlingRights; // bitwise castling rights tracker
+        int fiftyMoveRule;
+        int age = 0;
+        Square enPassSquare; // en passant square
+        Eval::Info eval;
 
-    std::vector<BoardState> moveHistory;
-    std::vector<uint64_t> zobristKeyHistory;
+        std::vector<BoardState> moveHistory;
+        std::vector<uint64_t> zobristKeyHistory;
+
+    private:
+        void initZobristKey();
 };
 
 castleRights castleRightsBit(Square finalKingPos, bool isWhiteTurn);
