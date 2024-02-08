@@ -433,11 +433,15 @@ void Board::clearHistory() {
     this->m_zobristKeyHistory.push_back(this->m_zobristKey);
 }
 
+// for tests
 bool operator==(const Board& lhs, const Board& rhs) {
     return lhs.m_board == rhs.m_board
         && lhs.pieceSets == rhs.pieceSets
-        && lhs.m_zobristKeyHistory == rhs.m_zobristKeyHistory
         && lhs.m_isWhiteTurn == rhs.m_isWhiteTurn
+        && lhs.m_fiftyMoveRule == rhs.m_fiftyMoveRule
+        && lhs.m_zobristKey == rhs.m_zobristKey
+        && lhs.m_zobristKey != 0
+        && rhs.m_zobristKey != 0
         && lhs.m_enPassSquare == rhs.m_enPassSquare;
 }
 

@@ -53,12 +53,12 @@ class Board {
         void undoMove();
         void makeNullMove();
         void unmakeNullMove();
-        bool moveIsCapture(BoardMove move) const;
         
         pieceTypes getPiece(Square square) const;
         void setPiece(Square square, pieceTypes currPiece);
         
         bool isLegalMove(const BoardMove move) const;
+        bool moveIsCapture(BoardMove move) const;
         bool isDraw() const;
         int evaluate();
 
@@ -85,8 +85,8 @@ class Board {
         Eval::Info eval;
 
         bool m_isWhiteTurn;
-        castleRights m_castlingRights; // bitwise castling rights tracker
-        Square m_enPassSquare; // en passant square
+        castleRights m_castlingRights;
+        Square m_enPassSquare;
         int m_fiftyMoveRule;
         int m_age = 0;
         uint64_t m_zobristKey; // zobristKeyHistory also contains zobristKey
