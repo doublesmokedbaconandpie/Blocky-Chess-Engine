@@ -76,13 +76,13 @@ class Board {
         castleRights castlingRights; // bitwise castling rights tracker
         int age = 0;
         Square enPassSquare; // en passant square
-        Eval::Info eval;
 
         std::vector<BoardState> moveHistory;
 
     private:
         void initZobristKey();
 
+        Eval::Info eval;
         int fiftyMoveRule;
         uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
         std::vector<uint64_t> zobristKeyHistory;
