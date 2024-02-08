@@ -53,13 +53,17 @@ class Board {
         void undoMove();
         void makeNullMove();
         void unmakeNullMove();
+        bool moveIsCapture(BoardMove move) const;
         
         pieceTypes getPiece(Square square) const;
         void setPiece(Square square, pieceTypes currPiece);
-        bool moveIsCapture(BoardMove move) const;
+        uint64_t getZobristKey() const;
         
         bool isLegalMove(const BoardMove move) const;
+        bool is3fold() const;
         int evaluate();
+
+        void clearHistory();
 
         friend bool operator==(const Board& lhs, const Board& rhs);
         friend std::ostream& operator<<(std::ostream& os, const Board& target);
@@ -67,7 +71,6 @@ class Board {
         PieceSets pieceSets = {0ull};
         std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
 
-        uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
         bool isWhiteTurn;
         castleRights castlingRights; // bitwise castling rights tracker
         int fiftyMoveRule;
@@ -76,11 +79,17 @@ class Board {
         Eval::Info eval;
 
         std::vector<BoardState> moveHistory;
-        std::vector<uint64_t> zobristKeyHistory;
 
     private:
         void initZobristKey();
+
+        uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
+        std::vector<uint64_t> zobristKeyHistory;
 };
+
+inline uint64_t Board::getZobristKey() const {
+    return this->zobristKey;
+}
 
 castleRights castleRightsBit(Square finalKingPos, bool isWhiteTurn);
 bool currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn);

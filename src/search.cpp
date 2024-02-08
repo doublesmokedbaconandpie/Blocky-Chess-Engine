@@ -141,8 +141,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         return DRAW_SCORE;
     }
     // three-fold repetition
-    const int occurrences = std::count(this->board.zobristKeyHistory.begin(), this->board.zobristKeyHistory.end(), this->board.zobristKey);
-    if (occurrences >= 3) {
+    if (this->board.is3fold()) {
         return DRAW_SCORE;
     }
     // max depth reached
@@ -155,8 +154,9 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     *************/
     BoardMove TTMove;
     int staticEval;
-    if (TTable::Table.entryExists(this->board.zobristKey)) {
-        const TTable::Entry entry = TTable::Table.getEntry(this->board.zobristKey);
+    const uint64_t zobristKey = this->board.getZobristKey();
+    if (TTable::Table.entryExists(zobristKey)) {
+        const TTable::Entry entry = TTable::Table.getEntry(zobristKey);
 
         if (!ISPV && entry.depth >= depth) {
             if (entry.bound == EvalType::EXACT
@@ -316,7 +316,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     // store results with best moves in transposition table
     if (bestMove) {
         const EvalType bound = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
-        TTable::Table.store(bestscore, bestMove, bound, depth, this->board.age, this->board.zobristKey);
+        TTable::Table.store(bestscore, bestMove, bound, depth, this->board.age, zobristKey);
     }
     return bestscore;
 }

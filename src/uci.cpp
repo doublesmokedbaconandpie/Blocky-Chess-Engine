@@ -135,9 +135,8 @@ Board position(std::istringstream& input) {
         // this makes things faster
         if (currBoard.moveHistory.back().targetPiece != EmptyPiece ||
             currBoard.castlingRights != currBoard.moveHistory.back().castlingRights) {
-            currBoard.moveHistory.clear();
-            currBoard.zobristKeyHistory.clear();
-            currBoard.zobristKeyHistory.push_back(currBoard.zobristKey);
+            
+            currBoard.clearHistory();
         }
     }
     return currBoard;

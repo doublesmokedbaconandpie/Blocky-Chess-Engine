@@ -405,11 +405,22 @@ bool Board::isLegalMove(const BoardMove move) const {
 
     return !currKingInAttack(tmpPieceSets, this->isWhiteTurn);
 }
+
+bool Board::is3fold() const {
+    const int occurrences = std::count(this->zobristKeyHistory.begin(), this->zobristKeyHistory.end(), this->zobristKey);
+    return occurrences >= 3 ? true : false;
+}
     
 // positive return values means winning for the side to move, negative is opposite
 int Board::evaluate() {
     const int rawEval = this->eval.getRawEval(this->pieceSets);
     return this->isWhiteTurn ? rawEval : rawEval * -1;
+}
+
+void Board::clearHistory() {
+    this->moveHistory.clear();
+    this->zobristKeyHistory.clear();
+    this->zobristKeyHistory.push_back(this->zobristKey);
 }
 
 bool operator==(const Board& lhs, const Board& rhs) {
