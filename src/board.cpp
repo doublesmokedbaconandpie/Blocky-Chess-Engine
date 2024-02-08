@@ -422,6 +422,11 @@ int Board::evaluate() {
     return this->isWhiteTurn ? rawEval : rawEval * -1;
 }
 
+auto Board::lastMoveCaptureOrCastle() const -> bool {
+    return this->moveHistory.back().targetPiece != EmptyPiece 
+        || this->castlingRights != this->moveHistory.back().castlingRights;
+}
+
 void Board::clearHistory() {
     this->moveHistory.clear();
     this->zobristKeyHistory.clear();

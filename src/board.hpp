@@ -61,6 +61,8 @@ class Board {
         bool isLegalMove(const BoardMove move) const;
         bool isDraw() const;
         int evaluate();
+
+        auto lastMoveCaptureOrCastle() const -> bool;
         void clearHistory();
 
         auto getZobristKey() const -> uint64_t;
@@ -77,8 +79,6 @@ class Board {
         int age = 0;
         Square enPassSquare; // en passant square
 
-        std::vector<BoardState> moveHistory;
-
     private:
         void initZobristKey();
 
@@ -86,6 +86,7 @@ class Board {
         int fiftyMoveRule;
         uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
         std::vector<uint64_t> zobristKeyHistory;
+        std::vector<BoardState> moveHistory;
 };
 
 inline auto Board::getZobristKey() const -> uint64_t {

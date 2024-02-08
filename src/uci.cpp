@@ -133,9 +133,7 @@ Board position(std::istringstream& input) {
         // if a capture or castling rights change, clear move history since
         // 3fold repetition or 50 move rule will be reset
         // this makes things faster
-        if (currBoard.moveHistory.back().targetPiece != EmptyPiece ||
-            currBoard.castlingRights != currBoard.moveHistory.back().castlingRights) {
-            
+        if (currBoard.lastMoveCaptureOrCastle()) {
             currBoard.clearHistory();
         }
     }
