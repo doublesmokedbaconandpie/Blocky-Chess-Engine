@@ -175,7 +175,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         return beta;
     }
 
-    const bool inCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
+    const bool inCheck = currKingInAttack(this->board.pieceSets, this->board.getIsWhiteTurn());
     /************
      * Null Move Pruning
      * Give the opponent a free move and see if our position is still too good after that; if so, prune
@@ -211,7 +211,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     while (movePicker.movesLeft(this->board, this->history)) {
         const BoardMove move = movePicker.pickMove();
         board.makeMove(move);
-        const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
+        const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.getIsWhiteTurn());
         const bool quietMove = !movePicker.stagesLeft();
 
         /*************
