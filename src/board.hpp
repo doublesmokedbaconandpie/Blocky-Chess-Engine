@@ -65,61 +65,61 @@ class Board {
         auto lastMoveCaptureOrCastle() const -> bool;
         void clearHistory();
 
-        auto getBoard() const -> std::array<pieceTypes, BOARD_SIZE>;
-        auto getIsWhiteTurn() const -> bool;
-        auto getCastlingRights() const -> castleRights;
-        auto getEnPassSquare() const -> Square;
-        auto getFiftyMoveRule() const -> int;
-        auto getAge() const -> int;
-        auto getZobristKey() const -> uint64_t;
+        auto board() const -> std::array<pieceTypes, BOARD_SIZE>;
+        auto isWhiteTurn() const -> bool;
+        auto castlingRights() const -> castleRights;
+        auto enPassSquare() const -> Square;
+        auto fiftyMoveRule() const -> int;
+        auto age() const -> int;
+        auto zobristKey() const -> uint64_t;
 
         friend bool operator==(const Board& lhs, const Board& rhs);
         friend std::ostream& operator<<(std::ostream& os, const Board& target);
 
-        PieceSets pieceSets = {0ull};
+        PieceSets pieceSets{};
 
     private:
         void initZobristKey();
         
-        std::array<pieceTypes, BOARD_SIZE> board = {EmptyPiece};
+        std::array<pieceTypes, BOARD_SIZE> m_board;
         Eval::Info eval;
 
-        bool isWhiteTurn;
-        castleRights castlingRights; // bitwise castling rights tracker
-        Square enPassSquare; // en passant square
-        int fiftyMoveRule;
-        int age = 0;
-        uint64_t zobristKey; // zobristKeyHistory also contains zobristKey
-        std::vector<uint64_t> zobristKeyHistory;
-        std::vector<BoardState> moveHistory;
+        bool m_isWhiteTurn;
+        castleRights m_castlingRights; // bitwise castling rights tracker
+        Square m_enPassSquare; // en passant square
+        int m_fiftyMoveRule;
+        int m_age = 0;
+        uint64_t m_zobristKey; // zobristKeyHistory also contains zobristKey
+        std::vector<uint64_t> m_zobristKeyHistory;
+        std::vector<BoardState> m_moveHistory;
 };
 
-inline auto Board::getBoard() const -> std::array<pieceTypes, BOARD_SIZE> {
-    return this->board;
+inline auto Board::board() const -> std::array<pieceTypes, BOARD_SIZE> {
+    return this->m_board;
 }
 
-inline auto Board::getIsWhiteTurn() const -> bool {
-    return this->isWhiteTurn;
+inline auto Board::isWhiteTurn() const -> bool {
+    return this->m_isWhiteTurn;
 }
 
-inline auto Board::getCastlingRights() const -> castleRights {
-    return this->castlingRights;
+inline auto Board::castlingRights() const -> castleRights {
+    return this->m_castlingRights;
 }
 
-inline auto Board::getEnPassSquare() const -> Square {
-    return this->enPassSquare;
+inline auto Board::enPassSquare() const -> Square {
+    return this->m_enPassSquare;
 }
 
-inline auto Board::getFiftyMoveRule() const -> int {
-    return this->fiftyMoveRule;
+inline auto Board::fiftyMoveRule() const -> int {
+    return this->m_fiftyMoveRule;
 }
 
-inline auto Board::getAge() const -> int {
-    return this->age;
+inline auto Board::age() const -> int {
+    return this->m_age;
 }
 
-inline auto Board::getZobristKey() const -> uint64_t {
-    return this->zobristKey;
+inline auto Board::zobristKey() const -> uint64_t {
+    return this->m_zobristKey;
 }
 
 castleRights castleRightsBit(Square finalKingPos, bool isWhiteTurn);

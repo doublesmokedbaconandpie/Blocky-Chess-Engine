@@ -149,7 +149,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     *************/
     BoardMove TTMove;
     int staticEval;
-    const uint64_t zobristKey = this->board.getZobristKey();
+    const uint64_t zobristKey = this->board.zobristKey();
     if (TTable::Table.entryExists(zobristKey)) {
         const TTable::Entry entry = TTable::Table.getEntry(zobristKey);
 
@@ -175,7 +175,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         return beta;
     }
 
-    const bool inCheck = currKingInAttack(this->board.pieceSets, this->board.getIsWhiteTurn());
+    const bool inCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn());
     /************
      * Null Move Pruning
      * Give the opponent a free move and see if our position is still too good after that; if so, prune
@@ -211,7 +211,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     while (movePicker.movesLeft(this->board, this->history)) {
         const BoardMove move = movePicker.pickMove();
         board.makeMove(move);
-        const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.getIsWhiteTurn());
+        const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn());
         const bool quietMove = !movePicker.stagesLeft();
 
         /*************
@@ -311,7 +311,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     // store results with best moves in transposition table
     if (bestMove) {
         const EvalType bound = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
-        TTable::Table.store(bestscore, bestMove, bound, depth, this->board.getAge(), zobristKey);
+        TTable::Table.store(bestscore, bestMove, bound, depth, this->board.age(), zobristKey);
     }
     return bestscore;
 }
