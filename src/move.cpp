@@ -25,7 +25,7 @@
 #include "utils/types.hpp"
 
 Move::Move(Square square1, Square square2, pieceTypes promotePiece) {
-    data =  square1 | (square2 << 6) | (toInt(promotePiece) << 12);
+    this->data =  square1 | (square2 << 6) | (this->toInt(promotePiece) << 12);
 }
 
 Move::Move(std::string input, bool isWhiteTurn) {
@@ -55,11 +55,11 @@ Move::Move(std::string input, bool isWhiteTurn) {
                 promotePiece = EmptyPiece;
         }
     }
-    data =  square1 | (square2 << 6) | (toInt(promotePiece) << 12);
+    this->data =  square1 | (square2 << 6) | (this->toInt(promotePiece) << 12);
 }
 
 std::string Move::toStr() const {
-    return sqrToStr(sqr1()) + sqrToStr(sqr2()) + pieceToStr(promotePiece());
+    return sqrToStr(this->sqr1()) + sqrToStr(this->sqr2()) + pieceToStr(this->promotePiece());
 }
 
 uint8_t Move::sqr1() const{
@@ -75,11 +75,11 @@ uint8_t Move::sqr2() const{
 pieceTypes Move::promotePiece() const {
     constexpr uint16_t mask = 0x000F;
     const int pieceInt = (this->data >> 12) & mask;
-    return toPieceType(pieceInt);
+    return this->toPieceType(pieceInt);
 }
 
 Move::operator bool() const {
-    return data != NULLMOVE;
+    return this->data != NULLMOVE;
 }
 
 bool Move::operator==(const Move& rhs) const {

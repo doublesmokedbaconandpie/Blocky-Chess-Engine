@@ -28,7 +28,7 @@
 #include "utils/types.hpp"
 
 struct BoardState {
-    BoardState(Move a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, castleRights a_castlingRights, Square a_enPassSquare, int a_fiftyMoveRule) : 
+    BoardState(Move a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, castleRights a_castlingRights, Square a_enPassSquare, int a_fiftyMoveRule) :
                 move(a_move), 
                 originPiece(a_originPiece), 
                 targetPiece(a_targetPiece),
