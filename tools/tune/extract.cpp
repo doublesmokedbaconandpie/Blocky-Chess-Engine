@@ -282,7 +282,7 @@ Move getMove(std::string input, Board& board) {
     }
 
     auto notPromotePiece = [board, promotePiece](Move move) {
-        return move.getPromotePiece() != promotePiece;};
+        return move.promotePiece() != promotePiece;};
     if (promotePiece != EmptyPiece) {
         moves.erase(std::remove_if(moves.begin(), moves.end(), notPromotePiece), moves.end());
     }

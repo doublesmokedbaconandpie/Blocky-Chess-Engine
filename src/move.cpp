@@ -59,26 +59,23 @@ Move::Move(std::string input, bool isWhiteTurn) {
 }
 
 std::string Move::toStr() const {
-    const auto square1 = squareToStr(sqr1());
-    const auto square2 = squareToStr(sqr2());
-    const auto promotePiece = toStr(getPromotePiece());
-    return square1 + square2 + promotePiece;
+    return sqrToStr(sqr1()) + sqrToStr(sqr2()) + pieceToStr(promotePiece());
 }
 
 uint8_t Move::sqr1() const{
     constexpr uint16_t mask = 0x003F;
-    return data & mask;
+    return this->data & mask;
 }
 
 uint8_t Move::sqr2() const{
     constexpr uint16_t mask = 0x003F;
-    return (data >> 6) & mask;
+    return (this->data >> 6) & mask;
 }
 
-pieceTypes Move::getPromotePiece() const {
+pieceTypes Move::promotePiece() const {
     constexpr uint16_t mask = 0x000F;
-    const int piece = (data >> 12) & mask;
-    return toPromotePiece(piece);
+    const int pieceInt = (this->data >> 12) & mask;
+    return toPieceType(pieceInt);
 }
 
 Move::operator bool() const {
@@ -98,7 +95,7 @@ std::ostream& Move::operator<<(std::ostream& os) const {
     return os;
 }
 
-int Move::toInt(pieceTypes piece) const {
+int Move::toInt(pieceTypes piece) {
     switch (piece)
     {
         case WQueen:
@@ -122,7 +119,7 @@ int Move::toInt(pieceTypes piece) const {
     }
 }
 
-pieceTypes Move::toPromotePiece(int integer) const {
+pieceTypes Move::toPieceType(int integer) {
     switch (integer)
     {
         case 1:
@@ -146,7 +143,7 @@ pieceTypes Move::toPromotePiece(int integer) const {
     }
 }
 
-std::string Move::toStr(pieceTypes piece) const {
+std::string pieceToStr(pieceTypes piece) {
     switch (piece) {
             case WQueen:
             case BQueen:
@@ -165,6 +162,19 @@ std::string Move::toStr(pieceTypes piece) const {
     }
 }
 
+std::string sqrToStr(Square square) {
+    if (square == NULLSQUARE) {
+        return "-";
+    }
+
+    constexpr std::array<char, 8> fileRep = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    constexpr std::array<char, 8> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
+
+    const int file = getFile(square);
+    const int rank = getRank(square);
+    return std::string(1, fileRep[file]) + std::string(1, rankRep[rank]);
+}
+
 Square toSquare(std::string input) {
     if (input == "-") { // fen-style invalid square
         return NULLSQUARE;
@@ -176,17 +186,4 @@ Square toSquare(std::string input) {
 
 Square toSquare(int rank, int file) {
     return rank * 8 + file;
-}
-
-std::string squareToStr(Square square) {
-    if (square == NULLSQUARE) {
-        return "-";
-    }
-
-    constexpr std::array<char, 8> fileRep = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-    constexpr std::array<char, 8> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
-
-    const int file = getFile(square);
-    const int rank = getRank(square);
-    return std::string(1, fileRep[file]) + std::string(1, rankRep[rank]);
 }

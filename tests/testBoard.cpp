@@ -32,7 +32,7 @@ TEST(MoveTest, MoveStrConstructor2) {
     Move move = Move("a7a8q", true);
     EXPECT_EQ(move.sqr1(), 8);
     EXPECT_EQ(move.sqr2(), 0);
-    EXPECT_EQ(move.getPromotePiece(), WQueen);
+    EXPECT_EQ(move.promotePiece(), WQueen);
 }
 
 TEST_F(BoardTest, getPieceValidSquare) {

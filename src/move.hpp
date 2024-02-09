@@ -34,20 +34,20 @@ class Move {
 
         Square sqr1() const;
         Square sqr2() const;
-        pieceTypes getPromotePiece() const;
+        pieceTypes promotePiece() const;
 
         operator bool() const;
         bool operator==(const Move& rhs) const;
         bool operator!=(const Move& rhs) const;
         std::ostream& operator<<(std::ostream& os) const;
     private:
-        pieceTypes toPromotePiece(int integer) const;
-        int toInt(pieceTypes piece) const;
-        std::string toStr(pieceTypes piece) const;
+        static pieceTypes toPieceType(int integer);
+        static int toInt(pieceTypes piece);
 
         uint16_t data{};
 };
 
+std::string pieceToStr(pieceTypes piece);
+std::string sqrToStr(Square square);
 Square toSquare(int rank, int file);
 Square toSquare(std::string input);
-std::string squareToStr(Square square);
