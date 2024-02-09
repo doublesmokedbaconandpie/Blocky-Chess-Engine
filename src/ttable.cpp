@@ -59,7 +59,7 @@ Entry TTable::getEntry(uint64_t key) const {
     return this->table[this->getIndex(key)];
 }
 
-void TTable::store(int eval, BoardMove move, EvalType bound, int depth, int age, uint64_t key) {
+void TTable::store(int eval, Move move, EvalType bound, int depth, int age, uint64_t key) {
     /* entries in the transposition table are overwritten under two conditions:
     1. The current search depth is greater than the entry's depth, meaning that a better
     search has been performed

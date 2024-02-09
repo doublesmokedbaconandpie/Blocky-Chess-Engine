@@ -24,11 +24,11 @@
 #include "move.hpp"
 #include "utils/types.hpp"
 
-BoardMove::BoardMove(Square square1, Square square2, pieceTypes promotePiece) {
-    data =  square1 | (square2 << 6) | (toInt(promotePiece) << 12);
+Move::Move(Square square1, Square square2, pieceTypes promotePiece) {
+    this->data =  square1 | (square2 << 6) | (this->toInt(promotePiece) << 12);
 }
 
-BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
+Move::Move(std::string input, bool isWhiteTurn) {
     const pieceTypes allyQueen = isWhiteTurn ? WQueen : BQueen;
     const pieceTypes allyBishop = isWhiteTurn ? WBishop : BBishop;
     const pieceTypes allyKnight = isWhiteTurn ? WKnight : BKnight;
@@ -55,45 +55,47 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
                 promotePiece = EmptyPiece;
         }
     }
-    data =  square1 | (square2 << 6) | (toInt(promotePiece) << 12);
+    this->data =  square1 | (square2 << 6) | (this->toInt(promotePiece) << 12);
 }
 
-std::string BoardMove::toStr() const {
-    const auto square1 = squareToStr(sqr1());
-    const auto square2 = squareToStr(sqr2());
-    const auto promotePiece = toStr(getPromotePiece());
-    return square1 + square2 + promotePiece;
+std::string Move::toStr() const {
+    return sqrToStr(this->sqr1()) + sqrToStr(this->sqr2()) + pieceToStr(this->promotePiece());
 }
 
-uint8_t BoardMove::sqr1() const{
+uint8_t Move::sqr1() const{
     constexpr uint16_t mask = 0x003F;
-    return data & mask;
+    return this->data & mask;
 }
 
-uint8_t BoardMove::sqr2() const{
+uint8_t Move::sqr2() const{
     constexpr uint16_t mask = 0x003F;
-    return (data >> 6) & mask;
+    return (this->data >> 6) & mask;
 }
 
-pieceTypes BoardMove::getPromotePiece() const {
+pieceTypes Move::promotePiece() const {
     constexpr uint16_t mask = 0x000F;
-    const int piece = (data >> 12) & mask;
-    return toPromotePiece(piece);
+    const int pieceInt = (this->data >> 12) & mask;
+    return this->toPieceType(pieceInt);
 }
 
-BoardMove::operator bool() const {
-    return data != NULLMOVE;
+Move::operator bool() const {
+    return this->data != NULLMOVE;
 }
 
-bool operator==(const BoardMove& lhs, const BoardMove& rhs) {
-    return lhs.data == rhs.data;
+bool Move::operator==(const Move& rhs) const {
+    return this->data == rhs.data;
 }
 
-bool operator!=(const BoardMove& lhs, const BoardMove& rhs) {
-    return lhs.data != rhs.data;
+bool Move::operator!=(const Move& rhs) const {
+    return this->data != rhs.data;
 }
 
-int BoardMove::toInt(pieceTypes piece) const {
+std::ostream& Move::operator<<(std::ostream& os) const {
+    os << this->toStr();
+    return os;
+}
+
+int Move::toInt(pieceTypes piece) {
     switch (piece)
     {
         case WQueen:
@@ -117,7 +119,7 @@ int BoardMove::toInt(pieceTypes piece) const {
     }
 }
 
-pieceTypes BoardMove::toPromotePiece(int integer) const {
+pieceTypes Move::toPieceType(int integer) {
     switch (integer)
     {
         case 1:
@@ -141,7 +143,7 @@ pieceTypes BoardMove::toPromotePiece(int integer) const {
     }
 }
 
-std::string BoardMove::toStr(pieceTypes piece) const {
+std::string pieceToStr(pieceTypes piece) {
     switch (piece) {
             case WQueen:
             case BQueen:
@@ -160,9 +162,17 @@ std::string BoardMove::toStr(pieceTypes piece) const {
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const BoardMove& target) {
-    os << target.toStr();
-    return os;
+std::string sqrToStr(Square square) {
+    if (square == NULLSQUARE) {
+        return "-";
+    }
+
+    constexpr std::array<char, 8> fileRep = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    constexpr std::array<char, 8> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
+
+    const int file = getFile(square);
+    const int rank = getRank(square);
+    return std::string(1, fileRep[file]) + std::string(1, rankRep[rank]);
 }
 
 Square toSquare(std::string input) {
@@ -176,17 +186,4 @@ Square toSquare(std::string input) {
 
 Square toSquare(int rank, int file) {
     return rank * 8 + file;
-}
-
-std::string squareToStr(Square square) {
-    if (square == NULLSQUARE) {
-        return "-";
-    }
-
-    constexpr std::array<char, 8> fileRep = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-    constexpr std::array<char, 8> rankRep = {'8', '7', '6', '5', '4', '3', '2', '1'};
-
-    const int file = getFile(square);
-    const int rank = getRank(square);
-    return std::string(1, fileRep[file]) + std::string(1, rankRep[rank]);
 }

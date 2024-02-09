@@ -109,7 +109,7 @@ TEST_F(MoveGenTest, validKingMovesValidCastle3) {
 
 TEST_F(MoveGenTest, moveGeneratorBlackMove) {
     Board board;
-    board.makeMove(BoardMove(toSquare("e2"), toSquare("e3")));
+    board.makeMove(Move(toSquare("e2"), toSquare("e3")));
     MoveList moveGen(board);
     moveGen.generateAllMoves(board);
     ASSERT_EQ(moveGen.moves.size(), 20);

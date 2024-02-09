@@ -33,7 +33,7 @@ class MoveList {
         void generateCaptures(const Board& board);
         void generateQuiets(const Board& board);
 
-        FixedVector<BoardMove, MAX_MOVES> moves{};
+        FixedVector<Move, MAX_MOVES> moves{};
     private:
         template<typename Func>
         void generatePieceMoves(uint64_t pieces, uint64_t validDests, Func pieceMoves, const Board& board);

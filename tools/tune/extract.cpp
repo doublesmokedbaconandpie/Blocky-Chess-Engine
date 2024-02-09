@@ -157,7 +157,7 @@ std::vector<std::string> getPositions(std::ifstream& file, std::string startFen,
     }
 
     Board board(startFen);
-    BoardMove move;
+    Move move;
 
     // if black is to move, do black's turn first before getting into the main loop for formatting reasons
     if (blackStarts) {
@@ -205,10 +205,10 @@ std::vector<std::string> getPositions(std::ifstream& file, std::string startFen,
     return fens;
 }
 
-BoardMove getMove(std::string input, Board& board) {
+Move getMove(std::string input, Board& board) {
     MoveList gen(board);
     gen.generateAllMoves(board);
-    std::vector<BoardMove> moves{};
+    std::vector<Move> moves{};
     for (const auto move: gen.moves) {
         moves.push_back(move);
     }
@@ -223,7 +223,7 @@ BoardMove getMove(std::string input, Board& board) {
     if (input == "O-O" || input == "O-O-O") {
         int castleFile = input == "O-O" ? 6 : 2;
         pieceTypes allyKing = board.isWhiteTurn() ? WKing : BKing;
-        for (BoardMove move: moves) {
+        for (Move move: moves) {
             if (board.getPiece(move.sqr1()) == allyKing 
                 && castleRightsBit(move.sqr2(), board.isWhiteTurn())
                 && getFile(move.sqr2()) == castleFile) {
@@ -275,31 +275,31 @@ BoardMove getMove(std::string input, Board& board) {
     Square dest = toSquare(input);
 
     // filter moves
-    auto notCurrPiece = [board, currPiece](BoardMove move) {
+    auto notCurrPiece = [board, currPiece](Move move) {
         return board.getPiece(move.sqr1()) != currPiece;};
     if (currPiece != EmptyPiece) {
         moves.erase(std::remove_if(moves.begin(), moves.end(), notCurrPiece), moves.end());
     }
 
-    auto notPromotePiece = [board, promotePiece](BoardMove move) {
-        return move.getPromotePiece() != promotePiece;};
+    auto notPromotePiece = [board, promotePiece](Move move) {
+        return move.promotePiece() != promotePiece;};
     if (promotePiece != EmptyPiece) {
         moves.erase(std::remove_if(moves.begin(), moves.end(), notPromotePiece), moves.end());
     }
     
-    auto notRank = [board, rank](BoardMove move) {
+    auto notRank = [board, rank](Move move) {
         return getRank(move.sqr1()) != rank;};
     if (rank != -1) {
         moves.erase(std::remove_if(moves.begin(), moves.end(), notRank), moves.end());
     }
     
-    auto notFile = [board, file](BoardMove move) {
+    auto notFile = [board, file](Move move) {
         return getFile(move.sqr1()) != file;};
     if (file != -1) {
         moves.erase(std::remove_if(moves.begin(), moves.end(), notFile), moves.end());
     }
 
-    auto notDest = [board, dest](BoardMove move) {
+    auto notDest = [board, dest](Move move) {
         return move.sqr2() != dest;
     };
     moves.erase(std::remove_if(moves.begin(), moves.end(), notDest), moves.end());

@@ -34,7 +34,7 @@ struct Entry {
     int depth{};
     int eval{};
     EvalType bound = NONE;
-    BoardMove move{};
+    Move move{};
 };
 
 class TTable {
@@ -46,7 +46,7 @@ class TTable {
 
         bool entryExists(uint64_t key) const;
         Entry getEntry(uint64_t key) const;
-        void store(int eval, BoardMove move, EvalType bound, int depth, int age, uint64_t key);
+        void store(int eval, Move move, EvalType bound, int depth, int age, uint64_t key);
     private:
         int getIndex(uint64_t key) const;
         std::vector<Entry> table;

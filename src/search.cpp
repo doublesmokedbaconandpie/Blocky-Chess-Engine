@@ -147,7 +147,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     /************
      * Probe Tranposition Table
     *************/
-    BoardMove TTMove;
+    Move TTMove;
     int staticEval;
     if (TTable::Table.entryExists(this->board.zobristKey())) {
         const TTable::Entry entry = TTable::Table.getEntry(this->board.zobristKey());
@@ -203,12 +203,12 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
 
     // start search through moves
     int score = NO_SCORE, bestscore = -INF_SCORE;
-    BoardMove bestMove{};
-    FixedVector<BoardMove, MAX_MOVES> failedQuiets{};
+    Move bestMove{};
+    FixedVector<Move, MAX_MOVES> failedQuiets{};
     bool doFullNullSearch, doPVS;
 
     while (movePicker.movesLeft(this->board, this->history)) {
-        const BoardMove move = movePicker.pickMove();
+        const Move move = movePicker.pickMove();
         board.makeMove(move);
         const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn());
         const bool quietMove = !movePicker.stagesLeft();
@@ -332,7 +332,7 @@ int Searcher::quiesce(int alpha, int beta, StackEntry* ss) {
     MoveOrder::MovePicker movePicker(this->board, this->history, MoveOrder::Captures);
     int score = -INF_SCORE;
     while (movePicker.movesLeft(this->board, this->history)) {
-        BoardMove move = movePicker.pickMove();
+        Move move = movePicker.pickMove();
         board.makeMove(move);
         score = -quiesce(-beta, -alpha, ss + 1);
         board.undoMove(); 
@@ -376,7 +376,7 @@ void Searcher::outputUciInfo(Info searchResult) const {
     // principle variations are checked for a valid sequence of moves; if not valid, a warning is given;
     std::cout << "pv ";
     Board tmpBoard = this->board;
-    BoardMove move;
+    Move move;
     bool illegalMove = false;
     for (int i = 0; i < this->PVTable[0].length; ++i) {
         move = this->PVTable[0].moves[i];

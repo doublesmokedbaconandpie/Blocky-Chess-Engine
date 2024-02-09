@@ -33,11 +33,11 @@ enum Stage {
 
 class MovePicker {
     public:
-        MovePicker(const Board& board, const HistoryTable& history, Stage a_stage, BoardMove a_TTMove = BoardMove(), BoardMove a_killerMove = BoardMove());
+        MovePicker(const Board& board, const HistoryTable& history, Stage a_stage, Move a_TTMove = Move(), Move a_killerMove = Move());
         bool movesLeft(const Board& board, const HistoryTable& history);
         int getMovesPicked() const;
         bool stagesLeft() const;
-        BoardMove pickMove();
+        Move pickMove();
     private:
         enum MoveScores {
             PV = 1 << 30,
@@ -48,12 +48,12 @@ class MovePicker {
 
         template<bool ASSIGN_TTMOVE, Stage STAGE>
         void assignMoveScores(const Board& board, const HistoryTable& history);
-        int getVictimScore(const Board& board, BoardMove move) const;
+        int getVictimScore(const Board& board, Move move) const;
 
         MoveList moveList;
         std::array<int, MAX_MOVES> moveScores;
         Stage stage;
-        BoardMove TTMove, killerMove;
+        Move TTMove, killerMove;
         unsigned int movesPicked;
 };
 

@@ -113,7 +113,7 @@ auto Board::toFen() const -> std::string{
     this->m_castlingRights == noCastle ? fenStr.append("-") : "";
     fenStr.push_back(' ');
 
-    fenStr.append(squareToStr(this->m_enPassSquare));
+    fenStr.append(sqrToStr(this->m_enPassSquare));
     fenStr.push_back(' ');
 
     fenStr.append(std::to_string(this->m_fiftyMoveRule));
@@ -144,10 +144,10 @@ void Board::initZobristKey() {
 }
 
 // makeMove will not check if the move is invalid
-void Board::makeMove(BoardMove move) {
+void Board::makeMove(Move move) {
     const Square pos1 = move.sqr1();
     const Square pos2 = move.sqr2();
-    const pieceTypes promotionPiece = move.getPromotePiece();
+    const pieceTypes promotionPiece = move.promotePiece();
 
     // allies haven't made a move yet
     const pieceTypes allyKing = this->m_isWhiteTurn ? WKing : BKing;
@@ -160,7 +160,7 @@ void Board::makeMove(BoardMove move) {
     const pieceTypes targetPiece = this->getPiece(pos2);
 
     this->m_moveHistory.push_back(BoardState(
-        BoardMove(pos1, pos2, promotionPiece),
+        Move(pos1, pos2, promotionPiece),
         originPiece,
         targetPiece,
         this->m_castlingRights,
@@ -289,7 +289,7 @@ void Board::undoMove() {
 
 void Board::makeNullMove() {
     this->m_moveHistory.push_back(BoardState(
-        BoardMove(),
+        Move(),
         EmptyPiece,
         EmptyPiece,
         this->m_castlingRights,
@@ -350,7 +350,7 @@ void Board::setPiece(Square square, pieceTypes currPiece) {
     }
 }
 
-auto Board::isLegalMove(const BoardMove move) const -> bool {
+auto Board::isLegalMove(const Move move) const -> bool {
     // This is a bitboard implementation to check whether a move leaves the ally king under attack
     // The current move generation already checks whether castling is even valid 
     // or squares unblocked so only the king final position needs to be checked
@@ -397,10 +397,10 @@ auto Board::isLegalMove(const BoardMove move) const -> bool {
     return !currKingInAttack(tmpPieceSets, this->m_isWhiteTurn);
 }
 
-auto Board::moveIsCapture(BoardMove move) const -> bool {
+auto Board::moveIsCapture(Move move) const -> bool {
     if ( (this->getPiece(move.sqr1()) == WPawn || this->getPiece(move.sqr1()) == BPawn) && this->m_enPassSquare == move.sqr2())
         return true;
-    if (move.getPromotePiece() == WQueen || move.getPromotePiece() == BQueen)
+    if (move.promotePiece() == WQueen || move.promotePiece() == BQueen)
         return true;
     return this->getPiece(move.sqr2()) != EmptyPiece;
 }
@@ -455,7 +455,7 @@ auto Board::operator<<(std::ostream& os) const -> std::ostream& {
     }
     os << "\n";
     os << "castlingRights: " << this->castlingRights() << "\n";
-    os << "enPassSquare: " << squareToStr(this->enPassSquare()) << "\n";
+    os << "enPassSquare: " << sqrToStr(this->enPassSquare()) << "\n";
     os << "isWhiteTurn: " << this->isWhiteTurn() << "\n";
     os << "50MoveRule: " << this->fiftyMoveRule() << "\n";
     os << "ZobristKey: " << this->zobristKey() << "\n";

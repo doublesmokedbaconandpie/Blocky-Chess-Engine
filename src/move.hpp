@@ -25,29 +25,29 @@
 constexpr Square NULLSQUARE = 0xFF;
 constexpr uint16_t NULLMOVE = 0xFFFF;
 
-class BoardMove {
+class Move {
     public:
-        BoardMove() : data(NULLMOVE) {};
-        BoardMove(Square square1, Square square2, pieceTypes promotePiece = EmptyPiece);
-        BoardMove(std::string input, bool isWhiteTurn);
+        Move() : data(NULLMOVE) {};
+        Move(Square square1, Square square2, pieceTypes promotePiece = EmptyPiece);
+        Move(std::string input, bool isWhiteTurn);
         std::string toStr() const;
 
         Square sqr1() const;
         Square sqr2() const;
-        pieceTypes getPromotePiece() const;
+        pieceTypes promotePiece() const;
 
         operator bool() const;
+        bool operator==(const Move& rhs) const;
+        bool operator!=(const Move& rhs) const;
+        std::ostream& operator<<(std::ostream& os) const;
     private:
-        pieceTypes toPromotePiece(int integer) const;
-        int toInt(pieceTypes piece) const;
-        std::string toStr(pieceTypes piece) const;
+        static pieceTypes toPieceType(int integer);
+        static int toInt(pieceTypes piece);
 
         uint16_t data{};
-    friend std::ostream& operator<<(std::ostream& os, const BoardMove& target);
-    friend bool operator==(const BoardMove& lhs, const BoardMove& rhs);
-    friend bool operator!=(const BoardMove& lhs, const BoardMove& rhs);
 };
 
+std::string pieceToStr(pieceTypes piece);
+std::string sqrToStr(Square square);
 Square toSquare(int rank, int file);
 Square toSquare(std::string input);
-std::string squareToStr(Square square);

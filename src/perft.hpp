@@ -66,7 +66,7 @@ uint64_t perftMovePicker(Board& board, int depthLeft) {
     uint64_t leafNodeCount = 0;
 
     while (movePicker.movesLeft(board, unusedHistory)) {
-        const BoardMove move = movePicker.pickMove();
+        const Move move = movePicker.pickMove();
         board.makeMove(move);
         const uint64_t moveCount = perftMovePicker<false>(board, depthLeft - 1);
         leafNodeCount += moveCount;
