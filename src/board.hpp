@@ -47,20 +47,20 @@ class Board {
     public:
         Board(std::string fenStr);
         Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {};
-        std::string toFen() const;
+        auto toFen() const -> std::string;
 
         void makeMove(BoardMove move);
         void undoMove();
         void makeNullMove();
         void unmakeNullMove();
 
-        pieceTypes getPiece(Square square) const;
+        auto getPiece(Square square) const -> pieceTypes;
         void setPiece(Square square, pieceTypes currPiece);
 
-        bool isLegalMove(const BoardMove move) const;
-        bool moveIsCapture(BoardMove move) const;
-        bool isDraw() const;
-        int evaluate();
+        auto isLegalMove(const BoardMove move) const -> bool;
+        auto moveIsCapture(BoardMove move) const -> bool;
+        auto isDraw() const -> bool;
+        auto evaluate() -> int;
         auto lastMoveCaptureOrCastle() const -> bool;
         void clearHistory();
 
@@ -73,8 +73,8 @@ class Board {
         auto age() const -> int;
         auto zobristKey() const -> uint64_t;
 
-        bool operator==(const Board& rhs) const;
-        std::ostream& operator<<(std::ostream& os) const;
+        auto operator==(const Board& rhs) const -> bool;
+        auto operator<<(std::ostream& os) const -> std::ostream&;
 
         PieceSets pieceSets{};
     private:
@@ -121,6 +121,6 @@ inline auto Board::zobristKey() const -> uint64_t {
     return this->m_zobristKey;
 }
 
-castleRights castleRightsBit(Square finalKingPos, bool isWhiteTurn);
-bool currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn);
-uint64_t getAllPieces(const PieceSets& pieceSets);
+auto castleRightsBit(Square finalKingPos, bool isWhiteTurn) -> castleRights;
+auto currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn) -> bool;
+auto getAllPieces(const PieceSets& pieceSets) -> uint64_t;

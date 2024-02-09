@@ -76,8 +76,7 @@ Board::Board(std::string fenStr) {
     // Board doesn't use Fullmove counter
 }
 
-// For debugging
-std::string Board::toFen() const {
+auto Board::toFen() const -> std::string{
     std::string fenStr; 
 
     int emptyPiecesInRow = 0, piecesPlaced = 0;
@@ -321,7 +320,7 @@ void Board::unmakeNullMove() {
 }
 
 // getPiece is not responsible for bounds checking
-pieceTypes Board::getPiece(Square square) const{
+auto Board::getPiece(Square square) const -> pieceTypes{
     return this->m_board[square];
 }
 
@@ -351,7 +350,7 @@ void Board::setPiece(Square square, pieceTypes currPiece) {
     }
 }
 
-bool Board::isLegalMove(const BoardMove move) const {
+auto Board::isLegalMove(const BoardMove move) const -> bool {
     // This is a bitboard implementation to check whether a move leaves the ally king under attack
     // The current move generation already checks whether castling is even valid 
     // or squares unblocked so only the king final position needs to be checked
@@ -398,7 +397,7 @@ bool Board::isLegalMove(const BoardMove move) const {
     return !currKingInAttack(tmpPieceSets, this->m_isWhiteTurn);
 }
 
-bool Board::moveIsCapture(BoardMove move) const {
+auto Board::moveIsCapture(BoardMove move) const -> bool {
     if ( (this->getPiece(move.sqr1()) == WPawn || this->getPiece(move.sqr1()) == BPawn) && this->m_enPassSquare == move.sqr2())
         return true;
     if (move.getPromotePiece() == WQueen || move.getPromotePiece() == BQueen)
@@ -417,7 +416,7 @@ bool Board::isDraw() const {
 }
     
 // positive return values means winning for the side to move, negative is opposite
-int Board::evaluate() {
+auto Board::evaluate() -> int {
     const int rawEval = this->eval.getRawEval(this->pieceSets);
     return this->m_isWhiteTurn ? rawEval : rawEval * -1;
 }
@@ -434,7 +433,7 @@ void Board::clearHistory() {
 }
 
 // for tests
-bool Board::operator==(const Board& rhs) const {
+auto Board::operator==(const Board& rhs) const -> bool {
     return this->board() == rhs.board()
         && this->pieceSets == rhs.pieceSets
         && this->isWhiteTurn() == rhs.isWhiteTurn()
@@ -445,7 +444,7 @@ bool Board::operator==(const Board& rhs) const {
         && this->enPassSquare() == rhs.enPassSquare();
 }
 
-std::ostream& Board::operator<<(std::ostream& os) const {
+auto Board::operator<<(std::ostream& os) const -> std::ostream& {
     for (int rank = 0; rank <= 7; rank++) {
         os << "[";
         for (int file = 0; file <= 7; file++) {
@@ -463,7 +462,7 @@ std::ostream& Board::operator<<(std::ostream& os) const {
     return os;
 }
 
-castleRights castleRightsBit(Square finalKingPos, bool m_isWhiteTurn) {
+auto castleRightsBit(Square finalKingPos, bool m_isWhiteTurn) -> castleRights {
     if (finalKingPos == 62 && m_isWhiteTurn) {
         return W_OO;
     }
@@ -481,7 +480,7 @@ castleRights castleRightsBit(Square finalKingPos, bool m_isWhiteTurn) {
     }
 }
 
-bool currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn) {
+auto currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn) -> bool {
     const pieceTypes allyKing = isWhiteTurn ? WKing : BKing;
     assert(pieceSets[allyKing]);
     const int kingSquare = lsb(pieceSets[allyKing]);
@@ -502,6 +501,6 @@ bool currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn) {
         || Attacks::kingAttacks(kingSquare) & enemyKings;
 }
 
-uint64_t getAllPieces(const PieceSets& pieceSets) {
+auto getAllPieces(const PieceSets& pieceSets) -> uint64_t {
     return pieceSets[WHITE_PIECES] | pieceSets[BLACK_PIECES];
 }
