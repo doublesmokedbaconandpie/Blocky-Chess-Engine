@@ -23,13 +23,13 @@ TEST(SquareTest, SquareStrConstructorNeg) {
 }
 
 TEST(MoveTest, MoveStrConstructor) {
-    BoardMove move = BoardMove("e2e4", true);
+    Move move = Move("e2e4", true);
     EXPECT_EQ(move.sqr1(), 52);
     EXPECT_EQ(move.sqr2(), 36);
 }
 
 TEST(MoveTest, MoveStrConstructor2) {
-    BoardMove move = BoardMove("a7a8q", true);
+    Move move = Move("a7a8q", true);
     EXPECT_EQ(move.sqr1(), 8);
     EXPECT_EQ(move.sqr2(), 0);
     EXPECT_EQ(move.getPromotePiece(), WQueen);
@@ -63,7 +63,7 @@ TEST_F(BoardTest, fenConstructorDefault) {
 TEST_F(BoardTest, fenConstructorEnPassantSquare) {
     Board fenBoard("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1");
     Board moveBoard;
-    moveBoard.makeMove(BoardMove("e2e4", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("e2e4", moveBoard.isWhiteTurn()));
 
     EXPECT_EQ(fenBoard, moveBoard);
 }
@@ -72,13 +72,13 @@ TEST_F(BoardTest, fenConstructorEnPassantCastle) {
     // ruy lopez
     Board fenBoard("r1bqkb1r/pppp1ppp/2n2n2/1B2p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4");
     Board moveBoard;
-    moveBoard.makeMove(BoardMove("e2e4", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("e7e5", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("g1f3", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("b8c6", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("f1b5", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("g8f6", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("e1g1", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("e2e4", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("e7e5", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("g1f3", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("b8c6", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("f1b5", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("g8f6", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("e1g1", moveBoard.isWhiteTurn()));
 
     EXPECT_EQ(fenBoard, moveBoard);
 }
@@ -201,7 +201,7 @@ TEST_F(BoardTest, MakeMovePawnJump) {
     Square pos1 = toSquare("e2");
     Square pos2 = toSquare("e4");
     Square enPassantSquare = toSquare("e3");
-    board.makeMove(BoardMove(pos1, pos2));
+    board.makeMove(Move(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn(), false);
     EXPECT_EQ(board.getPiece(pos2), WPawn);
@@ -215,7 +215,7 @@ TEST_F(BoardTest, MakeMoveKingCastle) {
     Square pos2 = toSquare("g1");
     Square rookStart = toSquare("h1");
     Square rookEnd = toSquare("f1");
-    board.makeMove(BoardMove(pos1, pos2));
+    board.makeMove(Move(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn(), false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -232,7 +232,7 @@ TEST_F(BoardTest, MakeMoveQueenCastle) {
     Square pos2 = toSquare("c1");
     Square rookStart = toSquare("a1");
     Square rookEnd = toSquare("d1");
-    board.makeMove(BoardMove(pos1, pos2));
+    board.makeMove(Move(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn(), false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -247,7 +247,7 @@ TEST_F(BoardTest, MakeMoveMovedKing) {
     Board board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/R3KBNR w KQkq - 0 1");
     Square pos1 = toSquare("e1");
     Square pos2 = toSquare("e2");
-    board.makeMove(BoardMove(pos1, pos2));
+    board.makeMove(Move(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn(), false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -260,7 +260,7 @@ TEST_F(BoardTest, MakeMoveKingToCastleSquare) {
     Board board("k7/8/8/8/8/8/8/5K1R w kq - 0 1");
     Square pos1 = toSquare("f1");
     Square pos2 = toSquare("g1");
-    board.makeMove(BoardMove(pos1, pos2));
+    board.makeMove(Move(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn(), false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -277,7 +277,7 @@ TEST_F(BoardTest, MakeMoveEnPassant) {
     Square pos2 = toSquare("d6");
     Square enemyPawn = toSquare("d5");
     EXPECT_EQ(fenBoard.getPiece(enemyPawn), BPawn);
-    fenBoard.makeMove(BoardMove(pos1, pos2));
+    fenBoard.makeMove(Move(pos1, pos2));
 
     EXPECT_EQ(fenBoard, moveBoard);
 }
@@ -289,7 +289,7 @@ TEST_F(BoardTest, MakeMoveNotEnPassant) {
     Square pos2 = toSquare("f3");
     Square enemyPawn = toSquare("d5");
     EXPECT_EQ(fenBoard.getPiece(enemyPawn), BPawn);
-    fenBoard.makeMove(BoardMove(pos1, pos2));
+    fenBoard.makeMove(Move(pos1, pos2));
 
     EXPECT_EQ(fenBoard, moveBoard);
 }
@@ -298,7 +298,7 @@ TEST_F(BoardTest, MakeMovePromote) {
     Board board("8/PK6/8/8/8/8/8/7k w KQkq - 0 1");
     Square pos1 = toSquare("a7");
     Square pos2 = toSquare("a8");
-    board.makeMove(BoardMove(pos1, pos2, WQueen));
+    board.makeMove(Move(pos1, pos2, WQueen));
 
     EXPECT_EQ(board.isWhiteTurn(), false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -310,7 +310,7 @@ TEST_F(BoardTest, MakeMovePawnCapture) {
     Board board("8/8/4p3/3Pp3/8/K7/8/k7 w KQkq - 0 1");
     Square pos1 = toSquare("d5");
     Square pos2 = toSquare("e6");
-    board.makeMove(BoardMove(pos1, pos2));
+    board.makeMove(Move(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn(), false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -323,7 +323,7 @@ TEST_F(BoardTest, LegalMoveRegularCapture) {
     Board board("8/5p2/8/3Bp3/8/K7/8/k7 w KQkq - 0 1");
     Square pos1 = toSquare("d5");
     Square pos2 = toSquare("f7");
-    board.makeMove(BoardMove(pos1, pos2));
+    board.makeMove(Move(pos1, pos2));
 
     EXPECT_EQ(board.isWhiteTurn(), false);
     EXPECT_EQ(board.getPiece(pos1), EmptyPiece);
@@ -333,56 +333,56 @@ TEST_F(BoardTest, LegalMoveRegularCapture) {
 
 TEST_F(BoardTest, LegalMoveRookPin) {
     Board board("r6k/R7/8/8/8/8/8/K7 w KQkq - 0 1");
-    BoardMove move("a7b7", board.isWhiteTurn());
+    Move move("a7b7", board.isWhiteTurn());
     ASSERT_FALSE(board.isLegalMove(move));
 }
 
 TEST_F(BoardTest, LegalMoveBishopPin) {
     Board board("8/8/8/8/3b4/7k/1B6/K7 w KQkq - 0 1");
-    BoardMove move("b2a3", board.isWhiteTurn());
+    Move move("b2a3", board.isWhiteTurn());
     ASSERT_FALSE(board.isLegalMove(move));
 }
 
 TEST_F(BoardTest, LegalMoveEnPassant) {
     Board board("2RQ4/R6p/6b1/1k5p/Ppp5/8/6P1/7K b - a3 0 42");
-    BoardMove move("b4a3", board.isWhiteTurn());
+    Move move("b4a3", board.isWhiteTurn());
     ASSERT_TRUE(board.isLegalMove(move));
 }
 
 TEST_F(BoardTest, LegalMoveEnPassantPin) {
     Board board("6k1/8/7p/3K1Ppq/4n3/8/6p1/8 w - g6 0 1");
-    BoardMove move("f5g6", board.isWhiteTurn());
+    Move move("f5g6", board.isWhiteTurn());
     ASSERT_FALSE(board.isLegalMove(move));
 }
 
 TEST_F(BoardTest, MakeMoveCastleRightsRook) {
     Board board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQK2R w KQkq - 0 1");
-    board.makeMove(BoardMove("h1g1", board.isWhiteTurn()));
+    board.makeMove(Move("h1g1", board.isWhiteTurn()));
     EXPECT_EQ(board.castlingRights(), B_Castle | W_OOO);
 }
 
 TEST_F(BoardTest, MakeMoveCastleRightsRook2) {
     Board board("rnbqk2r/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1");
-    board.makeMove(BoardMove("h8g8", board.isWhiteTurn()));
+    board.makeMove(Move("h8g8", board.isWhiteTurn()));
     EXPECT_EQ(board.castlingRights(), W_Castle | B_OOO);
 }
 
 TEST_F(BoardTest, MakeMoveCastleRightsRook3) {
     Board board("7r/1k4P1/1n6/B7/P4P1p/7P/4NK2/1R5R b - - 0 44");
-    board.makeMove(BoardMove("h8g8", board.isWhiteTurn()));
+    board.makeMove(Move("h8g8", board.isWhiteTurn()));
     EXPECT_EQ(board.castlingRights(), noCastle);
 }
 
 TEST_F(BoardTest, undoMove) {
     // ruy lopez
     Board defaultBoard, moveBoard;
-    moveBoard.makeMove(BoardMove("e2e4", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("e7e5", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("g1f3", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("b8c6", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("f1b5", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("g8f6", moveBoard.isWhiteTurn()));
-    moveBoard.makeMove(BoardMove("e1g1", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("e2e4", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("e7e5", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("g1f3", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("b8c6", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("f1b5", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("g8f6", moveBoard.isWhiteTurn()));
+    moveBoard.makeMove(Move("e1g1", moveBoard.isWhiteTurn()));
     for (int i = 0; i < 7; i++) {
         moveBoard.undoMove();
     }
@@ -392,46 +392,46 @@ TEST_F(BoardTest, undoMove) {
 
 TEST_F(BoardTest, moveIsCaptureTest) {
     Board b1;
-    BoardMove m1 = BoardMove("e2e4", b1.isWhiteTurn());
+    Move m1 = Move("e2e4", b1.isWhiteTurn());
     bool b_1 = b1.moveIsCapture(m1); //F
     b1.makeMove(m1);
-    BoardMove m2 = BoardMove("d7d5", b1.isWhiteTurn());
+    Move m2 = Move("d7d5", b1.isWhiteTurn());
     bool b_2 = b1.moveIsCapture(m2); //F
     b1.makeMove(m2);
-    BoardMove m3 = BoardMove("e4e5", b1.isWhiteTurn());
+    Move m3 = Move("e4e5", b1.isWhiteTurn());
     bool b_3 = b1.moveIsCapture(m3); //F
     b1.makeMove(m3);
-    BoardMove m4 = BoardMove("d5d4", b1.isWhiteTurn());
+    Move m4 = Move("d5d4", b1.isWhiteTurn());
     bool b_4 = b1.moveIsCapture(m4); //F
     b1.makeMove(m4);
-    BoardMove m5 = BoardMove("h2h3", b1.isWhiteTurn());
+    Move m5 = Move("h2h3", b1.isWhiteTurn());
     bool b_5 = b1.moveIsCapture(m5); //F
     b1.makeMove(m5);
-    BoardMove m6 = BoardMove("f7f5", b1.isWhiteTurn());
+    Move m6 = Move("f7f5", b1.isWhiteTurn());
     bool b_6 = b1.moveIsCapture(m6); //F
     b1.makeMove(m6);
-    BoardMove m7 = BoardMove("e5f6", b1.isWhiteTurn());
+    Move m7 = Move("e5f6", b1.isWhiteTurn());
     bool b_7 = b1.moveIsCapture(m7); //T
     b1.makeMove(m7);
-    BoardMove m8 = BoardMove("g7f6", b1.isWhiteTurn());
+    Move m8 = Move("g7f6", b1.isWhiteTurn());
     bool b_8 = b1.moveIsCapture(m8); //T
     b1.makeMove(m8);
-    BoardMove m9 = BoardMove("c2c4", b1.isWhiteTurn());
+    Move m9 = Move("c2c4", b1.isWhiteTurn());
     bool b_9 = b1.moveIsCapture(m9); //F
     b1.makeMove(m9);
-    BoardMove m10 = BoardMove("d4c3", b1.isWhiteTurn());
+    Move m10 = Move("d4c3", b1.isWhiteTurn());
     bool b_10 = b1.moveIsCapture(m10); //T
     b1.makeMove(m10);
-    BoardMove m11 = BoardMove("d2d4", b1.isWhiteTurn());
+    Move m11 = Move("d2d4", b1.isWhiteTurn());
     bool b_11 = b1.moveIsCapture(m11); //F
     b1.makeMove(m11);
-    BoardMove m12 = BoardMove("c3b2", b1.isWhiteTurn());
+    Move m12 = Move("c3b2", b1.isWhiteTurn());
     bool b_12 = b1.moveIsCapture(m12); //T
     b1.makeMove(m12);
-    BoardMove m13 = BoardMove("d4d5", b1.isWhiteTurn());
+    Move m13 = Move("d4d5", b1.isWhiteTurn());
     bool b_13 = b1.moveIsCapture(m13); //F
     b1.makeMove(m13);
-    BoardMove m14 = BoardMove("b2a1r", b1.isWhiteTurn());
+    Move m14 = Move("b2a1r", b1.isWhiteTurn());
     bool b_14 = b1.moveIsCapture(m14); //T
     b1.makeMove(m14);
     

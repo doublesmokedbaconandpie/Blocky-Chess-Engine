@@ -119,7 +119,7 @@ void MoveList::generatePieceMoves(uint64_t pieces, uint64_t validDests, Func pie
 
         while (dests) {
             const int target = popLsb(dests);
-            const BoardMove move(piece, target);
+            const Move move(piece, target);
             if (board.isLegalMove(move)) {
                 this->moves.push_back(move);
             }
@@ -140,17 +140,17 @@ void MoveList::generatePawnPromotions(uint64_t pieces, uint64_t validDests, Func
 
         while (dests) {
             const int target = popLsb(dests);
-            const BoardMove move(piece, target);
+            const Move move(piece, target);
             if (!board.isLegalMove(move)) {
                 continue;
             }
 
             if (QUEENS) {
-                this->moves.push_back(BoardMove(piece, target, allyQueen));
+                this->moves.push_back(Move(piece, target, allyQueen));
             } else {
-                this->moves.push_back(BoardMove(piece, target, allyKnight));
-                this->moves.push_back(BoardMove(piece, target, allyRook));
-                this->moves.push_back(BoardMove(piece, target, allyBishop));
+                this->moves.push_back(Move(piece, target, allyKnight));
+                this->moves.push_back(Move(piece, target, allyRook));
+                this->moves.push_back(Move(piece, target, allyBishop));
             }
         }
     }
@@ -162,7 +162,7 @@ void MoveList::generateKingCastles(const Board& board) {
     uint64_t dests = this->kingCastles(board.pieceSets);
     while (dests) {
         const int target = popLsb(dests);
-        const BoardMove move(king, target);
+        const Move move(king, target);
         if (board.isLegalMove(move)) {
             this->moves.push_back(move);
         }

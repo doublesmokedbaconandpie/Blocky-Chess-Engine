@@ -42,18 +42,18 @@ struct Info {
     int seldepth{};
     int eval{};
     int mateIn = NO_SCORE;
-    BoardMove move{};
+    Move move{};
     uint64_t timeElapsed{};
 };
 
 // triangular pv-table row
 struct PVRow {
-    std::array<BoardMove, MAX_PLY> moves{};
+    std::array<Move, MAX_PLY> moves{};
     int length{};
 };
 
 struct StackEntry {
-    BoardMove killerMove{};
+    Move killerMove{};
     int ply{};
 };
 

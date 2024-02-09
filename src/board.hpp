@@ -28,14 +28,14 @@
 #include "utils/types.hpp"
 
 struct BoardState {
-    BoardState(BoardMove a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, castleRights a_castlingRights, Square a_enPassSquare, int a_fiftyMoveRule) : 
+    BoardState(Move a_move, pieceTypes a_originPiece, pieceTypes a_targetPiece, castleRights a_castlingRights, Square a_enPassSquare, int a_fiftyMoveRule) : 
                 move(a_move), 
                 originPiece(a_originPiece), 
                 targetPiece(a_targetPiece),
                 castlingRights(a_castlingRights), 
                 enPassSquare(a_enPassSquare), 
                 fiftyMoveRule(a_fiftyMoveRule) {};
-    BoardMove move;
+    Move move;
     pieceTypes originPiece;
     pieceTypes targetPiece;
     castleRights castlingRights;
@@ -49,7 +49,7 @@ class Board {
         Board() : Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") {};
         auto toFen() const -> std::string;
 
-        void makeMove(BoardMove move);
+        void makeMove(Move move);
         void undoMove();
         void makeNullMove();
         void unmakeNullMove();
@@ -57,8 +57,8 @@ class Board {
         auto getPiece(Square square) const -> pieceTypes;
         void setPiece(Square square, pieceTypes currPiece);
 
-        auto isLegalMove(const BoardMove move) const -> bool;
-        auto moveIsCapture(BoardMove move) const -> bool;
+        auto isLegalMove(const Move move) const -> bool;
+        auto moveIsCapture(Move move) const -> bool;
         auto isDraw() const -> bool;
         auto evaluate() -> int;
         auto lastMoveCaptureOrCastle() const -> bool;

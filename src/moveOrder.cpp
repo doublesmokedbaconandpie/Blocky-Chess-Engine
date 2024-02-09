@@ -26,7 +26,7 @@
 
 namespace MoveOrder {
 
-MovePicker::MovePicker(const Board& board, const HistoryTable& history, Stage a_stage, BoardMove a_TTMove, BoardMove a_killerMove) {
+MovePicker::MovePicker(const Board& board, const HistoryTable& history, Stage a_stage, Move a_TTMove, Move a_killerMove) {
     this->moveList = MoveList(board);
     this->moveScores = std::array<int, MAX_MOVES>{};
     this->TTMove = a_TTMove;
@@ -101,7 +101,7 @@ bool MovePicker::stagesLeft() const {
 
 // Due to pruning, we don't need to sort the entire array of moves for move ordering.
 // When sorting only small portions of arrays, using partial insertion sort is faster.
-BoardMove MovePicker::pickMove() {
+Move MovePicker::pickMove() {
     assert(this->movesPicked < this->moveList.moves.size());
 
     const auto begin = this->moveScores.begin() + this->movesPicked;
@@ -116,7 +116,7 @@ BoardMove MovePicker::pickMove() {
     return move;
 }
 
-int MovePicker::getVictimScore(const Board& board, BoardMove move) const {
+int MovePicker::getVictimScore(const Board& board, Move move) const {
     if ( (board.getPiece(move.sqr1()) == WPawn || board.getPiece(move.sqr1()) == BPawn) && board.enPassSquare() == move.sqr2())
         return pieceValues[WPawn];
     else if (move.getPromotePiece() != EmptyPiece)

@@ -24,11 +24,11 @@
 #include "move.hpp"
 #include "utils/types.hpp"
 
-BoardMove::BoardMove(Square square1, Square square2, pieceTypes promotePiece) {
+Move::Move(Square square1, Square square2, pieceTypes promotePiece) {
     data =  square1 | (square2 << 6) | (toInt(promotePiece) << 12);
 }
 
-BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
+Move::Move(std::string input, bool isWhiteTurn) {
     const pieceTypes allyQueen = isWhiteTurn ? WQueen : BQueen;
     const pieceTypes allyBishop = isWhiteTurn ? WBishop : BBishop;
     const pieceTypes allyKnight = isWhiteTurn ? WKnight : BKnight;
@@ -58,42 +58,42 @@ BoardMove::BoardMove(std::string input, bool isWhiteTurn) {
     data =  square1 | (square2 << 6) | (toInt(promotePiece) << 12);
 }
 
-std::string BoardMove::toStr() const {
+std::string Move::toStr() const {
     const auto square1 = squareToStr(sqr1());
     const auto square2 = squareToStr(sqr2());
     const auto promotePiece = toStr(getPromotePiece());
     return square1 + square2 + promotePiece;
 }
 
-uint8_t BoardMove::sqr1() const{
+uint8_t Move::sqr1() const{
     constexpr uint16_t mask = 0x003F;
     return data & mask;
 }
 
-uint8_t BoardMove::sqr2() const{
+uint8_t Move::sqr2() const{
     constexpr uint16_t mask = 0x003F;
     return (data >> 6) & mask;
 }
 
-pieceTypes BoardMove::getPromotePiece() const {
+pieceTypes Move::getPromotePiece() const {
     constexpr uint16_t mask = 0x000F;
     const int piece = (data >> 12) & mask;
     return toPromotePiece(piece);
 }
 
-BoardMove::operator bool() const {
+Move::operator bool() const {
     return data != NULLMOVE;
 }
 
-bool operator==(const BoardMove& lhs, const BoardMove& rhs) {
+bool operator==(const Move& lhs, const Move& rhs) {
     return lhs.data == rhs.data;
 }
 
-bool operator!=(const BoardMove& lhs, const BoardMove& rhs) {
+bool operator!=(const Move& lhs, const Move& rhs) {
     return lhs.data != rhs.data;
 }
 
-int BoardMove::toInt(pieceTypes piece) const {
+int Move::toInt(pieceTypes piece) const {
     switch (piece)
     {
         case WQueen:
@@ -117,7 +117,7 @@ int BoardMove::toInt(pieceTypes piece) const {
     }
 }
 
-pieceTypes BoardMove::toPromotePiece(int integer) const {
+pieceTypes Move::toPromotePiece(int integer) const {
     switch (integer)
     {
         case 1:
@@ -141,7 +141,7 @@ pieceTypes BoardMove::toPromotePiece(int integer) const {
     }
 }
 
-std::string BoardMove::toStr(pieceTypes piece) const {
+std::string Move::toStr(pieceTypes piece) const {
     switch (piece) {
             case WQueen:
             case BQueen:
@@ -160,7 +160,7 @@ std::string BoardMove::toStr(pieceTypes piece) const {
     }
 }
 
-std::ostream& operator<<(std::ostream& os, const BoardMove& target) {
+std::ostream& operator<<(std::ostream& os, const Move& target) {
     os << target.toStr();
     return os;
 }
