@@ -2,6 +2,7 @@
 #include "board.hpp"
 #include "move.hpp"
 #include "attacks.hpp"
+#include "bitboard.hpp"
 
 #include <gtest/gtest.h>
 
@@ -54,49 +55,49 @@ TEST(ScoreTest, Minus) {
 
 TEST(checkIsPassedPawn, whiteTrue) {
     int square = toSquare("d4");
-    uint64_t enemyPawns = 1ull << toSquare("e4") | 1ull << toSquare("c3");
+    uint64_t enemyPawns = c_u64(1) << toSquare("e4") | c_u64(1) << toSquare("c3");
     ASSERT_TRUE(isPassedPawn(square, enemyPawns, true));
 }
 
 TEST(checkIsPassedPawn, whiteTrue2) {
     int square = toSquare("d4");
-    uint64_t enemyPawns = 1ull << toSquare("d3") | 1ull << toSquare("c4");
+    uint64_t enemyPawns = c_u64(1) << toSquare("d3") | c_u64(1) << toSquare("c4");
     ASSERT_TRUE(isPassedPawn(square, enemyPawns, true));
 }
 
 TEST(checkIsPassedPawn, whiteFalse) {
     int square = toSquare("d4");
-    uint64_t enemyPawns = 1ull << toSquare("e4") | 1ull << toSquare("c5");
+    uint64_t enemyPawns = c_u64(1) << toSquare("e4") | c_u64(1) << toSquare("c5");
     ASSERT_FALSE(isPassedPawn(square, enemyPawns, true));
 }
 
 TEST(checkIsPassedPawn, whiteFalse2) {
     int square = toSquare("d4");
-    uint64_t enemyPawns = 1ull << toSquare("d5") | 1ull << toSquare("c3");
+    uint64_t enemyPawns = c_u64(1) << toSquare("d5") | c_u64(1) << toSquare("c3");
     ASSERT_FALSE(isPassedPawn(square, enemyPawns, true));
 }
 
 TEST(checkIsPassedPawn, blackTrue) {
     int square = toSquare("d4");
-    uint64_t enemyPawns = 1ull << toSquare("e4") | 1ull << toSquare("c5");
+    uint64_t enemyPawns = c_u64(1) << toSquare("e4") | c_u64(1) << toSquare("c5");
     ASSERT_TRUE(isPassedPawn(square, enemyPawns, false));
 }
 
 TEST(checkIsPassedPawn, blackFalse) {
     int square = toSquare("d4");
-    uint64_t enemyPawns = 1ull << toSquare("e3") | 1ull << toSquare("c5");
+    uint64_t enemyPawns = c_u64(1) << toSquare("e3") | c_u64(1) << toSquare("c5");
     ASSERT_FALSE(isPassedPawn(square, enemyPawns, false));
 }
 
 TEST(checkIsPassedPawn, blackFalse2) {
     int square = toSquare("b7");
-    uint64_t enemyPawns = 1ull << toSquare("a4") | 1ull << toSquare("c4");
+    uint64_t enemyPawns = c_u64(1) << toSquare("a4") | c_u64(1) << toSquare("c4");
     ASSERT_FALSE(isPassedPawn(square, enemyPawns, false));
 }
 
 TEST(checkIsPassedPawn, blackFalse3) {
     int square = toSquare("a7");
-    uint64_t enemyPawns = 1ull << toSquare("a2") | 1ull << toSquare("b2") | 1ull << toSquare("c2");
+    uint64_t enemyPawns = c_u64(1) << toSquare("a2") | c_u64(1) << toSquare("b2") | c_u64(1) << toSquare("c2");
     ASSERT_FALSE(isPassedPawn(square, enemyPawns, false));
 }
 
