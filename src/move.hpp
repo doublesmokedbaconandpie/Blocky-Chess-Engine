@@ -37,15 +37,15 @@ class Move {
         pieceTypes getPromotePiece() const;
 
         operator bool() const;
+        bool operator==(const Move& rhs) const;
+        bool operator!=(const Move& rhs) const;
+        std::ostream& operator<<(std::ostream& os) const;
     private:
         pieceTypes toPromotePiece(int integer) const;
         int toInt(pieceTypes piece) const;
         std::string toStr(pieceTypes piece) const;
 
         uint16_t data{};
-    friend std::ostream& operator<<(std::ostream& os, const Move& target);
-    friend bool operator==(const Move& lhs, const Move& rhs);
-    friend bool operator!=(const Move& lhs, const Move& rhs);
 };
 
 Square toSquare(int rank, int file);

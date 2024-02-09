@@ -85,12 +85,17 @@ Move::operator bool() const {
     return data != NULLMOVE;
 }
 
-bool operator==(const Move& lhs, const Move& rhs) {
-    return lhs.data == rhs.data;
+bool Move::operator==(const Move& rhs) const {
+    return this->data == rhs.data;
 }
 
-bool operator!=(const Move& lhs, const Move& rhs) {
-    return lhs.data != rhs.data;
+bool Move::operator!=(const Move& rhs) const {
+    return this->data != rhs.data;
+}
+
+std::ostream& Move::operator<<(std::ostream& os) const {
+    os << this->toStr();
+    return os;
 }
 
 int Move::toInt(pieceTypes piece) const {
@@ -158,11 +163,6 @@ std::string Move::toStr(pieceTypes piece) const {
             default:
                 return "";
     }
-}
-
-std::ostream& operator<<(std::ostream& os, const Move& target) {
-    os << target.toStr();
-    return os;
 }
 
 Square toSquare(std::string input) {
