@@ -392,46 +392,46 @@ TEST_F(BoardTest, undoMove) {
 
 TEST_F(BoardTest, moveIsCaptureTest) {
     Board b1;
-    Move m1 = Move("e2e4", b1.isWhiteTurn());
+    Move m1("e2e4", b1.isWhiteTurn());
     bool b_1 = b1.moveIsCapture(m1); //F
     b1.makeMove(m1);
-    Move m2 = Move("d7d5", b1.isWhiteTurn());
+    Move m2("d7d5", b1.isWhiteTurn());
     bool b_2 = b1.moveIsCapture(m2); //F
     b1.makeMove(m2);
-    Move m3 = Move("e4e5", b1.isWhiteTurn());
+    Move m3("e4e5", b1.isWhiteTurn());
     bool b_3 = b1.moveIsCapture(m3); //F
     b1.makeMove(m3);
-    Move m4 = Move("d5d4", b1.isWhiteTurn());
+    Move m4("d5d4", b1.isWhiteTurn());
     bool b_4 = b1.moveIsCapture(m4); //F
     b1.makeMove(m4);
-    Move m5 = Move("h2h3", b1.isWhiteTurn());
+    Move m5("h2h3", b1.isWhiteTurn());
     bool b_5 = b1.moveIsCapture(m5); //F
     b1.makeMove(m5);
-    Move m6 = Move("f7f5", b1.isWhiteTurn());
+    Move m6("f7f5", b1.isWhiteTurn());
     bool b_6 = b1.moveIsCapture(m6); //F
     b1.makeMove(m6);
-    Move m7 = Move("e5f6", b1.isWhiteTurn());
+    Move m7("e5f6", b1.isWhiteTurn());
     bool b_7 = b1.moveIsCapture(m7); //T
     b1.makeMove(m7);
-    Move m8 = Move("g7f6", b1.isWhiteTurn());
+    Move m8("g7f6", b1.isWhiteTurn());
     bool b_8 = b1.moveIsCapture(m8); //T
     b1.makeMove(m8);
-    Move m9 = Move("c2c4", b1.isWhiteTurn());
+    Move m9("c2c4", b1.isWhiteTurn());
     bool b_9 = b1.moveIsCapture(m9); //F
     b1.makeMove(m9);
-    Move m10 = Move("d4c3", b1.isWhiteTurn());
+    Move m10("d4c3", b1.isWhiteTurn());
     bool b_10 = b1.moveIsCapture(m10); //T
     b1.makeMove(m10);
-    Move m11 = Move("d2d4", b1.isWhiteTurn());
+    Move m11("d2d4", b1.isWhiteTurn());
     bool b_11 = b1.moveIsCapture(m11); //F
     b1.makeMove(m11);
-    Move m12 = Move("c3b2", b1.isWhiteTurn());
+    Move m12("c3b2", b1.isWhiteTurn());
     bool b_12 = b1.moveIsCapture(m12); //T
     b1.makeMove(m12);
-    Move m13 = Move("d4d5", b1.isWhiteTurn());
+    Move m13("d4d5", b1.isWhiteTurn());
     bool b_13 = b1.moveIsCapture(m13); //F
     b1.makeMove(m13);
-    Move m14 = Move("b2a1r", b1.isWhiteTurn());
+    Move m14("b2a1r", b1.isWhiteTurn());
     bool b_14 = b1.moveIsCapture(m14); //T
     b1.makeMove(m14);
     
