@@ -117,7 +117,7 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
             const uint64_t enemyPawnSet = isWhitePiece ? board.pieceSets[BPawn] : board.pieceSets[WPawn];
             const uint64_t doubledPawnSet = Eval::getDoubledPawnsMask(allyPawnSet, isWhitePiece);
             const uint64_t chainedPawnSet = Eval::getChainedPawnsMask(allyPawnSet, isWhitePiece);
-            const uint64_t phalanxPawnSet = Eval::getPhalanxPawnsMask(allyPawnSet, isWhitePiece);
+            const uint64_t phalanxPawnSet = Eval::getPhalanxPawnsMask(allyPawnSet);
 
             passedPawnFlag = static_cast<int>(Eval::isPassedPawn(i, enemyPawnSet, isWhitePiece));
             doubledPawnFlag = static_cast<int>(static_cast<bool>(doubledPawnSet & c_u64(1) << i));

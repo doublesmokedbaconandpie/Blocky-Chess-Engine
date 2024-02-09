@@ -222,10 +222,10 @@ BoardMove getMove(std::string input, Board& board) {
     // castles (Ex: O-O)
     if (input == "O-O" || input == "O-O-O") {
         int castleFile = input == "O-O" ? 6 : 2;
-        pieceTypes allyKing = board.isWhiteTurn ? WKing : BKing;
+        pieceTypes allyKing = board.isWhiteTurn() ? WKing : BKing;
         for (BoardMove move: moves) {
             if (board.getPiece(move.sqr1()) == allyKing 
-                && castleRightsBit(move.sqr2(), board.isWhiteTurn)
+                && castleRightsBit(move.sqr2(), board.isWhiteTurn())
                 && getFile(move.sqr2()) == castleFile) {
                 board.makeMove(move);
                 return move;
@@ -237,7 +237,7 @@ BoardMove getMove(std::string input, Board& board) {
     // pawn promotions (Ex: e8=Q), trim the last two characters
     pieceTypes promotePiece = EmptyPiece;
     if (input[input.length() - 2] == '=') {
-        char pieceChar = board.isWhiteTurn ? input.back() : tolower(input.back());
+        char pieceChar = board.isWhiteTurn() ? input.back() : tolower(input.back());
         promotePiece = charToPiece.at(pieceChar);
         input = input.substr(0, input.length() - 2);
     }
@@ -250,11 +250,11 @@ BoardMove getMove(std::string input, Board& board) {
     // case where there is a piece prefix (Ex: Nf3); trim first character
     pieceTypes currPiece = EmptyPiece;
     if (isupper(input[0])) {
-        char pieceChar = board.isWhiteTurn ? input[0] : tolower(input[0]);
+        char pieceChar = board.isWhiteTurn() ? input[0] : tolower(input[0]);
         currPiece = charToPiece.at(pieceChar);
         input.erase(input.begin());
     } else {
-        currPiece = board.isWhiteTurn ? WPawn : BPawn;
+        currPiece = board.isWhiteTurn() ? WPawn : BPawn;
     }
 
     // case where there is a file qualifier, trim first character

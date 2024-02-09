@@ -136,13 +136,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     ++this->nodes;
     this->max_seldepth = std::max(ss->ply, this->max_seldepth);
 
-    // fifty move rule
-    if (this->board.fiftyMoveRule >= 100) {
-        return DRAW_SCORE;
-    }
-    // three-fold repetition
-    const int occurrences = std::count(this->board.zobristKeyHistory.begin(), this->board.zobristKeyHistory.end(), this->board.zobristKey);
-    if (occurrences >= 3) {
+    if (this->board.isDraw()) {
         return DRAW_SCORE;
     }
     // max depth reached
@@ -155,8 +149,8 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     *************/
     BoardMove TTMove;
     int staticEval;
-    if (TTable::Table.entryExists(this->board.zobristKey)) {
-        const TTable::Entry entry = TTable::Table.getEntry(this->board.zobristKey);
+    if (TTable::Table.entryExists(this->board.zobristKey())) {
+        const TTable::Entry entry = TTable::Table.getEntry(this->board.zobristKey());
 
         if (!ISPV && entry.depth >= depth) {
             if (entry.bound == EvalType::EXACT
@@ -180,7 +174,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         return beta;
     }
 
-    const bool inCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
+    const bool inCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn());
     /************
      * Null Move Pruning
      * Give the opponent a free move and see if our position is still too good after that; if so, prune
@@ -216,7 +210,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     while (movePicker.movesLeft(this->board, this->history)) {
         const BoardMove move = movePicker.pickMove();
         board.makeMove(move);
-        const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn);
+        const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn());
         const bool quietMove = !movePicker.stagesLeft();
 
         /*************
@@ -316,7 +310,7 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     // store results with best moves in transposition table
     if (bestMove) {
         const EvalType bound = (bestscore >= beta) ? EvalType::LOWER : (alpha == oldAlpha) ? EvalType::UPPER : EvalType::EXACT;
-        TTable::Table.store(bestscore, bestMove, bound, depth, this->board.age, this->board.zobristKey);
+        TTable::Table.store(bestscore, bestMove, bound, depth, this->board.age(), this->board.zobristKey());
     }
     return bestscore;
 }

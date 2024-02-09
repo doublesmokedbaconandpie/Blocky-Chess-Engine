@@ -28,17 +28,17 @@ MoveList::MoveList(const Board& board) {
     // information used in both captures and quiets move generation
     this->allPieces = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
     this->emptySquares = ~this->allPieces;
-    this->isWhiteTurn = board.isWhiteTurn;
+    this->isWhiteTurn = board.isWhiteTurn();
 
     // gather piece bitboards
-    this->kings   = board.isWhiteTurn ? board.pieceSets[WKing]   : board.pieceSets[BKing];
-    this->knights = board.isWhiteTurn ? board.pieceSets[WKnight] : board.pieceSets[BKnight];
-    this->bishops = board.isWhiteTurn ? board.pieceSets[WBishop] : board.pieceSets[BBishop];
-    this->rooks   = board.isWhiteTurn ? board.pieceSets[WRook]   : board.pieceSets[BRook];
-    this->queens  = board.isWhiteTurn ? board.pieceSets[WQueen]  : board.pieceSets[BQueen];
+    this->kings   = board.isWhiteTurn() ? board.pieceSets[WKing]   : board.pieceSets[BKing];
+    this->knights = board.isWhiteTurn() ? board.pieceSets[WKnight] : board.pieceSets[BKnight];
+    this->bishops = board.isWhiteTurn() ? board.pieceSets[WBishop] : board.pieceSets[BBishop];
+    this->rooks   = board.isWhiteTurn() ? board.pieceSets[WRook]   : board.pieceSets[BRook];
+    this->queens  = board.isWhiteTurn() ? board.pieceSets[WQueen]  : board.pieceSets[BQueen];
     
-    this->pawns   = board.isWhiteTurn ? board.pieceSets[WPawn]   : board.pieceSets[BPawn];
-    this->promotingPawns = board.isWhiteTurn ? this->pawns & RANK_7 : this->pawns & RANK_2;
+    this->pawns   = board.isWhiteTurn() ? board.pieceSets[WPawn]   : board.pieceSets[BPawn];
+    this->promotingPawns = board.isWhiteTurn() ? this->pawns & RANK_7 : this->pawns & RANK_2;
     this->pawns ^= promotingPawns;
 }
 
@@ -50,7 +50,7 @@ void MoveList::generateAllMoves(const Board& board) {
 void MoveList::generateCaptures(const Board& board) {
     // helper information for captures
     uint64_t validDests = this->isWhiteTurn ? board.pieceSets[BLACK_PIECES] : board.pieceSets[WHITE_PIECES];
-    this->enPassSquare = board.enPassSquare;
+    this->enPassSquare = board.enPassSquare();
 
     const auto knightMovesFunc = [this](Square piece, uint64_t vd) {return this->knightMoves(piece, vd);};
     const auto bishopMovesFunc = [this](Square piece, uint64_t vd) {return this->bishopMoves(piece, vd);};
@@ -84,10 +84,10 @@ void MoveList::generateCaptures(const Board& board) {
 void MoveList::generateQuiets(const Board& board) {
     // helper information for quiets
     const uint64_t validDests = this->emptySquares;
-    this->pawnStartRank   = board.isWhiteTurn ? RANK_2 : RANK_7;
-    this->pawnJumpRank    = board.isWhiteTurn ? RANK_4 : RANK_5;
-    this->castlingRights  = board.castlingRights;
-    this->castlingRights &= board.isWhiteTurn ? W_Castle : B_Castle;
+    this->pawnStartRank   = board.isWhiteTurn() ? RANK_2 : RANK_7;
+    this->pawnJumpRank    = board.isWhiteTurn() ? RANK_4 : RANK_5;
+    this->castlingRights  = board.castlingRights();
+    this->castlingRights &= board.isWhiteTurn() ? W_Castle : B_Castle;
     
     const auto knightMovesFunc = [this](Square piece, uint64_t vd) {return this->knightMoves(piece, vd);};
     const auto bishopMovesFunc = [this](Square piece, uint64_t vd) {return this->bishopMoves(piece, vd);};
@@ -129,10 +129,10 @@ void MoveList::generatePieceMoves(uint64_t pieces, uint64_t validDests, Func pie
 
 template<typename Func>
 void MoveList::generatePawnPromotions(uint64_t pieces, uint64_t validDests, Func pieceMoves, const Board& board, const bool QUEENS) {
-    const pieceTypes allyKnight = board.isWhiteTurn ? WKnight : BKnight;
-    const pieceTypes allyBishop = board.isWhiteTurn ? WBishop : BBishop;
-    const pieceTypes allyRook = board.isWhiteTurn ? WRook : BRook;
-    const pieceTypes allyQueen = board.isWhiteTurn ? WQueen : BQueen;
+    const pieceTypes allyKnight = board.isWhiteTurn() ? WKnight : BKnight;
+    const pieceTypes allyBishop = board.isWhiteTurn() ? WBishop : BBishop;
+    const pieceTypes allyRook = board.isWhiteTurn() ? WRook : BRook;
+    const pieceTypes allyQueen = board.isWhiteTurn() ? WQueen : BQueen;
 
     while (pieces) {
         const Square piece = popLsb(pieces);
