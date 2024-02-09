@@ -434,32 +434,32 @@ void Board::clearHistory() {
 }
 
 // for tests
-bool operator==(const Board& lhs, const Board& rhs) {
-    return lhs.m_board == rhs.m_board
-        && lhs.pieceSets == rhs.pieceSets
-        && lhs.m_isWhiteTurn == rhs.m_isWhiteTurn
-        && lhs.m_fiftyMoveRule == rhs.m_fiftyMoveRule
-        && lhs.m_zobristKey == rhs.m_zobristKey
-        && lhs.m_zobristKey != 0
-        && rhs.m_zobristKey != 0
-        && lhs.m_enPassSquare == rhs.m_enPassSquare;
+bool Board::operator==(const Board& rhs) const {
+    return this->board() == rhs.board()
+        && this->pieceSets == rhs.pieceSets
+        && this->isWhiteTurn() == rhs.isWhiteTurn()
+        && this->fiftyMoveRule() == rhs.fiftyMoveRule()
+        && this->zobristKey() == rhs.zobristKey()
+        && this->zobristKey() != 0
+        && rhs.zobristKey() != 0
+        && this->enPassSquare() == rhs.enPassSquare();
 }
 
-std::ostream& operator<<(std::ostream& os, const Board& target) {
+std::ostream& Board::operator<<(std::ostream& os) const {
     for (int rank = 0; rank <= 7; rank++) {
         os << "[";
         for (int file = 0; file <= 7; file++) {
-            os << pieceToChar.at(target.getPiece(toSquare(rank, file)));
+            os << pieceToChar.at(this->getPiece(toSquare(rank, file)));
             os << ',';
         }
         os << "],\n";
     }
     os << "\n";
-    os << "castlingRights: " << target.m_castlingRights << "\n";
-    os << "enPassSquare: " << squareToStr(target.m_enPassSquare) << "\n";
-    os << "isWhiteTurn: " << target.m_isWhiteTurn << "\n";
-    os << "50MoveRule: " << target.m_fiftyMoveRule << "\n";
-    os << "ZobristKey: " << target.m_zobristKey << "\n";
+    os << "castlingRights: " << this->castlingRights() << "\n";
+    os << "enPassSquare: " << squareToStr(this->enPassSquare()) << "\n";
+    os << "isWhiteTurn: " << this->isWhiteTurn() << "\n";
+    os << "50MoveRule: " << this->fiftyMoveRule() << "\n";
+    os << "ZobristKey: " << this->zobristKey() << "\n";
     return os;
 }
 

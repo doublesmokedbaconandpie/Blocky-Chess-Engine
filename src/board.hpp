@@ -73,8 +73,8 @@ class Board {
         auto age() const -> int;
         auto zobristKey() const -> uint64_t;
 
-        friend bool operator==(const Board& lhs, const Board& rhs);
-        friend std::ostream& operator<<(std::ostream& os, const Board& target);
+        bool operator==(const Board& rhs) const;
+        std::ostream& operator<<(std::ostream& os) const;
 
         PieceSets pieceSets{};
     private:
