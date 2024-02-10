@@ -78,6 +78,13 @@ void TTable::store(int eval, Move move, EvalType bound, int depth, int age, uint
     }
 }
 
+void TTable::prefetch(uint64_t key) const {
+    if (this->table.empty()) {
+        return;
+    }
+    __builtin_prefetch(&this->table[getIndex(key)]);
+}
+
 int TTable::getIndex(uint64_t key) const {
     return key % this->size;
 }
