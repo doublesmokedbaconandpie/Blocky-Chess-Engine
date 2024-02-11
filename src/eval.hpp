@@ -132,7 +132,7 @@ constexpr std::array<S, NUM_PIECES> pieceVals = {
 constexpr auto doubledPawns = S(-16,-33);
 constexpr auto chainedPawns = S( 23, 21);
 constexpr auto phalanxPawns = S( 10, 10);
-constexpr auto tempo = S();
+constexpr int tempo = 11;
 
 // piece square tables
 constexpr auto PSQT = [] {
