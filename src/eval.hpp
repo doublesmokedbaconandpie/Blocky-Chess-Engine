@@ -24,8 +24,8 @@
 
 namespace Eval {
 
-constexpr int TOTAL_PHASE = 24;
-constexpr int PAWN_HASH_SIZE = 1024;
+inline constexpr int TOTAL_PHASE = 24;
+inline constexpr int PAWN_HASH_SIZE = 1024;
 
 // evaluation scores
 // contain both midgame and endgame scores
@@ -109,33 +109,33 @@ int getPieceMobility(pieceTypes piece, Square sq, uint64_t mobilitySquares, uint
 **************/
 
 // mobility tables
-constexpr std::array<S, 9> knightMobility = {
+inline constexpr std::array<S, 9> knightMobility = {
     S( 28,-55), S( 40, 56), S( 50,105), S( 56,125), S( 60,139), S( 62,152), S( 68,145), S( 79,124),
     S(137, 40), };
 
-constexpr std::array<S, 14> bishopMobility = {
+inline constexpr std::array<S, 14> bishopMobility = {
     S( 65, 39), S( 74, 90), S( 82,106), S( 88,127), S( 96,144), S(101,160), S(104,161), S(110,159),
     S(112,161), S(130,143), S(129,146), S(197, 82), S(184,113), S(395,-55), };
 
-constexpr std::array<S, 15> rookMobility = {
+inline constexpr std::array<S, 15> rookMobility = {
     S(112,195), S(123,211), S(131,212), S(138,219), S(137,232), S(147,233), S(152,244), S(161,241),
     S(169,244), S(174,249), S(190,248), S(197,253), S(192,254), S(215,242), S(190,254), };
 
 // other tables
-constexpr std::array<S, NUM_RANKS> passedPawn = {
+inline constexpr std::array<S, NUM_RANKS> passedPawn = {
     S(  0,  0), S( 65,192), S( 62,124), S( 25, 72), S(  3, 44), S(-10, 19), S(  8,  6), S(  0,  0),};
 
-constexpr std::array<S, NUM_PIECES> pieceVals = {
+inline constexpr std::array<S, NUM_PIECES> pieceVals = {
     S(  0,  0), S(899,818), S(289,186), S(347,193), S(343,333), S( 68, 84), };
 
 // misc terms
-constexpr auto doubledPawns = S(-16,-33);
-constexpr auto chainedPawns = S( 23, 21);
-constexpr auto phalanxPawns = S( 10, 10);
-constexpr int tempo = 11;
+inline constexpr auto doubledPawns = S(-16,-33);
+inline constexpr auto chainedPawns = S( 23, 21);
+inline constexpr auto phalanxPawns = S( 10, 10);
+inline constexpr int tempo = 11;
 
 // piece square tables
-constexpr auto PSQT = [] {
+inline constexpr auto PSQT = [] {
     std::array<std::array<S, BOARD_SIZE>, 6> tables{};
 
     tables[KING] = {

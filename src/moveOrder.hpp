@@ -57,7 +57,7 @@ class MovePicker {
         unsigned int movesPicked;
 };
 
-constexpr inline Stage operator&(Stage lhs, Stage rhs) {
+inline constexpr Stage operator&(Stage lhs, Stage rhs) {
     return static_cast<Stage>(static_cast<int>(lhs) & static_cast<int>(rhs));
 }
 

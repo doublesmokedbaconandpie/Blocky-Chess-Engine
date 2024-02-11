@@ -25,7 +25,7 @@
 
 namespace Zobrist {
 
-constexpr auto pieceKeys = [] {
+inline constexpr auto pieceKeys = [] {
     RNGSeed seed = {0x360baff383999633, 0x68ee16f8479f8123, 0xa89adf4551b3b25b, 0x4887b5a003b21d40};
     std::array<std::array<uint64_t, BOARD_SIZE>, NUM_COLORED_PIECES> keyTable{};
     for (auto& piece: keyTable) {
@@ -36,7 +36,7 @@ constexpr auto pieceKeys = [] {
     return keyTable;
 }();
 
-constexpr auto castlingKeys = [] {
+inline constexpr auto castlingKeys = [] {
     RNGSeed seed = {0x19b7b1bb3c2d8fe5, 0x8d989b67e947c8f4, 0x2e3d29cda1ecff47, 0x9c1872c99fdb5a3c};
     std::array<uint64_t, 4> keyTable{};
     for (auto& key: keyTable) {
@@ -45,7 +45,7 @@ constexpr auto castlingKeys = [] {
     return keyTable;
 }();
 
-constexpr auto enPassKeys = [] {
+inline constexpr auto enPassKeys = [] {
     RNGSeed seed = {0x3e9da55e408ecafe, 0x6d569800e894469e, 0x974a657968409560, 0xcb37386a2913c636};
     std::array<uint64_t, 8> keyTable{};
     for (auto& key: keyTable) {
@@ -54,7 +54,7 @@ constexpr auto enPassKeys = [] {
     return keyTable;
 }();
 
-constexpr auto isBlackKey = [] {
+inline constexpr auto isBlackKey = [] {
     RNGSeed seed = {0x078279f6872cb95e, 0xd675a7617f43a9b5, 0x55c511df8850988f, 0x22789bd6bcf41f28};
     return rand64(seed);
 }();

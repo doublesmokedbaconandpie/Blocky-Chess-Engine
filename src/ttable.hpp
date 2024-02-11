@@ -26,7 +26,7 @@
 
 namespace TTable {
 
-constexpr int DEFAULT_SIZEMB = 128;
+inline constexpr int DEFAULT_SIZEMB = 128;
 
 struct Entry {
     uint64_t key{};
