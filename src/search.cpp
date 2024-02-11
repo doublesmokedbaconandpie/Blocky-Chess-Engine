@@ -29,6 +29,7 @@
 #include "moveGen.hpp"
 #include "board.hpp"
 #include "timeman.hpp"
+#include "zobrist.hpp"
 #include "utils/fixedVector.hpp"
 
 namespace Search {
@@ -185,6 +186,9 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         && depth >= 2
         && staticEval >= beta) {
 
+        // prefetch TT entry as soon as possible; NMP only changes color
+        TTable::Table.prefetch(this->board.zobristKey() ^ Zobrist::isBlackKey);
+
         int reduction = 3 + depth / 4;
         board.makeNullMove();
         int nullMoveScore = -search<NMP>(-beta, -beta + 1, depth - reduction, ss + 1);
@@ -210,6 +214,9 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     while (movePicker.movesLeft(this->board, this->history)) {
         const Move move = movePicker.pickMove();
         board.makeMove(move);
+
+        // prefetch TT entry as soon as possible
+        TTable::Table.prefetch(this->board.zobristKey());
         const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn());
         const bool quietMove = !movePicker.stagesLeft();
 
