@@ -417,7 +417,7 @@ bool Board::isDraw() const {
     
 // positive return values means winning for the side to move, negative is opposite
 auto Board::evaluate() -> int {
-    const int rawEval = this->eval.getRawEval(this->pieceSets);
+    const int rawEval = this->eval.getRawEval(this->pieceSets, this->m_isWhiteTurn);
     return this->m_isWhiteTurn ? rawEval : rawEval * -1;
 }
 

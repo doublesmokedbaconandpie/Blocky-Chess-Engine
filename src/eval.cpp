@@ -29,7 +29,7 @@
 
 namespace Eval {
 
-int Info::getRawEval(const PieceSets& pieceSets) {
+int Info::getRawEval(const PieceSets& pieceSets, bool isWhiteTurn) {
     // positive values means white is winning, negative means black
     const S pawnScore = this->getPawnInfo(pieceSets).score;
     const S mobilityScore = evalMobilityScores(pieceSets, true) - evalMobilityScores(pieceSets, false);
@@ -38,7 +38,9 @@ int Info::getRawEval(const PieceSets& pieceSets) {
     const int op = totalScore.opScore;
     const int eg = totalScore.egScore;
     const int eval = (op * this->phase + eg * (TOTAL_PHASE - this->phase)) / TOTAL_PHASE;
-    return eval + evalMopUpScore(pieceSets, eval);
+
+    const int tempoBonus = isWhiteTurn ? tempo : -tempo;
+    return eval + evalMopUpScore(pieceSets, eval) + tempoBonus;
 }
 
 void Info::addPiece(Square square, pieceTypes piece) {
