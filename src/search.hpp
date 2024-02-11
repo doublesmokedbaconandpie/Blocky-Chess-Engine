@@ -28,10 +28,10 @@
 
 namespace Search {
 
-constexpr int DRAW_SCORE = 0;
-constexpr int INF_SCORE = 1000000;
-constexpr int MATE_IN_SCORE = INF_SCORE - MAX_PLY;
-constexpr int NO_SCORE = -100000000;
+inline constexpr int DRAW_SCORE = 0;
+inline constexpr int INF_SCORE = 1000000;
+inline constexpr int MATE_IN_SCORE = INF_SCORE - MAX_PLY;
+inline constexpr int NO_SCORE = -100000000;
 
 void initLMRTable();
 

@@ -22,8 +22,8 @@
 
 #include "utils/types.hpp"
 
-constexpr Square NULLSQUARE = 0xFF;
-constexpr uint16_t NULLMOVE = 0xFFFF;
+inline constexpr Square NULLSQUARE = 0xFF;
+inline constexpr uint16_t NULLMOVE = 0xFFFF;
 
 class Move {
     public:

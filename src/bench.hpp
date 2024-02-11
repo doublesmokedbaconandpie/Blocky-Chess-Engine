@@ -25,7 +25,7 @@
 // benchmarking is used to test for any functional changes in the search
 namespace Bench {
 
-constexpr int BENCHDEPTH = 8;
+inline constexpr int BENCHDEPTH = 8;
 
 const std::vector<std::string> fens = {
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",

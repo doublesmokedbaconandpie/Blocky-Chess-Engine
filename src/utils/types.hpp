@@ -22,14 +22,14 @@
 #include <unordered_map>
 #include <cstdint>
 
-constexpr int BOARD_SIZE = 64;
-constexpr int NUM_FILES = 8;
-constexpr int NUM_RANKS = 8;
-constexpr int NUM_BITBOARDS = 14;
-constexpr int NUM_COLORED_PIECES = 12;
-constexpr int NUM_PIECES = 6;
-constexpr int MAX_MOVES = 256;
-constexpr int MAX_PLY = 250;
+inline constexpr int BOARD_SIZE = 64;
+inline constexpr int NUM_FILES = 8;
+inline constexpr int NUM_RANKS = 8;
+inline constexpr int NUM_BITBOARDS = 14;
+inline constexpr int NUM_COLORED_PIECES = 12;
+inline constexpr int NUM_PIECES = 6;
+inline constexpr int MAX_MOVES = 256;
+inline constexpr int MAX_PLY = 250;
 
 using Square = uint8_t;
 using PieceSets = std::array<uint64_t, NUM_BITBOARDS>;
@@ -97,18 +97,18 @@ enum castleRights {
     All_Castle = W_Castle | B_Castle,
 };
 
-constexpr inline castleRights operator&(castleRights lhs, castleRights rhs) {
+inline constexpr castleRights operator&(castleRights lhs, castleRights rhs) {
     return static_cast<castleRights>(static_cast<int>(lhs) & static_cast<int>(rhs));
 }
 
-constexpr inline castleRights operator^(castleRights lhs, castleRights rhs) {
+inline constexpr castleRights operator^(castleRights lhs, castleRights rhs) {
     return static_cast<castleRights>(static_cast<int>(lhs) ^ static_cast<int>(rhs));
 }
 
-constexpr inline castleRights& operator&=(castleRights& lhs, castleRights rhs) {
+inline constexpr castleRights& operator&=(castleRights& lhs, castleRights rhs) {
     return lhs = lhs & rhs;
 }
 
-constexpr inline castleRights& operator^=(castleRights& lhs, castleRights rhs) {
+inline constexpr castleRights& operator^=(castleRights& lhs, castleRights rhs) {
     return lhs = lhs ^ rhs;
 }

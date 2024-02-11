@@ -23,7 +23,7 @@
 
 namespace Timeman {
 
-constexpr uint64_t INF_TIME = 1 << 28;
+inline constexpr uint64_t INF_TIME = 1 << 28;
 
 class TimeManager
 {
