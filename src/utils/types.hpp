@@ -97,18 +97,18 @@ enum castleRights {
     All_Castle = W_Castle | B_Castle,
 };
 
-inline constexpr castleRights operator&(castleRights lhs, castleRights rhs) {
+constexpr castleRights operator&(castleRights lhs, castleRights rhs) {
     return static_cast<castleRights>(static_cast<int>(lhs) & static_cast<int>(rhs));
 }
 
-inline constexpr castleRights operator^(castleRights lhs, castleRights rhs) {
+constexpr castleRights operator^(castleRights lhs, castleRights rhs) {
     return static_cast<castleRights>(static_cast<int>(lhs) ^ static_cast<int>(rhs));
 }
 
-inline constexpr castleRights& operator&=(castleRights& lhs, castleRights rhs) {
+constexpr castleRights& operator&=(castleRights& lhs, castleRights rhs) {
     return lhs = lhs & rhs;
 }
 
-inline constexpr castleRights& operator^=(castleRights& lhs, castleRights rhs) {
+constexpr castleRights& operator^=(castleRights& lhs, castleRights rhs) {
     return lhs = lhs ^ rhs;
 }
