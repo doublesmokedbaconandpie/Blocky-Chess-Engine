@@ -33,14 +33,14 @@ int Info::getRawEval(const PieceSets& pieceSets, bool isWhiteTurn) {
     // positive values means white is winning, negative means black
     const S pawnScore = this->getPawnInfo(pieceSets).score;
     const S mobilityScore = evalMobilityScores(pieceSets, true) - evalMobilityScores(pieceSets, false);
-    const S totalScore = this->score + pawnScore + mobilityScore;
+    const S tempoBonus = isWhiteTurn ? tempo : -tempo;
+    const S totalScore = this->score + pawnScore + mobilityScore + tempoBonus;
 
     const int op = totalScore.opScore;
     const int eg = totalScore.egScore;
     const int eval = (op * this->phase + eg * (TOTAL_PHASE - this->phase)) / TOTAL_PHASE;
 
-    const int tempoBonus = isWhiteTurn ? tempo : -tempo;
-    return eval + evalMopUpScore(pieceSets, eval) + tempoBonus;
+    return eval + evalMopUpScore(pieceSets, eval);
 }
 
 void Info::addPiece(Square square, pieceTypes piece) {
