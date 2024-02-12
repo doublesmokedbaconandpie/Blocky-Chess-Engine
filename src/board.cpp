@@ -245,7 +245,6 @@ void Board::makeMove(Move move) {
     // after finalizing move logic, now switch turns
     this->m_isWhiteTurn = !this->m_isWhiteTurn;
     this->m_zobristKey ^= Zobrist::isBlackKey;
-    this->m_age++;
 
     // update history to include curr key
     this->m_zobristKeyHistory.push_back(this->m_zobristKey);
@@ -281,7 +280,6 @@ void Board::undoMove() {
     this->m_castlingRights = prev.castlingRights;
     this->m_enPassSquare = prev.enPassSquare;
     this->m_fiftyMoveRule = prev.fiftyMoveRule;
-    this->m_age--;
 
     this->m_moveHistory.pop_back();
     this->m_zobristKeyHistory.pop_back();
@@ -303,7 +301,6 @@ void Board::makeNullMove() {
     }
     this->m_isWhiteTurn = !this->m_isWhiteTurn;
     this->m_fiftyMoveRule++;
-    this->m_age++;
 
     this->m_zobristKey ^= Zobrist::isBlackKey;
     this->m_zobristKeyHistory.push_back(this->m_zobristKey);
@@ -313,7 +310,6 @@ void Board::unmakeNullMove() {
     this->m_enPassSquare = this->m_moveHistory.back().enPassSquare;
     this->m_isWhiteTurn = !this->m_isWhiteTurn;
     this->m_fiftyMoveRule--;
-    this->m_age--;
 
     this->m_moveHistory.pop_back();
     this->m_zobristKeyHistory.pop_back();
