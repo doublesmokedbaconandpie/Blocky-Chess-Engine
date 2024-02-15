@@ -20,7 +20,7 @@
 
 RNGSeed seed = {0xf38f4541449b0fc3, 0x8432cf48703f8864, 0x1c8596ae5c1621d1, 0xf6d3be81a796f876};
 
-inline constexpr int MOD_FENS = 3;
+inline constexpr int MOD_FENS = 4;
 
 int main() {
     // initialize prerequisites
