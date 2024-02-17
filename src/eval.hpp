@@ -91,7 +91,6 @@ class Info {
 // other evaluation helper functions
 S evalPawns(const PieceSets& pieceSets, bool isWhite);
 S evalPieces(const PieceSets& pieceSets, bool isWhite);
-int evalMopUpScore(const PieceSets& pieceSets, int eval);
 
 int getPiecePhase(pieceTypes piece);
 S getPSQTVal(Square square, pieceTypes currPiece);
