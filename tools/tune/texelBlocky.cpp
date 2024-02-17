@@ -43,6 +43,7 @@ parameters_t BlockyEval::get_initial_parameters() {
     pushSingleTerm(params, "doubledPawns", Eval::doubledPawns);
     pushSingleTerm(params, "chainedPawns", Eval::chainedPawns);
     pushSingleTerm(params, "phalanxPawns", Eval::phalanxPawns);
+    pushSingleTerm(params, "bishopPair", Eval::bishopPair);
 
     totalSize = params.size();
     return params;
@@ -161,6 +162,10 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
         result.coefficients[offsets["phalanxPawns"]] += phalanxPawnFlag * occurences;
         result.coefficients[mobilityOffset + mobility] += mobilityFlag * occurences;
     }
+
+    // misc coefficients
+    int bishopPairFlag = Eval::isBishopPair(board.pieceSets[WBishop]) - Eval::isBishopPair(board.pieceSets[BBishop]);
+    result.coefficients[offsets["bishopPair"]] += bishopPairFlag;
 
     result.score = board.evaluate();
     return result;

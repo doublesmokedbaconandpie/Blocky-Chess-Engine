@@ -32,7 +32,7 @@ namespace Eval {
 int Info::getRawEval(const PieceSets& pieceSets, bool isWhiteTurn) {
     // positive values means white is winning, negative means black
     const S pawnScore = this->getPawnInfo(pieceSets).score;
-    const S mobilityScore = evalMobilityScores(pieceSets, true) - evalMobilityScores(pieceSets, false);
+    const S mobilityScore = evalPieces(pieceSets, true) - evalPieces(pieceSets, false);
     const S totalScore = this->score + pawnScore + mobilityScore;
 
     const int op = totalScore.opScore;
@@ -103,30 +103,34 @@ S evalPawns(const PieceSets& pieceSets, bool isWhite) {
     return pawnScore;
 }
 
-S evalMobilityScores(const PieceSets& pieceSets, bool isWhite) {
+S evalPieces(const PieceSets& pieceSets, bool isWhite) {
     const uint64_t mobilitySquares = getMobilitySquares(pieceSets, isWhite);
     const uint64_t allPieces   = isWhite ? pieceSets[WHITE_PIECES] : pieceSets[BLACK_PIECES];
     uint64_t allyKnights = isWhite ? pieceSets[WKnight] : pieceSets[BKnight];
     uint64_t allyBishops = isWhite ? pieceSets[WBishop] : pieceSets[BBishop];
     uint64_t allyRooks = isWhite ? pieceSets[WRook] : pieceSets[BRook];
 
-    S mobilityScores{};
+    S score{};
     Square sq;
+
+    if (isBishopPair(allyBishops)) {
+        score += bishopPair;
+    }
 
     while (allyKnights) {
         sq = popLsb(allyKnights);
-        mobilityScores += knightMobility[getPieceMobility(KNIGHT, sq, mobilitySquares, allPieces)];
+        score += knightMobility[getPieceMobility(KNIGHT, sq, mobilitySquares, allPieces)];
     }
     while (allyBishops) {
         sq = popLsb(allyBishops);
-        mobilityScores += bishopMobility[getPieceMobility(BISHOP, sq, mobilitySquares, allPieces)];
+        score += bishopMobility[getPieceMobility(BISHOP, sq, mobilitySquares, allPieces)];
     }
     while (allyRooks) {
         sq = popLsb(allyRooks);
-        mobilityScores += rookMobility[getPieceMobility(ROOK, sq, mobilitySquares, allPieces)];
+        score += rookMobility[getPieceMobility(ROOK, sq, mobilitySquares, allPieces)];
     }
 
-    return mobilityScores;
+    return score;
 }
 
 int evalMopUpScore(const PieceSets& pieceSets, int eval) {
