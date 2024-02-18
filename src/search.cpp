@@ -184,7 +184,8 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     if (!ISNMP
         && !inCheck
         && depth >= 2
-        && staticEval >= beta) {
+        && staticEval >= beta
+        && this->board.hasNonPawnMat()) {
 
         // prefetch TT entry as soon as possible; NMP only changes color
         TTable::Table.prefetch(this->board.zobristKey() ^ Zobrist::isBlackKey);
