@@ -500,7 +500,3 @@ auto currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn) -> bool {
         || Attacks::knightAttacks(kingSquare) & enemyKnights
         || Attacks::kingAttacks(kingSquare) & enemyKings;
 }
-
-auto getAllPieces(const PieceSets& pieceSets) -> uint64_t {
-    return pieceSets[WHITE_PIECES] | pieceSets[BLACK_PIECES];
-}

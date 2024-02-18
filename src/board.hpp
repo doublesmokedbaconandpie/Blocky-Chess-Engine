@@ -63,6 +63,7 @@ class Board {
         auto evaluate() -> int;
         auto lastMoveCaptureOrCastle() const -> bool;
         void clearHistory();
+        auto hasNonPawnMat() const -> bool;
 
         // getters
         auto board() const -> std::array<pieceTypes, BOARD_SIZE>;
@@ -92,6 +93,24 @@ class Board {
         std::vector<uint64_t> m_zobristKeyHistory;
         std::vector<BoardState> m_moveHistory;
 };
+
+inline auto allPieces(const PieceSets& pieceSets) -> uint64_t {
+    return pieceSets[WHITE_PIECES] | pieceSets[BLACK_PIECES];
+}
+inline auto allPawns(const PieceSets& pieceSets) -> uint64_t {
+    return pieceSets[WPawn] | pieceSets[BPawn];
+}
+
+inline auto allKings(const PieceSets& pieceSets) -> uint64_t {
+    return pieceSets[WKing] | pieceSets[BKing];
+}
+
+inline auto Board::hasNonPawnMat() const -> bool {
+    const auto pieces = allPieces(this->pieceSets);
+    const auto pawns = allPawns(this->pieceSets);
+    const auto kings = allKings(this->pieceSets);
+    return static_cast<bool>(pieces ^ (pawns | kings));
+}
 
 inline auto Board::board() const -> std::array<pieceTypes, BOARD_SIZE> {
     return this->m_board;
@@ -123,4 +142,3 @@ inline auto Board::zobristKey() const -> uint64_t {
 
 auto castleRightsBit(Square finalKingPos, bool isWhiteTurn) -> castleRights;
 auto currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn) -> bool;
-auto getAllPieces(const PieceSets& pieceSets) -> uint64_t;
