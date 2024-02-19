@@ -89,7 +89,7 @@ void BlockyEval::pushEntry(parameters_t& parameters, Eval::S entry, const Eval::
 EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
     Board board(fen);
     EvalResult result;
-    const auto allPieces = allPieces(board.pieceSets);
+    const auto allPieces = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
 
     /************
      * Initialize coefficients to zero-weights, which should fit most of them
