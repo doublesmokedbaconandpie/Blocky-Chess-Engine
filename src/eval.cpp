@@ -105,7 +105,7 @@ S evalPawns(const PieceSets& pieceSets, bool isWhite) {
 
 S evalPieces(const PieceSets& pieceSets, bool isWhite) {
     const uint64_t mobilitySquares = getMobilitySquares(pieceSets, isWhite);
-    const uint64_t allPieces   = isWhite ? pieceSets[WHITE_PIECES] : pieceSets[BLACK_PIECES];
+    const uint64_t allPieces = pieceSets[WHITE_PIECES] | pieceSets[BLACK_PIECES];
     uint64_t allyKnights = isWhite ? pieceSets[WKnight] : pieceSets[BKnight];
     uint64_t allyBishops = isWhite ? pieceSets[WBishop] : pieceSets[BBishop];
     uint64_t allyRooks = isWhite ? pieceSets[WRook] : pieceSets[BRook];
