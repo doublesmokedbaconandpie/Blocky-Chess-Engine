@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include "eval.hpp"
+#include "pieceSets.hpp"
 #include "move.hpp"
 #include "bitboard.hpp"
 #include "attacks.hpp"
@@ -73,16 +74,13 @@ const PawnHashEntry& Info::getPawnInfo(const PieceSets& pieceSets) {
 }
 
 S evalPawns(const PieceSets& pieceSets, bool isWhite) {
-    const auto allyPawn  = isWhite ? WPawn : BPawn;
-    const auto enemyPawn = isWhite ? BPawn : WPawn;
-
-    const auto allyPawnSet = pieceSets[allyPawn];
-    const auto enemyPawnSet = pieceSets[enemyPawn];
+    const auto allyPawnSet = pieceSets.get(PAWN, isWhite);
+    const auto enemyPawnSet = pieceSets.get(PAWN, !isWhite);
 
     int pawn;
     S pawnScore{};
 
-    auto pawns = pieceSets[allyPawn];
+    auto pawns = allyPawnSet;
     while (pawns) {
         pawn = popLsb(pawns);
         if (isPassedPawn(pawn, enemyPawnSet, isWhite)) {
@@ -105,10 +103,10 @@ S evalPawns(const PieceSets& pieceSets, bool isWhite) {
 
 S evalPieces(const PieceSets& pieceSets, bool isWhite) {
     const uint64_t mobilitySquares = getMobilitySquares(pieceSets, isWhite);
-    const uint64_t allPieces = pieceSets[WHITE_PIECES] | pieceSets[BLACK_PIECES];
-    uint64_t allyKnights = isWhite ? pieceSets[WKnight] : pieceSets[BKnight];
-    uint64_t allyBishops = isWhite ? pieceSets[WBishop] : pieceSets[BBishop];
-    uint64_t allyRooks = isWhite ? pieceSets[WRook] : pieceSets[BRook];
+    const uint64_t allPieces = pieceSets.get(ALL);
+    uint64_t allyKnights = pieceSets.get(KNIGHT, isWhite);
+    uint64_t allyBishops = pieceSets.get(BISHOP, isWhite);
+    uint64_t allyRooks = pieceSets.get(ROOK, isWhite);
 
     S score{};
     Square sq;
@@ -199,8 +197,8 @@ uint64_t getPhalanxPawnsMask(uint64_t allyPawnSet) {
 
 // returns all squares that can be moved to (including captures) that aren't defended by enemy pawns
 uint64_t getMobilitySquares(const PieceSets& pieceSets, bool isWhite) {
-    const uint64_t nonAllies = isWhite ? ~pieceSets[WHITE_PIECES] : ~pieceSets[BLACK_PIECES];
-    const uint64_t enemyPawns = isWhite ? pieceSets[BPawn] : pieceSets[WPawn];
+    const uint64_t nonAllies = ~pieceSets.get(ALL, isWhite);
+    const uint64_t enemyPawns = pieceSets.get(PAWN, !isWhite);
     const uint64_t left  = enemyPawns & NOT_FILE_A;
     const uint64_t right = enemyPawns & NOT_FILE_H;
     const uint64_t attackedSquares = isWhite ?

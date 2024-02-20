@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include "pieceSets.hpp"
 #include "move.hpp"
 #include "bitboard.hpp"
 #include "utils/types.hpp"
