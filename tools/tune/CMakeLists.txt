@@ -8,6 +8,7 @@ target_sources(extract PRIVATE
     ../../src/moveGen.cpp
     ../../src/board.cpp
     ../../src/move.cpp
+    ../../src/pieceSets.cpp
     ../../src/eval.cpp
     ../../src/attacks.cpp
     ../../src/bitboard.cpp

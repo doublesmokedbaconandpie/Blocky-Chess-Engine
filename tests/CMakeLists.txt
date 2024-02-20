@@ -27,6 +27,7 @@ add_executable(allTests
     ../src/board.cpp
     ../src/moveGen.cpp
     ../src/moveOrder.cpp
+    ../src/pieceSets.cpp
     ../src/timeman.cpp
     ../src/ttable.cpp
     ../src/search.cpp
