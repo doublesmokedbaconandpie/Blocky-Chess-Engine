@@ -26,18 +26,18 @@
 
 MoveList::MoveList(const Board& board) {
     // information used in both captures and quiets move generation
-    this->allPieces = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
+    this->allPieces = board.pieceSets.get(ALL);
     this->emptySquares = ~this->allPieces;
     this->isWhiteTurn = board.isWhiteTurn();
 
     // gather piece bitboards
-    this->kings   = board.isWhiteTurn() ? board.pieceSets[WKing]   : board.pieceSets[BKing];
-    this->knights = board.isWhiteTurn() ? board.pieceSets[WKnight] : board.pieceSets[BKnight];
-    this->bishops = board.isWhiteTurn() ? board.pieceSets[WBishop] : board.pieceSets[BBishop];
-    this->rooks   = board.isWhiteTurn() ? board.pieceSets[WRook]   : board.pieceSets[BRook];
-    this->queens  = board.isWhiteTurn() ? board.pieceSets[WQueen]  : board.pieceSets[BQueen];
+    this->kings   = board.pieceSets.get(KING, board.isWhiteTurn());
+    this->knights = board.pieceSets.get(KNIGHT, board.isWhiteTurn());
+    this->bishops = board.pieceSets.get(BISHOP, board.isWhiteTurn());
+    this->rooks   = board.pieceSets.get(ROOK, board.isWhiteTurn());
+    this->queens  = board.pieceSets.get(QUEEN, board.isWhiteTurn());
     
-    this->pawns   = board.isWhiteTurn() ? board.pieceSets[WPawn]   : board.pieceSets[BPawn];
+    this->pawns   = board.pieceSets.get(PAWN, board.isWhiteTurn());
     this->promotingPawns = board.isWhiteTurn() ? this->pawns & RANK_7 : this->pawns & RANK_2;
     this->pawns ^= promotingPawns;
 }
@@ -49,7 +49,7 @@ void MoveList::generateAllMoves(const Board& board) {
 
 void MoveList::generateCaptures(const Board& board) {
     // helper information for captures
-    uint64_t validDests = this->isWhiteTurn ? board.pieceSets[BLACK_PIECES] : board.pieceSets[WHITE_PIECES];
+    uint64_t validDests = board.pieceSets.get(ALL, !isWhiteTurn);
     this->enPassSquare = board.enPassSquare();
 
     const auto knightMovesFunc = [this](Square piece, uint64_t vd) {return this->knightMoves(piece, vd);};
