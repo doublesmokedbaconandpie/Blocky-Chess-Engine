@@ -482,9 +482,9 @@ auto castleRightsBit(Square finalKingPos, bool m_isWhiteTurn) -> castleRights {
 }
 
 auto currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn) -> bool {
-    const pieceTypes allyKing = isWhiteTurn ? WKing : BKing;
-    assert(pieceSets[allyKing]);
-    const int kingSquare = lsb(pieceSets[allyKing]);
+    const uint64_t allyKing = pieceSets.get(KING, isWhiteTurn);
+    assert(allyKing);
+    const int kingSquare = lsb(allyKing);
     const bool enemyColor = !isWhiteTurn;
 
     const uint64_t allPieces    = pieceSets.get(ALL);

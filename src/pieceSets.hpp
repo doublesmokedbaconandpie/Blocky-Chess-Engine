@@ -8,7 +8,7 @@
 class PieceSets {
     public:
         auto get(pieceTypes piece) const -> uint64_t;
-        auto get(pieceTypes piece, bool isWhite) const -> uint64_t;
+        auto get(pieceTypes piece, bool isWhite) const -> const uint64_t&;
 
         auto view() const -> const std::array<uint64_t, NUM_BITBOARDS>&;
 

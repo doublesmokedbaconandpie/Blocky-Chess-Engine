@@ -114,8 +114,8 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
         // pawn terms
         int passedPawnFlag = 0, doubledPawnFlag = 0, chainedPawnFlag = 0, phalanxPawnFlag = 0;
         if (colorlessPiece == WPawn) {
-            const uint64_t allyPawnSet = isWhitePiece ? board.pieceSets[WPawn] : board.pieceSets[BPawn];
-            const uint64_t enemyPawnSet = isWhitePiece ? board.pieceSets[BPawn] : board.pieceSets[WPawn];
+            const uint64_t allyPawnSet = board.pieceSets.get(PAWN, isWhitePiece);
+            const uint64_t enemyPawnSet = board.pieceSets.get(PAWN, !isWhitePiece);
             const uint64_t doubledPawnSet = Eval::getDoubledPawnsMask(allyPawnSet, isWhitePiece);
             const uint64_t chainedPawnSet = Eval::getChainedPawnsMask(allyPawnSet, isWhitePiece);
             const uint64_t phalanxPawnSet = Eval::getPhalanxPawnsMask(allyPawnSet);
@@ -164,7 +164,8 @@ EvalResult BlockyEval::get_fen_eval_result(const std::string& fen) {
     }
 
     // misc coefficients
-    int bishopPairFlag = Eval::isBishopPair(board.pieceSets[WBishop]) - Eval::isBishopPair(board.pieceSets[BBishop]);
+    int bishopPairFlag = Eval::isBishopPair(board.pieceSets.get(BISHOP, true)) - 
+                         Eval::isBishopPair(board.pieceSets.get(BISHOP, false));
     result.coefficients[offsets["bishopPair"]] += bishopPairFlag;
 
     result.score = board.evaluate();

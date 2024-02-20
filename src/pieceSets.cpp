@@ -24,7 +24,7 @@ auto PieceSets::get(pieceTypes piece) const -> uint64_t {
     }
 }
 
-auto PieceSets::get(pieceTypes piece, bool isWhite) const -> uint64_t {
+auto PieceSets::get(pieceTypes piece, bool isWhite) const -> const uint64_t& {
     switch (piece)
     {
     case KING:
