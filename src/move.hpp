@@ -39,7 +39,7 @@ class Move {
         operator bool() const;
         bool operator==(const Move& rhs) const;
         bool operator!=(const Move& rhs) const;
-        std::ostream& operator<<(std::ostream& os) const;
+        friend std::ostream& operator<<(std::ostream& os, const Move& obj);
     private:
         static pieceTypes toPieceType(int integer);
         static int toInt(pieceTypes piece);

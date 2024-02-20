@@ -41,7 +41,7 @@ uint64_t perft(Board& board, int depthLeft) {
     }
 
     uint64_t leafNodeCount = 0;
-    for (auto move: gen.moves) {
+    for (Move move: gen.moves) {
         board.makeMove(move);
         const uint64_t moveCount = perft<false>(board, depthLeft - 1);
         leafNodeCount += moveCount;

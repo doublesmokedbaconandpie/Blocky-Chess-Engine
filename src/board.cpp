@@ -445,21 +445,21 @@ auto Board::operator==(const Board& rhs) const -> bool {
         && this->enPassSquare() == rhs.enPassSquare();
 }
 
-auto Board::operator<<(std::ostream& os) const -> std::ostream& {
+auto operator<<(std::ostream& os, const Board& obj) -> std::ostream& {
     for (int rank = 0; rank <= 7; rank++) {
         os << "[";
         for (int file = 0; file <= 7; file++) {
-            os << pieceToChar.at(this->getPiece(toSquare(rank, file)));
+            os << pieceToChar.at(obj.getPiece(toSquare(rank, file)));
             os << ',';
         }
         os << "],\n";
     }
     os << "\n";
-    os << "castlingRights: " << this->castlingRights() << "\n";
-    os << "enPassSquare: " << sqrToStr(this->enPassSquare()) << "\n";
-    os << "isWhiteTurn: " << this->isWhiteTurn() << "\n";
-    os << "50MoveRule: " << this->fiftyMoveRule() << "\n";
-    os << "ZobristKey: " << this->zobristKey() << "\n";
+    os << "castlingRights: " << obj.castlingRights() << "\n";
+    os << "enPassSquare: " << sqrToStr(obj.enPassSquare()) << "\n";
+    os << "isWhiteTurn: " << obj.isWhiteTurn() << "\n";
+    os << "50MoveRule: " << obj.fiftyMoveRule() << "\n";
+    os << "ZobristKey: " << obj.zobristKey() << "\n";
     return os;
 }
 

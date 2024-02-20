@@ -76,7 +76,7 @@ class Board {
         auto zobristKey() const -> uint64_t;
 
         auto operator==(const Board& rhs) const -> bool;
-        auto operator<<(std::ostream& os) const -> std::ostream&;
+        friend auto operator<<(std::ostream& os, const Board& obj) -> std::ostream&;
 
         PieceSets pieceSets{};
     private:
