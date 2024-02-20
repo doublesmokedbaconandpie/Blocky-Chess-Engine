@@ -485,15 +485,15 @@ auto currKingInAttack(const PieceSets& pieceSets, bool isWhiteTurn) -> bool {
     const pieceTypes allyKing = isWhiteTurn ? WKing : BKing;
     assert(pieceSets[allyKing]);
     const int kingSquare = lsb(pieceSets[allyKing]);
+    const bool enemyColor = !isWhiteTurn;
 
-    const uint64_t allPieces = pieceSets.get(ALL);
-
-    const uint64_t enemyKings   = pieceSets.get(KING, !isWhiteTurn);
-    const uint64_t enemyQueens  = pieceSets.get(QUEEN, !isWhiteTurn);
-    const uint64_t enemyBishops = pieceSets.get(BISHOP, !isWhiteTurn);
-    const uint64_t enemyRooks   = pieceSets.get(ROOK, !isWhiteTurn);
-    const uint64_t enemyKnights = pieceSets.get(KNIGHT, !isWhiteTurn);
-    const uint64_t enemyPawns   = pieceSets.get(PAWN, !isWhiteTurn);
+    const uint64_t allPieces    = pieceSets.get(ALL);
+    const uint64_t enemyKings   = pieceSets.get(KING, enemyColor);
+    const uint64_t enemyQueens  = pieceSets.get(QUEEN, enemyColor);
+    const uint64_t enemyBishops = pieceSets.get(BISHOP, enemyColor);
+    const uint64_t enemyRooks   = pieceSets.get(ROOK, enemyColor);
+    const uint64_t enemyKnights = pieceSets.get(KNIGHT, enemyColor);
+    const uint64_t enemyPawns   = pieceSets.get(PAWN, enemyColor);
 
     return Attacks::bishopAttacks(kingSquare, allPieces) & (enemyBishops | enemyQueens)
         || Attacks::rookAttacks(kingSquare, allPieces) & (enemyRooks | enemyQueens)
