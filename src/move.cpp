@@ -90,8 +90,8 @@ bool Move::operator!=(const Move& rhs) const {
     return this->data != rhs.data;
 }
 
-std::ostream& Move::operator<<(std::ostream& os) const {
-    os << this->toStr();
+std::ostream& operator<<(std::ostream& os, const Move& obj) {
+    os << obj.toStr();
     return os;
 }
 
