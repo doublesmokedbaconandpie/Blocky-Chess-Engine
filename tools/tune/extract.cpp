@@ -326,8 +326,7 @@ void storeFenResults(std::ofstream& file, std::vector<std::string> fens, Winning
         Board board(fen);
 
         // filter unwanted positions
-        uint64_t nonPawns = board.pieceSets[WHITE_PIECES] | board.pieceSets[BLACK_PIECES];
-        nonPawns ^= board.pieceSets[WPawn] | board.pieceSets[BPawn];
+        uint64_t nonPawns = board.pieceSets.get(ALL) ^ board.pieceSets.get(PAWN);
         if (popcount(nonPawns) <= 4) {
             continue;
         }

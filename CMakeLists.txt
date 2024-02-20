@@ -18,6 +18,7 @@ target_sources(Blocky PRIVATE
     src/board.cpp
     src/moveGen.cpp
     src/moveOrder.cpp
+    src/pieceSets.cpp
     src/search.cpp
     src/ttable.cpp
     src/eval.cpp

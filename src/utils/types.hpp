@@ -32,7 +32,6 @@ inline constexpr int MAX_MOVES = 256;
 inline constexpr int MAX_PLY = 250;
 
 using Square = uint8_t;
-using PieceSets = std::array<uint64_t, NUM_BITBOARDS>;
 using HistoryTable = std::array<std::array<int, BOARD_SIZE>, BOARD_SIZE>;
 using RNGSeed = std::array<uint64_t, 4>;
 
@@ -50,7 +49,7 @@ enum pieceTypes: int {
     BKing, BQueen, BBishop, BKnight, BRook, BPawn,
     WHITE_PIECES, BLACK_PIECES,
 
-    KING = WKing, KNIGHT = WKnight, BISHOP = WBishop, ROOK = WRook, QUEEN = WQueen, PAWN = WPawn
+    KING = WKing, KNIGHT = WKnight, BISHOP = WBishop, ROOK = WRook, QUEEN = WQueen, PAWN = WPawn, ALL = WHITE_PIECES
 };
 
 // indices are equal to the enumerated pieceTypes
