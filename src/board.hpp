@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "eval.hpp"
+#include "pieceSets.hpp"
 #include "move.hpp"
 #include "bitboard.hpp"
 #include "utils/types.hpp"
@@ -94,21 +95,10 @@ class Board {
         std::vector<BoardState> m_moveHistory;
 };
 
-inline auto allPieces(const PieceSets& pieceSets) -> uint64_t {
-    return pieceSets[WHITE_PIECES] | pieceSets[BLACK_PIECES];
-}
-inline auto allPawns(const PieceSets& pieceSets) -> uint64_t {
-    return pieceSets[WPawn] | pieceSets[BPawn];
-}
-
-inline auto allKings(const PieceSets& pieceSets) -> uint64_t {
-    return pieceSets[WKing] | pieceSets[BKing];
-}
-
 inline auto Board::hasNonPawnMat() const -> bool {
-    const auto pieces = allPieces(this->pieceSets);
-    const auto pawns = allPawns(this->pieceSets);
-    const auto kings = allKings(this->pieceSets);
+    const auto pieces = this->pieceSets.get(ALL);
+    const auto pawns = this->pieceSets.get(PAWN);
+    const auto kings = this->pieceSets.get(KING);
     return static_cast<bool>(pieces ^ (pawns | kings));
 }
 
