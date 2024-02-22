@@ -210,16 +210,33 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
     int score = NO_SCORE, bestscore = -INF_SCORE;
     Move bestMove{};
     FixedVector<Move, MAX_MOVES> failedQuiets{};
-    bool doFullNullSearch, doPVS;
+    bool doFullNullSearch, doPVS, skipQuiets = false;
 
     while (movePicker.movesLeft(this->board, this->history)) {
         const Move move = movePicker.pickMove();
-        board.makeMove(move);
+        const bool quietMove = !movePicker.stagesLeft();
 
+        /*************
+         * Late Move Pruning:
+         * Moves that are searched later are less likely to be good
+         * Still search captures though
+        **************/
+        if (!skipQuiets) {
+            if (!ISPV
+                && movePicker.getMovesPicked() >= 30
+                && !inCheck) {
+
+                skipQuiets = true;
+            }
+        }
+        if (skipQuiets && quietMove) {
+            continue;
+        }
+
+        board.makeMove(move);
         // prefetch TT entry as soon as possible
         TTable::Table.prefetch(this->board.zobristKey());
         const bool moveGivesCheck = currKingInAttack(this->board.pieceSets, this->board.isWhiteTurn());
-        const bool quietMove = !movePicker.stagesLeft();
 
         /*************
          * Extensions:
