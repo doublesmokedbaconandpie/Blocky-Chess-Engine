@@ -124,6 +124,7 @@ int Searcher::aspiration(int depth, int prevEval) {
 
 template <NodeTypes NODE>
 int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
+    constexpr bool ISROOT = NODE == ROOT;
     constexpr bool ISPV = NODE == ROOT || NODE == PV;
     constexpr bool ISNMP = NODE == NMP;
     const int oldAlpha = alpha;
@@ -165,6 +166,14 @@ int Searcher::search(int alpha, int beta, int depth, StackEntry* ss) {
         staticEval = entry.eval;
     } else {
         staticEval = this->board.evaluate();
+    }
+
+    /************
+     * Internal Iterative Reductions
+     * Nodes that don't have a TTMove are less likely to be important
+    *************/
+    if (!ISROOT && !TTMove && depth >= 6) {
+        depth--;
     }
 
     /************
