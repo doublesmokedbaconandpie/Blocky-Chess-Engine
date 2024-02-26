@@ -36,8 +36,8 @@ parameters_t BlockyEval::get_initial_parameters() {
     pushTable(params, "knightMobility", Eval::knightMobility);
     pushTable(params, "bishopMobility", Eval::bishopMobility);
     pushTable(params, "rookMobility", Eval::rookMobility);
-    pushTable(params, "pieceVals", Eval::pieceVals);
     pushTable(params, "passedPawns", Eval::passedPawn);
+    pushTable(params, "pieceVals", Eval::pieceVals);
 
     // misc evaluation terms
     pushSingleTerm(params, "doubledPawns", Eval::doubledPawns);
