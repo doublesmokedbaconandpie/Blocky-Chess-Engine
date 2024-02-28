@@ -72,7 +72,6 @@ class Board {
         auto castlingRights() const -> castleRights;
         auto enPassSquare() const -> Square;
         auto fiftyMoveRule() const -> int;
-        auto age() const -> int;
         auto zobristKey() const -> uint64_t;
 
         auto operator==(const Board& rhs) const -> bool;
@@ -89,7 +88,6 @@ class Board {
         castleRights m_castlingRights;
         Square m_enPassSquare;
         int m_fiftyMoveRule;
-        int m_age = 0;
         uint64_t m_zobristKey; // zobristKeyHistory also contains zobristKey
         std::vector<uint64_t> m_zobristKeyHistory;
         std::vector<BoardState> m_moveHistory;
@@ -120,10 +118,6 @@ inline auto Board::enPassSquare() const -> Square {
 
 inline auto Board::fiftyMoveRule() const -> int {
     return this->m_fiftyMoveRule;
-}
-
-inline auto Board::age() const -> int {
-    return this->m_age;
 }
 
 inline auto Board::zobristKey() const -> uint64_t {

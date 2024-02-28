@@ -30,7 +30,6 @@ inline constexpr int DEFAULT_SIZEMB = 128;
 
 struct Entry {
     uint64_t key{};
-    uint8_t age{};
     int depth{};
     int eval{};
     EvalType bound = NONE;
@@ -46,7 +45,7 @@ class TTable {
 
         bool entryExists(uint64_t key) const;
         Entry getEntry(uint64_t key) const;
-        void store(int eval, Move move, EvalType bound, int depth, int age, uint64_t key);
+        void store(int eval, Move move, EvalType bound, int depth, uint64_t key);
         void prefetch(uint64_t key) const;
     private:
         int getIndex(uint64_t key) const;
