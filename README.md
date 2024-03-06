@@ -10,16 +10,27 @@ Blocky is a UCI-compliant chess engine. It has implemented the following techniq
         * Principle Variation Search
     * Quiescent Search
     * Null Move Pruning
+    * Reverse Futility Pruning
+    * Internal Iterative Reductions
     * Late Move Reductions
+    * Late Move Pruning
     * Transposition Tables Cutoffs
 * Evaluation: 
     * Piece-Square Tables
     * Tapered Evaluation
-    * Mop Up Evaluation
+    * Pieces
+        * Mobility (Bishop, Knight, Rook)
+        * Bishop Pair
+    * Pawns
+        * Passed Pawns
+        * Doubled Pawns
+        * Chained Pawns
+        * Phalanx Pawns
 * Move Ordering:
     * Transposition Table Moves
     * MVV-LVA
     * Killer Move Heuristic
+    * Butterfly History Heuristic
     * Staged Move Generation
 * Other Techniques:
     * Magic Bitboards and Attack Tables
